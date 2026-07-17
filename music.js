@@ -1,41 +1,96 @@
-/* ============================================================
-   JUKEBOX — music.js v2
-   Vintage glassmorphism jukebox for 100 prghs for eeshah
-   ============================================================ */
-
 (function () {
   'use strict';
 
-  /* ==========================================================
-     CONFIG
-     ========================================================== */
   var PLACEHOLDER_COVERS = [
     'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%232a2018%22/%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2220%22 fill=%22%23ffe680%22 opacity=%22.15%22/%3E%3C/svg%3E',
     'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%231c1620%22/%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2220%22 fill=%22%23e85d3a%22 opacity=%22.15%22/%3E%3C/svg%3E',
     'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23181820%22/%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2220%22 fill=%22%23ffd700%22 opacity=%22.12%22/%3E%3C/svg%3E',
     'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23221828%22/%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2220%22 fill=%22%23ffb6c1%22 opacity=%22.15%22/%3E%3C/svg%3E',
-    'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23202018%22/%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2220%22 fill=%22%23ffa500%22 opacity=%22.15%22/%3E%3C/svg%3E',
+    'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23202018%22/%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2220%22 fill=%22%23ffa500%22 opacity=%22.15%22/%3E%3Csvg%3E',
     'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23182020%22/%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2220%22 fill=%22%23ff6347%22 opacity=%22.15%22/%3E%3C/svg%3E'
   ];
 
-  var DEFAULT_SRC = './Romantic%20Dark%20Playlist%20for%20Making%20Love%20%20Sensual%20Late%20Night%20Vibes%20%28playlist%29.mp3';
+  var DB_NAME = 'ash-jukebox-db';
+  var DB_VER = 1;
 
-  var SONGS = [
-    { title: 'Until I Found You',   artist: 'Stephen Sanchez',  cover: PLACEHOLDER_COVERS[0], src: DEFAULT_SRC, duration: 207 },
-    { title: 'Perfect',             artist: 'Ed Sheeran',        cover: PLACEHOLDER_COVERS[1], src: DEFAULT_SRC, duration: 263 },
-    { title: 'Yellow',              artist: 'Coldplay',          cover: PLACEHOLDER_COVERS[2], src: DEFAULT_SRC, duration: 266 },
-    { title: 'Turning Page',        artist: 'Sleeping At Last',  cover: PLACEHOLDER_COVERS[3], src: DEFAULT_SRC, duration: 257 },
-    { title: 'Photograph',          artist: 'Ed Sheeran',        cover: PLACEHOLDER_COVERS[4], src: DEFAULT_SRC, duration: 259 },
-    { title: 'I Wanna Be Yours',    artist: 'Arctic Monkeys',    cover: PLACEHOLDER_COVERS[5], src: DEFAULT_SRC, duration: 184 }
+  var DEFAULT_SONGS = [
+    { title: 'Until I Found You',   artist: 'Stephen Sanchez',  duration: 207, coverIdx: 0 },
+    { title: 'Perfect',             artist: 'Ed Sheeran',        duration: 263, coverIdx: 1 },
+    { title: 'Yellow',              artist: 'Coldplay',          duration: 266, coverIdx: 2 },
+    { title: 'Turning Page',        artist: 'Sleeping At Last',  duration: 257, coverIdx: 3 },
+    { title: 'Photograph',          artist: 'Ed Sheeran',        duration: 259, coverIdx: 4 },
+    { title: 'I Wanna Be Yours',    artist: 'Arctic Monkeys',    duration: 184, coverIdx: 5 }
   ];
 
   var STORAGE_KEY = 'ash-jukebox';
+  var audioUrls = [];
 
-  /* ==========================================================
-     JUKEBOX CLASS
-     ========================================================== */
-  function Jukebox() {
-    this.songs = SONGS;
+  function openDB() {
+    return new Promise(function (resolve, reject) {
+      var req = indexedDB.open(DB_NAME, DB_VER);
+      req.onupgradeneeded = function (e) {
+        var db = e.target.result;
+        if (!db.objectStoreNames.contains('songs')) db.createObjectStore('songs', { keyPath: 'id', autoIncrement: true });
+        if (!db.objectStoreNames.contains('config')) db.createObjectStore('config', { keyPath: 'key' });
+      };
+      req.onsuccess = function () { resolve(req.result); };
+      req.onerror = function () { reject(req.error); };
+    });
+  }
+
+  function dbGetAll(storeName) {
+    return openDB().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(storeName, 'readonly');
+        var store = tx.objectStore(storeName);
+        var req = store.getAll();
+        req.onsuccess = function () { db.close(); resolve(req.result); };
+        req.onerror = function () { db.close(); reject(req.error); };
+      });
+    });
+  }
+
+  function revokeAudioUrls() {
+    for (var i = 0; i < audioUrls.length; i++) {
+      try { URL.revokeObjectURL(audioUrls[i]); } catch(e) {}
+    }
+    audioUrls = [];
+  }
+
+  function loadSongsFromDB() {
+    return dbGetAll('songs').then(function (records) {
+      if (!records || !records.length) return null;
+      var songObjs = [];
+      for (var i = 0; i < records.length; i++) {
+        var r = records[i];
+        var audioUrl = null;
+        if (r.audioData) {
+          try {
+            var blob = new Blob([r.audioData], { type: r.audioType || 'audio/mpeg' });
+            audioUrl = URL.createObjectURL(blob);
+            audioUrls.push(audioUrl);
+          } catch(e) {}
+        }
+        songObjs.push({
+          title: r.title || 'Untitled',
+          artist: r.artist || 'Unknown',
+          cover: r.cover || PLACEHOLDER_COVERS[i % PLACEHOLDER_COVERS.length],
+          src: audioUrl,
+          duration: r.duration || 180,
+          unlockDate: r.unlockDate || '',
+          autoUnlock: r.autoUnlock !== false,
+          hasFile: !!r.hasFile || !!audioUrl
+        });
+      }
+      return songObjs;
+    }).catch(function () {
+      return null;
+    });
+  }
+
+  function Jukebox(songs) {
+    var self = this;
+    this.songs = songs || [];
     this.currentIndex = 0;
     this.isPlaying = false;
     this.isOpen = false;
@@ -55,23 +110,18 @@
     this.noteTimer = null;
 
     this.restoreState();
-    this.buildDOM();
-    this.bindEvents();
-    this.updateUI();
+    this.buildDOM(function () {
+      self.bindEvents();
+      self.updateUI();
 
-    // Show button after delay
-    var self = this;
-    setTimeout(function () { self.btn.classList.add('show'); }, 1500);
+      setTimeout(function () { self.btn.classList.add('show'); }, 1500);
 
-    // Auto-play if was playing before
-    if (this._autoPlay) {
-      setTimeout(function () { self.togglePlay(); }, 2500);
-    }
+      if (self._autoPlay) {
+        setTimeout(function () { self.togglePlay(); }, 2500);
+      }
+    });
   }
 
-  /* ==========================================================
-     STATE PERSISTENCE
-     ========================================================== */
   Jukebox.prototype.saveState = function () {
     try {
       var state = {
@@ -86,7 +136,7 @@
         shuffleIndex: this.shuffleIndex
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch (e) { /* noop */ }
+    } catch (e) {}
   };
 
   Jukebox.prototype.restoreState = function () {
@@ -103,42 +153,37 @@
       if (state.shuffleIndex !== undefined) this.shuffleIndex = state.shuffleIndex;
       if (state.currentTime) this.currentTime = state.currentTime;
       this._autoPlay = !!state.isPlaying;
-    } catch (e) { /* noop */ }
+    } catch (e) {}
   };
 
-  /* ==========================================================
-     DOM BUILDING
-     ========================================================== */
-  Jukebox.prototype.buildDOM = function () {
-    // Button
-    this.btn = document.getElementById('jukeboxBtn');
-    if (!this.btn) {
-      this.btn = document.createElement('button');
-      this.btn.id = 'jukeboxBtn';
-      this.btn.setAttribute('aria-label', 'Open jukebox');
-      this.btn.innerHTML =
+  Jukebox.prototype.buildDOM = function (done) {
+    var self = this;
+
+    this.btn = document.getElementById('jukeboxBtn') || (function () {
+      var el = document.createElement('button');
+      el.id = 'jukeboxBtn';
+      el.setAttribute('aria-label', 'Open jukebox');
+      el.innerHTML =
         '<span class="btn-icon">&#x1F3B5;</span>' +
         '<svg class="progress-ring" viewBox="0 0 100 100">' +
           '<circle class="ring-bg" cx="50" cy="50" r="46"/>' +
           '<circle class="ring-fg" cx="50" cy="50" r="46" stroke-dasharray="289.03" stroke-dashoffset="289.03"/>' +
         '</svg>';
-      document.body.appendChild(this.btn);
-    }
+      document.body.appendChild(el);
+      return el;
+    })();
 
-    // Overlay
-    this.overlay = document.getElementById('jukeboxOverlay');
-    if (!this.overlay) {
-      this.overlay = document.createElement('div');
-      this.overlay.id = 'jukeboxOverlay';
-      document.body.appendChild(this.overlay);
-    }
+    this.overlay = document.getElementById('jukeboxOverlay') || (function () {
+      var el = document.createElement('div');
+      el.id = 'jukeboxOverlay';
+      document.body.appendChild(el);
+      return el;
+    })();
 
-    // Panel
-    this.panel = document.getElementById('jukeboxPanel');
-    if (!this.panel) {
-      this.panel = document.createElement('div');
-      this.panel.id = 'jukeboxPanel';
-      this.panel.innerHTML =
+    this.panel = document.getElementById('jukeboxPanel') || (function () {
+      var el = document.createElement('div');
+      el.id = 'jukeboxPanel';
+      el.innerHTML =
         '<div class="jukebox-inner">' +
           '<div class="jukebox-header">' +
             '<span class="now-playing-label">Now Playing</span>' +
@@ -184,26 +229,25 @@
           '<div class="playlist-label">Playlist</div>' +
           '<div class="playlist" id="jukeboxPlaylist" role="listbox" aria-label="Song playlist"></div>' +
         '</div>';
-      document.body.appendChild(this.panel);
-    }
+      document.body.appendChild(el);
+      return el;
+    })();
 
-    // Mini player
-    this.miniPlayer = document.getElementById('jukeboxMini');
-    if (!this.miniPlayer) {
-      this.miniPlayer = document.createElement('div');
-      this.miniPlayer.id = 'jukeboxMini';
-      this.miniPlayer.className = 'mini-player';
-      this.miniPlayer.innerHTML =
+    this.miniPlayer = document.getElementById('jukeboxMini') || (function () {
+      var el = document.createElement('div');
+      el.id = 'jukeboxMini';
+      el.className = 'mini-player';
+      el.innerHTML =
         '<div class="mp-album"><img src="" alt="" loading="lazy"></div>' +
         '<div class="mp-info">' +
           '<div class="mp-title">Not Playing</div>' +
           '<div class="mp-artist">&mdash;</div>' +
         '</div>' +
         '<button class="mp-play-btn" aria-label="Play / Pause">&#x25B6;</button>';
-      document.body.appendChild(this.miniPlayer);
-    }
+      document.body.appendChild(el);
+      return el;
+    })();
 
-    // Refs
     this.vinylDisc = this.panel.querySelector('.vinyl-disc');
     this.albumCover = this.panel.querySelector('.album-cover');
     this.songTitle = this.panel.querySelector('.song-title');
@@ -228,12 +272,14 @@
     this.mpPlayBtn = this.miniPlayer.querySelector('.mp-play-btn');
 
     this.buildPlaylist();
+    if (done) done();
   };
 
   Jukebox.prototype.isSongUnlocked = function (index) {
     var s = this.songs[index];
+    if (!s) return true;
     if (!s.unlockDate) return true;
-    if (!s.autoUnlock) return true;
+    if (s.autoUnlock === false) return true;
     var now = new Date();
     now.setHours(0, 0, 0, 0);
     var parts = s.unlockDate.split('-');
@@ -243,7 +289,7 @@
 
   Jukebox.prototype.getLockString = function (index) {
     var s = this.songs[index];
-    if (!s.unlockDate || !s.autoUnlock) return '';
+    if (!s || !s.unlockDate || s.autoUnlock === false) return '';
     if (this.isSongUnlocked(index)) return '';
     var parts = s.unlockDate.split('-');
     var d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
@@ -278,9 +324,6 @@
     this.playlistEl.innerHTML = html;
   };
 
-  /* ==========================================================
-     AUDIO ENGINE
-     ========================================================== */
   Jukebox.prototype.initAudio = function () {
     if (this.audioCtx) return;
     try {
@@ -291,9 +334,7 @@
       this.analyser.fftSize = 64;
       this.gainNode.connect(this.analyser);
       this.analyser.connect(this.audioCtx.destination);
-    } catch (e) {
-      // Web Audio not supported, continue with basic Audio
-    }
+    } catch (e) {}
   };
 
   Jukebox.prototype.createAudio = function () {
@@ -303,20 +344,20 @@
       this.audio.src = '';
       this.audio.load();
     }
-    this.audio = new Audio(this.songs[this.currentIndex].src);
+
+    var s = this.songs[this.currentIndex];
+    var src = s.src || '';
+
+    this.audio = new Audio(src);
     this.audio.preload = 'auto';
     this.audio.volume = 1;
 
-    // Connect to Web Audio API if available
     if (this.audioCtx && this.gainNode) {
       try {
-        if (this.audioCtx.state === 'suspended') {
-          this.audioCtx.resume();
-        }
+        if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
         this.sourceNode = this.audioCtx.createMediaElementSource(this.audio);
         this.sourceNode.connect(this.gainNode);
       } catch (e) {
-        // Already connected, fallback to direct audio
         this.audio.volume = this.volume;
       }
     } else {
@@ -324,7 +365,7 @@
     }
 
     this.audio.addEventListener('loadedmetadata', function () {
-      self.duration = self.audio.duration || self.songs[self.currentIndex].duration;
+      self.duration = self.audio.duration || s.duration;
       self.totalTimeEl.textContent = self.formatTime(self.duration);
       self.seekBar.max = Math.floor(self.duration * 100) || 1000;
     });
@@ -339,14 +380,12 @@
     });
 
     this.audio.addEventListener('error', function () {
-      // Fallback: just advance anyway
       self.onTrackEnd();
     });
   };
 
   Jukebox.prototype.onTrackEnd = function () {
     if (this.repeat === true) {
-      // Repeat one
       this.audio.currentTime = 0;
       this.audio.play();
     } else {
@@ -354,9 +393,6 @@
     }
   };
 
-  /* ==========================================================
-     PLAYBACK CONTROLS
-     ========================================================== */
   Jukebox.prototype.play = function (index) {
     var self = this;
 
@@ -385,9 +421,7 @@
     }
 
     if (this.audio && this.audio.paused) {
-      if (this.audioCtx && this.audioCtx.state === 'suspended') {
-        this.audioCtx.resume();
-      }
+      if (this.audioCtx && this.audioCtx.state === 'suspended') this.audioCtx.resume();
       this.audio.play().then(function () {
         self.isPlaying = true;
         self.updateUI();
@@ -411,12 +445,9 @@
     this.updateSongInfo();
     this.updatePlaylist();
 
-    if (this.audioCtx && this.audioCtx.state === 'suspended') {
-      this.audioCtx.resume();
-    }
+    if (this.audioCtx && this.audioCtx.state === 'suspended') this.audioCtx.resume();
 
-    // Restore position
-    if (this.currentTime > 0 && this.currentTime < this.songs[this.currentIndex].duration) {
+    if (this.currentTime > 0 && this.currentTime < (this.songs[this.currentIndex] ? this.songs[this.currentIndex].duration : 200)) {
       this.audio.currentTime = this.currentTime;
     }
 
@@ -434,9 +465,7 @@
   };
 
   Jukebox.prototype.pause = function () {
-    if (this.audio && !this.audio.paused) {
-      this.audio.pause();
-    }
+    if (this.audio && !this.audio.paused) this.audio.pause();
     this.isPlaying = false;
     this.currentTime = this.audio ? this.audio.currentTime : this.currentTime;
     if (this.vinylDisc) this.vinylDisc.classList.remove('spinning');
@@ -447,11 +476,8 @@
   };
 
   Jukebox.prototype.togglePlay = function () {
-    if (this.isPlaying) {
-      this.pause();
-    } else {
-      this.play();
-    }
+    if (this.isPlaying) this.pause();
+    else this.play();
   };
 
   Jukebox.prototype.next = function () {
@@ -473,7 +499,6 @@
   Jukebox.prototype.prev = function () {
     var self = this;
 
-    // If more than 3 seconds in, restart current track
     if (this.audio && this.audio.currentTime > 3) {
       this.crossfadeOut(function () {
         self.audio.currentTime = 0;
@@ -498,9 +523,6 @@
     });
   };
 
-  /* ==========================================================
-     CROSSFADE
-     ========================================================== */
   Jukebox.prototype.crossfadeOut = function (callback) {
     if (!this.audio || !this.isPlaying) {
       if (callback) callback();
@@ -515,7 +537,6 @@
     var currentStep = 0;
 
     if (this.sourceNode && this.gainNode) {
-      // Use gain node for smooth fade
       var startGain = this.gainNode.gain.value;
       var fadeTimer = setInterval(function () {
         currentStep++;
@@ -523,16 +544,12 @@
           clearInterval(fadeTimer);
           self.pause();
           if (callback) callback();
-          // Reset gain for next song
           if (self.gainNode) self.gainNode.gain.value = self.volume;
         } else {
-          if (self.gainNode) {
-            self.gainNode.gain.value = Math.max(0, startGain * (1 - currentStep / steps));
-          }
+          if (self.gainNode) self.gainNode.gain.value = Math.max(0, startGain * (1 - currentStep / steps));
         }
       }, interval);
     } else {
-      // Fallback: just pause
       this.pause();
       if (callback) callback();
     }
@@ -555,16 +572,11 @@
         clearInterval(fadeTimer);
         if (self.gainNode) self.gainNode.gain.value = targetVol;
       } else {
-        if (self.gainNode) {
-          self.gainNode.gain.value = targetVol * (currentStep / steps);
-        }
+        if (self.gainNode) self.gainNode.gain.value = targetVol * (currentStep / steps);
       }
     }, interval);
   };
 
-  /* ==========================================================
-     SHUFFLE & REPEAT
-     ========================================================== */
   Jukebox.prototype.toggleShuffle = function () {
     this.shuffle = !this.shuffle;
     if (this.shuffle) {
@@ -572,7 +584,6 @@
       for (var i = 0; i < this.songs.length; i++) {
         if (i !== this.currentIndex) this.shuffleOrder.push(i);
       }
-      // Fisher-Yates shuffle
       for (var j = this.shuffleOrder.length - 1; j > 0; j--) {
         var k = Math.floor(Math.random() * (j + 1));
         var tmp = this.shuffleOrder[j];
@@ -587,21 +598,13 @@
   };
 
   Jukebox.prototype.toggleRepeat = function () {
-    // Cycle: off -> one (true) -> all ('all') -> off
-    if (this.repeat === false) {
-      this.repeat = true;
-    } else if (this.repeat === true) {
-      this.repeat = 'all';
-    } else {
-      this.repeat = false;
-    }
+    if (this.repeat === false) this.repeat = true;
+    else if (this.repeat === true) this.repeat = 'all';
+    else this.repeat = false;
     this.updateUI();
     this.saveState();
   };
 
-  /* ==========================================================
-     FAVORITES
-     ========================================================== */
   Jukebox.prototype.toggleFavorite = function (index) {
     var idx = this.favorites.indexOf(index);
     if (idx === -1) {
@@ -612,49 +615,41 @@
     this.saveState();
     this.buildPlaylist();
     this.highlightActivePlaylist();
-    // Re-bind fav button events
     this.bindPlaylistFavEvents();
   };
 
-  /* ==========================================================
-     UI UPDATES
-     ========================================================== */
   Jukebox.prototype.updateSongInfo = function () {
     var s = this.songs[this.currentIndex];
+    if (!s) return;
     if (this.songTitle) this.songTitle.textContent = s.title;
     if (this.artistName) this.artistName.textContent = s.artist;
-    if (this.albumCover) this.albumCover.src = s.cover;
-    if (this.albumCover) this.albumCover.alt = s.title + ' album art';
+    if (this.albumCover) { this.albumCover.src = s.cover; this.albumCover.alt = s.title + ' album art'; }
     if (this.mpTitle) this.mpTitle.textContent = s.title;
     if (this.mpArtist) this.mpArtist.textContent = s.artist;
     if (this.mpAlbum) this.mpAlbum.src = s.cover;
     if (this.totalTimeEl) this.totalTimeEl.textContent = this.formatTime(s.duration);
-    if (this.seekBar) {
-      this.seekBar.max = Math.floor((s.duration || 200) * 100);
-    }
+    if (this.seekBar) this.seekBar.max = Math.floor((s.duration || 200) * 100);
   };
 
   Jukebox.prototype.updateUI = function () {
-    // Button state
     if (this.isPlaying) {
       this.btn.classList.add('playing');
-      this.btn.querySelector('.btn-icon').textContent = '\u266B';
+      var btnIcon = this.btn.querySelector('.btn-icon');
+      if (btnIcon) btnIcon.textContent = '\u266B';
       this.playBtn.textContent = '\u23F8';
       this.mpPlayBtn.textContent = '\u23F8';
       this.miniPlayer.classList.add('show');
     } else {
       this.btn.classList.remove('playing');
-      this.btn.querySelector('.btn-icon').textContent = '\uD83C\uDFB5';
+      var btnIcon = this.btn.querySelector('.btn-icon');
+      if (btnIcon) btnIcon.textContent = '\uD83C\uDFB5';
       this.playBtn.textContent = '\u25B6';
       this.mpPlayBtn.textContent = '\u25B6';
-      if (!this.isOpen) {
-        this.miniPlayer.classList.remove('show');
-      }
+      if (!this.isOpen) this.miniPlayer.classList.remove('show');
     }
 
-    // Song info
     var s = this.songs[this.currentIndex];
-    if (!this.isPlaying && !this.audio) {
+    if (s && !this.isPlaying && !this.audio) {
       this.songTitle.textContent = s.title;
       this.artistName.textContent = s.artist;
       this.albumCover.src = s.cover;
@@ -663,30 +658,17 @@
       this.mpAlbum.src = s.cover;
     }
 
-    // Shuffle
     this.shuffleBtn.classList.toggle('active', this.shuffle);
-
-    // Repeat
     this.repeatBtn.classList.toggle('active', this.repeat !== false);
-    if (this.repeat === 'all') {
-      this.repeatBtn.textContent = '\uD83D\uDD01';
-    } else if (this.repeat === true) {
-      this.repeatBtn.textContent = '\uD83D\uDD02';
-    } else {
-      this.repeatBtn.textContent = '\uD83D\uDD01';
-    }
+    if (this.repeat === 'all') this.repeatBtn.textContent = '\uD83D\uDD01';
+    else if (this.repeat === true) this.repeatBtn.textContent = '\uD83D\uDD02';
+    else this.repeatBtn.textContent = '\uD83D\uDD01';
 
-    // Volume
     this.volumeSlider.value = this.volume * 100;
-    if (this.volume === 0) {
-      this.volIcon.textContent = '\uD83D\uDD07';
-    } else if (this.volume < 0.33) {
-      this.volIcon.textContent = '\uD83D\uDD08';
-    } else if (this.volume < 0.66) {
-      this.volIcon.textContent = '\uD83D\uDD09';
-    } else {
-      this.volIcon.textContent = '\uD83D\uDD0A';
-    }
+    if (this.volume === 0) this.volIcon.textContent = '\uD83D\uDD07';
+    else if (this.volume < 0.33) this.volIcon.textContent = '\uD83D\uDD08';
+    else if (this.volume < 0.66) this.volIcon.textContent = '\uD83D\uDD09';
+    else this.volIcon.textContent = '\uD83D\uDD0A';
 
     this.updatePlaylist();
     this.updateProgressRing();
@@ -702,14 +684,10 @@
     }
   };
 
-  Jukebox.prototype.highlightActivePlaylist = function () {
-    // Already done in updatePlaylist
-  };
+  Jukebox.prototype.highlightActivePlaylist = function () {};
 
   Jukebox.prototype.updateTimeDisplay = function () {
-    if (this.currentTimeEl) {
-      this.currentTimeEl.textContent = this.formatTime(this.currentTime);
-    }
+    if (this.currentTimeEl) this.currentTimeEl.textContent = this.formatTime(this.currentTime);
     if (this.seekBar && this.duration > 0) {
       this.seekBar.value = Math.floor((this.currentTime / this.duration) * this.seekBar.max);
     }
@@ -719,11 +697,9 @@
   Jukebox.prototype.updateProgressRing = function () {
     if (!this.progressRing) return;
     var s = this.songs[this.currentIndex];
-    var dur = this.duration || s.duration || 200;
+    var dur = this.duration || (s ? s.duration : 200) || 200;
     var pct = Math.min(this.currentTime / dur, 1);
-    var circumference = 289.03;
-    var offset = circumference - (pct * circumference);
-    this.progressRing.setAttribute('stroke-dashoffset', offset);
+    this.progressRing.setAttribute('stroke-dashoffset', 289.03 - (pct * 289.03));
   };
 
   Jukebox.prototype.formatTime = function (sec) {
@@ -733,9 +709,6 @@
     return m + ':' + (s < 10 ? '0' : '') + s;
   };
 
-  /* ==========================================================
-     VISUALIZER
-     ========================================================== */
   Jukebox.prototype.startVisualizer = function () {
     var self = this;
     if (this.animationId) cancelAnimationFrame(this.animationId);
@@ -745,31 +718,24 @@
     var dataArray = new Uint8Array(bufferLength);
     var bars = this.eqEl ? this.eqEl.querySelectorAll('.eq-bar') : [];
 
-    function draw() {
+    (function draw() {
       self.animationId = requestAnimationFrame(draw);
       self.analyser.getByteFrequencyData(dataArray);
-
       for (var i = 0; i < bars.length && i < bufferLength; i++) {
         var val = dataArray[i] / 255;
-        var h = 4 + val * 20;
-        bars[i].style.height = h + 'px';
+        bars[i].style.height = (4 + val * 20) + 'px';
       }
-    }
-    draw();
+    })();
   };
 
-  /* ==========================================================
-     FLOATING MUSICAL NOTES
-     ========================================================== */
   Jukebox.prototype.spawnNotes = function () {
     var self = this;
     if (this.noteTimer) clearInterval(this.noteTimer);
     var notes = ['\u266A', '\u266B', '\u266C', '\uD83C\uDFB5', '\u266D'];
-    var btnRect;
 
     this.noteTimer = setInterval(function () {
       if (!self.isPlaying) return;
-      btnRect = self.btn.getBoundingClientRect();
+      var btnRect = self.btn.getBoundingClientRect();
       var note = document.createElement('div');
       note.className = 'music-note';
       note.textContent = notes[Math.floor(Math.random() * notes.length)];
@@ -780,9 +746,6 @@
     }, 2000);
   };
 
-  /* ==========================================================
-     PANEL OPEN / CLOSE
-     ========================================================== */
   Jukebox.prototype.open = function () {
     var self = this;
     this.isOpen = true;
@@ -802,76 +765,34 @@
   };
 
   Jukebox.prototype.close = function () {
-    var self = this;
     this.isOpen = false;
     this.panel.classList.remove('open');
     this.overlay.classList.remove('open');
-
-    if (this.isPlaying) {
-      this.miniPlayer.classList.add('show');
-    }
+    if (this.isPlaying) this.miniPlayer.classList.add('show');
   };
 
   Jukebox.prototype.togglePanel = function () {
-    if (this.isOpen) {
-      this.close();
-    } else {
-      this.open();
-    }
+    if (this.isOpen) this.close();
+    else this.open();
   };
 
-  /* ==========================================================
-     EVENT BINDING
-     ========================================================== */
   Jukebox.prototype.bindEvents = function () {
     var self = this;
 
-    // Button toggle
     this.btn.addEventListener('click', function (e) {
       e.stopPropagation();
       self.togglePanel();
     });
 
-    // Overlay close
-    this.overlay.addEventListener('click', function () {
-      self.close();
-    });
+    this.overlay.addEventListener('click', function () { self.close(); });
+    this.closeBtn.addEventListener('click', function () { self.close(); });
+    this.playBtn.addEventListener('click', function () { self.togglePlay(); });
+    this.mpPlayBtn.addEventListener('click', function () { self.togglePlay(); });
+    this.nextBtn.addEventListener('click', function () { self.next(); });
+    this.prevBtn.addEventListener('click', function () { self.prev(); });
+    this.shuffleBtn.addEventListener('click', function () { self.toggleShuffle(); });
+    this.repeatBtn.addEventListener('click', function () { self.toggleRepeat(); });
 
-    // Close button
-    this.closeBtn.addEventListener('click', function () {
-      self.close();
-    });
-
-    // Play/Pause
-    this.playBtn.addEventListener('click', function () {
-      self.togglePlay();
-    });
-
-    this.mpPlayBtn.addEventListener('click', function () {
-      self.togglePlay();
-    });
-
-    // Next
-    this.nextBtn.addEventListener('click', function () {
-      self.next();
-    });
-
-    // Previous
-    this.prevBtn.addEventListener('click', function () {
-      self.prev();
-    });
-
-    // Shuffle
-    this.shuffleBtn.addEventListener('click', function () {
-      self.toggleShuffle();
-    });
-
-    // Repeat
-    this.repeatBtn.addEventListener('click', function () {
-      self.toggleRepeat();
-    });
-
-    // Seek
     this.seekBar.addEventListener('input', function () {
       if (!self.audio || !self.duration) return;
       var pct = this.value / this.max;
@@ -881,7 +802,6 @@
       self.updateTimeDisplay();
     });
 
-    // Volume
     this.volumeSlider.addEventListener('input', function () {
       self.volume = this.value / 100;
       if (self.audio) self.audio.volume = self.volume;
@@ -890,70 +810,38 @@
       self.saveState();
     });
 
-    // Keyboard shortcuts
     document.addEventListener('keydown', function (e) {
-      // Don't capture if typing in an input
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-
       switch (e.code) {
-        case 'Space':
-          e.preventDefault();
-          self.togglePlay();
-          break;
-        case 'ArrowLeft':
-          e.preventDefault();
-          self.prev();
-          break;
-        case 'ArrowRight':
-          e.preventDefault();
-          self.next();
-          break;
-        case 'ArrowUp':
-          e.preventDefault();
-          self.volume = Math.min(1, self.volume + 0.05);
+        case 'Space': e.preventDefault(); self.togglePlay(); break;
+        case 'ArrowLeft': e.preventDefault(); self.prev(); break;
+        case 'ArrowRight': e.preventDefault(); self.next(); break;
+        case 'ArrowUp': e.preventDefault(); self.volume = Math.min(1, self.volume + 0.05);
           self.volumeSlider.value = self.volume * 100;
           if (self.audio) self.audio.volume = self.volume;
           if (self.gainNode) self.gainNode.gain.value = self.volume;
-          self.updateUI();
-          self.saveState();
-          break;
-        case 'ArrowDown':
-          e.preventDefault();
-          self.volume = Math.max(0, self.volume - 0.05);
+          self.updateUI(); self.saveState(); break;
+        case 'ArrowDown': e.preventDefault(); self.volume = Math.max(0, self.volume - 0.05);
           self.volumeSlider.value = self.volume * 100;
           if (self.audio) self.audio.volume = self.volume;
           if (self.gainNode) self.gainNode.gain.value = self.volume;
-          self.updateUI();
-          self.saveState();
-          break;
-        case 'Escape':
-          if (self.isOpen) self.close();
-          break;
+          self.updateUI(); self.saveState(); break;
+        case 'Escape': if (self.isOpen) self.close(); break;
       }
     });
 
-    // Playlist item clicks (delegated)
     this.playlistEl.addEventListener('click', function (e) {
       var item = e.target.closest('.playlist-item');
       var favBtn = e.target.closest('.pl-fav-btn');
-      if (favBtn) return;
-      if (!item) return;
+      if (favBtn || !item) return;
       var idx = parseInt(item.getAttribute('data-index'), 10);
-      if (idx === self.currentIndex && self.isPlaying) {
-        // Toggle pause if clicking same song
-      } else {
-        self.play(idx);
-      }
+      self.play(idx);
     });
 
-    // Bind playlist fav buttons
     this.bindPlaylistFavEvents();
-
-    // Initial UI update
     this.updateSongInfo();
     this.updateUI();
 
-    // Restore volume
     this.volumeSlider.value = this.volume * 100;
     if (this.audio) this.audio.volume = this.volume;
     if (this.gainNode) this.gainNode.gain.value = this.volume;
@@ -971,29 +859,40 @@
     }
   };
 
-  /* ==========================================================
-     INIT
-     ========================================================== */
-  function init() {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', function () {
-        new Jukebox();
+  async function init() {
+    var songs = await loadSongsFromDB();
+    if (!songs || !songs.length) {
+      songs = DEFAULT_SONGS.map(function (d, i) {
+        return {
+          title: d.title,
+          artist: d.artist,
+          cover: PLACEHOLDER_COVERS[i % PLACEHOLDER_COVERS.length],
+          src: null,
+          duration: d.duration,
+          unlockDate: '',
+          autoUnlock: true,
+          hasFile: false
+        };
       });
+    }
+
+    function create() {
+      new Jukebox(songs);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', create);
     } else {
-      new Jukebox();
+      create();
+    }
+
+    // Load GSAP progressively
+    if (typeof gsap === 'undefined') {
+      var script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js';
+      document.head.appendChild(script);
     }
   }
 
   init();
-
-  // Load GSAP if not already loaded (progressive enhancement)
-  if (typeof gsap === 'undefined') {
-    var script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js';
-    script.onload = function () {
-      // GSAP loaded — no need to re-init, just enhanced animations available
-    };
-    document.head.appendChild(script);
-  }
-
 })();

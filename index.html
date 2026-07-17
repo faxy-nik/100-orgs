@@ -354,6 +354,33 @@
         'fantasies':   { year: 2026, month: 6, day: 25, file: 'fantasies.html' }
       };
 
+      // Load section dates from IndexedDB (admin panel)
+      (function() {
+        var r = indexedDB.open('ash-jukebox-db', 1);
+        r.onsuccess = function() {
+          var db = r.result;
+          try {
+            var tx = db.transaction('config', 'readonly');
+            var store = tx.objectStore('config');
+            var g = store.get('sections');
+            g.onsuccess = function() {
+              var data = g.result && g.result.data;
+              if (data && data.length) {
+                for (var i = 0; i < data.length; i++) {
+                  var s = data[i];
+                  if (s.key && s.unlockDate && UNLOCK_DATES[s.key]) {
+                    var parts = s.unlockDate.split('-');
+                    UNLOCK_DATES[s.key].year = parseInt(parts[0]);
+                    UNLOCK_DATES[s.key].month = parseInt(parts[1]) - 1;
+                    UNLOCK_DATES[s.key].day = parseInt(parts[2]);
+                  }
+                }
+              }
+            };
+          } catch(e) {}
+        };
+      })();
+
       var TEASERS = {
         '100-organs': '"the curve of her waist, the arch of her neck — catalogued in devotion..."',
         'love': '"your morning voice, raspy and warm — the sound of someone who hasn\'t yet put up their walls..."',
