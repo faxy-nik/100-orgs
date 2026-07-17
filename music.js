@@ -9,8 +9,6 @@
   /* ==========================================================
      CONFIG
      ========================================================== */
-  var MP3_PATH = './Romantic%20Dark%20Playlist%20for%20Making%20Love%20%20Sensual%20Late%20Night%20Vibes%20%28playlist%29.mp3';
-
   var PLACEHOLDER_COVERS = [
     'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%232a2018%22/%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2220%22 fill=%22%23ffe680%22 opacity=%22.15%22/%3E%3C/svg%3E',
     'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%231c1620%22/%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2220%22 fill=%22%23e85d3a%22 opacity=%22.15%22/%3E%3C/svg%3E',
@@ -20,13 +18,15 @@
     'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23182020%22/%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2220%22 fill=%22%23ff6347%22 opacity=%22.15%22/%3E%3C/svg%3E'
   ];
 
+  var DEFAULT_SRC = './Romantic%20Dark%20Playlist%20for%20Making%20Love%20%20Sensual%20Late%20Night%20Vibes%20%28playlist%29.mp3';
+
   var SONGS = [
-    { title: 'Until I Found You',   artist: 'Stephen Sanchez',  cover: PLACEHOLDER_COVERS[0], duration: 207 },
-    { title: 'Perfect',             artist: 'Ed Sheeran',        cover: PLACEHOLDER_COVERS[1], duration: 263 },
-    { title: 'Yellow',              artist: 'Coldplay',          cover: PLACEHOLDER_COVERS[2], duration: 266 },
-    { title: 'Turning Page',        artist: 'Sleeping At Last',  cover: PLACEHOLDER_COVERS[3], duration: 257 },
-    { title: 'Photograph',          artist: 'Ed Sheeran',        cover: PLACEHOLDER_COVERS[4], duration: 259 },
-    { title: 'I Wanna Be Yours',    artist: 'Arctic Monkeys',    cover: PLACEHOLDER_COVERS[5], duration: 184 }
+    { title: 'Until I Found You',   artist: 'Stephen Sanchez',  cover: PLACEHOLDER_COVERS[0], src: DEFAULT_SRC, duration: 207 },
+    { title: 'Perfect',             artist: 'Ed Sheeran',        cover: PLACEHOLDER_COVERS[1], src: DEFAULT_SRC, duration: 263 },
+    { title: 'Yellow',              artist: 'Coldplay',          cover: PLACEHOLDER_COVERS[2], src: DEFAULT_SRC, duration: 266 },
+    { title: 'Turning Page',        artist: 'Sleeping At Last',  cover: PLACEHOLDER_COVERS[3], src: DEFAULT_SRC, duration: 257 },
+    { title: 'Photograph',          artist: 'Ed Sheeran',        cover: PLACEHOLDER_COVERS[4], src: DEFAULT_SRC, duration: 259 },
+    { title: 'I Wanna Be Yours',    artist: 'Arctic Monkeys',    cover: PLACEHOLDER_COVERS[5], src: DEFAULT_SRC, duration: 184 }
   ];
 
   var STORAGE_KEY = 'ash-jukebox';
@@ -276,7 +276,7 @@
       this.audio.src = '';
       this.audio.load();
     }
-    this.audio = new Audio(MP3_PATH);
+    this.audio = new Audio(this.songs[this.currentIndex].src);
     this.audio.preload = 'auto';
     this.audio.volume = 1;
 
