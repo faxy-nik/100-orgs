@@ -756,24 +756,11 @@
     this.overlay.classList.add('open');
     this.miniPlayer.classList.remove('show');
 
-    // GSAP animation if available
-    if (window.gsap) {
-      gsap.fromTo(this.panel,
-        { opacity: 0, scale: 0.85, y: 20 },
-        { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: 'back.out(1.4)' }
-      );
-      gsap.fromTo(this.overlay,
-        { opacity: 0 },
-        { opacity: 1, duration: 0.3, ease: 'power2.out' }
-      );
-    }
-
-    // Animate playlist items
     if (window.gsap) {
       var items = this.playlistEl.querySelectorAll('.playlist-item');
       gsap.fromTo(items,
         { opacity: 0, x: -10 },
-        { opacity: 1, x: 0, duration: 0.3, stagger: 0.04, ease: 'power2.out', delay: 0.15 }
+        { opacity: 1, x: 0, duration: 0.3, stagger: 0.04, ease: 'power2.out', delay: 0.15, clearProps: 'all' }
       );
     }
 
@@ -788,12 +775,6 @@
 
     if (this.isPlaying) {
       this.miniPlayer.classList.add('show');
-    }
-
-    if (window.gsap) {
-      gsap.to(this.panel, {
-        opacity: 0, scale: 0.9, y: 15, duration: 0.25, ease: 'power2.in'
-      });
     }
   };
 
@@ -969,14 +950,16 @@
     }
   }
 
-  // Load GSAP if not already loaded
+  init();
+
+  // Load GSAP if not already loaded (progressive enhancement)
   if (typeof gsap === 'undefined') {
     var script = document.createElement('script');
     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js';
-    script.onload = init;
+    script.onload = function () {
+      // GSAP loaded — no need to re-init, just enhanced animations available
+    };
     document.head.appendChild(script);
-  } else {
-    init();
   }
 
 })();
