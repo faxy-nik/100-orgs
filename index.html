@@ -362,7 +362,7 @@
 
       // Load section dates from IndexedDB (admin panel)
       (function() {
-        var r = indexedDB.open('ash-jukebox-db', 1);
+        var r = indexedDB.open('ash-jukebox-db', 2);
         r.onsuccess = function() {
           var db = r.result;
           try {
