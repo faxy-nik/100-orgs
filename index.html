@@ -234,6 +234,77 @@
       margin: 0;
     }
 
+    /* ---- Ember ---- */
+    #emberCanvas {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ---- Heartbeat pulse on locked cards ---- */
+    @keyframes heartbeatPulse {
+      0%, 100% { box-shadow: 0 0 8px rgba(232,93,58,.08); }
+      25% { box-shadow: 0 0 25px rgba(232,93,58,.18), 0 0 50px rgba(232,93,58,.06); }
+       50% { box-shadow: 0 0 10px rgba(232,93,58,0.1); }
+       75% { box-shadow: 0 0 30px rgba(232,93,58,0.2), 0 0 60px rgba(232,93,58,0.08); }
+    }
+    .card.locked-heartbeat {
+      animation: heartbeatPulse 4s ease-in-out infinite;
+    }
+
+    /* ---- Hover Whisper ---- */
+    .card .whisper {
+      display: block;
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 0.85rem;
+      color: var(--ash);
+      margin: 0.5rem 0 0.5rem;
+      line-height: 1.5;
+      opacity: 0;
+      max-height: 0;
+      transition: opacity 0.5s, max-height 0.5s;
+      overflow: hidden;
+    }
+    .card.locked-heartbeat:hover .whisper {
+      opacity: 1;
+      max-height: 4rem;
+    }
+
+    /* ---- Countdown Mood ---- */
+    .card .mood {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      color: var(--ember);
+      margin-top: 0.25rem;
+      letter-spacing: 0.03em;
+      opacity: 0.7;
+    }
+    .card .mood.fade-in {
+      animation: moodFade 2s ease-in-out infinite alternate;
+    }
+    @keyframes moodFade {
+      0% { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
+
+    /* ---- Smooth Unlock Animation ---- */
+    @keyframes unlockGlow {
+      0% { border-color: var(--glassBorder); box-shadow: 0 0 0 transparent; }
+      50% { border-color: var(--gold); box-shadow: 0 0 50px rgba(255,230,128,.25); }
+      100% { border-color: var(--gold); box-shadow: 0 0 20px rgba(255,230,128,.12); }
+    }
+    .card.unlocking {
+      animation: unlockGlow 1.2s ease-out !important;
+    }
+    .card .enter-btn {
+      transition: opacity 0.6s, transform 0.6s, background 0.3s, color 0.3s;
+    }
+    .card .enter-btn.btn-appear {
+      opacity: 1 !important;
+      transform: translateY(0) !important;
+    }
+
     @media (max-width: 480px) {
       .card { padding: 1.2rem; }
     }
@@ -269,116 +340,276 @@
     </div>
   </main>
 
+  <canvas id="emberCanvas"></canvas>
+
   <script>
     (function () {
 
       /* ================================================================
-         CONFIG — change these dates to adjust unlock schedule
+         CONFIG
          ================================================================ */
       var UNLOCK_DATES = {
-        '100-organs':  { year: 2026, month: 6 /* July = 0-indexed 6 */, day: 20, file: '100-organs.html' },
+        '100-organs':  { year: 2026, month: 6, day: 20, file: '100-organs.html' },
         'love':        { year: 2026, month: 6, day: 21, file: 'love.html' },
         'fantasies':   { year: 2026, month: 6, day: 25, file: 'fantasies.html' }
       };
 
-      /* ================================================================
-         SECTION DATA
-         ================================================================ */
+      var TEASERS = {
+        '100-organs': '"the curve of her waist, the arch of her neck — catalogued in devotion..."',
+        'love': '"your morning voice, raspy and warm — the sound of someone who hasn\'t yet put up their walls..."',
+        'fantasies': '"when our skin finally meets, when there is no distance left between us..."'
+      };
+
+      var MOODS = [
+        { minDays: 30, msg: 'The waiting makes it sweeter\u2026', emoji: '\uD83C\uDF19' },
+        { minDays: 14, msg: 'Patience, my love\u2026',            emoji: '\uD83D\uDD6F\uFE0F' },
+        { minDays: 7,  msg: 'Getting closer, piece by piece\u2026', emoji: '\u2728' },
+        { minDays: 2,  msg: 'Almost there\u2026',                  emoji: '\uD83D\uDD25' },
+        { minDays: 0,  msg: 'Can you feel it?',                    emoji: '\uD83D\uDC9B' }
+      ];
+
       var SECTIONS = [
         {
           id: '100-organs',
           title: '100 Organs',
-          desc: 'One hundred pieces of her, catalogued in devotion — from the curve of her smile to the depths of her soul. A lover\'s anatomy, written one organ at a time.',
-          unlock: UNLOCK_DATES['100-organs']
+          desc: 'One hundred pieces of her, catalogued in devotion \u2014 from the curve of her smile to the depths of her soul. A lover\'s anatomy, written one organ at a time.',
+          unlock: UNLOCK_DATES['100-organs'],
+          teaser: TEASERS['100-organs']
         },
         {
           id: 'love',
           title: 'Love',
-          desc: 'The softer side of the story. A hundred paragraphs that trace the quiet, tender corners of who she is — her warmth, her voice, her way of being in the world.',
-          unlock: UNLOCK_DATES['love']
+          desc: 'The softer side of the story. A hundred paragraphs that trace the quiet, tender corners of who she is \u2014 her warmth, her voice, her way of being in the world.',
+          unlock: UNLOCK_DATES['love'],
+          teaser: TEASERS['love']
         },
         {
           id: 'fantasies',
           title: 'Fantasies',
-          desc: 'The parts too intimate for daylight. Raw, unguarded, and laid bare — these are the thoughts that belong only to the space between two people who trust each other completely.',
-          unlock: UNLOCK_DATES['fantasies']
+          desc: 'The parts too intimate for daylight. Raw, unguarded, and laid bare \u2014 these are the thoughts that belong only to the space between two people who trust each other completely.',
+          unlock: UNLOCK_DATES['fantasies'],
+          teaser: TEASERS['fantasies']
         }
       ];
 
       var container = document.getElementById('cardsContainer');
       if (!container) return;
 
+      /* ================================================================
+         EMBER PARTICLES
+         ================================================================ */
+      (function embers() {
+        var canvas = document.getElementById('emberCanvas');
+        var ctx = canvas.getContext('2d');
+        var particles = [];
+        var MAX = 40;
+
+        function resize() {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        function Particle() {
+          this.reset();
+        }
+        Particle.prototype.reset = function () {
+          this.x = Math.random() * canvas.width;
+          this.y = canvas.height + 10 + Math.random() * 30;
+          this.size = 2 + Math.random() * 3;
+          this.speedY = -(0.3 + Math.random() * 0.6);
+          this.speedX = (Math.random() - 0.5) * 0.4;
+          this.glow = 0.3 + Math.random() * 0.5;
+          this.phase = Math.random() * Math.PI * 2;
+          this.hue = 20 + Math.random() * 15; // orange-red range
+        };
+        Particle.prototype.update = function () {
+          this.y += this.speedY;
+          this.x += this.speedX + Math.sin(this.phase) * 0.15;
+          this.phase += 0.02;
+          this.glow = 0.3 + 0.5 * (0.5 + 0.5 * Math.sin(this.phase));
+          if (this.y < -20 || this.x < -20 || this.x > canvas.width + 20) this.reset();
+        };
+        Particle.prototype.draw = function () {
+          var g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 4);
+          g.addColorStop(0, 'rgba(255,200,120,' + this.glow + ')');
+          g.addColorStop(0.3, 'rgba(232,93,58,' + (this.glow * 0.6) + ')');
+          g.addColorStop(1, 'rgba(180,60,30,0)');
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size * 4, 0, Math.PI * 2);
+          ctx.fill();
+        };
+
+        for (var i = 0; i < MAX; i++) {
+          var p = new Particle();
+          p.y = Math.random() * canvas.height;
+          particles.push(p);
+        }
+
+        function loop() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          for (var i = 0; i < particles.length; i++) {
+            particles[i].update();
+            particles[i].draw();
+          }
+          requestAnimationFrame(loop);
+        }
+        loop();
+      })();
+
+      /* ================================================================
+         HELPERS
+         ================================================================ */
       function padNum(n) { return n < 10 ? '0' + n : '' + n; }
 
-      function buildCountdown(target) {
+      function getDiff(target) {
         var now = new Date();
         var t = new Date(target.year, target.month, target.day);
-        var diff = t.getTime() - now.getTime();
+        return t.getTime() - now.getTime();
+      }
 
-        if (diff <= 0) return null; // unlocked
-
-        var totalSec = Math.floor(diff / 1000);
+      function getCountdownString(diffMs) {
+        if (diffMs <= 0) return null;
+        var totalSec = Math.floor(diffMs / 1000);
         var days = Math.floor(totalSec / 86400);
         var hours = Math.floor((totalSec % 86400) / 3600);
         var minutes = Math.floor((totalSec % 3600) / 60);
         var seconds = totalSec % 60;
-
         return days + 'd ' + padNum(hours) + 'h ' + padNum(minutes) + 'm ' + padNum(seconds) + 's';
       }
+
+      function getMood(diffMs) {
+        if (diffMs <= 0) return null;
+        var days = diffMs / 86400000;
+        for (var i = 0; i < MOODS.length; i++) {
+          if (days >= MOODS[i].minDays) {
+            return MOODS[i];
+          }
+        }
+        return MOODS[MOODS.length - 1];
+      }
+
+      /* ================================================================
+         BUILD CARD HTML
+         ================================================================ */
+      function buildCardHtml(s, diffMs) {
+        var unlocked = diffMs === null || diffMs <= 0;
+
+        var lockedClass = unlocked ? 'unlocked' : 'locked-heartbeat';
+        var statusHtml, timerHtml, btnHtml, whisperHtml, moodHtml;
+
+        // Always include the main <h3> and <p class="desc">
+        var h3 = '<h3>' + s.title + '</h3>';
+        var desc = '<p class="desc">' + s.desc + '</p>';
+
+        if (unlocked) {
+          statusHtml = '<span class="status unlocked-status"><span class="lock-icon">\uD83D\uDD13</span> Unlocked</span>';
+          timerHtml = '';
+          whisperHtml = '';
+          moodHtml = '';
+          btnHtml = '<a href="' + s.unlock.file + '" class="enter-btn" style="opacity:1;transform:translateY(0)">\u2192 Enter</a>';
+        } else {
+          var countdownStr = getCountdownString(diffMs);
+          statusHtml = '<span class="status locked"><span class="lock-icon">\uD83D\uDD12</span> Locked</span>';
+          timerHtml = '<div class="timer">Unlocks in <span class="countdown" data-id="' + s.id + '">' + countdownStr + '</span></div>';
+          whisperHtml = '<span class="whisper">' + s.teaser + '</span>';
+
+          var mood = getMood(diffMs);
+          moodHtml = '<span class="mood fade-in">' + mood.emoji + ' ' + mood.msg + '</span>';
+
+          btnHtml = '<a href="' + s.unlock.file + '" class="enter-btn hidden" style="opacity:0;transform:translateY(10px)" disabled>' + '\u2192 Enter</a>';
+        }
+
+        return '<div class="card ' + lockedClass + '" data-id="' + s.id + '">' +
+          h3 + desc +
+          timerHtml +
+          whisperHtml +
+          statusHtml +
+          moodHtml +
+          btnHtml +
+          '</div>';
+      }
+
+      /* ================================================================
+         RENDER
+         ================================================================ */
+      var previousState = {}; // track diffMs per section
 
       function render() {
         var html = '';
         for (var i = 0; i < SECTIONS.length; i++) {
           var s = SECTIONS[i];
-          var remaining = buildCountdown(s.unlock);
-          var unlocked = remaining === null;
-
-          var lockedClass = unlocked ? 'unlocked' : '';
-          var statusHtml = unlocked
-            ? '<span class="status unlocked-status"><span class="lock-icon">&#x1F513;</span> Unlocked</span>'
-            : '<span class="status locked"><span class="lock-icon">&#x1F512;</span> Locked</span>';
-
-          var timerHtml = unlocked
-            ? ''
-            : '<div class="timer">Unlocks in <span class="countdown" data-year="' + s.unlock.year + '" data-month="' + s.unlock.month + '" data-day="' + s.unlock.day + '">' + remaining + '</span></div>';
-
-          var btnHtml = unlocked
-            ? '<a href="' + s.unlock.file + '" class="enter-btn">&#x2192; Enter</a>'
-            : '<button class="enter-btn hidden" disabled>&#x2192; Enter</button>';
-
-          html += '<div class="card ' + lockedClass + '">' +
-            '<h3>' + s.title + '</h3>' +
-            '<p class="desc">' + s.desc + '</p>' +
-            timerHtml +
-            statusHtml +
-            btnHtml +
-            '</div>';
+          var diffMs = getDiff(s.unlock);
+          previousState[s.id] = diffMs;
+          html += buildCardHtml(s, diffMs);
         }
         container.innerHTML = html;
-
-        // Live countdown tick
-        var countdowns = container.querySelectorAll('.countdown');
-        if (countdowns.length === 0) return;
-
-        setInterval(function () {
-          var els = container.querySelectorAll('.countdown');
-          for (var j = 0; j < els.length; j++) {
-            var el = els[j];
-            var year = parseInt(el.getAttribute('data-year'), 10);
-            var month = parseInt(el.getAttribute('data-month'), 10);
-            var day = parseInt(el.getAttribute('data-day'), 10);
-            var rem = buildCountdown({ year: year, month: month, day: day });
-            if (rem === null) {
-              // Just unlocked — reload to show buttons
-              location.reload();
-              return;
-            }
-            el.textContent = rem;
-          }
-        }, 1000);
       }
 
       render();
+
+      /* ================================================================
+         LIVE COUNTDOWN + SMOOTH UNLOCK
+         ================================================================ */
+      setInterval(function () {
+        var changed = false;
+
+        for (var i = 0; i < SECTIONS.length; i++) {
+          var s = SECTIONS[i];
+          var diffMs = getDiff(s.unlock);
+          var prev = previousState[s.id];
+
+          // Update timer text
+          var el = container.querySelector('[data-id="' + s.id + '"] .countdown');
+          if (el) {
+            var str = getCountdownString(diffMs);
+            if (str) {
+              el.textContent = str;
+            }
+          }
+
+          // Update mood
+          var moodEl = container.querySelector('[data-id="' + s.id + '"] .mood');
+          if (moodEl) {
+            var mood = getMood(diffMs);
+            if (mood) {
+              moodEl.textContent = mood.emoji + ' ' + mood.msg;
+            }
+          }
+
+          // Check if just unlocked
+          if (prev !== undefined && prev > 0 && diffMs <= 0) {
+            changed = true;
+            var card = container.querySelector('[data-id="' + s.id + '"]');
+            if (card) {
+              // Smooth unlock animation
+              card.classList.add('unlocking');
+              // After animation, replace content
+              setTimeout(function (section, cardEl) {
+                var newHtml = buildCardHtml(section, 0);
+                var temp = document.createElement('div');
+                temp.innerHTML = newHtml;
+                var newCard = temp.firstChild;
+                cardEl.parentNode.replaceChild(newCard, cardEl);
+                // Small reflow + appear animation
+                requestAnimationFrame(function () {
+                  var btn = newCard.querySelector('.enter-btn');
+                  if (btn) {
+                    btn.style.opacity = '1';
+                    btn.style.transform = 'translateY(0)';
+                  }
+                });
+              }, 1200, s, card);
+            }
+          }
+
+          previousState[s.id] = diffMs;
+        }
+
+        // No more location.reload()
+      }, 1000);
 
     })();
   </script>
