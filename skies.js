@@ -617,8 +617,5 @@
     createButton: createSkyButton
   };
 
-  var saved = getCurrentSkyIndex();
-  if (saved >= 0 && saved < SKIES.length) applySky(saved);
-
 })();
 
