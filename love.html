@@ -11,6 +11,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap"
     rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
   <style>
     /* ============================================================
      Design tokens
@@ -1208,56 +1209,6 @@ TABLE OF CONTENTS
     }
 
     /*=========================================
-    MUSIC TOGGLE
-    =========================================*/
-
-    .music-toggle {
-      position: fixed;
-      right: 25px;
-      bottom: 80px;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: rgba(20, 20, 20, .6);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 210, 150, .3);
-      color: var(--gold);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 30;
-      font-size: 1.2rem;
-      transition: all .3s ease;
-      opacity: 0;
-      pointer-events: none;
-      box-shadow: 0 0 10px rgba(255, 200, 100, .1);
-    }
-
-    .music-toggle.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .music-toggle:hover {
-      border-color: var(--gold);
-      transform: scale(1.1);
-      background: rgba(20, 20, 20, .8);
-      box-shadow: 0 0 18px rgba(255, 200, 100, .35), 0 0 36px rgba(255, 180, 80, .15);
-    }
-
-    .music-toggle.playing {
-      animation: spinSlow 3s linear infinite;
-    }
-
-    @keyframes spinSlow {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    /*=========================================
 END SECTION
 =========================================*/
 
@@ -1694,7 +1645,6 @@ END SECTION
     }
     body.day-mode .toc,
     body.day-mode .toc-toggle,
-    body.day-mode .music-toggle,
     body.day-mode .fav-toggle-btn,
     body.day-mode .dice-btn,
     body.day-mode .theme-toggle-btn {
@@ -1999,7 +1949,6 @@ END SECTION
       .fav-toggle-btn { right: 16px !important; bottom: 180px !important; width: 40px !important; height: 40px !important; font-size: 1rem !important; }
       .theme-toggle-btn { right: 16px !important; bottom: 230px !important; width: 40px !important; height: 40px !important; font-size: 1rem !important; }
       .dice-btn { right: 16px !important; bottom: 280px !important; width: 40px !important; height: 40px !important; font-size: 1rem !important; }
-      .music-toggle { right: 16px !important; bottom: 80px !important; width: 40px !important; height: 40px !important; font-size: 1rem !important; }
       .easter-egg-btn { right: 16px !important; bottom: 130px !important; padding: 8px 14px !important; font-size: 0.78rem !important; min-height: 40px !important; }
       .toc-toggle { left: 16px !important; bottom: 25px !important; width: 40px !important; height: 40px !important; font-size: 1rem !important; }
     }
@@ -2780,10 +2729,6 @@ END SECTION
       <line x1="3" y1="6" x2="21" y2="6"></line>
       <line x1="3" y1="18" x2="21" y2="18"></line>
     </svg>
-  </button>
-
-  <button type="button" class="music-toggle" id="musicToggle" aria-label="Toggle ambient music" title="Ambient Music">
-    &#x1F3B5;
   </button>
 
   <button type="button" class="easter-egg-btn" id="easterEggBtn" aria-label="Turn Yourself On easter egg"
@@ -3813,46 +3758,6 @@ END SECTION
 
       /*======= PARALLAX HERO =======*/
 
-      /*======= MUSIC TOGGLE =======*/
-      (function () {
-        try {
-          var btn = document.getElementById('musicToggle');
-          if (!btn) return;
-          safeSetTimeout(function () { btn.classList.add('show'); }, 2000);
-          var audio, playing = false;
-
-          var pref = localStorage.getItem('ash-music');
-          if (pref === 'playing' && !isTouch) {
-            safeSetTimeout(function () { btn.click(); }, 3000);
-          }
-
-          safeAddEventListener(btn, 'click', function () {
-            if (!playing) {
-              try {
-                audio = new Audio('./Romantic%20Dark%20Playlist%20for%20Making%20Love%20%20Sensual%20Late%20Night%20Vibes%20%28playlist%29.mp3');
-                audio.loop = true;
-                audio.volume = 0.5;
-                audio.play();
-                playing = true;
-                btn.classList.add('playing');
-                btn.textContent = '\u266A';
-                localStorage.setItem('ash-music', 'playing');
-              } catch (e) { logError('MUSIC_START', e); }
-            } else {
-              try {
-                audio.pause();
-                audio.currentTime = 0;
-                audio = null;
-              } catch (e) { logError('MUSIC_STOP', e); }
-              playing = false;
-              btn.classList.remove('playing');
-              btn.textContent = '\u266B';
-              localStorage.setItem('ash-music', 'paused');
-            }
-          });
-        } catch (e) { logError('MUSIC_TOGGLE', e); }
-      })();
-
       /*======= EASTER EGG (TURN YOURSELF ON) =======*/
       (function () {
         try {
@@ -4529,6 +4434,8 @@ END SECTION
       observer.observe(ded);
     })();
   </script>
+
+  <script defer src="music.js"></script>
 
 </body>
 </html>
