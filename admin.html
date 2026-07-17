@@ -233,6 +233,7 @@
   <div class="tabs">
     <button class="tab active" data-tab="sections">&#x1F4C5; Unlock Dates</button>
     <button class="tab" data-tab="songs">&#x1F3B5; Songs</button>
+    <button class="tab" data-tab="secret">&#x2728; Secret</button>
   </div>
 
   <!-- Tab: Sections -->
@@ -250,6 +251,56 @@
     </p>
     <div class="song-list" id="songList"></div>
     <button class="add-btn" id="addBtn">+ Add New Song</button>
+  </div>
+
+  <!-- Tab: Secret -->
+  <div class="tab-content" id="tabSecret">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      This song appears when <strong>all three sections</strong> are unlocked. A little reward for making it through everything.
+    </p>
+    <div id="secretForm">
+      <div class="field" style="margin-bottom:.85rem;">
+        <label style="display:block;font-size:.7rem;color:#6b5f52;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;">Song Title</label>
+        <input type="text" id="secTitle" placeholder="e.g. Our Song" style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;">
+      </div>
+      <div class="field" style="margin-bottom:.85rem;">
+        <label style="display:block;font-size:.7rem;color:#6b5f52;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;">Artist</label>
+        <input type="text" id="secArtist" placeholder="e.g. Faxy Nik" style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;">
+      </div>
+      <div style="display:flex;gap:.75rem;margin-bottom:.85rem;">
+        <div class="field" style="flex:1;">
+          <label style="display:block;font-size:.7rem;color:#6b5f52;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;">Duration (sec)</label>
+          <input type="number" id="secDuration" placeholder="200" min="1" style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;">
+        </div>
+        <div class="field" style="flex:1;">
+          <label style="display:block;font-size:.7rem;color:#6b5f52;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;">Cover URL</label>
+          <input type="text" id="secCover" placeholder="https://..." style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;">
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:.85rem;">
+        <label style="display:block;font-size:.7rem;color:#6b5f52;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;">Audio File (MP3)</label>
+        <input type="file" id="secAudioFile" accept="audio/*" style="width:100%;padding:.35rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;">
+        <div id="secFileInfo" style="font-size:.75rem;color:#6b5f52;margin-top:3px;"></div>
+      </div>
+      <div style="display:flex;gap:.75rem;margin-top:1rem;">
+        <button id="secClearBtn" style="padding:.45rem 1.25rem;border-radius:6px;cursor:pointer;font-family:'Fraunces',Georgia,serif;font-size:.8rem;background:rgba(232,93,58,.1);border:1px solid #e85d3a;color:#e85d3a;">Clear Secret</button>
+        <button id="secSaveBtn" style="padding:.45rem 1.25rem;border-radius:6px;cursor:pointer;font-family:'Fraunces',Georgia,serif;font-size:.8rem;background:rgba(255,230,128,.1);border:1px solid #ffe680;color:#ffe680;">Save Secret Song</button>
+      </div>
+    </div>
+
+    <hr style="border:none;border-top:1px solid rgba(255,210,150,.1);margin:2rem 0;">
+
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      A personal note that typewrites itself on the Fantasies page when she arrives.
+    </p>
+    <div class="field" style="margin-bottom:.85rem;">
+      <label style="display:block;font-size:.7rem;color:#6b5f52;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;">Personal Note</label>
+      <textarea id="secNoteText" rows="4" placeholder="Write something only she will see..." style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:'Lora',Georgia,serif;font-size:.85rem;outline:none;resize:vertical;"></textarea>
+    </div>
+    <div style="display:flex;gap:.75rem;">
+      <button id="secNoteClearBtn" style="padding:.45rem 1.25rem;border-radius:6px;cursor:pointer;font-family:'Fraunces',Georgia,serif;font-size:.8rem;background:rgba(232,93,58,.1);border:1px solid #e85d3a;color:#e85d3a;">Clear Note</button>
+      <button id="secNoteSaveBtn" style="padding:.45rem 1.25rem;border-radius:6px;cursor:pointer;font-family:'Fraunces',Georgia,serif;font-size:.8rem;background:rgba(255,230,128,.1);border:1px solid #ffe680;color:#ffe680;">Save Note</button>
+    </div>
   </div>
 </div>
 
@@ -648,6 +699,80 @@
     el._t = setTimeout(function () { el.classList.remove('show'); }, 2500);
   }
 
+  /* ---- Secret Song ---- */
+  function loadSecretForm() {
+    dbGet('config', 'secretSong').then(function (data) {
+      if (data && data.song) {
+        var s = data.song;
+        document.getElementById('secTitle').value = s.title || '';
+        document.getElementById('secArtist').value = s.artist || '';
+        document.getElementById('secDuration').value = s.duration || '';
+        document.getElementById('secCover').value = s.cover || '';
+        document.getElementById('secFileInfo').textContent = s.fileName ? 'Current: ' + s.fileName : '';
+      } else {
+        document.getElementById('secTitle').value = '';
+        document.getElementById('secArtist').value = '';
+        document.getElementById('secDuration').value = '';
+        document.getElementById('secCover').value = '';
+        document.getElementById('secFileInfo').textContent = '';
+      }
+    }).catch(function () {});
+  }
+
+  function saveSecretSong() {
+    var title = document.getElementById('secTitle').value.trim();
+    var artist = document.getElementById('secArtist').value.trim();
+    var duration = parseInt(document.getElementById('secDuration').value) || 200;
+    var cover = document.getElementById('secCover').value.trim();
+    var fileInput = document.getElementById('secAudioFile');
+    var file = fileInput.files[0];
+
+    var song = {
+      title: title || '\u2728 Secret Song',
+      artist: artist || '\u2661 For You',
+      duration: duration,
+      cover: cover || '',
+      hasFile: !!file
+    };
+
+    function doSave() {
+      dbPut('config', { key: 'secretSong', song: song }).then(function () {
+        toast('Secret song saved!');
+        loadSecretForm();
+      }).catch(function () { toast('Error saving secret song'); });
+    }
+
+    if (file) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        song.audioData = e.target.result;
+        song.audioType = file.type;
+        song.fileName = file.name;
+        song.hasFile = true;
+        doSave();
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      // Preserve existing audio if available
+      dbGet('config', 'secretSong').then(function (existing) {
+        if (existing && existing.song && existing.song.audioData) {
+          song.audioData = existing.song.audioData;
+          song.audioType = existing.song.audioType;
+          song.fileName = existing.song.fileName;
+        }
+        doSave();
+      }).catch(function () { doSave(); });
+    }
+  }
+
+  function clearSecretSong() {
+    if (!confirm('Remove the secret song?')) return;
+    dbPut('config', { key: 'secretSong', song: null }).then(function () {
+      toast('Secret song cleared');
+      loadSecretForm();
+    }).catch(function () { toast('Error clearing secret song'); });
+  }
+
   /* ---- Init ---- */
   async function init() {
     if (localStorage.getItem('ash-admin-auth') === '1') {
@@ -700,8 +825,41 @@
         document.querySelectorAll('.tab-content').forEach(function (t) { t.classList.remove('active'); });
         this.classList.add('active');
         document.getElementById('tab' + this.dataset.tab.charAt(0).toUpperCase() + this.dataset.tab.slice(1)).classList.add('active');
+        // Load secret form when switching to secret tab
+        if (this.dataset.tab === 'secret') loadSecretForm();
       });
     });
+
+    // Secret song
+    document.getElementById('secSaveBtn').addEventListener('click', saveSecretSong);
+    document.getElementById('secClearBtn').addEventListener('click', clearSecretSong);
+    document.getElementById('secAudioFile').addEventListener('change', function () {
+      var f = this.files[0];
+      document.getElementById('secFileInfo').textContent = f ? f.name + ' (' + Math.round(f.size / 1024) + ' KB)' : '';
+    });
+
+    // Personal note
+    function loadPersonalNote() {
+      dbGet('config', 'personalNote').then(function (data) {
+        document.getElementById('secNoteText').value = data && data.text ? data.text : '';
+      }).catch(function () {});
+    }
+    document.getElementById('secNoteSaveBtn').addEventListener('click', function () {
+      var text = document.getElementById('secNoteText').value.trim();
+      dbPut('config', { key: 'personalNote', text: text }).then(function () {
+        toast('Personal note saved!');
+      }).catch(function () { toast('Error saving note'); });
+    });
+    document.getElementById('secNoteClearBtn').addEventListener('click', function () {
+      if (!confirm('Clear the personal note?')) return;
+      document.getElementById('secNoteText').value = '';
+      dbPut('config', { key: 'personalNote', text: '' }).then(function () {
+        toast('Note cleared');
+      }).catch(function () { toast('Error clearing note'); });
+    });
+    // Patch loadSecretForm to also load note
+    var origLoad = loadSecretForm;
+    loadSecretForm = function() { origLoad(); loadPersonalNote(); };
   }
 
   init();

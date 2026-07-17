@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stats — 100 prghs for eeshah</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #181214; color: #ffebd2;
+      font-family: 'Lora', Georgia, serif; font-size: 15px; line-height: 1.6;
+      min-height: 100vh;
+    }
+    h1, h2 { font-family: 'Fraunces', Georgia, serif; font-weight: 500; color: #ffe680; }
+    a { color: #ffe680; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 600px; margin: 0 auto; padding: 3rem 1.5rem 4rem; }
+    h1 { font-size: 1.6rem; margin-bottom: .25rem; }
+    .sub { color: #6b5f52; font-size: .85rem; margin-bottom: 2rem; font-style: italic; }
+    .stat-card {
+      background: rgba(255,220,160,.04); border: 1px solid rgba(255,210,150,.1);
+      border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: .75rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .stat-card .label { font-size: .9rem; }
+    .stat-card .label .icon { margin-right: .5rem; }
+    .stat-card .label .sub-label { font-size: .75rem; color: #6b5f52; display: block; }
+    .stat-card .count {
+      font-family: 'Fraunces', Georgia, serif; font-size: 1.4rem; color: #ffe680;
+    }
+    .total-row {
+      background: rgba(255,230,128,.06); border-color: rgba(255,230,128,.15);
+    }
+    .total-row .count { font-size: 1.7rem; }
+    .back { display: inline-block; margin-top: 2rem; color: #6b5f52; font-size: .85rem; }
+    .empty { text-align: center; color: #6b5f52; padding: 3rem 0; font-style: italic; }
+    .heart-divider { text-align: center; color: #e85d3a; font-size: 1.2rem; margin: 2rem 0; opacity: .4; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>&#x1F4CA; Our Story by the Numbers</h1>
+    <div class="sub">Every visit, every song — it all matters</div>
+    <div class="heart-divider">&#x2661;</div>
+    <div id="statsContainer">
+      <div class="empty">Loading...</div>
+    </div>
+    <div class="heart-divider">&#x2661;</div>
+    <a href="index.html" class="back">&#x2190; Back home</a>
+  </div>
+  <script src="track.js"></script>
+  <script>
+    (function () {
+      var PAGE_LABELS = {
+        'index.html': 'Home',
+        '100-organs.html': '100 Organs',
+        'love.html': 'Love',
+        'fantasies.html': 'Fantasies'
+      };
+      var PAGE_ICONS = {
+        'index.html': '\uD83C\uDFD6\uFE0F',
+        '100-organs.html': '\uD83D\uDCD6',
+        'love.html': '\uD83D\uDC98',
+        'fantasies.html': '\uD83D\uDD25'
+      };
+
+      var container = document.getElementById('statsContainer');
+
+      Track.getAll().then(function (counters) {
+        if (!counters || !counters.length) {
+          container.innerHTML = '<div class="empty">No visits recorded yet \u2014 go explore!</div>';
+          return;
+        }
+
+        var pageVisits = {};
+        var songPlays = {};
+        var totalVisits = 0;
+
+        for (var i = 0; i < counters.length; i++) {
+          var c = counters[i];
+          if (c.key.indexOf('visit_') === 0) {
+            pageVisits[c.key.replace('visit_', '')] = c.count;
+            totalVisits += c.count;
+          } else if (c.key.indexOf('song_') === 0) {
+            songPlays[c.key.replace('song_', '')] = c.count;
+          }
+        }
+
+        var html = '';
+
+        // Page visits
+        html += '<h2 style="font-size:1.1rem;margin-bottom:.75rem;color:#ffebd2;">\uD83D\uDCC4 Page Visits</h2>';
+        for (var page in PAGE_LABELS) {
+          var cnt = pageVisits[page] || 0;
+          html +=
+            '<div class="stat-card">' +
+              '<div class="label">' +
+                '<span class="icon">' + PAGE_ICONS[page] + '</span>' + PAGE_LABELS[page] +
+                '<span class="sub-label">' + page + '</span>' +
+              '</div>' +
+              '<div class="count">' + cnt + '</div>' +
+            '</div>';
+        }
+
+        // Total
+        html +=
+          '<div class="stat-card total-row">' +
+            '<div class="label"><span class="icon">\u2728</span>Total Visits</div>' +
+            '<div class="count">' + totalVisits + '</div>' +
+          '</div>';
+
+        // Song plays
+        var songCount = 0;
+        var songHtml = '';
+        for (var key in songPlays) {
+          songCount += songPlays[key];
+          songHtml +=
+            '<div class="stat-card">' +
+              '<div class="label"><span class="icon">\uD83C\uDFB5</span>' + key + '</div>' +
+              '<div class="count">' + songPlays[key] + '</div>' +
+            '</div>';
+        }
+
+        if (songHtml) {
+          html += '<h2 style="font-size:1.1rem;margin:.75rem 0;color:#ffebd2;">\uD83C\uDFB6 Song Plays</h2>' + songHtml;
+          html +=
+            '<div class="stat-card total-row">' +
+              '<div class="label"><span class="icon">\uD83C\uDFB5</span>Total Songs Played</div>' +
+              '<div class="count">' + songCount + '</div>' +
+            '</div>';
+        }
+
+        container.innerHTML = html;
+      }).catch(function () {
+        container.innerHTML = '<div class="empty">Could not load stats.</div>';
+      });
+    })();
+  </script>
+</body>
+</html>

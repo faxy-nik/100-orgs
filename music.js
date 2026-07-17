@@ -429,12 +429,20 @@
         if (self.vinylDisc) self.vinylDisc.classList.add('spinning');
         if (self.eqEl) self.eqEl.classList.add('active');
         self.spawnNotes();
+        self.trackPlay();
       }).catch(function () {
         self.isPlaying = false;
         self.updateUI();
       });
     } else if (!this.audio) {
       this.loadAndPlay();
+    }
+  };
+
+  Jukebox.prototype.trackPlay = function () {
+    var s = this.songs[this.currentIndex];
+    if (s && window.Track) {
+      Track.increment('song_' + s.title);
     }
   };
 
@@ -458,6 +466,7 @@
       if (self.eqEl) self.eqEl.classList.add('active');
       self.spawnNotes();
       self.startVisualizer();
+      self.trackPlay();
     }).catch(function () {
       self.isPlaying = false;
       self.updateUI();
@@ -875,6 +884,50 @@
         };
       });
     }
+
+    // Check if all sections unlocked — reveal secret song
+    try {
+      var dbSec = await dbGet('config', 'sections');
+      if (dbSec && dbSec.data && dbSec.data.length) {
+        var unlocked = 0;
+        var now = new Date(); now.setHours(0, 0, 0, 0);
+        for (var i = 0; i < dbSec.data.length; i++) {
+          var sec = dbSec.data[i];
+          if (sec.unlockDate && sec.autoUnlock !== false) {
+            var p = sec.unlockDate.split('-');
+            var d = new Date(parseInt(p[0]), parseInt(p[1]) - 1, parseInt(p[2]));
+            if (now >= d) unlocked++;
+          } else {
+            unlocked++;
+          }
+        }
+        if (unlocked >= 3) {
+          var secretData = await dbGet('config', 'secretSong');
+          if (secretData && secretData.song) {
+            var sec = secretData.song;
+            var secAudioUrl = null;
+            if (sec.audioData) {
+              try {
+                var blob = new Blob([sec.audioData], { type: sec.audioType || 'audio/mpeg' });
+                secAudioUrl = URL.createObjectURL(blob);
+                audioUrls.push(secAudioUrl);
+              } catch(e) {}
+            }
+            songs.push({
+              title: sec.title || '\u2728 Secret Song',
+              artist: sec.artist || '\u2661 For You',
+              cover: sec.cover || PLACEHOLDER_COVERS[0],
+              src: secAudioUrl,
+              duration: sec.duration || 200,
+              unlockDate: '',
+              autoUnlock: true,
+              hasFile: true,
+              secret: true
+            });
+          }
+        }
+      }
+    } catch(e) {}
 
     function create() {
       new Jukebox(songs);
