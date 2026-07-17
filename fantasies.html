@@ -3664,12 +3664,14 @@ END SECTION
               h.style.pointerEvents = 'none';
               h.style.zIndex = '9999';
               document.body.appendChild(h);
-              safeSetTimeout(function (el) {
-                el.style.transition = '3s linear';
-                el.style.transform = 'translateY(110vh)';
-                el.style.opacity = '0';
-                safeSetTimeout(function () { el.remove(); }, 3000);
-              }, 100, h);
+              (function (el) {
+                safeSetTimeout(function () {
+                  el.style.transition = '3s linear';
+                  el.style.transform = 'translateY(110vh)';
+                  el.style.opacity = '0';
+                  safeSetTimeout(function () { el.remove(); }, 3000);
+                }, 100);
+              })(h);
             }
           }, 30000);
         } catch (e) { logError('HEART_RAIN', e); }

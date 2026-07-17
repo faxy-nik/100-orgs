@@ -181,7 +181,7 @@
       return el;
     })();
 
-    this.panel = document.getElementById('jukeboxPanel') || (function () {
+    this.panel = document.getElementById('jukeboxPanel') || (function (ctx) {
       var el = document.createElement('div');
       el.id = 'jukeboxPanel';
       el.innerHTML =
@@ -225,14 +225,14 @@
           '</div>' +
           '<div class="volume-container">' +
             '<span class="vol-icon">&#x1F509;</span>' +
-            '<input type="range" class="volume-slider" min="0" max="100" value="' + (this.volume * 100) + '" aria-label="Volume">' +
+            '<input type="range" class="volume-slider" min="0" max="100" value="' + (ctx.volume * 100) + '" aria-label="Volume">' +
           '</div>' +
           '<div class="playlist-label">Playlist</div>' +
           '<div class="playlist" id="jukeboxPlaylist" role="listbox" aria-label="Song playlist"></div>' +
         '</div>';
       document.body.appendChild(el);
       return el;
-    })();
+    })(this);
 
     this.miniPlayer = document.getElementById('jukeboxMini') || (function () {
       var el = document.createElement('div');
