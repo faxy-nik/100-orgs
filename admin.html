@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jukebox Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #181214; color: #ffebd2;
+      font-family: 'Lora', Georgia, serif; font-size: 15px; line-height: 1.6;
+      min-height: 100vh;
+    }
+    h1, h2, h3 { font-family: 'Fraunces', Georgia, serif; font-weight: 500; }
+    a { color: #ffe680; }
+
+    /* ---- Login ---- */
+    #loginGate {
+      position: fixed; inset: 0; z-index: 9999;
+      display: flex; align-items: center; justify-content: center;
+      background: #181214;
+    }
+    #loginGate.hidden { display: none; }
+    .login-box {
+      background: rgba(255,220,160,.06); border: 1px solid rgba(255,210,150,.15);
+      border-radius: 16px; padding: 2.5rem; width: 340px; max-width: 90vw;
+      text-align: center;
+    }
+    .login-box h1 { font-size: 1.5rem; color: #ffe680; margin-bottom: .25rem; }
+    .login-box p { color: #6b5f52; font-size: .85rem; margin-bottom: 1.5rem; }
+    .login-box input {
+      width: 100%; padding: .7rem 1rem; border-radius: 8px;
+      background: rgba(255,220,160,.06); border: 1px solid rgba(255,210,150,.15);
+      color: #ffebd2; font-family: inherit; font-size: 1rem; outline: none;
+      transition: border-color .25s;
+    }
+    .login-box input:focus { border-color: #ffe680; }
+    .login-box .err { color: #e85d3a; font-size: .8rem; margin-top: .5rem; display: none; }
+    .login-box .err.show { display: block; }
+    .login-box button {
+      margin-top: 1rem; padding: .6rem 2rem; border-radius: 8px;
+      background: rgba(255,230,128,.1); border: 1px solid #ffe680;
+      color: #ffe680; font-family: 'Fraunces', Georgia, serif; font-size: .95rem;
+      cursor: pointer; transition: all .25s;
+    }
+    .login-box button:hover { background: #ffe680; color: #181214; }
+
+    /* ---- App ---- */
+    #app { display: none; max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+    #app.show { display: block; }
+
+    header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+    header h1 { font-size: 1.6rem; color: #ffe680; }
+    header .sub { color: #6b5f52; font-size: .8rem; font-style: italic; }
+    header .logout-btn {
+      background: none; border: 1px solid rgba(255,210,150,.15);
+      color: #6b5f52; padding: .4rem 1rem; border-radius: 6px;
+      cursor: pointer; font-family: inherit; font-size: .8rem; transition: all .25s;
+    }
+    header .logout-btn:hover { border-color: #e85d3a; color: #e85d3a; }
+
+    /* ---- Song List ---- */
+    .song-list { display: flex; flex-direction: column; gap: .75rem; margin-bottom: 2rem; }
+    .song-card {
+      background: rgba(255,220,160,.04); border: 1px solid rgba(255,210,150,.1);
+      border-radius: 12px; padding: 1rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem;
+      transition: all .25s;
+      position: relative;
+    }
+    .song-card:hover { border-color: rgba(255,210,150,.2); background: rgba(255,220,160,.06); }
+    .song-card .drag-handle { color: #6b5f52; cursor: grab; font-size: 1.1rem; user-select: none; }
+    .song-card .thumb {
+      width: 40px; height: 40px; border-radius: 6px; overflow: hidden; flex-shrink: 0;
+      background: rgba(255,220,160,.06);
+    }
+    .song-card .thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .song-card .info { flex: 1; min-width: 0; }
+    .song-card .info .title { font-family: 'Fraunces', Georgia, serif; font-size: .9rem; color: #ffebd2; }
+    .song-card .info .artist { font-size: .75rem; color: #6b5f52; }
+    .song-card .info .meta { font-size: .7rem; color: #6b5f52; margin-top: 2px; display: flex; gap: 1rem; }
+    .song-card .info .meta .locked { color: #e85d3a; }
+    .song-card .info .meta .unlocked { color: #6fcf97; }
+    .song-card .actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .song-card .actions button {
+      width: 32px; height: 32px; border-radius: 8px; border: 1px solid rgba(255,210,150,.1);
+      background: transparent; color: #6b5f52; cursor: pointer; font-size: .85rem;
+      transition: all .2s; display: flex; align-items: center; justify-content: center;
+    }
+    .song-card .actions .edit-btn:hover { border-color: #ffe680; color: #ffe680; }
+    .song-card .actions .del-btn:hover { border-color: #e85d3a; color: #e85d3a; background: rgba(232,93,58,.1); }
+
+    /* ---- Add Button ---- */
+    .add-btn {
+      width: 100%; padding: .8rem; border-radius: 10px;
+      border: 1px dashed rgba(255,210,150,.15); background: transparent;
+      color: #6b5f52; font-family: 'Fraunces', Georgia, serif; font-size: .9rem;
+      cursor: pointer; transition: all .25s;
+    }
+    .add-btn:hover { border-color: #ffe680; color: #ffe680; background: rgba(255,230,128,.04); }
+
+    /* ---- Modal ---- */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,.6); backdrop-filter: blur(6px);
+      display: none; align-items: center; justify-content: center;
+      padding: 1.5rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: rgba(22,20,18,.95); backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,210,150,.12); border-radius: 16px;
+      width: 520px; max-width: 100%; max-height: 90vh; overflow-y: auto;
+      padding: 2rem; box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    }
+    .modal h2 { font-size: 1.3rem; color: #ffe680; margin-bottom: 1.25rem; }
+    .modal .field { margin-bottom: 1rem; }
+    .modal .field label { display: block; font-size: .75rem; color: #6b5f52; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .05em; }
+    .modal .field input, .modal .field textarea {
+      width: 100%; padding: .6rem .8rem; border-radius: 8px;
+      background: rgba(255,220,160,.04); border: 1px solid rgba(255,210,150,.1);
+      color: #ffebd2; font-family: inherit; font-size: .9rem; outline: none;
+      transition: border-color .25s;
+    }
+    .modal .field input:focus, .modal .field textarea:focus { border-color: #ffe680; }
+    .modal .field input[type="file"] { padding: .4rem; }
+    .modal .field input[type="file"]::file-selector-button {
+      background: rgba(255,230,128,.1); border: 1px solid rgba(255,210,150,.2);
+      border-radius: 6px; color: #ffe680; padding: .3rem .8rem; cursor: pointer;
+      font-family: inherit; margin-right: .5rem;
+    }
+    .modal .field .file-name { font-size: .8rem; color: #6b5f52; margin-top: 4px; }
+    .modal .field-row { display: flex; gap: 1rem; }
+    .modal .field-row .field { flex: 1; }
+    .modal .field .checkbox-label {
+      display: flex; align-items: center; gap: .5rem; cursor: pointer;
+      font-size: .85rem; color: #ffebd2;
+    }
+    .modal .field .checkbox-label input { width: auto; }
+    .modal .modal-actions { display: flex; gap: .75rem; margin-top: 1.5rem; justify-content: flex-end; }
+    .modal .modal-actions button {
+      padding: .5rem 1.5rem; border-radius: 8px; cursor: pointer;
+      font-family: 'Fraunces', Georgia, serif; font-size: .85rem; transition: all .25s;
+    }
+    .modal .modal-actions .btn-cancel {
+      background: transparent; border: 1px solid rgba(255,210,150,.1); color: #6b5f52;
+    }
+    .modal .modal-actions .btn-cancel:hover { border-color: rgba(255,210,150,.25); color: #ffebd2; }
+    .modal .modal-actions .btn-save {
+      background: rgba(255,230,128,.1); border: 1px solid #ffe680; color: #ffe680;
+    }
+    .modal .modal-actions .btn-save:hover { background: #ffe680; color: #181214; }
+    .modal .modal-actions .btn-delete {
+      background: rgba(232,93,58,.1); border: 1px solid #e85d3a; color: #e85d3a;
+    }
+    .modal .modal-actions .btn-delete:hover { background: #e85d3a; color: #fff; }
+
+    /* ---- Export ---- */
+    .export-section {
+      margin-top: 2rem; padding: 1.25rem;
+      background: rgba(255,220,160,.03); border: 1px solid rgba(255,210,150,.08);
+      border-radius: 12px;
+    }
+    .export-section h3 { font-size: 1rem; color: #ffe680; margin-bottom: .5rem; }
+    .export-section p { font-size: .8rem; color: #6b5f52; margin-bottom: .75rem; }
+    .export-section textarea {
+      width: 100%; min-height: 200px; padding: .8rem;
+      background: rgba(0,0,0,.3); border: 1px solid rgba(255,210,150,.08);
+      border-radius: 8px; color: #c7b8a1; font-family: 'Courier New', monospace;
+      font-size: .75rem; line-height: 1.5; resize: vertical; outline: none;
+    }
+    .export-section .export-actions { display: flex; gap: .75rem; margin-top: .75rem; }
+    .export-section .export-actions button {
+      padding: .5rem 1.5rem; border-radius: 8px; cursor: pointer;
+      font-family: 'Fraunces', Georgia, serif; font-size: .85rem; transition: all .25s;
+    }
+    .export-section .export-actions .btn-copy {
+      background: rgba(255,230,128,.1); border: 1px solid #ffe680; color: #ffe680;
+    }
+    .export-section .export-actions .btn-copy:hover { background: #ffe680; color: #181214; }
+    .export-section .export-actions .btn-copied {
+      background: rgba(111,207,151,.15); border: 1px solid #6fcf97; color: #6fcf97;
+    }
+
+    /* ---- Notifications ---- */
+    .toast {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: rgba(22,20,18,.92); backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,210,150,.12); border-radius: 10px;
+      padding: .7rem 1.5rem; color: #ffebd2; font-size: .85rem;
+      opacity: 0; transition: all .35s ease; z-index: 9999; pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ---- Empty ---- */
+    .empty-state { text-align: center; padding: 3rem 2rem; color: #6b5f52; }
+    .empty-state .icon { font-size: 2.5rem; margin-bottom: .5rem; }
+    .empty-state p { font-style: italic; font-size: .9rem; }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 600px) {
+      #app { padding: 1rem; }
+      .song-card { flex-wrap: wrap; }
+      .song-card .actions { margin-left: auto; }
+      .modal { padding: 1.25rem; }
+      .modal .field-row { flex-direction: column; gap: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="loginGate">
+  <div class="login-box">
+    <h1>&#x1F3B5; Jukebox Admin</h1>
+    <p>Enter the passkey to manage your songs</p>
+    <input type="password" id="loginPass" placeholder="Passkey" autofocus>
+    <div class="err" id="loginErr">Incorrect passkey</div>
+    <button id="loginBtn">Unlock</button>
+  </div>
+</div>
+
+<div id="app">
+  <header>
+    <div>
+      <h1>&#x1F3B5; Jukebox Admin</h1>
+      <div class="sub">Manage your songs, set unlock dates, and export</div>
+    </div>
+    <button class="logout-btn" id="logoutBtn">Logout</button>
+  </header>
+
+  <div class="song-list" id="songList"></div>
+
+  <button class="add-btn" id="addBtn">+ Add New Song</button>
+
+  <div class="export-section">
+    <h3>&#x1F4E4; Export to music.js</h3>
+    <p>Copy this code and paste it into <strong>music.js</strong> to update your jukebox.</p>
+    <textarea id="exportCode" readonly spellcheck="false"></textarea>
+    <div class="export-actions">
+      <button class="btn-copy" id="copyBtn">&#x1F4CB; Copy to Clipboard</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2 id="modalTitle">Edit Song</h2>
+    <div class="field">
+      <label>Song Title</label>
+      <input type="text" id="fTitle" placeholder="e.g. Until I Found You">
+    </div>
+    <div class="field">
+      <label>Artist Name</label>
+      <input type="text" id="fArtist" placeholder="e.g. Stephen Sanchez">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Duration (seconds)</label>
+        <input type="number" id="fDuration" placeholder="207" min="1">
+      </div>
+      <div class="field">
+        <label>Audio File</label>
+        <input type="text" id="fSrc" placeholder="./song.mp3">
+      </div>
+    </div>
+    <div class="field">
+      <label>Cover Image URL (optional)</label>
+      <input type="text" id="fCover" placeholder="./cover.jpg or data:image/...">
+    </div>
+    <div class="field">
+      <label>Upload Audio File (optional — copies filename to the field above)</label>
+      <input type="file" id="fFile" accept="audio/*">
+      <div class="file-name" id="fFileName"></div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Unlock Date (optional — leave empty for always available)</label>
+        <input type="date" id="fUnlockDate">
+      </div>
+      <div class="field" style="display:flex;align-items:flex-end;padding-bottom:2px;">
+        <label class="checkbox-label">
+          <input type="checkbox" id="fAutoUnlock">
+          Auto-unlock on date
+        </label>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="modalCancel">Cancel</button>
+      <button class="btn-delete" id="modalDelete" style="display:none;">Delete</button>
+      <button class="btn-save" id="modalSave">Save Song</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  var PASSKEY = 'eshah';
+  var STORAGE_KEY = 'ash-jukebox-admin';
+  var editingIndex = -1;
+  var songs = [];
+
+  /* ---- Init ---- */
+  function init() {
+    songs = loadSongs();
+    render();
+    updateExport();
+
+    document.getElementById('loginBtn').addEventListener('click', login);
+    document.getElementById('loginPass').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') login();
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+    document.getElementById('addBtn').addEventListener('click', function () { openModal(-1); });
+    document.getElementById('modalCancel').addEventListener('click', closeModal);
+    document.getElementById('modalSave').addEventListener('click', saveSong);
+    document.getElementById('modalDelete').addEventListener('click', deleteSong);
+    document.getElementById('copyBtn').addEventListener('click', copyExport);
+    document.getElementById('fFile').addEventListener('change', handleFileSelect);
+
+    document.getElementById('modalOverlay').addEventListener('click', function (e) {
+      if (e.target === this) closeModal();
+    });
+
+    // Auto-login from localStorage
+    if (localStorage.getItem('ash-admin-auth') === '1') {
+      showApp();
+    }
+  }
+
+  /* ---- Login / Logout ---- */
+  function login() {
+    var pass = document.getElementById('loginPass').value;
+    if (pass === PASSKEY) {
+      localStorage.setItem('ash-admin-auth', '1');
+      showApp();
+    } else {
+      document.getElementById('loginErr').classList.add('show');
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem('ash-admin-auth');
+    document.getElementById('app').classList.remove('show');
+    document.getElementById('loginGate').classList.remove('hidden');
+    document.getElementById('loginPass').value = '';
+    document.getElementById('loginErr').classList.remove('show');
+  }
+
+  function showApp() {
+    document.getElementById('loginGate').classList.add('hidden');
+    document.getElementById('app').classList.add('show');
+  }
+
+  /* ---- Data ---- */
+  function defaultSongs() {
+    return [
+      { title: 'Until I Found You', artist: 'Stephen Sanchez', src: './song-1.mp3', cover: '', duration: 207, unlockDate: '', autoUnlock: true },
+      { title: 'Perfect',           artist: 'Ed Sheeran',       src: './song-2.mp3', cover: '', duration: 263, unlockDate: '', autoUnlock: true },
+      { title: 'Yellow',            artist: 'Coldplay',         src: './song-3.mp3', cover: '', duration: 266, unlockDate: '', autoUnlock: true },
+      { title: 'Turning Page',      artist: 'Sleeping At Last', src: './song-4.mp3', cover: '', duration: 257, unlockDate: '', autoUnlock: true },
+      { title: 'Photograph',        artist: 'Ed Sheeran',       src: './song-5.mp3', cover: '', duration: 259, unlockDate: '', autoUnlock: true },
+      { title: 'I Wanna Be Yours',  artist: 'Arctic Monkeys',   src: './song-6.mp3', cover: '', duration: 184, unlockDate: '', autoUnlock: true }
+    ];
+  }
+
+  function loadSongs() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return defaultSongs();
+  }
+
+  function saveSongs() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(songs));
+    render();
+    updateExport();
+  }
+
+  /* ---- Render ---- */
+  function render() {
+    var list = document.getElementById('songList');
+    if (songs.length === 0) {
+      list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F3B6;</div><p>No songs yet. Add your first one!</p></div>';
+      return;
+    }
+
+    var html = '';
+    for (var i = 0; i < songs.length; i++) {
+      var s = songs[i];
+      var status = getUnlockStatus(s);
+      var statusClass = status.locked ? 'locked' : 'unlocked';
+      var statusText = status.locked ? 'Locked until ' + status.date : 'Unlocked';
+      var coverSrc = s.cover || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22%3E%3Crect fill=%22%232a2018%22 width=%2240%22 height=%2240%22/%3E%3Ccircle cx=%2220%22 cy=%2220%22 r=%228%22 fill=%22%23ffe680%22 opacity=%22.1%22/%3E%3C/svg%3E';
+
+      html +=
+        '<div class="song-card" data-index="' + i + '">' +
+          '<div class="drag-handle">&#x2630;</div>' +
+          '<div class="thumb"><img src="' + coverSrc + '" alt=""></div>' +
+          '<div class="info">' +
+            '<div class="title">' + esc(s.title) + '</div>' +
+            '<div class="artist">' + esc(s.artist) + '</div>' +
+            '<div class="meta">' +
+              '<span>' + formatDur(s.duration) + '</span>' +
+              '<span class="' + statusClass + '">' + statusText + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="actions">' +
+            '<button class="edit-btn" data-index="' + i + '" title="Edit">&#x270E;</button>' +
+            '<button class="del-btn" data-index="' + i + '" title="Delete">&#x2716;</button>' +
+          '</div>' +
+        '</div>';
+    }
+    list.innerHTML = html;
+
+    // Bind edit/del
+    list.querySelectorAll('.edit-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () { openModal(parseInt(this.dataset.index)); });
+    });
+    list.querySelectorAll('.del-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (confirm('Delete "' + songs[parseInt(this.dataset.index)].title + '"?')) {
+          songs.splice(parseInt(this.dataset.index), 1);
+          saveSongs();
+        }
+      });
+    });
+  }
+
+  function getUnlockStatus(song) {
+    if (!song.unlockDate) return { locked: false };
+    var now = new Date();
+    now.setHours(0,0,0,0);
+    var parts = song.unlockDate.split('-');
+    var unlock = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+    var locked = now < unlock;
+    return { locked: locked, date: song.unlockDate };
+  }
+
+  /* ---- Modal ---- */
+  function openModal(index) {
+    editingIndex = index;
+    var isNew = index === -1;
+    document.getElementById('modalTitle').textContent = isNew ? 'Add New Song' : 'Edit Song';
+    document.getElementById('modalDelete').style.display = isNew ? 'none' : 'inline-block';
+
+    if (isNew) {
+      document.getElementById('fTitle').value = '';
+      document.getElementById('fArtist').value = '';
+      document.getElementById('fDuration').value = '';
+      document.getElementById('fSrc').value = '';
+      document.getElementById('fCover').value = '';
+      document.getElementById('fUnlockDate').value = '';
+      document.getElementById('fAutoUnlock').checked = true;
+      document.getElementById('fFileName').textContent = '';
+    } else {
+      var s = songs[index];
+      document.getElementById('fTitle').value = s.title;
+      document.getElementById('fArtist').value = s.artist;
+      document.getElementById('fDuration').value = s.duration;
+      document.getElementById('fSrc').value = s.src || '';
+      document.getElementById('fCover').value = s.cover || '';
+      document.getElementById('fUnlockDate').value = s.unlockDate || '';
+      document.getElementById('fAutoUnlock').checked = s.autoUnlock !== false;
+      document.getElementById('fFileName').textContent = '';
+    }
+
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+    editingIndex = -1;
+  }
+
+  function saveSong() {
+    var title = document.getElementById('fTitle').value.trim();
+    var artist = document.getElementById('fArtist').value.trim();
+    var duration = parseInt(document.getElementById('fDuration').value) || 180;
+    var src = document.getElementById('fSrc').value.trim();
+    var cover = document.getElementById('fCover').value.trim();
+    var unlockDate = document.getElementById('fUnlockDate').value;
+    var autoUnlock = document.getElementById('fAutoUnlock').checked;
+
+    if (!title) { toast('Song title is required'); return; }
+    if (!src) { toast('Audio file path is required'); return; }
+
+    var song = { title: title, artist: artist, src: src, cover: cover, duration: duration, unlockDate: unlockDate, autoUnlock: autoUnlock };
+
+    if (editingIndex === -1) {
+      songs.push(song);
+    } else {
+      songs[editingIndex] = song;
+    }
+
+    saveSongs();
+    closeModal();
+    toast('Song saved!');
+  }
+
+  function deleteSong() {
+    if (editingIndex === -1 || editingIndex >= songs.length) return;
+    if (confirm('Delete "' + songs[editingIndex].title + '"?')) {
+      songs.splice(editingIndex, 1);
+      saveSongs();
+      closeModal();
+      toast('Song deleted');
+    }
+  }
+
+  /* ---- File Upload ---- */
+  function handleFileSelect(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var fileName = file.name;
+    document.getElementById('fFileName').textContent = 'Selected: ' + fileName;
+    // Suggest a path: rename to .mp3 and put in site root
+    var cleanName = fileName.replace(/\.[^.]+$/, '') + '.mp3';
+    document.getElementById('fSrc').value = './' + cleanName;
+  }
+
+  /* ---- Export ---- */
+  function updateExport() {
+    var lines = [];
+    lines.push('var SONGS = [');
+    for (var i = 0; i < songs.length; i++) {
+      var s = songs[i];
+      var cover = s.cover ? "'" + s.cover.replace(/'/g, "\\'") + "'" : "PLACEHOLDER_COVERS[" + (i % 6) + "]";
+      var src = "'" + s.src.replace(/'/g, "\\'") + "'";
+      var item = '  { title: ' + JSON.stringify(s.title) + ', artist: ' + JSON.stringify(s.artist) + ', cover: ' + cover + ', src: ' + src + ', duration: ' + s.duration;
+      if (s.unlockDate) {
+        item += ', unlockDate: ' + JSON.stringify(s.unlockDate) + ', autoUnlock: ' + (s.autoUnlock !== false);
+      }
+      item += ' }';
+      if (i < songs.length - 1) item += ',';
+      lines.push(item);
+    }
+    lines.push('];');
+    document.getElementById('exportCode').value = lines.join('\n');
+  }
+
+  function copyExport() {
+    var ta = document.getElementById('exportCode');
+    ta.select();
+    ta.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(ta.value).then(function () {
+      var btn = document.getElementById('copyBtn');
+      btn.textContent = '\u2713 Copied!';
+      btn.className = 'btn-copied';
+      setTimeout(function () {
+        btn.textContent = '\uD83D\uDCCB Copy to Clipboard';
+        btn.className = 'btn-copy';
+      }, 2000);
+      toast('Copied to clipboard! Paste into music.js');
+    }).catch(function () {
+      toast('Could not copy. Select and copy manually.');
+    });
+  }
+
+  /* ---- Helpers ---- */
+  function esc(str) { var d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+  function formatDur(sec) {
+    if (!sec) return '0:00';
+    var m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+    return m + ':' + (s < 10 ? '0' : '') + s;
+  }
+  function toast(msg) {
+    var el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(function () { el.classList.remove('show'); }, 2500);
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>

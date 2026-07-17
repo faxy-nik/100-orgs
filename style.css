@@ -635,6 +635,24 @@
   animation: jbPulse 1.5s ease-out infinite;
 }
 
+.playlist-item.locked {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.playlist-item.locked:hover {
+  background: transparent;
+}
+
+.playlist-item.locked .pl-title {
+  color: var(--ash, #6b5f52);
+}
+
+.playlist-item.locked .pl-artist {
+  color: var(--ember, #e85d3a);
+  font-style: italic;
+}
+
 .playlist-item .pl-fav-btn {
   background: none;
   border: none;

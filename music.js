@@ -230,18 +230,45 @@
     this.buildPlaylist();
   };
 
+  Jukebox.prototype.isSongUnlocked = function (index) {
+    var s = this.songs[index];
+    if (!s.unlockDate) return true;
+    if (!s.autoUnlock) return true;
+    var now = new Date();
+    now.setHours(0, 0, 0, 0);
+    var parts = s.unlockDate.split('-');
+    var unlock = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+    return now >= unlock;
+  };
+
+  Jukebox.prototype.getLockString = function (index) {
+    var s = this.songs[index];
+    if (!s.unlockDate || !s.autoUnlock) return '';
+    if (this.isSongUnlocked(index)) return '';
+    var parts = s.unlockDate.split('-');
+    var d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+    var now = new Date();
+    var diff = Math.ceil((d.getTime() - now.getTime()) / 86400000);
+    if (diff <= 0) return '';
+    if (diff === 1) return 'Unlocks tomorrow';
+    if (diff < 30) return 'Locked ' + diff + ' days';
+    return 'Locked until ' + s.unlockDate;
+  };
+
   Jukebox.prototype.buildPlaylist = function () {
     var html = '';
     var self = this;
     for (var i = 0; i < this.songs.length; i++) {
       var s = this.songs[i];
       var isFav = this.favorites.indexOf(i) !== -1;
+      var unlocked = this.isSongUnlocked(i);
+      var lockStr = this.getLockString(i);
       html +=
-        '<div class="playlist-item" role="option" data-index="' + i + '" tabindex="0">' +
+        '<div class="playlist-item' + (unlocked ? '' : ' locked') + '" role="option" data-index="' + i + '" tabindex="0">' +
           '<div class="pl-album"><img src="' + s.cover + '" alt="" loading="lazy"></div>' +
           '<div class="pl-info">' +
-            '<div class="pl-title">' + s.title + '</div>' +
-            '<div class="pl-artist">' + s.artist + '</div>' +
+            '<div class="pl-title">' + (unlocked ? s.title : s.title + ' \uD83D\uDD12') + '</div>' +
+            '<div class="pl-artist">' + (unlocked ? s.artist : lockStr) + '</div>' +
           '</div>' +
           '<span class="pl-duration">' + self.formatTime(s.duration) + '</span>' +
           '<span class="pl-playing-indicator"></span>' +
@@ -332,6 +359,13 @@
      ========================================================== */
   Jukebox.prototype.play = function (index) {
     var self = this;
+
+    if (index !== undefined && !this.isSongUnlocked(index)) {
+      var lockStr = this.getLockString(index);
+      if (this.songTitle) this.songTitle.textContent = '\uD83D\uDD12 ' + this.songs[index].title;
+      if (this.artistName) this.artistName.textContent = lockStr || 'Not yet available';
+      return;
+    }
 
     if (index !== undefined && index !== this.currentIndex) {
       this.crossfadeOut(function () {
