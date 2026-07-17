@@ -163,19 +163,18 @@
 
   function applySky(index) {
     var sky = SKIES[index];
-    var html = document.documentElement;
-
-    html.style.cssText = sky.css;
-    document.body.style.background = 'transparent';
-
     var container = document.getElementById('skyOverlay');
     if (!container) {
       container = document.createElement('div');
       container.id = 'skyOverlay';
-      container.style.cssText = 'position:fixed;inset:0;z-index:0;pointer-events:none;transition:opacity 1s ease;';
+      container.style.cssText = 'position:fixed;inset:0;z-index:1;pointer-events:none;transition:opacity 1s ease;';
       document.body.insertBefore(container, document.body.firstChild);
     }
     container.innerHTML = '';
+
+    var bg = document.createElement('div');
+    bg.style.cssText = 'position:absolute;inset:0;' + sky.css + 'transition:opacity 1.5s ease;opacity:0.35;';
+    container.appendChild(bg);
 
     if (sky.extra) {
       var extraDiv = document.createElement('div');
@@ -214,6 +213,7 @@
       color:#6b5f52;padding:.4rem .9rem;border-radius:6px;\
       cursor:pointer;font-family:inherit;font-size:.8rem;\
       transition:all .25s;\
+      position:relative;z-index:2;\
     ';
     btn.addEventListener('mouseenter', function () {
       this.style.borderColor = '#ffe680'; this.style.color = '#ffe680';
