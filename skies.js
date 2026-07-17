@@ -1,5 +1,7 @@
 (function () {
   var SKY_KEY = 'ash-jukebox-sky';
+  var MSG_KEY = 'ash-jukebox-sky-msg';
+  var msgEl = null;
 
   var SKIES = [
     {
@@ -8,6 +10,7 @@
         background: linear-gradient(180deg, #ff7e5f 0%, #feb47b 35%, #ffe29f 60%, #fff5e6 100%);\
         background-attachment: fixed;\
       ',
+      message: 'Like the first light you brought into my world \u2661',
       extra: '\
         <div class="sky-sun" style="position:fixed;top:5%;left:50%;transform:translateX(-50%);width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,#fff8e0,#ffcc33 60%,transparent 70%);box-shadow:0 0 60px rgba(255,200,50,.5),0 0 120px rgba(255,200,50,.2);pointer-events:none;z-index:0;"></div>\
         <div class="sky-ray" style="position:fixed;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 50% 10%,rgba(255,200,100,.12),transparent 60%);pointer-events:none;z-index:0;"></div>\
@@ -19,6 +22,7 @@
         background: linear-gradient(180deg, #1a0a2e 0%, #2d1b4e 20%, #e85d3a 50%, #ff9a56 70%, #ffd3a5 100%);\
         background-attachment: fixed;\
       ',
+      message: 'Even endings are beautiful when I think of you \u2661',
       extra: '\
         <div class="sky-sun" style="position:fixed;bottom:8%;left:50%;transform:translateX(-50%);width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,#ffe680,#e85d3a 60%,transparent 70%);box-shadow:0 0 80px rgba(232,93,58,.6),0 0 160px rgba(232,93,58,.3);pointer-events:none;z-index:0;"></div>\
       '
@@ -29,6 +33,7 @@
         background: linear-gradient(180deg, #2c3e50 0%, #4a6274 30%, #6b8599 60%, #889aaa 100%);\
         background-attachment: fixed;\
       ',
+      message: 'Every drop carries a memory of you \u2661',
       extra: '\
         <div class="sky-rain" style="position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0;"></div>\
         <script>\
@@ -42,6 +47,7 @@
         background: linear-gradient(180deg, #b8c6d4 0%, #d4e1ec 40%, #e8f0f6 70%, #f0f5f9 100%);\
         background-attachment: fixed;\
       ',
+      message: 'My thoughts of you drift like clouds, endless \u2661',
       extra: '\
         <div class="sky-clouds" style="position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0;"></div>\
         <script>\
@@ -55,6 +61,7 @@
         background: linear-gradient(180deg, #0a0a1a 0%, #12122e 30%, #1a1a3e 60%, #0d0d2b 100%);\
         background-attachment: fixed;\
       ',
+      message: 'You are every star that lights my darkest nights \u2661',
       extra: '\
         <div class="sky-stars" style="position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0;"></div>\
         <script>\
@@ -69,6 +76,7 @@
         background: linear-gradient(180deg, #1a1a2e 0%, #2d2d44 30%, #3d3d5c 60%, #2a2a3e 100%);\
         background-attachment: fixed;\
       ',
+      message: 'Even in chaos, you are my calm \u2661',
       extra: '\
         <div class="sky-storm" style="position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0;"></div>\
         <script>\
@@ -83,6 +91,7 @@
         background: linear-gradient(180deg, #0a0a1a 0%, #0f1a2e 30%, #0a1a1a 60%, #0a0a1a 100%);\
         background-attachment: fixed;\
       ',
+      message: 'You paint my sky with colours I never knew existed \u2661',
       extra: '\
         <div class="sky-aurora" style="position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0;"></div>\
         <script>\
@@ -97,6 +106,7 @@
         background: linear-gradient(180deg, #b0b8c0 0%, #c8ced4 30%, #d8dce0 60%, #e0e4e8 100%);\
         background-attachment: fixed;\
       ',
+      message: 'I\u2019d wander through a thousand mists just to find you \u2661',
       extra: '\
         <div class="sky-fog" style="position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0;"></div>\
         <script>\
@@ -110,6 +120,7 @@
         background: linear-gradient(180deg, #4facfe 0%, #87cefa 40%, #b0d4f1 70%, #d4e8f7 100%);\
         background-attachment: fixed;\
       ',
+      message: 'With you, every day is clear and bright \u2661',
       extra: '\
         <div class="sky-clear" style="position:fixed;top:6%;right:10%;width:70px;height:70px;border-radius:50%;background:radial-gradient(circle,#fff8e0,#ffdd44 60%,transparent 70%);box-shadow:0 0 50px rgba(255,220,50,.4),0 0 100px rgba(255,220,50,.15);pointer-events:none;z-index:0;"></div>\
       '
@@ -120,6 +131,7 @@
         background: linear-gradient(180deg, #1a0a2e 0%, #2d1b4e 25%, #5b2c56 50%, #b85d6e 70%, #e8a87c 100%);\
         background-attachment: fixed;\
       ',
+      message: 'Between day and night, you are my only thought \u2661',
       extra: '\
         <div class="sky-twilight" style="position:fixed;top:12%;right:15%;width:35px;height:35px;border-radius:50%;background:radial-gradient(circle at 60% 60%,#fff8e0,transparent 60%);box-shadow:3px 3px 20px rgba(255,255,200,.1);pointer-events:none;z-index:0;"></div>\
         <div style="position:fixed;inset:0;background:radial-gradient(ellipse at 50% 70%,rgba(200,100,80,.08),transparent 50%);pointer-events:none;z-index:0;"></div>\
@@ -127,19 +139,44 @@
     }
   ];
 
+  function showSkyMessage(sky) {
+    if (msgEl) { msgEl.remove(); msgEl = null; }
+    msgEl = document.createElement('div');
+    msgEl.id = 'skyMsg';
+    msgEl.textContent = sky.message;
+    msgEl.style.cssText = '\
+      position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);\
+      font-family:Fraunces,Georgia,serif;font-size:1rem;font-style:italic;\
+      color:#ffe680;text-shadow:0 2px 12px rgba(0,0,0,.6);\
+      text-align:center;pointer-events:none;z-index:10000;\
+      opacity:1;transition:opacity 2s ease;\
+      max-width:80vw;white-space:nowrap;\
+    ';
+    document.body.appendChild(msgEl);
+    setTimeout(function () {
+      if (msgEl) { msgEl.style.opacity = '0'; }
+    }, 6000);
+    setTimeout(function () {
+      if (msgEl) { msgEl.remove(); msgEl = null; }
+    }, 8000);
+  }
+
   function applySky(index) {
     var sky = SKIES[index];
+    var html = document.documentElement;
+
+    html.style.cssText = sky.css;
+    document.body.style.background = 'transparent';
+
     var container = document.getElementById('skyOverlay');
     if (!container) {
       container = document.createElement('div');
       container.id = 'skyOverlay';
-      container.style.cssText = 'position:fixed;inset:0;z-index:1;pointer-events:none;transition:opacity 1s ease;';
+      container.style.cssText = 'position:fixed;inset:0;z-index:0;pointer-events:none;transition:opacity 1s ease;';
       document.body.insertBefore(container, document.body.firstChild);
     }
     container.innerHTML = '';
-    var bg = document.createElement('div');
-    bg.style.cssText = 'position:absolute;inset:0;' + sky.css + 'transition:opacity 1.5s ease;';
-    container.appendChild(bg);
+
     if (sky.extra) {
       var extraDiv = document.createElement('div');
       extraDiv.innerHTML = sky.extra;
@@ -153,7 +190,9 @@
         document.body.removeChild(s);
       }
     }
-    try { localStorage.setItem(SKY_KEY, index); } catch(e) {}
+
+    showSkyMessage(sky);
+    try { localStorage.setItem(SKY_KEY, index); } catch (e) {}
   }
 
   function randomSky() {
@@ -162,7 +201,7 @@
   }
 
   function getCurrentSkyIndex() {
-    try { var v = localStorage.getItem(SKY_KEY); return v !== null ? parseInt(v) : -1; } catch(e) { return -1; }
+    try { var v = localStorage.getItem(SKY_KEY); return v !== null ? parseInt(v) : -1; } catch (e) { return -1; }
   }
 
   function createSkyButton(container) {
