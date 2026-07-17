@@ -161,6 +161,22 @@
       white-space: pre-line;
     }
 
+    /* ---- Typing animation ---- */
+    .dedication-body.typing {
+      border-right: 2px solid var(--gold);
+      animation: blinkCursor 0.8s step-end infinite;
+      max-width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .dedication-body.typing.done {
+      border-right: none;
+      animation: none;
+    }
+    @keyframes blinkCursor {
+      50% { border-color: transparent; }
+    }
+
     /* ---------------- Flowing tributes & prose ---------------- */
     .flow {
       display: block;
@@ -2132,13 +2148,13 @@ END SECTION
         <p class="dedication-kicker">A Lover's Anatomy</p>
         <p class="dedication-body">To my Eeshah.
 
-          This is not just a collection of words. This is an inventory of you — the way a cartographer maps an uncharted
+          This is not just a collection of words. This is an inventory of you, the way a cartographer maps an uncharted
           land, the way a musician learns a song by heart. One hundred parts of the woman I love, catalogued one by one,
           because the whole of you was too vast to hold in a single sentence.
 
           I started with your hair. Then your eyes. Then the spaces between your fingers. I wrote about your voice, your
           silence, the way you breathe when you are finally asleep beside me. I wrote about the parts of you the world
-          sees — your smile, your laugh, the shape of your hips — and the parts only I am allowed to witness — the
+          sees, your smile, your laugh, the shape of your hips, and the parts only I am allowed to witness, the
           softness of your belly, the way your neck arches when you let go, the small sounds you make when you feel safe
           enough to be completely yourself.
 
@@ -2153,7 +2169,7 @@ END SECTION
           haven't made yet, the answer to prayers I forgot I whispered.
 
           Before these pages belonged to a book, they belonged to you. Every sentence was born from a memory of your
-          laugh — that laugh that starts quiet, almost shy, before it breaks open and fills everything. Every paragraph
+          laugh, that laugh that starts quiet, almost shy, before it breaks open and fills everything. Every paragraph
           carries the weight and the warmth of your hugs, the ones where you press your whole self into me like you're
           trying to merge our ribs. Every word remembers your voice, even when silence has taken its place.
 
@@ -2161,7 +2177,7 @@ END SECTION
           You are the girl who overthinks at 3 AM and then falls asleep mid-sentence.
           The girl who gets angry at the smallest things and then melts the moment someone says something soft.
           The girl whose eyes hold an entire storm and an entire sunrise at the same time.
-          The girl who doesn't realize how deeply, impossibly, irreversibly beautiful she is — not just in face, but in
+          The girl who doesn't realize how deeply, impossibly, irreversibly beautiful she is, not just in face, but in
           the way she exists.
 
           You love harder than anyone I've ever known.
@@ -2179,7 +2195,7 @@ END SECTION
           You changed the way I looked at ordinary things. Suddenly sunsets lasted longer. Songs felt written for us.
           Long drives needed one empty seat beside me. Even silence became meaningful because I imagined sharing it with
           you. Rain reminded me of your voice. Night reminded me of your hair. Mornings reminded me that somewhere in
-          this world, you were waking up, rubbing your eyes, existing — and that alone was enough to make the whole day
+          this world, you were waking up, rubbing your eyes, existing, and that alone was enough to make the whole day
           worth starting.
 
           You are stubborn and sensitive and strong and soft and brave and scared and funny and serious and every
@@ -2191,7 +2207,7 @@ END SECTION
           If one day memories begin to fade the way they always do, then let these pages remember for us. Let them
           remember every smile that healed me. Every late night that became morning. Every fight that taught me how much
           I was willing to bend. Every hug that convinced my heart it had finally found home. Every tiny, ordinary,
-          unremarkable moment that the world would have forgotten — but I never could.
+          unremarkable moment that the world would have forgotten, but I never could.
 
           I do not know what time will do to us.
           Maybe it will be kind.
@@ -2203,10 +2219,10 @@ END SECTION
           Into my prayers.
           Into the parts of my heart that no distance, no silence, no ending can ever reach.
 
-          This is a promise carved into something permanent — one hundred pieces of evidence that you existed, that you
+          This is a promise carved into something permanent, one hundred pieces of evidence that you existed, that you
           were real, that someone like you walked through my life and left it forever changed.
 
-          So if anyone ever asks who these hundred organs belong to —
+          So if anyone ever asks who these hundred organs belong to,
 
           They belong to the girl with the messy hair and the loud laugh and the soft heart.
           They belong to the girl who doesn't know she's extraordinary.
@@ -8687,6 +8703,37 @@ END SECTION
     writeLogs();
     setTimeout(writeLogs, 3000);
   </script>
-</body>
 
+  <script>
+    (function () {
+      var ded = document.querySelector('.dedication-body');
+      if (!ded) return;
+      var text = ded.textContent;
+      ded.setAttribute('data-text', text);
+      ded.textContent = '';
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            observer.disconnect();
+            ded.classList.add('typing');
+            var i = 0;
+            var speed = 8;
+            var timer = setInterval(function () {
+              if (i < text.length) {
+                ded.textContent = text.slice(0, i + 1);
+                i++;
+              } else {
+                clearInterval(timer);
+                ded.classList.add('done');
+              }
+            }, speed);
+          }
+        });
+      }, { threshold: 0.3 });
+      observer.observe(ded);
+    })();
+  </script>
+
+</body>
 </html>

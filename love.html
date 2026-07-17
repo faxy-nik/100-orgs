@@ -161,6 +161,22 @@
       white-space: pre-line;
     }
 
+    /* ---- Typing animation ---- */
+    .dedication-body.typing {
+      border-right: 2px solid var(--gold);
+      animation: blinkCursor 0.8s step-end infinite;
+      max-width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .dedication-body.typing.done {
+      border-right: none;
+      animation: none;
+    }
+    @keyframes blinkCursor {
+      50% { border-color: transparent; }
+    }
+
     /* ---------------- Flowing tributes & prose ---------------- */
     .flow {
       display: block;
@@ -2036,15 +2052,15 @@ END SECTION
         <p class="dedication-kicker">Still</p>
         <p class="dedication-body">There is never enough paper. Never enough ink. Never enough silence in the middle of the night to write down everything you make me feel.
 
-          So here are more pieces of you — smaller moments, quieter corners, things I noticed but did not know how to
+          So here are more pieces of you, smaller moments, quieter corners, things I noticed but did not know how to
           say the first time.
 
-          This is not a repeat. This is a deepening. The hundred organs were the map of your body — the geography of
+          This is not a repeat. This is a deepening. The hundred organs were the map of your body, the geography of
           who you are. This is the softness that lives inside those boundaries. The warmth that radiates from your skin
           when you have forgotten to guard yourself. The way you say my name when you are too tired to perform for the
           world. The love that exists not in grand gestures, but in the ordinary, sacred architecture of a shared life.
 
-          This is about the you that exists in the spaces between — the voice you have only in the morning, the sighs
+          This is about the you that exists in the spaces between, the voice you have only in the morning, the sighs
           you release when no one else is listening, the way your body curls toward mine in sleep without waking.
           These are the things I still need to tell you. Not because I forgot, but because some truths only reveal
           themselves after the first layer has been peeled away.
@@ -4482,6 +4498,37 @@ END SECTION
     writeLogs();
     setTimeout(writeLogs, 3000);
   </script>
-</body>
 
+  <script>
+    (function () {
+      var ded = document.querySelector('.dedication-body');
+      if (!ded) return;
+      var text = ded.textContent;
+      ded.setAttribute('data-text', text);
+      ded.textContent = '';
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            observer.disconnect();
+            ded.classList.add('typing');
+            var i = 0;
+            var speed = 8;
+            var timer = setInterval(function () {
+              if (i < text.length) {
+                ded.textContent = text.slice(0, i + 1);
+                i++;
+              } else {
+                clearInterval(timer);
+                ded.classList.add('done');
+              }
+            }, speed);
+          }
+        });
+      }, { threshold: 0.3 });
+      observer.observe(ded);
+    })();
+  </script>
+
+</body>
 </html>

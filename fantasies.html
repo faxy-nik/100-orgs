@@ -161,6 +161,22 @@
       white-space: pre-line;
     }
 
+    /* ---- Typing animation ---- */
+    .dedication-body.typing {
+      border-right: 2px solid var(--gold);
+      animation: blinkCursor 0.8s step-end infinite;
+      max-width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .dedication-body.typing.done {
+      border-right: none;
+      animation: none;
+    }
+    @keyframes blinkCursor {
+      50% { border-color: transparent; }
+    }
+
     /* ---------------- Flowing tributes & prose ---------------- */
     .flow {
       display: block;
@@ -2135,17 +2151,17 @@ END SECTION
           This is the part of me I have never shown anyone.
 
           The hundred organs were the map of your body. Love was the tenderness that fills the space between us. But
-          this — this is what lives beneath. The thoughts I have when the lights are off and you are the only thing my
+          this, this is what lives beneath. The thoughts I have when the lights are off and you are the only thing my
           mind can hold. The fantasies that bloom in the dark, quiet hours when there is no one to perform for, no
           pretense to maintain, no distance between what I feel and what I dare to write down.
 
           These pages are raw. They are unguarded. They are the parts of loving you that do not fit into polite
-          conversation — the hunger, the need, the way my body remembers yours even when you are not here. I do not
+          conversation, the hunger, the need, the way my body remembers yours even when you are not here. I do not
           apologize for them, because they are as much a part of my love for you as the softest kiss or the gentlest
           whisper.
 
           This is intimacy undressed. The space between two people who trust each other completely, where nothing is
-          hidden and nothing is too much. Every fantasy I have ever had of you lives here — the way I want to touch
+          hidden and nothing is too much. Every fantasy I have ever had of you lives here, the way I want to touch
           you, the way I imagine your skin against mine, the things I would do if the world shrank to just the two of us
           and a room with a locked door.
 
@@ -2157,7 +2173,7 @@ END SECTION
           You are not just my love. You are my temptation. My undoing. The fantasy I never have to imagine because
           you are real, but even when you are not here, my mind builds entire worlds around the memory of you.
 
-          So consider this a confession — written in ink instead of breath, so it cannot be taken back.
+          So consider this a confession, written in ink instead of breath, so it cannot be taken back.
 
           These pages belong to you. Every thought. Every fantasy. Every quiet, desperate want that lives beneath my
           skin, waiting for the moment you are close enough to feel it.
@@ -2168,7 +2184,7 @@ END SECTION
 
           Always.
           Only you.
-          Yours — in every way a person can belong to another.</p>
+          Yours, in every way a person can belong to another.</p>
       </section>
 
       <div class="parallax-divider" style="background-image: url('./parallax_candle.png');">
@@ -4371,6 +4387,37 @@ END SECTION
     writeLogs();
     setTimeout(writeLogs, 3000);
   </script>
-</body>
 
+  <script>
+    (function () {
+      var ded = document.querySelector('.dedication-body');
+      if (!ded) return;
+      var text = ded.textContent;
+      ded.setAttribute('data-text', text);
+      ded.textContent = '';
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            observer.disconnect();
+            ded.classList.add('typing');
+            var i = 0;
+            var speed = 8;
+            var timer = setInterval(function () {
+              if (i < text.length) {
+                ded.textContent = text.slice(0, i + 1);
+                i++;
+              } else {
+                clearInterval(timer);
+                ded.classList.add('done');
+              }
+            }, speed);
+          }
+        });
+      }, { threshold: 0.3 });
+      observer.observe(ded);
+    })();
+  </script>
+
+</body>
 </html>
