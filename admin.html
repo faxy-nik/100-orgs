@@ -315,7 +315,7 @@
 (function () {
   var PASSKEY = 'eshah';
   var DB_NAME = 'ash-jukebox-db';
-  var DB_VER = 1;
+  var DB_VER = 2;
 
   var editingIndex = -1;
   var songs = [];
@@ -332,6 +332,9 @@
         }
         if (!db.objectStoreNames.contains('config')) {
           db.createObjectStore('config', { keyPath: 'key' });
+        }
+        if (!db.objectStoreNames.contains('counters')) {
+          db.createObjectStore('counters', { keyPath: 'key' });
         }
       };
       req.onsuccess = function () { resolve(req.result); };

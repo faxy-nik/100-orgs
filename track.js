@@ -1,15 +1,15 @@
 (function () {
   var DB = 'ash-jukebox-db';
-  var VER = 1;
+  var VER = 2;
 
   function openDB() {
     return new Promise(function (resolve, reject) {
       var r = indexedDB.open(DB, VER);
       r.onupgradeneeded = function (e) {
         var db = e.target.result;
-        if (!db.objectStoreNames.contains('counters')) {
-          db.createObjectStore('counters', { keyPath: 'key' });
-        }
+        if (!db.objectStoreNames.contains('counters')) db.createObjectStore('counters', { keyPath: 'key' });
+        if (!db.objectStoreNames.contains('songs')) db.createObjectStore('songs', { keyPath: 'id', autoIncrement: true });
+        if (!db.objectStoreNames.contains('config')) db.createObjectStore('config', { keyPath: 'key' });
       };
       r.onsuccess = function () { resolve(r.result); };
       r.onerror = function () { reject(r.error); };

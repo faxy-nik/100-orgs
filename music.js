@@ -11,7 +11,7 @@
   ];
 
   var DB_NAME = 'ash-jukebox-db';
-  var DB_VER = 1;
+  var DB_VER = 2;
 
   var DEFAULT_SONGS = [
     { title: 'Until I Found You',   artist: 'Stephen Sanchez',  duration: 207, coverIdx: 0 },
@@ -32,6 +32,7 @@
         var db = e.target.result;
         if (!db.objectStoreNames.contains('songs')) db.createObjectStore('songs', { keyPath: 'id', autoIncrement: true });
         if (!db.objectStoreNames.contains('config')) db.createObjectStore('config', { keyPath: 'key' });
+        if (!db.objectStoreNames.contains('counters')) db.createObjectStore('counters', { keyPath: 'key' });
       };
       req.onsuccess = function () { resolve(req.result); };
       req.onerror = function () { reject(req.error); };
