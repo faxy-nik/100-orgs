@@ -13,15 +13,6 @@
   var DB_NAME = 'ash-jukebox-db';
   var DB_VER = 2;
 
-  var DEFAULT_SONGS = [
-    { title: 'Until I Found You',   artist: 'Stephen Sanchez',  duration: 207, coverIdx: 0 },
-    { title: 'Perfect',             artist: 'Ed Sheeran',        duration: 263, coverIdx: 1 },
-    { title: 'Yellow',              artist: 'Coldplay',          duration: 266, coverIdx: 2 },
-    { title: 'Turning Page',        artist: 'Sleeping At Last',  duration: 257, coverIdx: 3 },
-    { title: 'Photograph',          artist: 'Ed Sheeran',        duration: 259, coverIdx: 4 },
-    { title: 'I Wanna Be Yours',    artist: 'Arctic Monkeys',    duration: 184, coverIdx: 5 }
-  ];
-
   var STORAGE_KEY = 'ash-jukebox';
   var audioUrls = [];
 
@@ -86,6 +77,29 @@
       return songObjs;
     }).catch(function () {
       return null;
+    });
+  }
+
+  function loadFileSongs() {
+    return fetch('songs/list.json').then(function (res) {
+      if (!res.ok) return [];
+      return res.json();
+    }).then(function (list) {
+      if (!list || !list.length) return [];
+      return list.map(function (item, i) {
+        return {
+          title: item.title || 'Untitled',
+          artist: item.artist || 'Unknown',
+          cover: PLACEHOLDER_COVERS[i % PLACEHOLDER_COVERS.length],
+          src: 'songs/' + item.file,
+          duration: item.duration || 180,
+          unlockDate: item.unlockDate || '',
+          autoUnlock: true,
+          hasFile: true
+        };
+      });
+    }).catch(function () {
+      return [];
     });
   }
 
@@ -870,21 +884,9 @@
   };
 
   async function init() {
-    var songs = await loadSongsFromDB();
-    if (!songs || !songs.length) {
-      songs = DEFAULT_SONGS.map(function (d, i) {
-        return {
-          title: d.title,
-          artist: d.artist,
-          cover: PLACEHOLDER_COVERS[i % PLACEHOLDER_COVERS.length],
-          src: null,
-          duration: d.duration,
-          unlockDate: '',
-          autoUnlock: true,
-          hasFile: false
-        };
-      });
-    }
+    var fileSongs = await loadFileSongs();
+    var dbSongs = await loadSongsFromDB();
+    var songs = fileSongs.concat(dbSongs || []);
 
     // Check if all sections unlocked — reveal secret song
     try {
