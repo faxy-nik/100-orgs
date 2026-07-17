@@ -777,10 +777,7 @@ Animations
 
     }
 
-    .show {
-      opacity: 1 !important;
-      transform: none !important;
-    }
+
 
     .prose,
     .tribute-body {}
@@ -4406,7 +4403,7 @@ END SECTION
       }
     }
     writeLogs();
-    setTimeout(writeLogs, 3000);
+    setInterval(writeLogs, 3000);
   </script>
 
   <script>
@@ -4452,6 +4449,7 @@ END SECTION
         if (Math.random() > 0.12) return;
         var h = document.createElement('span');
         h.textContent = '\u2661';
+        h.setAttribute('aria-hidden', 'true');
         h.style.cssText = 'position:absolute;left:' + e.clientX + 'px;top:' + e.clientY + 'px;font-size:' + (8 + Math.random() * 14) + 'px;color:rgba(255,100,150,' + (0.25 + Math.random() * 0.4) + ');pointer-events:none;animation:hFloat ' + (1.5 + Math.random() * 2) + 's ease-out forwards;';
         c.appendChild(h);
         setTimeout(function() { h.remove(); }, 3500);
