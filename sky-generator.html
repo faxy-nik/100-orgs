@@ -1,5 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sky Generator — Engine v2</title>
+<style>
+  /* ====== Preview Styles ====== */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    min-height: 200vh;
+    font-family: Georgia, serif;
+    color: #ffebd2;
+    background: #181214;
+    padding: 2rem;
+  }
+  h1 { font-size: 1.6rem; margin-bottom: .5rem; color: #ffe680; font-family: Fraunces, Georgia, serif; }
+  p { color: #6b5f52; margin-bottom: 2rem; max-width: 40rem; line-height: 1.6; }
+  .content {
+    max-width: 40rem;
+    position: relative;
+    z-index: 2;
+  }
+  .demo-btn-area {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    text-align: center;
+  }
+  #previewBtn {
+    background: rgba(255,220,160,.08);
+    border: 1px solid rgba(255,210,150,.15);
+    color: #6b5f52;
+    padding: .5rem 1.2rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: .9rem;
+    transition: all .25s;
+  }
+  #previewBtn:hover {
+    border-color: #ffe680;
+    color: #ffe680;
+  }
+
+  /* ====== Sky Renderer (canvas-based) ====== */
+  #skyOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+  #skyOverlay .sky-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transition: opacity 1.5s ease;
+    will-change: opacity;
+  }
+  #skyMsg {
+    position: fixed;
+    bottom: 5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: Fraunces, Georgia, serif;
+    font-size: 1rem;
+    font-style: italic;
+    color: #ffe680;
+    text-shadow: 0 2px 12px rgba(0,0,0,.6);
+    text-align: center;
+    pointer-events: none;
+    z-index: 10000;
+    opacity: 1;
+    transition: opacity 2s ease;
+    max-width: 80vw;
+    white-space: nowrap;
+  }
+  #defaultSkyMsg {
+    position: fixed;
+    bottom: 5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: Fraunces, Georgia, serif;
+    font-size: .85rem;
+    font-style: italic;
+    color: #6b5f52;
+    text-align: center;
+    pointer-events: none;
+    z-index: 10000;
+    opacity: .5;
+  }
+</style>
+</head>
+<body>
+
+<div class="content">
+  <h1>&#x2728; Sky Generator &mdash; Engine v2</h1>
+  <p>
+    This preview now renders every sky on two crossfading canvases driven by a shared
+    set of engines (noise, wind, particles, clouds, aurora, lighting) instead of
+    per-sky DOM/script blobs. Scroll to verify the sky stays fixed behind the content.
+  </p>
+  <p>Click the button below to cycle through skies.</p>
+</div>
+
+<div class="demo-btn-area">
+  <button id="previewBtn">&#x1F326;&#xFE0F; Change Sky</button>
+</div>
+
+<div id="defaultSkyMsg">&#x2661; Click the button to change the sky &#x2661;</div>
+
+<script>
+window.__SKY_CONFIGS__ = [{"gradient": [[0, "#ff7e5f"], [0.35, "#feb47b"], [0.6, "#ffe29f"], [1, "#fff5e6"]], "lights": [{"x": 0.5, "y": 0.09, "r": 46, "core": "#fff8e0", "glow": "rgba(255,204,51,.55)", "rays": true}], "clouds": [{"count": 4, "yMin": 0.35, "yMax": 0.6, "minR": 60, "maxR": 130, "color": "#ffffff", "alpha": 0.35, "speed": 4, "puffs": 4, "evolveMs": 9000}], "name": "Sunrise", "message": "Like the first light you brought into my world ♡"}, {"gradient": [[0, "#1a0a2e"], [0.2, "#2d1b4e"], [0.5, "#e85d3a"], [0.7, "#ff9a56"], [1, "#ffd3a5"]], "lights": [{"x": 0.5, "y": 0.82, "r": 50, "core": "#ffe680", "glow": "rgba(232,93,58,.55)", "rays": true}], "stars": {"count": 30, "maxY": 45, "minR": 0.5, "maxR": 1.6}, "name": "Sunset", "message": "Even endings are beautiful when I think of you ♡"}, {"gradient": [[0, "#2c3e50"], [0.3, "#4a6274"], [0.6, "#6b8599"], [1, "#889aaa"]], "clouds": [{"count": 5, "yMin": 0.05, "yMax": 0.25, "minR": 90, "maxR": 200, "color": "#5b6f80", "alpha": 0.5, "speed": 6, "puffs": 5, "evolveMs": 8000}], "particles": [{"type": "rain", "count": 110, "minLen": 10, "maxLen": 26, "minSpeed": 45, "maxSpeed": 80}], "name": "Rain", "message": "Every drop carries a memory of you ♡"}, {"gradient": [[0, "#b8c6d4"], [0.4, "#d4e1ec"], [0.7, "#e8f0f6"], [1, "#f0f5f9"]], "clouds": [{"count": 6, "yMin": 0.08, "yMax": 0.4, "minR": 70, "maxR": 170, "color": "#ffffff", "alpha": 0.55, "speed": 7, "puffs": 4, "evolveMs": 8000}], "name": "Clouds", "message": "My thoughts of you drift like clouds, endless ♡"}, {"gradient": [[0, "#0a0a1a"], [0.3, "#12122e"], [0.6, "#1a1a3e"], [1, "#0d0d2b"]], "stars": {"count": 140, "maxY": 85, "minR": 0.5, "maxR": 2.4}, "lights": [{"x": 0.85, "y": 0.15, "r": 26, "core": "#fff8e0", "glow": "rgba(255,248,224,.35)", "rays": false}], "name": "Starry Night", "message": "You are every star that lights my darkest nights ♡"}, {"gradient": [[0, "#1a1a2e"], [0.3, "#2d2d44"], [0.6, "#3d3d5c"], [1, "#2a2a3e"]], "clouds": [{"count": 6, "yMin": 0.02, "yMax": 0.3, "minR": 100, "maxR": 220, "color": "#333349", "alpha": 0.6, "speed": 10, "puffs": 5, "evolveMs": 5000}], "particles": [{"type": "rain", "count": 140, "minLen": 14, "maxLen": 34, "minSpeed": 60, "maxSpeed": 100}], "storm": true, "name": "Storm", "message": "Even in chaos, you are my calm ♡"}, {"gradient": [[0, "#0a0a1a"], [0.3, "#0f1a2e"], [0.6, "#0a1a1a"], [1, "#0a0a1a"]], "stars": {"count": 60, "maxY": 85, "minR": 0.5, "maxR": 1.8}, "aurora": {"colors": ["rgba(0,255,128,.28)", "rgba(0,200,255,.22)", "rgba(120,60,220,.2)"], "speed": 0.05, "band": 90, "thickness": 70}, "name": "Aurora", "message": "You paint my sky with colours I never knew existed ♡"}, {"gradient": [[0, "#b0b8c0"], [0.3, "#c8ced4"], [0.6, "#d8dce0"], [1, "#e0e4e8"]], "clouds": [{"count": 4, "yMin": 0.2, "yMax": 0.8, "minR": 180, "maxR": 320, "color": "#ffffff", "alpha": 0.28, "speed": 2.5, "puffs": 3, "evolveMs": 10000}], "name": "Fog", "message": "I’d wander through a thousand mists just to find you ♡"}, {"gradient": [[0, "#4facfe"], [0.4, "#87cefa"], [0.7, "#b0d4f1"], [1, "#d4e8f7"]], "lights": [{"x": 0.78, "y": 0.1, "r": 40, "core": "#fff8e0", "glow": "rgba(255,220,50,.4)", "rays": true}], "clouds": [{"count": 3, "yMin": 0.45, "yMax": 0.65, "minR": 60, "maxR": 110, "color": "#ffffff", "alpha": 0.5, "speed": 5, "puffs": 4, "evolveMs": 9000}], "name": "Clear Day", "message": "With you, every day is clear and bright ♡"}, {"gradient": [[0, "#1a0a2e"], [0.25, "#2d1b4e"], [0.5, "#5b2c56"], [0.7, "#b85d6e"], [1, "#e8a87c"]], "lights": [{"x": 0.82, "y": 0.14, "r": 22, "core": "#fff8e0", "glow": "rgba(255,255,200,.3)", "rays": false}], "stars": {"count": 35, "maxY": 40, "minR": 0.5, "maxR": 1.5}, "name": "Twilight", "message": "Between day and night, you are my only thought ♡"}, {"gradient": [[0, "#05030f"], [0.35, "#0d0821"], [0.65, "#150a2e"], [1, "#1a0f38"]], "stars": {"count": 110, "maxY": 100, "minR": 0.5, "maxR": 2}, "aurora": {"colors": ["rgba(140,90,220,.18)", "rgba(90,60,180,.15)"], "speed": 0.02, "band": 160, "thickness": 140}, "name": "Midnight Galaxy", "message": "You are the whole galaxy folded into one heartbeat ♡"}, {"gradient": [[0, "#ffd9e8"], [0.35, "#ffc2d9"], [0.7, "#ffe0ec"], [1, "#fff2f7"]], "particles": [{"type": "petal", "count": 40, "minSize": 7, "maxSize": 15, "minSpeed": 3, "maxSpeed": 7, "colors": ["#ffeef5", "#ffb3d1", "#ff9ec4"]}], "name": "Sakura Petals", "message": "Like petals on the wind, my thoughts always drift to you ♡"}, {"gradient": [[0, "#7c93ad"], [0.35, "#a9bdd1"], [0.7, "#d6e2ee"], [1, "#eef4fa"]], "particles": [{"type": "snow", "count": 90, "minR": 1.5, "maxR": 4, "minSpeed": 4, "maxSpeed": 10}], "name": "Gentle Snowfall", "message": "Every snowflake is a quiet reminder that you are near ♡"}, {"gradient": [[0, "#04040f"], [0.4, "#0a0a1f"], [0.75, "#12122e"], [1, "#050510"]], "stars": {"count": 90, "maxY": 90, "minR": 0.5, "maxR": 1.8}, "particles": [{"type": "meteor", "count": 4, "interval": 3}], "name": "Meteor Shower", "message": "You fell into my life like a wish I never got to finish making ♡"}, {"gradient": [[0, "#10182c"], [0.35, "#1c2740"], [0.7, "#2a3550"], [1, "#384260"]], "lights": [{"x": 0.82, "y": 0.16, "r": 30, "core": "#fffaf0", "glow": "rgba(255,250,230,.4)", "rays": false}], "clouds": [{"count": 5, "yMin": 0.2, "yMax": 0.7, "minR": 90, "maxR": 190, "color": "#c8cde1", "alpha": 0.3, "speed": 4, "puffs": 4, "evolveMs": 9000}], "ambient": {"cloudBrightness": 0.9}, "name": "Moonlit Clouds", "message": "The moon shares its light with the clouds the way I share my heart with you ♡"}, {"gradient": [[0, "#1a1030"], [0.35, "#33163c"], [0.7, "#5c2a3e"], [1, "#7a3a2e"]], "particles": [{"type": "ember", "count": 22, "minR": 7, "maxR": 14, "minSpeed": 3, "maxSpeed": 8, "color": "#ffb35c"}], "name": "Floating Lanterns", "message": "I keep sending my wishes up to you, one lantern at a time ♡"}, {"gradient": [[0, "#0a1710"], [0.35, "#142a1c"], [0.7, "#1c3a26"], [1, "#0f2016"]], "particles": [{"type": "firefly", "count": 30, "minY": 30, "maxY": 92, "minSize": 2, "maxSize": 4, "colors": ["#d8ff8c", "#c8f27a"]}], "name": "Fireflies at Night", "message": "You flicker in my mind like a firefly I can never quite catch ♡"}, {"gradient": [[0, "#ffb3d9"], [0.35, "#d9b3ff"], [0.7, "#b3d9ff"], [1, "#fff0f7"]], "clouds": [{"count": 5, "yMin": 0.1, "yMax": 0.55, "minR": 90, "maxR": 200, "color": "#ffffff", "alpha": 0.4, "speed": 4, "puffs": 4, "evolveMs": 9000}], "stars": {"count": 20, "maxY": 40, "minR": 0.5, "maxR": 1.2}, "name": "Cotton Candy Sky", "message": "Loving you feels as light and sweet as a sky spun from cotton candy ♡"}, {"gradient": [[0, "#0a0518"], [0.3, "#1c0a30"], [0.6, "#3a1050"], [1, "#200a35"]], "stars": {"count": 70, "maxY": 100, "minR": 0.5, "maxR": 2}, "aurora": {"colors": ["rgba(255,80,150,.2)", "rgba(120,60,220,.22)", "rgba(60,180,220,.16)"], "speed": 0.03, "band": 180, "thickness": 160}, "name": "Fantasy Nebula", "message": "You are the color I never knew the universe was missing ♡"}, {"gradient": [[0, "#000005"], [0.4, "#04040c"], [0.75, "#0a0a18"], [1, "#030308"]], "stars": {"count": 150, "maxY": 100, "minR": 0.5, "maxR": 2}, "particles": [{"type": "planet", "count": 2, "minR": 12, "maxR": 30, "colors": ["#c05a2c", "#3d6ea5"]}], "name": "Cosmic Space", "message": "Out of an entire universe of stars, I only ever wanted to orbit you ♡"}, {"gradient": [[0, "#8fb8d8"], [0.35, "#b8d4e8"], [0.7, "#d8ecf0"], [1, "#f0f8ee"]], "particles": [{"type": "rain", "count": 30, "minLen": 8, "maxLen": 16, "minSpeed": 40, "maxSpeed": 60}], "rainbow": true, "name": "Rainbow After Rain", "message": "After every storm we weathered, I still find a rainbow waiting in you ♡"}, {"gradient": [[0, "#060615"], [0.3, "#0d0d28"], [0.65, "#16163e"], [1, "#0a0a20"]], "stars": {"count": 160, "maxY": 100, "minR": 0.5, "maxR": 2.4}, "particles": [{"type": "meteor", "count": 3, "interval": 4}], "name": "Magical Starfield", "message": "Somewhere among a million stars, I would still find my way back to you ♡"}, {"gradient": [[0, "#fef6e4"], [0.3, "#fde9d0"], [0.6, "#f9d9c8"], [1, "#f7e8e0"]], "lights": [{"x": 0.5, "y": 0.12, "r": 60, "core": "#fffaf0", "glow": "rgba(255,250,220,.5)", "rays": true}], "particles": [{"type": "feather", "count": 16, "minSize": 7, "maxSize": 13, "minSpeed": 2, "maxSpeed": 4, "colors": ["#ffffff", "#fff6e5"]}], "name": "Celestial Heaven", "message": "If heaven has a sky, I imagine it feels the way you make me feel ♡"}, {"gradient": [[0, "#0d3b52"], [0.35, "#14587a"], [0.65, "#2b8ba8"], [1, "#7ec4d4"]], "lights": [{"x": 0.5, "y": 0.72, "r": 40, "core": "#fff3d0", "glow": "rgba(255,210,140,.45)", "rays": false}], "waves": {"colors": ["rgba(255,255,255,.18)", "rgba(255,255,255,.12)", "rgba(255,255,255,.09)"], "horizontal": true, "baseMin": 0.78, "gap": 0.06, "band": 10, "thickness": 4, "speed": 0.15}, "name": "Ocean Horizon", "message": "My love for you stretches out as far and calm as the ocean horizon ♡"}, {"gradient": [[0, "#c9b8e8"], [0.35, "#d8c8ec"], [0.7, "#f0d8e8"], [1, "#fbeaf2"]], "clouds": [{"count": 5, "yMin": 0.1, "yMax": 0.55, "minR": 100, "maxR": 220, "color": "#ffffff", "alpha": 0.45, "speed": 3.5, "puffs": 4, "evolveMs": 9000}], "stars": {"count": 24, "maxY": 45, "minR": 0.5, "maxR": 1.3}, "name": "Dream Clouds", "message": "Time with you always feels like drifting through the softest dream ♡"}, {"gradient": [[0, "#2b1b3a"], [0.3, "#6b3350"], [0.6, "#c9583f"], [0.85, "#e8a45a"], [1, "#f5cf8a"]], "lights": [{"x": 0.5, "y": 0.72, "r": 46, "core": "#ffe0a0", "glow": "rgba(232,103,47,.5)", "rays": false}], "clouds": [{"count": 3, "yMin": 0.6, "yMax": 0.78, "minR": 160, "maxR": 260, "color": "#ffc896", "alpha": 0.15, "speed": 2, "puffs": 3, "evolveMs": 11000}], "name": "Desert Dusk", "message": "Even in the quiet desert dusk, my whole world still turns toward you ♡"}, {"gradient": [[0, "#6e4a2e"], [0.3, "#a8662f"], [0.6, "#d99a3d"], [1, "#f0c56b"]], "particles": [{"type": "leaf", "count": 34, "minSize": 8, "maxSize": 15, "minSpeed": 3, "maxSpeed": 7, "colors": ["#c9522c", "#e08a2e", "#d9b23d", "#a8422a"]}], "name": "Autumn Leaves", "message": "Falling for you was as natural and unstoppable as autumn leaves letting go ♡"}, {"gradient": [[0, "#a8d8b8"], [0.35, "#c8e8c0"], [0.7, "#eaf5d8"], [1, "#fdf8e8"]], "particles": [{"type": "butterfly", "count": 16, "minY": 25, "maxY": 85, "minSize": 4, "maxSize": 7, "colors": ["#ff9ec4", "#ffd27a", "#9ecbff", "#c9a0ff"]}], "name": "Butterfly Meadow", "message": "You make my heart feel light, like butterflies drifting through an open meadow ♡"}, {"gradient": [[0, "#8ec9e8"], [0.35, "#b8ddf0"], [0.7, "#dcf0f5"], [1, "#f2fbfc"]], "particles": [{"type": "bubble", "count": 26, "minR": 6, "maxR": 22, "minSpeed": 3, "maxSpeed": 10}], "name": "Bubble Dream", "message": "My favourite daydream is still just us, drifting somewhere weightless together ♡"}, {"gradient": [[0, "#060308"], [0.35, "#100814"], [0.7, "#1a0d1e"], [1, "#0a0510"]], "stars": {"count": 70, "maxY": 100, "minR": 0.5, "maxR": 1.8}, "lights": [{"x": 0.5, "y": 0.32, "r": 40, "core": "#040204", "glow": "rgba(255,120,50,.4)", "rays": false, "eclipse": true}], "name": "Eclipse Night", "message": "You are the light that finds a way through, even in my darkest eclipse ♡"}, {"gradient": [[0, "#4a5a70"], [0.35, "#6d7f95"], [0.7, "#9cb0c2"], [1, "#c9d8e4"]], "particles": [{"type": "snow", "count": 160, "minR": 2, "maxR": 5, "minSpeed": 10, "maxSpeed": 22}], "name": "Winter Blizzard", "message": "Whatever storm we face, I would still choose to walk through it beside you ♡"}, {"gradient": [[0, "#b85c3a"], [0.3, "#d98a4a"], [0.6, "#f0b869"], [0.85, "#fadb96"], [1, "#fff2cc"]], "lights": [{"x": 0.5, "y": 0.4, "r": 56, "core": "#fff3d0", "glow": "rgba(255,177,92,.5)", "rays": true}], "clouds": [{"count": 3, "yMin": 0.15, "yMax": 0.35, "minR": 160, "maxR": 260, "color": "#ffdcaa", "alpha": 0.12, "speed": 2, "puffs": 3, "evolveMs": 11000}], "name": "Golden Hour Haze", "message": "Being with you feels like living permanently inside golden hour ♡"}];
+</script>
+<script>
 /* ===================================================================
    SKY ENGINE — atmospheric rendering system
+   Replaces the old per-sky HTML/inline-<script> particle blobs with a
    small set of reusable, config-driven rendering engines running on
    two crossfading <canvas> layers under a single shared rAF loop.
 
@@ -486,7 +605,7 @@
 
     function makeCanvas() {
       var c = document.createElement('canvas');
-      c.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;transition:opacity 1.5s ease;will-change:opacity;';
+      c.className = 'sky-canvas';
       return c;
     }
     function ensureHost() {
@@ -494,7 +613,6 @@
       if (!host) {
         host = document.createElement('div');
         host.id = 'skyOverlay';
-        host.style.cssText = 'position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.35;';
         document.body.insertBefore(host, document.body.firstChild);
       }
       if (!canvasA) {
@@ -569,8 +687,6 @@
     return { start: start, stop: stop };
   })();
 
-  var SKIES = [{"gradient": [[0, "#ff7e5f"], [0.35, "#feb47b"], [0.6, "#ffe29f"], [1, "#fff5e6"]], "lights": [{"x": 0.5, "y": 0.09, "r": 46, "core": "#fff8e0", "glow": "rgba(255,204,51,.55)", "rays": true}], "clouds": [{"count": 4, "yMin": 0.35, "yMax": 0.6, "minR": 60, "maxR": 130, "color": "#ffffff", "alpha": 0.35, "speed": 4, "puffs": 4, "evolveMs": 9000}], "name": "Sunrise", "message": "Like the first light you brought into my world ♡"}, {"gradient": [[0, "#1a0a2e"], [0.2, "#2d1b4e"], [0.5, "#e85d3a"], [0.7, "#ff9a56"], [1, "#ffd3a5"]], "lights": [{"x": 0.5, "y": 0.82, "r": 50, "core": "#ffe680", "glow": "rgba(232,93,58,.55)", "rays": true}], "stars": {"count": 30, "maxY": 45, "minR": 0.5, "maxR": 1.6}, "name": "Sunset", "message": "Even endings are beautiful when I think of you ♡"}, {"gradient": [[0, "#2c3e50"], [0.3, "#4a6274"], [0.6, "#6b8599"], [1, "#889aaa"]], "clouds": [{"count": 5, "yMin": 0.05, "yMax": 0.25, "minR": 90, "maxR": 200, "color": "#5b6f80", "alpha": 0.5, "speed": 6, "puffs": 5, "evolveMs": 8000}], "particles": [{"type": "rain", "count": 110, "minLen": 10, "maxLen": 26, "minSpeed": 45, "maxSpeed": 80}], "name": "Rain", "message": "Every drop carries a memory of you ♡"}, {"gradient": [[0, "#b8c6d4"], [0.4, "#d4e1ec"], [0.7, "#e8f0f6"], [1, "#f0f5f9"]], "clouds": [{"count": 6, "yMin": 0.08, "yMax": 0.4, "minR": 70, "maxR": 170, "color": "#ffffff", "alpha": 0.55, "speed": 7, "puffs": 4, "evolveMs": 8000}], "name": "Clouds", "message": "My thoughts of you drift like clouds, endless ♡"}, {"gradient": [[0, "#0a0a1a"], [0.3, "#12122e"], [0.6, "#1a1a3e"], [1, "#0d0d2b"]], "stars": {"count": 140, "maxY": 85, "minR": 0.5, "maxR": 2.4}, "lights": [{"x": 0.85, "y": 0.15, "r": 26, "core": "#fff8e0", "glow": "rgba(255,248,224,.35)", "rays": false}], "name": "Starry Night", "message": "You are every star that lights my darkest nights ♡"}, {"gradient": [[0, "#1a1a2e"], [0.3, "#2d2d44"], [0.6, "#3d3d5c"], [1, "#2a2a3e"]], "clouds": [{"count": 6, "yMin": 0.02, "yMax": 0.3, "minR": 100, "maxR": 220, "color": "#333349", "alpha": 0.6, "speed": 10, "puffs": 5, "evolveMs": 5000}], "particles": [{"type": "rain", "count": 140, "minLen": 14, "maxLen": 34, "minSpeed": 60, "maxSpeed": 100}], "storm": true, "name": "Storm", "message": "Even in chaos, you are my calm ♡"}, {"gradient": [[0, "#0a0a1a"], [0.3, "#0f1a2e"], [0.6, "#0a1a1a"], [1, "#0a0a1a"]], "stars": {"count": 60, "maxY": 85, "minR": 0.5, "maxR": 1.8}, "aurora": {"colors": ["rgba(0,255,128,.28)", "rgba(0,200,255,.22)", "rgba(120,60,220,.2)"], "speed": 0.05, "band": 90, "thickness": 70}, "name": "Aurora", "message": "You paint my sky with colours I never knew existed ♡"}, {"gradient": [[0, "#b0b8c0"], [0.3, "#c8ced4"], [0.6, "#d8dce0"], [1, "#e0e4e8"]], "clouds": [{"count": 4, "yMin": 0.2, "yMax": 0.8, "minR": 180, "maxR": 320, "color": "#ffffff", "alpha": 0.28, "speed": 2.5, "puffs": 3, "evolveMs": 10000}], "name": "Fog", "message": "I’d wander through a thousand mists just to find you ♡"}, {"gradient": [[0, "#4facfe"], [0.4, "#87cefa"], [0.7, "#b0d4f1"], [1, "#d4e8f7"]], "lights": [{"x": 0.78, "y": 0.1, "r": 40, "core": "#fff8e0", "glow": "rgba(255,220,50,.4)", "rays": true}], "clouds": [{"count": 3, "yMin": 0.45, "yMax": 0.65, "minR": 60, "maxR": 110, "color": "#ffffff", "alpha": 0.5, "speed": 5, "puffs": 4, "evolveMs": 9000}], "name": "Clear Day", "message": "With you, every day is clear and bright ♡"}, {"gradient": [[0, "#1a0a2e"], [0.25, "#2d1b4e"], [0.5, "#5b2c56"], [0.7, "#b85d6e"], [1, "#e8a87c"]], "lights": [{"x": 0.82, "y": 0.14, "r": 22, "core": "#fff8e0", "glow": "rgba(255,255,200,.3)", "rays": false}], "stars": {"count": 35, "maxY": 40, "minR": 0.5, "maxR": 1.5}, "name": "Twilight", "message": "Between day and night, you are my only thought ♡"}, {"gradient": [[0, "#05030f"], [0.35, "#0d0821"], [0.65, "#150a2e"], [1, "#1a0f38"]], "stars": {"count": 110, "maxY": 100, "minR": 0.5, "maxR": 2}, "aurora": {"colors": ["rgba(140,90,220,.18)", "rgba(90,60,180,.15)"], "speed": 0.02, "band": 160, "thickness": 140}, "name": "Midnight Galaxy", "message": "You are the whole galaxy folded into one heartbeat ♡"}, {"gradient": [[0, "#ffd9e8"], [0.35, "#ffc2d9"], [0.7, "#ffe0ec"], [1, "#fff2f7"]], "particles": [{"type": "petal", "count": 40, "minSize": 7, "maxSize": 15, "minSpeed": 3, "maxSpeed": 7, "colors": ["#ffeef5", "#ffb3d1", "#ff9ec4"]}], "name": "Sakura Petals", "message": "Like petals on the wind, my thoughts always drift to you ♡"}, {"gradient": [[0, "#7c93ad"], [0.35, "#a9bdd1"], [0.7, "#d6e2ee"], [1, "#eef4fa"]], "particles": [{"type": "snow", "count": 90, "minR": 1.5, "maxR": 4, "minSpeed": 4, "maxSpeed": 10}], "name": "Gentle Snowfall", "message": "Every snowflake is a quiet reminder that you are near ♡"}, {"gradient": [[0, "#04040f"], [0.4, "#0a0a1f"], [0.75, "#12122e"], [1, "#050510"]], "stars": {"count": 90, "maxY": 90, "minR": 0.5, "maxR": 1.8}, "particles": [{"type": "meteor", "count": 4, "interval": 3}], "name": "Meteor Shower", "message": "You fell into my life like a wish I never got to finish making ♡"}, {"gradient": [[0, "#10182c"], [0.35, "#1c2740"], [0.7, "#2a3550"], [1, "#384260"]], "lights": [{"x": 0.82, "y": 0.16, "r": 30, "core": "#fffaf0", "glow": "rgba(255,250,230,.4)", "rays": false}], "clouds": [{"count": 5, "yMin": 0.2, "yMax": 0.7, "minR": 90, "maxR": 190, "color": "#c8cde1", "alpha": 0.3, "speed": 4, "puffs": 4, "evolveMs": 9000}], "ambient": {"cloudBrightness": 0.9}, "name": "Moonlit Clouds", "message": "The moon shares its light with the clouds the way I share my heart with you ♡"}, {"gradient": [[0, "#1a1030"], [0.35, "#33163c"], [0.7, "#5c2a3e"], [1, "#7a3a2e"]], "particles": [{"type": "ember", "count": 22, "minR": 7, "maxR": 14, "minSpeed": 3, "maxSpeed": 8, "color": "#ffb35c"}], "name": "Floating Lanterns", "message": "I keep sending my wishes up to you, one lantern at a time ♡"}, {"gradient": [[0, "#0a1710"], [0.35, "#142a1c"], [0.7, "#1c3a26"], [1, "#0f2016"]], "particles": [{"type": "firefly", "count": 30, "minY": 30, "maxY": 92, "minSize": 2, "maxSize": 4, "colors": ["#d8ff8c", "#c8f27a"]}], "name": "Fireflies at Night", "message": "You flicker in my mind like a firefly I can never quite catch ♡"}, {"gradient": [[0, "#ffb3d9"], [0.35, "#d9b3ff"], [0.7, "#b3d9ff"], [1, "#fff0f7"]], "clouds": [{"count": 5, "yMin": 0.1, "yMax": 0.55, "minR": 90, "maxR": 200, "color": "#ffffff", "alpha": 0.4, "speed": 4, "puffs": 4, "evolveMs": 9000}], "stars": {"count": 20, "maxY": 40, "minR": 0.5, "maxR": 1.2}, "name": "Cotton Candy Sky", "message": "Loving you feels as light and sweet as a sky spun from cotton candy ♡"}, {"gradient": [[0, "#0a0518"], [0.3, "#1c0a30"], [0.6, "#3a1050"], [1, "#200a35"]], "stars": {"count": 70, "maxY": 100, "minR": 0.5, "maxR": 2}, "aurora": {"colors": ["rgba(255,80,150,.2)", "rgba(120,60,220,.22)", "rgba(60,180,220,.16)"], "speed": 0.03, "band": 180, "thickness": 160}, "name": "Fantasy Nebula", "message": "You are the color I never knew the universe was missing ♡"}, {"gradient": [[0, "#000005"], [0.4, "#04040c"], [0.75, "#0a0a18"], [1, "#030308"]], "stars": {"count": 150, "maxY": 100, "minR": 0.5, "maxR": 2}, "particles": [{"type": "planet", "count": 2, "minR": 12, "maxR": 30, "colors": ["#c05a2c", "#3d6ea5"]}], "name": "Cosmic Space", "message": "Out of an entire universe of stars, I only ever wanted to orbit you ♡"}, {"gradient": [[0, "#8fb8d8"], [0.35, "#b8d4e8"], [0.7, "#d8ecf0"], [1, "#f0f8ee"]], "particles": [{"type": "rain", "count": 30, "minLen": 8, "maxLen": 16, "minSpeed": 40, "maxSpeed": 60}], "rainbow": true, "name": "Rainbow After Rain", "message": "After every storm we weathered, I still find a rainbow waiting in you ♡"}, {"gradient": [[0, "#060615"], [0.3, "#0d0d28"], [0.65, "#16163e"], [1, "#0a0a20"]], "stars": {"count": 160, "maxY": 100, "minR": 0.5, "maxR": 2.4}, "particles": [{"type": "meteor", "count": 3, "interval": 4}], "name": "Magical Starfield", "message": "Somewhere among a million stars, I would still find my way back to you ♡"}, {"gradient": [[0, "#fef6e4"], [0.3, "#fde9d0"], [0.6, "#f9d9c8"], [1, "#f7e8e0"]], "lights": [{"x": 0.5, "y": 0.12, "r": 60, "core": "#fffaf0", "glow": "rgba(255,250,220,.5)", "rays": true}], "particles": [{"type": "feather", "count": 16, "minSize": 7, "maxSize": 13, "minSpeed": 2, "maxSpeed": 4, "colors": ["#ffffff", "#fff6e5"]}], "name": "Celestial Heaven", "message": "If heaven has a sky, I imagine it feels the way you make me feel ♡"}, {"gradient": [[0, "#0d3b52"], [0.35, "#14587a"], [0.65, "#2b8ba8"], [1, "#7ec4d4"]], "lights": [{"x": 0.5, "y": 0.72, "r": 40, "core": "#fff3d0", "glow": "rgba(255,210,140,.45)", "rays": false}], "waves": {"colors": ["rgba(255,255,255,.18)", "rgba(255,255,255,.12)", "rgba(255,255,255,.09)"], "horizontal": true, "baseMin": 0.78, "gap": 0.06, "band": 10, "thickness": 4, "speed": 0.15}, "name": "Ocean Horizon", "message": "My love for you stretches out as far and calm as the ocean horizon ♡"}, {"gradient": [[0, "#c9b8e8"], [0.35, "#d8c8ec"], [0.7, "#f0d8e8"], [1, "#fbeaf2"]], "clouds": [{"count": 5, "yMin": 0.1, "yMax": 0.55, "minR": 100, "maxR": 220, "color": "#ffffff", "alpha": 0.45, "speed": 3.5, "puffs": 4, "evolveMs": 9000}], "stars": {"count": 24, "maxY": 45, "minR": 0.5, "maxR": 1.3}, "name": "Dream Clouds", "message": "Time with you always feels like drifting through the softest dream ♡"}, {"gradient": [[0, "#2b1b3a"], [0.3, "#6b3350"], [0.6, "#c9583f"], [0.85, "#e8a45a"], [1, "#f5cf8a"]], "lights": [{"x": 0.5, "y": 0.72, "r": 46, "core": "#ffe0a0", "glow": "rgba(232,103,47,.5)", "rays": false}], "clouds": [{"count": 3, "yMin": 0.6, "yMax": 0.78, "minR": 160, "maxR": 260, "color": "#ffc896", "alpha": 0.15, "speed": 2, "puffs": 3, "evolveMs": 11000}], "name": "Desert Dusk", "message": "Even in the quiet desert dusk, my whole world still turns toward you ♡"}, {"gradient": [[0, "#6e4a2e"], [0.3, "#a8662f"], [0.6, "#d99a3d"], [1, "#f0c56b"]], "particles": [{"type": "leaf", "count": 34, "minSize": 8, "maxSize": 15, "minSpeed": 3, "maxSpeed": 7, "colors": ["#c9522c", "#e08a2e", "#d9b23d", "#a8422a"]}], "name": "Autumn Leaves", "message": "Falling for you was as natural and unstoppable as autumn leaves letting go ♡"}, {"gradient": [[0, "#a8d8b8"], [0.35, "#c8e8c0"], [0.7, "#eaf5d8"], [1, "#fdf8e8"]], "particles": [{"type": "butterfly", "count": 16, "minY": 25, "maxY": 85, "minSize": 4, "maxSize": 7, "colors": ["#ff9ec4", "#ffd27a", "#9ecbff", "#c9a0ff"]}], "name": "Butterfly Meadow", "message": "You make my heart feel light, like butterflies drifting through an open meadow ♡"}, {"gradient": [[0, "#8ec9e8"], [0.35, "#b8ddf0"], [0.7, "#dcf0f5"], [1, "#f2fbfc"]], "particles": [{"type": "bubble", "count": 26, "minR": 6, "maxR": 22, "minSpeed": 3, "maxSpeed": 10}], "name": "Bubble Dream", "message": "My favourite daydream is still just us, drifting somewhere weightless together ♡"}, {"gradient": [[0, "#060308"], [0.35, "#100814"], [0.7, "#1a0d1e"], [1, "#0a0510"]], "stars": {"count": 70, "maxY": 100, "minR": 0.5, "maxR": 1.8}, "lights": [{"x": 0.5, "y": 0.32, "r": 40, "core": "#040204", "glow": "rgba(255,120,50,.4)", "rays": false, "eclipse": true}], "name": "Eclipse Night", "message": "You are the light that finds a way through, even in my darkest eclipse ♡"}, {"gradient": [[0, "#4a5a70"], [0.35, "#6d7f95"], [0.7, "#9cb0c2"], [1, "#c9d8e4"]], "particles": [{"type": "snow", "count": 160, "minR": 2, "maxR": 5, "minSpeed": 10, "maxSpeed": 22}], "name": "Winter Blizzard", "message": "Whatever storm we face, I would still choose to walk through it beside you ♡"}, {"gradient": [[0, "#b85c3a"], [0.3, "#d98a4a"], [0.6, "#f0b869"], [0.85, "#fadb96"], [1, "#fff2cc"]], "lights": [{"x": 0.5, "y": 0.4, "r": 56, "core": "#fff3d0", "glow": "rgba(255,177,92,.5)", "rays": true}], "clouds": [{"count": 3, "yMin": 0.15, "yMax": 0.35, "minR": 160, "maxR": 260, "color": "#ffdcaa", "alpha": 0.12, "speed": 2, "puffs": 3, "evolveMs": 11000}], "name": "Golden Hour Haze", "message": "Being with you feels like living permanently inside golden hour ♡"}];
-
   /* ================= MESSAGE (unchanged behaviour) ================= */
   function showSkyMessage(sky) {
     if (msgEl) { msgEl.remove(); msgEl = null; }
@@ -608,6 +724,8 @@
     return btn;
   }
 
+  /* ─── SKY CONFIGS GO HERE (window.__SKY_CONFIGS__ injected below) ─── */
+  var SKIES = window.__SKY_CONFIGS__;
 
   window.Skies = {
     SKIES: SKIES,
@@ -617,5 +735,14 @@
     createButton: createSkyButton
   };
 
+  var saved = getCurrentSkyIndex();
+  if (saved >= 0 && saved < SKIES.length) applySky(saved);
+
+  var previewBtn = document.getElementById('previewBtn');
+  if (previewBtn) previewBtn.addEventListener('click', randomSky);
 })();
 
+</script>
+
+</body>
+</html>
