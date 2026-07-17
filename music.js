@@ -42,6 +42,18 @@
     });
   }
 
+  function dbGet(storeName, key) {
+    return openDB().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(storeName, 'readonly');
+        var store = tx.objectStore(storeName);
+        var req = store.get(key);
+        req.onsuccess = function () { db.close(); resolve(req.result); };
+        req.onerror = function () { db.close(); reject(req.error); };
+      });
+    });
+  }
+
   function revokeAudioUrls() {
     for (var i = 0; i < audioUrls.length; i++) {
       try { URL.revokeObjectURL(audioUrls[i]); } catch(e) {}

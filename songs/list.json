@@ -3,60 +3,70 @@
         "artist":  "Bayaan",
         "title":  "Nahin Milta",
         "file":  "Bayaan - Nahin Milta (Official Video).mp4",
+        "type":  "video/mp4",
         "duration":  240
     },
     {
         "artist":  "Alexander Rybak",
         "title":  "Fairytale",
         "file":  "Alexander Rybak - Fairytale (LIVE)  Norway   Grand Final  Winner of Eurovision 2009.mp4",
+        "type":  "video/mp4",
         "duration":  240
     },
     {
         "artist":  "Billie Eilish, Khalid",
         "title":  "Lovely",
         "file":  "Billie Eilish, Khalid - lovely.mp4",
+        "type":  "video/mp4",
         "duration":  240
     },
     {
         "artist":  "La Casa De Papel",
         "title":  "Bella Ciao",
         "file":  "La Casa De Papel  Bella Ciao.mp4",
+        "type":  "video/mp4",
         "duration":  240
     },
     {
         "artist":  "Lady Gaga, Bruno Mars",
         "title":  "Die With A Smile",
         "file":  "Lady Gaga, Bruno Mars - Die With A Smile (Official Music Video).mp4",
+        "type":  "video/mp4",
         "duration":  240
     },
     {
         "artist":  "G-Eazy \u0026 Halsey",
         "title":  "Him \u0026 I",
         "file":  "G-Eazy \u0026 Halsey - Him \u0026 I (Official Video).mp4",
+        "type":  "video/mp4",
         "duration":  240
     },
     {
         "artist":  "One Direction",
         "title":  "Night Changes",
         "file":  "One Direction - Night Changes.mp4",
+        "type":  "video/mp4",
         "duration":  240
     },
     {
         "artist":  "Ed Sheeran",
         "title":  "Perfect",
         "file":  "Ed Sheeran - Perfect.mp4",
+        "type":  "video/mp4",
         "duration":  240
     },
     {
         "artist":  "Ellie Goulding",
         "title":  "Love Me Like You Do",
         "file":  "Ellie Goulding - Love Me Like You Do (Official Video).mp4",
+        "type":  "video/mp4",
         "duration":  240
     },
     {
         "artist":  "The Weeknd",
         "title":  "Earned It",
         "file":  "The Weeknd - Earned It (Fifty Shades Of Grey).mp4",
+        "type":  "video/mp4",
         "duration":  240
     }
 ]
