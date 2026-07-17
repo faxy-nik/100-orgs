@@ -486,7 +486,7 @@
 
     function makeCanvas() {
       var c = document.createElement('canvas');
-      c.className = 'sky-canvas';
+      c.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;transition:opacity 1.5s ease;will-change:opacity;';
       return c;
     }
     function ensureHost() {
@@ -494,6 +494,7 @@
       if (!host) {
         host = document.createElement('div');
         host.id = 'skyOverlay';
+        host.style.cssText = 'position:fixed;inset:0;z-index:1;pointer-events:none;';
         document.body.insertBefore(host, document.body.firstChild);
       }
       if (!canvasA) {
