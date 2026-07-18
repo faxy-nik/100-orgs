@@ -370,8 +370,6 @@
     var self = this;
     if (this.audio) {
       this.audio.pause();
-      this.audio.src = '';
-      this.audio.load();
     }
 
     var s = this.songs && this.songs[this.currentIndex];
@@ -409,6 +407,7 @@
     });
 
     this.audio.addEventListener('error', function () {
+      if (self._fadingOut) return;
       self.onTrackEnd();
     });
   };
@@ -562,7 +561,14 @@
   };
 
   Jukebox.prototype.crossfadeOut = function (callback) {
+    if (this._fadingOut) {
+      if (callback) callback();
+      return;
+    }
+    this._fadingOut = true;
+
     if (!this.audio || !this.isPlaying) {
+      this._fadingOut = false;
       if (callback) callback();
       return;
     }
@@ -581,6 +587,7 @@
         if (currentStep >= steps) {
           clearInterval(fadeTimer);
           self.pause();
+          self._fadingOut = false;
           if (callback) callback();
           if (self.gainNode) self.gainNode.gain.value = self.volume;
         } else {
@@ -588,6 +595,7 @@
         }
       }, interval);
     } else {
+      this._fadingOut = false;
       this.pause();
       if (callback) callback();
     }
@@ -945,6 +953,12 @@
         }
       }
     } catch(e) {}
+
+    if (!songs.length) {
+      var empty = document.getElementById('jukeboxBtn');
+      if (empty) { empty.textContent = '\u2661'; empty.title = 'No songs loaded'; empty.style.opacity = '0.3'; empty.style.cursor = 'default'; }
+      return;
+    }
 
     function create() {
       new Jukebox(songs);

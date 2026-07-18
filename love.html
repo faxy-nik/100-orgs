@@ -5,12 +5,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ASH — More of you, More of Us</title>
+  <!-- Section numbering continuous from 100-organs (141+). Intimate threshold >= 48. -->
   <meta name="description" content="The Things I Still Need to Tell You">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap"
     rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%A1%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css">
   <script>
     (function(){var k='love',n='ash-jukebox-db',r=indexedDB.open(n,2);r.onsuccess=function(){var d=r.result,t=d.transaction('config','readonly'),s=t.objectStore('config'),g=s.get('sections');g.onsuccess=function(){var c=g.result&&g.result.data;if(c)for(var i=0;i<c.length;i++)if(c[i].key===k){var u=c[i];if(u.unlockDate&&u.autoUnlock!==false){var p=u.unlockDate.split('-'),un=new Date(+p[0],+p[1]-1,+p[2]),nw=new Date();nw.setHours(0,0,0,0);if(nw<un){document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#181214;color:#ffebd2;font-family:Georgia,serif;padding:2rem;text-align:center"><div><h1 style="font-family:Fraunces,Georgia,serif;color:#ffe680">&#x1F512; Locked</h1><p style="color:#6b5f52;margin-top:1rem">This section unlocks on '+u.unlockDate+'.</p><a href="index.html" style="display:inline-block;margin-top:1.5rem;padding:.6rem 1.5rem;border:1px solid #ffe680;color:#ffe680;border-radius:8px;text-decoration:none;font-family:Fraunces,Georgia,serif">&#x2190; Back home</a></div></div>'}}}};d.close()}})();
@@ -1784,14 +1786,6 @@ END SECTION
 
     /* Intimate cards background parallax image configuration */
     .tribute.intimate-card {
-      background: linear-gradient(135deg, rgba(232, 93, 58, 0.05), rgba(15, 10, 8, 0.95)) !important;
-      background-image: 
-        linear-gradient(rgba(15, 10, 8, 0.86), rgba(15, 10, 8, 0.94)), 
-        url('./parallax/parallax_bedroom.png') !important;
-      background-attachment: fixed !important;
-      background-position: center !important;
-      background-size: cover !important;
-      background-repeat: no-repeat !important;
       border-color: rgba(232, 93, 58, 0.35) !important;
       box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
       transition: border-color 0.5s ease, box-shadow 0.5s ease, background-color 0.4s ease, transform .5s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -1804,12 +1798,11 @@ END SECTION
     .is-touch .tribute.intimate-card {
       background-attachment: scroll !important;
     }
+    .easter-egg-step {
+      border-color: rgba(232, 93, 58, 0.35) !important;
+      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
     body.day-mode .tribute.intimate-card {
-      background-image: 
-        linear-gradient(rgba(255, 248, 241, 0.92), rgba(255, 248, 241, 0.96)), 
-        url('./parallax/parallax_bedroom.png') !important;
-      background-size: cover !important;
-      background-repeat: no-repeat !important;
       border-color: rgba(162, 71, 43, 0.35) !important;
     }
 
@@ -1936,17 +1929,6 @@ END SECTION
       transition: background-color 0.15s ease-out;
     }
 
-    /* Dedication reveal animations */
-    .dedication-line {
-      opacity: 0;
-      transform: translateY(12px);
-      transition: opacity 1.2s ease, transform 1.2s ease;
-    }
-    .dedication-line.reveal {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
     /* Adjust spacing of floaters under mobile */
     @media (max-width: 640px) {
       .fav-toggle-btn { right: 16px !important; bottom: 180px !important; width: 40px !important; height: 40px !important; font-size: 1rem !important; }
@@ -1955,6 +1937,10 @@ END SECTION
       .easter-egg-btn { right: 16px !important; bottom: 130px !important; padding: 8px 14px !important; font-size: 0.78rem !important; min-height: 40px !important; }
       .toc-toggle { left: 16px !important; bottom: 25px !important; width: 40px !important; height: 40px !important; font-size: 1rem !important; }
     }
+.mood-btn.active { background:rgba(232,93,58,0.25) !important; border-color:rgba(232,93,58,0.5) !important; }
+.mood-btn:hover { background:rgba(255,255,255,0.12) !important; }
+.filtering-mood .tribute:not([data-mood]) { display:none !important; }
+.filtering-mood .tribute[data-mood]:not(.mood-match) { display:none !important; }
   </style>
 </head>
 
@@ -2035,6 +2021,15 @@ END SECTION
       </div>
 
       <div class="flow">
+<!-- Mood filter bar -->
+<div class="mood-filter-bar" style="display:flex;flex-wrap:wrap;gap:8px;padding:1rem 0 2rem;justify-content:center;border-bottom:1px solid rgba(255,230,128,0.12);margin-bottom:2rem;background:rgba(255,255,255,0.03);border-radius:12px;">
+  <button class="mood-btn active" data-mood="all" style="background:rgba(232,93,58,0.2);border:1px solid rgba(232,93,58,0.4);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;font-weight:500;">All</button>
+  <button class="mood-btn" data-mood="romantic" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;">Romantic</button>
+  <button class="mood-btn" data-mood="playful" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;">Playful</button>
+  <button class="mood-btn" data-mood="intimate" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;">Intimate</button>
+  <button class="mood-btn" data-mood="grateful" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;">Grateful</button>
+  <button class="mood-btn" data-mood="longing" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;">Longing</button>
+</div>
 
         <div class="tribute">
           <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>Your Temples</span></h2>
@@ -4198,6 +4193,7 @@ END SECTION
             var allTributes = document.querySelectorAll('.tribute');
             var attachment = 'scroll';
 
+            var tributeData = [];
             var lastImg = '';
             allTributes.forEach(function (tribute, idx) {
               var img = parallaxImages[idx % parallaxImages.length];
@@ -4210,14 +4206,12 @@ END SECTION
                   var rawText = titleSpan.textContent.trim();
                   var lowerText = rawText.toLowerCase();
 
-                  // Intimate sections (48+) use bedroom
                   var numMatch = rawText.match(/(\d+)/);
                   if (numMatch && parseInt(numMatch[1], 10) >= 48) {
                     isIntimate = true;
                     tribute.classList.add('intimate-card');
                     img = './parallax/parallax_bedroom.png';
                   } else if (lowerText.indexOf('--') === -1) {
-                    // Keyword mapping for top-level sections only (skip sub-sections like "nose--nosetip")
                     for (var mi = 0; mi < keywordMap.length; mi++) {
                       if (lowerText.indexOf(keywordMap[mi].kw) !== -1) {
                         img = keywordMap[mi].image;
@@ -4225,27 +4219,113 @@ END SECTION
                       }
                     }
                   }
-                  // Sub-sections (containing --) fall through to pool image
                 }
               }
 
-              // No two consecutive sections share the same image
               if (img === lastImg) {
                 var poolIdx = parallaxImages.indexOf(img);
                 img = parallaxImages[(poolIdx + 1) % parallaxImages.length];
               }
               lastImg = img;
 
-              // Apply parallax background via inline style
               var overlayOpacity = isIntimate ? '0.86' : '0.88';
-              var overlayColor = '15, 10, 8';
-              tribute.style.backgroundImage =
-                'linear-gradient(rgba(' + overlayColor + ', ' + overlayOpacity + '), rgba(' + overlayColor + ', 0.95)), url(' + img + ')';
-              tribute.style.backgroundAttachment = attachment;
-              tribute.style.backgroundPosition = 'center';
-              tribute.style.backgroundRepeat = 'no-repeat';
-              tribute.style.backgroundSize = 'cover';
+              tributeData.push({
+                el: tribute,
+                idx: idx,
+                bg: 'linear-gradient(rgba(15, 10, 8, ' + overlayOpacity + '), rgba(15, 10, 8, 0.95)), url(' + img + ')',
+                attachment: attachment
+              });
             });
+
+            var viewedKey = 'ash-viewed-' + location.pathname.replace(/[^a-z0-9]/gi, '_');
+            try { localStorage.setItem(viewedKey + '_count', tributeData.length); } catch(e) {}
+            if ('IntersectionObserver' in window) {
+              var obs = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                  if (entry.isIntersecting) {
+                    var data = entry.target._parallaxData;
+                    if (data) {
+                      if (window.innerWidth >= 768) {
+                        data.el.style.backgroundImage = data.bg;
+                        data.el.style.backgroundAttachment = data.attachment;
+                      } else {
+                        data.el.style.background = 'linear-gradient(rgba(15, 10, 8, 0.88), rgba(15, 10, 8, 0.95))';
+                      }
+                      data.el.style.backgroundPosition = 'center';
+                      data.el.style.backgroundRepeat = 'no-repeat';
+                      data.el.style.backgroundSize = 'cover';
+                      try {
+                        var v = JSON.parse(localStorage.getItem(viewedKey) || '[]');
+                        if (v.indexOf(data.idx) === -1) { v.push(data.idx); localStorage.setItem(viewedKey, JSON.stringify(v)); }
+                      } catch(e) {}
+                      delete data.el._parallaxData;
+                    }
+                    if (!entry.target.querySelector('.voice-note-btn')) {
+                      var vb = document.createElement('button');
+                      vb.className = 'voice-note-btn';
+                      vb.textContent = '\uD83C\uDF99\uFE0F';
+                      vb.setAttribute('aria-label', 'Record voice note');
+                      vb.title = 'Record a voice note for this section';
+                      vb.style.cssText = 'position:absolute;bottom:16px;right:16px;z-index:10;background:rgba(232,93,58,0.15);border:1px solid rgba(232,93,58,0.3);color:var(--parchment);width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all 0.3s;';
+                      vb.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        if (window._recording) return;
+                        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                          alert('Voice recording not supported in this browser.');
+                          return;
+                        }
+                        var that = this;
+                        that.style.background = 'rgba(232,58,58,0.3)';
+                        that.textContent = '\u26A0\uFE0F';
+                        window._recording = true;
+                        var chunks = [];
+                        navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+                          var mediaRecorder = new MediaRecorder(stream);
+                          mediaRecorder.ondataavailable = function(e) { if (e.data.size > 0) chunks.push(e.data); };
+                          mediaRecorder.onstop = function() {
+                            var blob = new Blob(chunks, { type: 'audio/webm' });
+                            var url = URL.createObjectURL(blob);
+                            that.style.background = 'rgba(58,232,93,0.2)';
+                            that.textContent = '\u25B6\uFE0F';
+                            that.onclick = function(e) { e.stopPropagation(); var a = new Audio(url); a.play(); };
+                            setTimeout(function() {
+                              that.style.background = 'rgba(232,93,58,0.15)';
+                              that.textContent = '\uD83C\uDF99\uFE0F';
+                              that.onclick = null;
+                              URL.revokeObjectURL(url);
+                            }, 60000);
+                            window._recording = false;
+                            stream.getTracks().forEach(function(t) { t.stop(); });
+                          };
+                          mediaRecorder.start();
+                          setTimeout(function() { if (mediaRecorder.state === 'recording') mediaRecorder.stop(); }, 10000);
+                        }).catch(function() {
+                          that.style.background = 'rgba(232,93,58,0.15)';
+                          that.textContent = '\uD83C\uDF99\uFE0F';
+                          window._recording = false;
+                          alert('Microphone access denied.');
+                        });
+                      });
+                      entry.target.style.position = 'relative';
+                      entry.target.appendChild(vb);
+                    }
+                    obs.unobserve(entry.target);
+                  }
+                });
+              }, { rootMargin: '200px' });
+              tributeData.forEach(function (d) {
+                d.el._parallaxData = d;
+                obs.observe(d.el);
+              });
+            } else {
+              tributeData.forEach(function (d) {
+                d.el.style.backgroundImage = d.bg;
+                d.el.style.backgroundAttachment = d.attachment;
+                d.el.style.backgroundPosition = 'center';
+                d.el.style.backgroundRepeat = 'no-repeat';
+                d.el.style.backgroundSize = 'cover';
+              });
+            }
           })();
 
           // --- Bookmarks / Favorites system ---
@@ -4381,6 +4461,184 @@ END SECTION
         } catch (e) { console.error('UX controller error:', e); }
       })();
 
+// Mood filtering
+(function() {
+  var bar = document.querySelector('.mood-filter-bar');
+  if (!bar) return;
+  bar.addEventListener('click', function(e) {
+    var btn = e.target.closest('.mood-btn');
+    if (!btn) return;
+    bar.querySelectorAll('.mood-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    var mood = btn.getAttribute('data-mood');
+    if (mood === 'all') {
+      document.body.classList.remove('filtering-mood');
+      document.querySelectorAll('.tribute').forEach(function(t) { t.classList.remove('mood-match'); });
+    } else {
+      document.body.classList.add('filtering-mood');
+      document.querySelectorAll('.tribute').forEach(function(t) {
+        var m = t.getAttribute('data-mood');
+        t.classList.toggle('mood-match', m === mood);
+      });
+    }
+  });
+  // Tag each tribute with a mood based on its content
+  document.querySelectorAll('.tribute').forEach(function(t) {
+    var text = (t.textContent || '').toLowerCase();
+    var span = t.querySelector('.tribute-lead span:last-child');
+    var title = span ? span.textContent.toLowerCase() : '';
+    var moodTags = [];
+    if (title.indexOf('kiss') !== -1 || title.indexOf('hug') !== -1 || title.indexOf('cuddle') !== -1 || title.indexOf('hold') !== -1 || text.indexOf('soft') !== -1 || text.indexOf('warm') !== -1 || text.indexOf('gentle') !== -1 || text.indexOf('tender') !== -1) moodTags.push('romantic');
+    if (title.indexOf('laugh') !== -1 || title.indexOf('smile') !== -1 || title.indexOf('play') !== -1 || title.indexOf('tease') !== -1 || text.indexOf('funny') !== -1 || text.indexOf('giggle') !== -1) moodTags.push('playful');
+    if (title.indexOf('breast') !== -1 || title.indexOf('nipple') !== -1 || title.indexOf('vagina') !== -1 || title.indexOf('clitor') !== -1 || title.indexOf('wet') !== -1 || title.indexOf('moan') !== -1 || title.indexOf('arous') !== -1 || title.indexOf('penetrat') !== -1 || text.indexOf('naked') !== -1 || text.indexOf('undress') !== -1 || text.indexOf('foreplay') !== -1 || text.indexOf('sext') !== -1) moodTags.push('intimate');
+    if (title.indexOf('thank') !== -1 || title.indexOf('grateful') !== -1 || title.indexOf('bless') !== -1 || text.indexOf('grateful') !== -1 || text.indexOf('thankful') !== -1 || text.indexOf('blessed') !== -1) moodTags.push('grateful');
+    if (title.indexOf('miss') !== -1 || title.indexOf('wish') !== -1 || title.indexOf('dream') !== -1 || title.indexOf('imagin') !== -1 || title.indexOf('can\'t wait') !== -1 || text.indexOf('miss') !== -1 || text.indexOf('wait') !== -1 || text.indexOf('someday') !== -1) moodTags.push('longing');
+    // Default to romantic
+    if (moodTags.length === 0) moodTags.push('romantic');
+    t.setAttribute('data-mood', moodTags.join(' '));
+  });
+})();
+
+// Love Letter Generator
+(function() {
+  var btn = document.createElement('button');
+  btn.textContent = 'Write me a letter';
+  btn.style.cssText = 'position:fixed;bottom:85px;left:25px;z-index:100;background:rgba(232,93,58,0.15);border:1px solid rgba(232,93,58,0.35);color:var(--parchment);padding:10px 18px;border-radius:24px;cursor:pointer;font-family:var(--font-display);font-size:0.85rem;transition:all 0.3s;backdrop-filter:blur(6px);';
+  btn.addEventListener('mouseenter',function(){this.style.background='rgba(232,93,58,0.3)';});
+  btn.addEventListener('mouseleave',function(){this.style.background='rgba(232,93,58,0.15)';});
+  btn.addEventListener('click',function(){
+    var sections=document.querySelectorAll('.tribute');
+    if(sections.length<5)return;
+    var picks=[],used=new Set();
+    while(picks.length<5){
+      var idx=Math.floor(Math.random()*sections.length);
+      if(!used.has(idx)){used.add(idx);picks.push(sections[idx]);}
+    }
+    var html='<div style="position:fixed;inset:0;z-index:9999;background:rgba(15,10,8,0.97);overflow-y:auto;padding:3rem 1.5rem;"><button onclick="this.parentElement.remove()" style="position:fixed;top:16px;right:20px;z-index:10000;background:transparent;border:1px solid rgba(255,255,255,0.15);color:var(--parchment);font-size:1.5rem;width:44px;height:44px;border-radius:50%;cursor:pointer;">\u2716</button><div style="max-width:640px;margin:0 auto;font-family:var(--font-display);">';
+    html+='<h1 style="font-size:2rem;margin-bottom:0.5rem;font-weight:400;">a letter for you</h1>';
+    html+='<p style="color:var(--parchment-dim);margin-bottom:3rem;font-style:italic;">picked from ' + document.title + '</p>';
+    picks.forEach(function(s,i){
+      var title=s.querySelector('.tribute-lead');
+      var body=s.querySelector('.tribute-body');
+      html+='<div style="margin-bottom:2.5rem;padding:1.5rem;border-left:2px solid rgba(232,93,58,0.3);">';
+      if(title)html+=title.outerHTML;
+      if(body)html+=body.outerHTML;
+      html+='</div>';
+    });
+    html+='</div></div>';
+    var div=document.createElement('div');
+    div.innerHTML=html;
+    document.body.appendChild(div.firstChild);
+  });
+  document.body.appendChild(btn);
+})();
+
+
+
+// Wallpaper Download
+(function() {
+  var btn = document.createElement('button');
+  btn.textContent = '\uD83D\uDCF7 Wallpaper';
+  btn.style.cssText = 'position:fixed;bottom:145px;left:25px;z-index:100;background:rgba(100,200,255,0.1);border:1px solid rgba(100,200,255,0.2);color:var(--parchment);padding:10px 18px;border-radius:24px;cursor:pointer;font-family:var(--font-display);font-size:0.85rem;transition:all 0.3s;backdrop-filter:blur(6px);';
+  btn.addEventListener('mouseenter',function(){this.style.background='rgba(100,200,255,0.2)';});
+  btn.addEventListener('mouseleave',function(){this.style.background='rgba(100,200,255,0.1)';});
+  btn.addEventListener('click', function() {
+    var tributes = document.querySelectorAll('.tribute');
+    if (!tributes.length) return;
+    var pick = tributes[Math.floor(Math.random() * tributes.length)];
+    var body = pick.querySelector('.tribute-body');
+    var quote = body ? body.textContent.trim() : 'for eeshah';
+    var titleEl = pick.querySelector('.tribute-lead');
+    var label = titleEl ? titleEl.textContent.trim() : '';
+
+    var ashFiles = ['ash1.jpeg','ash2.jpeg','ash3.jpeg','ash4.jpeg','ash5.jpeg','ash6.jpeg','ash7.jpeg','ash8.jpeg','ash9.jpeg','ash10.jpeg','ash11.jpeg','ash.jpeg','ash_childhood.jpeg','ash_childhood1.jpeg','ash_childhood2.jpeg','ash_childhood3.jpeg'];
+    var imgPath = './ash/' + ashFiles[Math.floor(Math.random() * ashFiles.length)];
+
+    var canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    var ctx = canvas.getContext('2d');
+
+    var img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = function() {
+      var scale = Math.max(canvas.width / img.width, canvas.height / img.height);
+      var x = (canvas.width - img.width * scale) / 2;
+      var y = (canvas.height - img.height * scale) / 2;
+      ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+
+      var overlay = ctx.createLinearGradient(0, canvas.height * 0.35, 0, canvas.height);
+      overlay.addColorStop(0, 'rgba(15,10,8,0.2)');
+      overlay.addColorStop(0.5, 'rgba(15,10,8,0.7)');
+      overlay.addColorStop(1, 'rgba(15,10,8,0.95)');
+      ctx.fillStyle = overlay;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = 'rgba(232,93,58,0.5)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(canvas.width * 0.15, canvas.height * 0.76);
+      ctx.lineTo(canvas.width * 0.85, canvas.height * 0.76);
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffebd2';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      ctx.font = '32px Georgia, serif';
+      ctx.fillText(label || 'for eeshah', canvas.width / 2, canvas.height * 0.12);
+
+      ctx.font = '48px Georgia, serif';
+      var maxWidth = canvas.width * 0.78;
+      var words = quote.split(' ');
+      var lines = [];
+      var line = '';
+      for (var i = 0; i < words.length; i++) {
+        var test = line + words[i] + ' ';
+        if (ctx.measureText(test).width > maxWidth) {
+          lines.push(line.trim());
+          line = words[i] + ' ';
+          if (lines.length >= 7) break;
+        } else {
+          line = test;
+        }
+      }
+      if (line.trim() && lines.length < 7) lines.push(line.trim());
+
+      var lineHeight = 68;
+      var startY = canvas.height * 0.48 - (lines.length * lineHeight) / 2;
+      for (var j = 0; j < lines.length; j++) {
+        ctx.fillText(lines[j], canvas.width / 2, startY + j * lineHeight);
+      }
+
+      ctx.font = '44px serif';
+      ctx.fillText('\u2661', canvas.width / 2, canvas.height * 0.88);
+
+      var link = document.createElement('a');
+      link.download = 'ash-wallpaper.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    };
+    img.onerror = function() {
+      var grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      grad.addColorStop(0, '#2a1f18');
+      grad.addColorStop(1, '#0f0a08');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#ffebd2';
+      ctx.font = '36px Georgia, serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('for eeshah', canvas.width / 2, canvas.height / 2);
+      var link = document.createElement('a');
+      link.download = 'ash-wallpaper.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    };
+    img.src = imgPath;
+  });
+  document.body.appendChild(btn);
+})();
+
       /*======= ACCESSIBILITY =======*/
       (function () {
         try {
@@ -4474,6 +4732,11 @@ END SECTION
     })();
   </script>
   <script defer src="music.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(function () {});
+    }
+  </script>
 
 </body>
 </html>

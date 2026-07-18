@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ASH A Story That Was Never Meant to Be Forgotten</title>
+  <!-- Section numbering: 1-18 (body/face), 19-97+ (organs, intimate), 141-160 (fantasies/comforts). Intimate threshold >= 48. -->
   <meta name="description" content="A Story That Was Never Meant to Be Forgotten">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -182,7 +183,7 @@
     }
 
     /* ---------------- Flowing tributes & prose ---------------- */
-    .flow {
+     .flow {
       display: block;
     }
 
@@ -1805,14 +1806,6 @@ END SECTION
 
     /* Intimate cards background parallax image configuration */
     .tribute.intimate-card {
-      background: linear-gradient(135deg, rgba(232, 93, 58, 0.05), rgba(15, 10, 8, 0.95)) !important;
-      background-image:
-        linear-gradient(rgba(15, 10, 8, 0.86), rgba(15, 10, 8, 0.94)),
-        url('./parallax/parallax_bedroom.png') !important;
-      background-attachment: fixed !important;
-      background-position: center !important;
-      background-size: cover !important;
-      background-repeat: no-repeat !important;
       border-color: rgba(232, 93, 58, 0.35) !important;
       box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
       transition: border-color 0.5s ease, box-shadow 0.5s ease, background-color 0.4s ease, transform .5s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -1828,12 +1821,12 @@ END SECTION
       background-attachment: scroll !important;
     }
 
+    .easter-egg-step {
+      border-color: rgba(232, 93, 58, 0.35) !important;
+      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
     body.day-mode .tribute.intimate-card {
-      background-image:
-        linear-gradient(rgba(255, 248, 241, 0.92), rgba(255, 248, 241, 0.96)),
-        url('./parallax/parallax_bedroom.png') !important;
-      background-size: cover !important;
-      background-repeat: no-repeat !important;
       border-color: rgba(162, 71, 43, 0.35) !important;
     }
 
@@ -1990,18 +1983,6 @@ END SECTION
       transition: background-color 0.15s ease-out;
     }
 
-    /* Dedication reveal animations */
-    .dedication-line {
-      opacity: 0;
-      transform: translateY(12px);
-      transition: opacity 1.2s ease, transform 1.2s ease;
-    }
-
-    .dedication-line.reveal {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
     /* Adjust spacing of floaters under mobile */
     @media (max-width: 640px) {
       .fav-toggle-btn {
@@ -2044,6 +2025,10 @@ END SECTION
         font-size: 1rem !important;
       }
     }
+.mood-btn.active { background:rgba(232,93,58,0.25) !important; border-color:rgba(232,93,58,0.5) !important; }
+.mood-btn:hover { background:rgba(255,255,255,0.12) !important; }
+.filtering-mood .tribute:not([data-mood]) { display:none !important; }
+.filtering-mood .tribute[data-mood]:not(.mood-match) { display:none !important; }
   </style>
 </head>
 
@@ -2186,6 +2171,15 @@ END SECTION
       </div>
 
 <div class="flow">
+<!-- Mood filter bar -->
+<div class="mood-filter-bar" style="display:flex;flex-wrap:wrap;gap:8px;padding:1rem 0 2rem;justify-content:center;border-bottom:1px solid rgba(255,230,128,0.12);margin-bottom:2rem;background:rgba(255,255,255,0.03);border-radius:12px;">
+  <button class="mood-btn active" data-mood="all" style="background:rgba(232,93,58,0.2);border:1px solid rgba(232,93,58,0.4);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;font-weight:500;">All</button>
+  <button class="mood-btn" data-mood="romantic" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;">Romantic</button>
+  <button class="mood-btn" data-mood="playful" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;">Playful</button>
+  <button class="mood-btn" data-mood="intimate" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;">Intimate</button>
+  <button class="mood-btn" data-mood="grateful" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;">Grateful</button>
+  <button class="mood-btn" data-mood="longing" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ffebd2;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:0.85rem;transition:all 0.3s;">Longing</button>
+</div>
         <div class="tribute">
           <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>100 prghs for her</span></h2>
           <p class="tribute-body">Heyy.
@@ -2817,7 +2811,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>16 &nbsp;Ahhhh your hair</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>19 &nbsp;Ahhhh your hair</span>
           </h2>
           <p class="tribute-body">They just gives you a presence before you even speak
             Whether it is perfectly styled or completely messy(ive seen less of em ) it somehow always feels like it
@@ -2833,7 +2827,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>17 &nbsp; Your hairline</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>20 &nbsp; Your hairline</span>
           </h2>
           <p class="tribute-body">Your hairline is one of those quiet details that most people never notice until they
             realize
@@ -2857,7 +2851,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>18 &nbsp; Your Baby Hairs</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>21 &nbsp; Your Baby Hairs</span>
           </h2>
           <p class="tribute-body">Your baby hairs are impossibly adorable. Those tiny strands soften your whole
             appearance and
@@ -2888,7 +2882,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>19 &nbsp; Your scalp</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>22 &nbsp; Your scalp</span>
           </h2>
           <p class="tribute-body">Your scalp is one of the most overlooked parts of you
             Yet it quietly supports every strand of your beautiful hair every single day
@@ -2906,7 +2900,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>20 &nbsp; Your Cheeks</span></h2>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>23 &nbsp; Your Cheeks</span></h2>
           <p class="tribute-body">Your cheeks ahhh
             Kuchupuchu
             They just bring a softness to your face that makes every expression feel warmer and lighter and cuter and
@@ -2923,7 +2917,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>21 &nbsp; Your cheekbones</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>24 &nbsp; Your cheekbones</span>
           </h2>
           <p class="tribute-body">Your cheekbones give your face such gentle character
             They catch the light in their own quiet way
@@ -2943,7 +2937,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>22 &nbsp; Your dimples(not such
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>25 &nbsp; Your dimples(not such
               prominent but still)</span></h2>
           <p class="tribute-body">Your dimples feel like tiny little celebrations that appear only when happiness
             decides to
@@ -2965,7 +2959,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>23 &nbsp; Your nose</span></h2>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>26 &nbsp; Your nose</span></h2>
           <p class="tribute-body">Your nose bridge
             Your nose bridge is one of the most elegant details of your face
             It quietly connects every feature with effortless balance
@@ -2982,7 +2976,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>24 &nbsp; Your nose tip</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>27 &nbsp; Your nose tip</span>
           </h2>
           <p class="tribute-body">Your nose tip is one of the sweetest little details about your face
             It sits there so naturally that most people never stop to appreciate it
@@ -3003,7 +2997,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>25 &nbsp; Ahh your smile</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>28 &nbsp; Ahh your smile</span>
           </h2>
           <p class="tribute-body">Your smile is my favorite proof that happiness can be contagious
             It begins so gently that sometimes you probably do not even notice it yourself
@@ -3040,7 +3034,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>26 &nbsp; Your lips ðŸ‘„</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>29 &nbsp; Your lips ðŸ‘„</span>
           </h2>
           <p class="tribute-body">Ahh your lips
             Mmm
@@ -3087,7 +3081,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>27 &nbsp; Upper and lower
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>30 &nbsp; Upper and lower
               lips</span></h2>
           <p class="tribute-body">Your upper and lower lips were made for each other ahm actually for me just
             Neither one tries to outshine the other
@@ -3127,7 +3121,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>28 &nbsp; Your teeth</span></h2>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>31 &nbsp; Your teeth</span></h2>
           <p class="tribute-body">Your teeth are one of those beautiful details that people rarely appreciate enough
             Most people only notice them for a moment
             But I could never do that because they become part of every smile that lights up your face
@@ -3170,7 +3164,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>29 &nbsp; Your chin</span></h2>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>32 &nbsp; Your chin</span></h2>
           <p class="tribute-body">Your chin is one of those quiet details that completes your entire face without ever
             asking to
             be noticed
@@ -3213,7 +3207,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>30 &nbsp; Ahh your jawline</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>33 &nbsp; Ahh your jawline</span>
           </h2>
           <p class="tribute-body">Your jawline is one of the quietest reasons your face is so unforgettable
             It does not need to be perfectly sharp to be beautiful
@@ -3254,7 +3248,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>31 &nbsp; Your neck</span></h2>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>34 &nbsp; Your neck</span></h2>
           <p class="tribute-body">Ahh your neck ❤💋¦
             Your neck is one of those beautiful details that people often overlook until they realize how perfectly it
             connects everything together
@@ -3294,7 +3288,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>32 &nbsp; The Nape of Your
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>35 &nbsp; The Nape of Your
               Neck</span></h2>
           <p class="tribute-body">The back of your neck has a quiet elegance that most people probably never notice.
             To me it's one of those gentle details that make your presence feel soft and comforting
@@ -3306,7 +3300,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>33 &nbsp; Your collarbones</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>36 &nbsp; Your collarbones</span>
           </h2>
           <p class="tribute-body">Your collarbones are one of those quiet details that make my heart pause every time I
             notice them. They never try to steal attention.
@@ -3343,7 +3337,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>34 &nbsp; Your shoulders</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>37 &nbsp; Your shoulders</span>
           </h2>
           <p class="tribute-body">Your shoulders carry far more than anyone ever realizes.
             Not just the weight of your body.
@@ -3379,7 +3373,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>35 &nbsp; Your arms</span></h2>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>38 &nbsp; Your arms</span></h2>
           <p class="tribute-body">Your arms have always felt like a quiet reflection of who you are
             They are there for every hug that makes someone feel safe
             Every hand you have reached out to hold
@@ -3418,7 +3412,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>36 &nbsp; Your elbows</span></h2>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>39 &nbsp; Your elbows</span></h2>
           <p class="tribute-body">Your elbows are one of those little details that almost nobody ever thinks about
             Yet somehow they have quietly been part of every memory your body has ever made
             They have bent every time you reached out to help someone
@@ -3453,7 +3447,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>37 &nbsp; Your forearms</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>40 &nbsp; Your forearms</span>
           </h2>
           <p class="tribute-body">Your forearms are a quiet kind of beautiful</p>
 
@@ -3495,7 +3489,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>38 &nbsp; Your wrist</span></h2>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>41 &nbsp; Your wrist</span></h2>
           <p class="tribute-body">Your wrists are one of the most delicate and graceful parts of you
             They quietly connect your hands to the rest of your world
             Every wave
@@ -3517,7 +3511,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>39 &nbsp; Your hands</span></h2>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>42 &nbsp; Your hands</span></h2>
           <p class="tribute-body">Your hands are one of my favorite parts of you because they tell the story of your
             heart without ever needing words
             They have celebrated victories
@@ -3556,7 +3550,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>40 &nbsp; Your palms</span></h2>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>43 &nbsp; Your palms</span></h2>
           <p class="tribute-body">Your palms are quiet little worlds of their own
             They have held every important thing that has ever passed through your life
             They have caught falling tears
@@ -3605,7 +3599,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>41 &nbsp; Your Fingertips</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>44 &nbsp; Your Fingertips</span>
           </h2>
           <p class="tribute-body">Your fingertips have touched so many moments that became memories.
             They've written words,
@@ -3618,7 +3612,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>42 &nbsp; Your fingernails</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>45 &nbsp; Your fingernails</span>
           </h2>
           <p class="tribute-body">Your fingernails are tiny little details that quietly complete your hands
             They may seem insignificant
@@ -3640,7 +3634,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>43 &nbsp; Your back</span></h2>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>46 &nbsp; Your back</span></h2>
           <p class="tribute-body">Your back tells a story that most people never stop to read
             It has quietly carried you through every chapter of your life
             Every step you have taken
@@ -3661,7 +3655,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>44 &nbsp; Your Upper Back</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>47 &nbsp; Your Upper Back</span>
           </h2>
           <p class="tribute-body">Your upper back carries a quiet strength that says so much without speaking.
             It has been there through every deep breath,
@@ -3674,7 +3668,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>45 &nbsp; Your spine</span></h2>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>48 &nbsp; Your spine</span></h2>
           <p class="tribute-body">Your spine is the quiet center of your entire body
             It keeps you standing through every season of life
             It supports you when you are confident
@@ -3693,7 +3687,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>46 &nbsp; Your Belly
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>49 &nbsp; Your Belly
               Button</span></h2>
           <p class="tribute-body">It's one of those little details that people rarely think about,
             yet it's part of the story of how every human begins.
@@ -3709,7 +3703,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>47 &nbsp; Your waist</span></h2>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>50 &nbsp; Your waist</span></h2>
           <p class="tribute-body">Your waist brings such graceful balance to your entire silhouette
             It connects every part of you with effortless harmony
             There is nothing forced about it
@@ -3741,7 +3735,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>48 &nbsp; Your Boobs</span></h2>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>51 &nbsp; Your Boobs</span></h2>
           <p class="tribute-body">They are absolute perfection. They curve so naturally and beautifully, making every
             single thing you wear look incredible, but they are infinitely more breathtaking when it's just you.
             They are soft, warm, and entirely yours, and the thought of holding them, kissing them, and worshipping
@@ -3758,7 +3752,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>49 &nbsp; Your Mammary
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>52 &nbsp; Your Mammary
               Glands</span></h2>
 
           <p class="tribute-body">There is something breathtaking about knowing that your body carries this soft, hidden
@@ -3773,7 +3767,7 @@ END SECTION
 
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>50 &nbsp; Your Sensitive
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>53 &nbsp; Your Sensitive
               Nipples</span></h2>
           <p class="tribute-body">There is something incredibly intoxicating about the way your body responds to me.
             When I turn you on and your nipples get so sensitive and beautifully sore, it makes me feel this
@@ -3787,7 +3781,7 @@ END SECTION
           <div class="parallax-text">Two hands holding the weight of the world...</div>
         </div>
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>51 &nbsp; Your Cleavage</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>54 &nbsp; Your Cleavage</span>
           </h2>
           <p class="tribute-body">There is something so intoxicating about the soft dip of your cleavage. Its this
             beautiful, gentle curve that draws my eyes every single time and makes my mind go completely blank. The way
@@ -3800,7 +3794,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>52 &nbsp; That Beautiful
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>55 &nbsp; That Beautiful
               Mole</span></h2>
           <p class="tribute-body">There is this perfect, tiny detail resting right there that beautiful little mole on
             your breast. It is such an intimate, delicate mark that feels completely, exclusively yours. Knowing it's
@@ -3811,7 +3805,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>53 &nbsp; Your Bare
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>56 &nbsp; Your Bare
               Back(delusional rn )</span>
           </h2>
           <p class="tribute-body">Seeing your bare back is like looking at a delicate, flawless work of art. I love the
@@ -3822,7 +3816,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>54 &nbsp; Your Vagina</span></h2>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>57 &nbsp; Your Vagina</span></h2>
           <p class="tribute-body">There is an absolute, undeniable perfection in your most intimate parts. They hold
             this raw, beautiful femininity that completely mesmerizes me. The softness, the warmth, the delicate
             folds every single inch is so beautifully crafted and deeply intoxicating. Just the thought of it, the
@@ -3835,7 +3829,7 @@ END SECTION
 
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>55 &nbsp; Your Pleasure</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>58 &nbsp; Your Pleasure</span>
           </h2>
           <p class="tribute-body">The way you unravel when I put my fingers inside of you is the most beautiful thing I
             have ever witnessed. Feeling you melt against me, feeling how wet and desperately you want it, and knowing I
@@ -3853,7 +3847,7 @@ END SECTION
 
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>56 &nbsp; Your G-Spot</span></h2>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>59 &nbsp; Your G-Spot</span></h2>
 
           <p class="tribute-body">There is something absolutely breathtaking about the way your body reveals itself to
             me when I search for that perfect spot inside of you. When I curl my fingers just right and find your
@@ -3866,7 +3860,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>57 &nbsp; Your Clitoris</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>60 &nbsp; Your Clitoris</span>
           </h2>
 
           <p class="tribute-body">Your clitoris is the most exquisitely sensitive part of you, and knowing exactly how
@@ -3882,7 +3876,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>58 &nbsp; Your Vulva</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>61 &nbsp; Your Vulva</span>
           </h2>
 
           <p class="tribute-body">Your vulva is the most intimate, delicate, and breathtaking part of your
@@ -3896,7 +3890,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>59 &nbsp; Your Labia</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>62 &nbsp; Your Labia</span>
           </h2>
 
           <p class="tribute-body">Your labia are one of the most exquisite, intimate parts of your body soft,
@@ -3911,7 +3905,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>60 &nbsp; Your Labia
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>63 &nbsp; Your Labia
               Majora</span></h2>
 
           <p class="tribute-body">Your labia majora are the soft, outermost embrace of your most intimate self two
@@ -3928,7 +3922,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>61 &nbsp; Your Labia
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>64 &nbsp; Your Labia
               Minora</span></h2>
 
           <p class="tribute-body">Your labia minora are the most delicate, sensitive, and breathtaking detail of
@@ -3947,7 +3941,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>62 &nbsp; Your Ovaries</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>65 &nbsp; Your Ovaries</span>
           </h2>
 
           <p class="tribute-body">Your ovaries are two tiny, extraordinary things quietly tucked inside you, and the
@@ -3960,7 +3954,7 @@ END SECTION
 
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>63 &nbsp; Your hips</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>66 &nbsp; Your hips</span>
           </h2>
           <p class="tribute-body">Your hips are another beautiful reminder that every part of you exists in perfect
             harmony
@@ -4005,7 +3999,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>64 &nbsp; Your thighs</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>67 &nbsp; Your thighs</span>
           </h2>
           <p class="tribute-body">Your thighs are a quiet symbol of strength and grace existing together
             They have carried you through every adventure
@@ -4028,7 +4022,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>65 &nbsp; Your knees</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>68 &nbsp; Your knees</span>
           </h2>
           <p class="tribute-body">Your knees have quietly carried every step of your journey
             They have bent when life asked you to be humble
@@ -4045,7 +4039,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>66 &nbsp; Your calves</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>69 &nbsp; Your calves</span>
           </h2>
           <p class="tribute-body">Your calves deserve far more appreciation than they ever receive
             They have carried you through every mile of your life without asking for recognition
@@ -4062,7 +4056,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>67 &nbsp; Your ankles</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>70 &nbsp; Your ankles</span>
           </h2>
           <p class="tribute-body">Your ankles are one of those delicate details that quietly complete the way you
             move
@@ -4080,7 +4074,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>68 &nbsp; Your feet</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>71 &nbsp; Your feet</span>
           </h2>
           <p class="tribute-body">Your feet have carried you through every chapter of your life
             They have stood beside the people you love
@@ -4095,7 +4089,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>69 &nbsp; Your toes</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>72 &nbsp; Your toes</span>
           </h2>
           <p class="tribute-body">Your toes may seem like the smallest detail
             But they have been part of every step you have ever taken
@@ -4111,7 +4105,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>70 &nbsp; Your skin</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>73 &nbsp; Your skin</span>
           </h2>
           <p class="tribute-body">Your skin is the first thing the world sees
             Yet it is so much more than appearance
@@ -4134,7 +4128,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>71 &nbsp; Your skin
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>74 &nbsp; Your skin
               tone</span>
           </h2>
           <p class="tribute-body">Your skin tone is one of the many things that makes you unmistakably you
@@ -4151,7 +4145,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>72 &nbsp; Your skin
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>75 &nbsp; Your skin
               texture</span></h2>
           <p class="tribute-body">Your skin texture is one of the quiet reminders that you are wonderfully human
             It was never meant to be perfectly smooth
@@ -4171,7 +4165,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>73 &nbsp; Your
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>76 &nbsp; Your
               freckles</span>
           </h2>
           <p class="tribute-body">Your freckles are like little memories scattered across your skin
@@ -4188,7 +4182,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>74 &nbsp; YOUR beauty
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>77 &nbsp; YOUR beauty
               marks</span></h2>
           <p class="tribute-body">Your beauty marks are the kind of details people remember long after they forget
             everything else
@@ -4205,7 +4199,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>75 &nbsp; Your scars</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>78 &nbsp; Your scars</span>
           </h2>
           <p class="tribute-body">Your scars are not imperfections
             They are chapters
@@ -4228,7 +4222,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>76 &nbsp; Your
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>79 &nbsp; Your
               Skeleton</span></h2>
 
           <p class="tribute-body">Your skeleton is the quiet, invisible architecture that holds every beautiful
@@ -4242,7 +4236,7 @@ END SECTION
 
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>77 &nbsp; Your laugh</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>80 &nbsp; Your laugh</span>
           </h2>
           <p class="tribute-body">Your laugh is the sound I never want to forget
             If someone asked me what happiness sounds like I would never have to think before answering
@@ -4301,7 +4295,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>78 &nbsp; Your blush</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>81 &nbsp; Your blush</span>
           </h2>
           <p class="tribute-body">Your blush is one of the most beautiful things about you because it is something
             you
@@ -4351,7 +4345,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>79 &nbsp; Your hugs</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>82 &nbsp; Your hugs</span>
           </h2>
           <p class="tribute-body">Your hugs feel like the place my heart would choose if it could ever have a home
             There is something about them that no words have ever been able to replace
@@ -4439,7 +4433,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>80 &nbsp; Your
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>83 &nbsp; Your
               Heartbeat</span>
           </h2>
           <p class="tribute-body">Knowing that your heart is quietly beating through every happy moment,
@@ -4535,7 +4529,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>81 &nbsp; Your Lungs</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>84 &nbsp; Your Lungs</span>
           </h2>
 
           <p class="tribute-body">Every breath you take is a quiet love letter to the world and to me.
@@ -4553,7 +4547,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>82 &nbsp; Your Brain</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>85 &nbsp; Your Brain</span>
           </h2>
 
           <p class="tribute-body">Your brain is where all of you lives every thought that has ever made me fall
@@ -4571,7 +4565,7 @@ END SECTION
 
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>83 &nbsp; YOUR WARMTH</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>86 &nbsp; YOUR WARMTH</span>
           </h2>
           <p class="tribute-body">Your warmth is one of those beautiful things that cannot be seen with the eyes yet
             somehow everyone who meets you can feel it
@@ -4623,7 +4617,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>84 &nbsp; Your
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>87 &nbsp; Your
               presence</span>
           </h2>
           <p class="tribute-body">Your presence is something I find impossible to explain because it has very little to
@@ -4663,7 +4657,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>85 &nbsp; Your heart</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>88 &nbsp; Your heart</span>
           </h2>
           <p class="tribute-body">Your heart is the most beautiful part of you because it is the reason every other
             beautiful
@@ -4741,7 +4735,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>86 &nbsp; Your soul</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>89 &nbsp; Your soul</span>
           </h2>
           <p class="tribute-body">Your soul is the quietest and most beautiful part of you
             Nobody can see it
@@ -4784,7 +4778,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>87 &nbsp; Your
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>90 &nbsp; Your
               personality</span>
           </h2>
           <p class="tribute-body">Your personality is my favorite thing to discover because it never ends
@@ -4823,7 +4817,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>88 &nbsp; Your
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>91 &nbsp; Your
               kindness</span>
           </h2>
           <p class="tribute-body">Your kindness is one of the purest things I have ever known
@@ -4860,7 +4854,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>89 &nbsp; Your
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>92 &nbsp; Your
               intelligence</span></h2>
           <p class="tribute-body">Your intelligence is one of the things I admire most because it is never about knowing
             every
@@ -4900,7 +4894,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>90 &nbsp; Your
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>93 &nbsp; Your
               compassion</span>
           </h2>
           <p class="tribute-body">Your compassion is one of the quiet miracles that exists inside you
@@ -4939,7 +4933,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>91 &nbsp; Your
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>94 &nbsp; Your
               strength</span>
           </h2>
           <p class="tribute-body">Your strength is one of the most beautiful things about you because it is not the kind
@@ -4989,7 +4983,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>92 &nbsp; Your love</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>95 &nbsp; Your love</span>
           </h2>
           <p class="tribute-body">Your love is the gentlest gift you could ever give another person
             It is not measured by grand gestures
@@ -5029,7 +5023,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>93 &nbsp; Your
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>96 &nbsp; Your
               existence</span>
           </h2>
           <p class="tribute-body">Your existence is my favorite thing about you because every beautiful part of you
@@ -5101,7 +5095,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>94 &nbsp; Your voice</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>97 &nbsp; Your voice</span>
           </h2>
           <p class="tribute-body">Your voice is one of those things I wish I could keep with me forever
             Not because it is simply beautiful
@@ -5191,7 +5185,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>95 &nbsp; Your sleepy
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>98 &nbsp; Your sleepy
               self</span>
           </h2>
           <p class="tribute-body">our sleepy self is one of the most precious versions of you
@@ -5245,7 +5239,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>96 &nbsp; Your
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>99 &nbsp; Your
               resilience</span>
           </h2>
           <p class="tribute-body">Your resilience amazes me more every time I think about it
@@ -5321,7 +5315,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>97 &nbsp; Your dreams</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>100 &nbsp; Your dreams</span>
           </h2>
           <p class="tribute-body">Your dreams are some of the most beautiful parts of you because they belong to the
             future that only you can create
@@ -5449,7 +5443,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>98 &nbsp; Your hope</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>101 &nbsp; Your hope</span>
           </h2>
           <p class="tribute-body">Your hope is one of the brightest lights you carry within you
             Even after disappointment
@@ -5494,7 +5488,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>99 &nbsp; Your Soft
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>102 &nbsp; Your Soft
               Skin</span></h2>
           <p class="tribute-body">I don't think I could ever get enough of the feeling of your skin against mine. It
             is so incredibly soft, so warm and inviting, that tracing my fingers across it feels like a privilege.
@@ -5508,7 +5502,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>100 &nbsp; The Sounds You
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>103 &nbsp; The Sounds You
               Make</span></h2>
           <p class="tribute-body">Hearing you in those quiet, intimate moments is my absolute favorite sound in the
             world. The soft little sighs, the change in your breathing, the gentle sounds that slip out when I touch
@@ -5517,7 +5511,7 @@ END SECTION
             from you, makes me feel more powerful and captivated than words can explain.</p>
         </div>
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>101 &nbsp; The Way We Fit
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>104 &nbsp; The Way We Fit
               Together</span></h2>
           <p class="tribute-body">It feels as though our bodies were deliberately sculpted to fit against each
             other. When I hold you, when we are as close as two people can possibly be, there is no awkwardness, no
@@ -5533,7 +5527,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>102 &nbsp; The Person You
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>105 &nbsp; The Person You
               Were</span></h2>
           <p class="tribute-body">I often wonder about the little girl you used to be
             The version of you that existed long before I ever knew your name
@@ -5630,7 +5624,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>103 &nbsp; The person you are
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>106 &nbsp; The person you are
               becoming</span></h2>
           <p class="tribute-body">The Person You Are Becoming
             Sometimes I find myself thinking about the future
@@ -5718,7 +5712,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>104 &nbsp; Everything that
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>107 &nbsp; Everything that
               makes
               you
               you</span></h2>
@@ -5824,7 +5818,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>105 &nbsp; Thank you for
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>108 &nbsp; Thank you for
               existing</span>
           </h2>
           <p class="tribute-body">Thank You For Existing</p>
@@ -5930,7 +5924,7 @@ END SECTION
         </div>
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>106 &nbsp; One final
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>109 &nbsp; One final
               note</span>
           </h2>
           <p class="tribute-body">I don't know when it happened. Somewhere between our conversations, your laughter,
@@ -5996,7 +5990,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>107 &nbsp; Our
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>110 &nbsp; Our
               Foreplay</span></h2>
 
           <p class="tribute-body">Foreplay with you is not a beginning it is its own universe. The slow,
@@ -6015,7 +6009,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>108 &nbsp; Our Sexting</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>111 &nbsp; Our Sexting</span>
           </h2>
 
           <p class="tribute-body">There is something uniquely intoxicating about the way words alone can set
@@ -6032,7 +6026,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>109 &nbsp; Our
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>112 &nbsp; Our
               Non-Penetrative Intimacy</span></h2>
 
           <p class="tribute-body">There is an entire world of closeness that lives outside the obvious, and I want
@@ -6049,7 +6043,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>110 &nbsp; Your Inner
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>113 &nbsp; Your Inner
               Thighs</span></h2>
 
           <p class="tribute-body">Your inner thighs are where everything changes. The skin there is impossibly soft
@@ -6064,7 +6058,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>111 &nbsp; Behind Your
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>114 &nbsp; Behind Your
               Ears</span></h2>
 
           <p class="tribute-body">There is a small, devastating place just behind your ears that you probably does
@@ -6079,7 +6073,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>112 &nbsp; The Small of Your
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>115 &nbsp; The Small of Your
               Back</span></h2>
 
           <p class="tribute-body">The small of your back is one of the most quietly intimate places on your body. That
@@ -6094,7 +6088,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>113 &nbsp; Your Pulse
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>116 &nbsp; Your Pulse
               Points</span></h2>
 
           <p class="tribute-body">Your pulse points are where I can feel your heartbeat against my lips and there is
@@ -6109,7 +6103,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>114 &nbsp; Your Lower
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>117 &nbsp; Your Lower
               Belly</span></h2>
 
           <p class="tribute-body">That soft strip of skin between your navel and where you want me most is one of
@@ -6124,7 +6118,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>115 &nbsp; Your Body
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>118 &nbsp; Your Body
               Temperature When Aroused</span></h2>
 
           <p class="tribute-body">When you is turned on, your body runs warmer and I am obsessed with it. The flush
@@ -6139,7 +6133,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>116 &nbsp; The Way You Texts
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>119 &nbsp; The Way You Texts
               Back</span></h2>
 
           <p class="tribute-body">There is an art to the way you responds when I send you something bold. First
@@ -6155,7 +6149,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>117 &nbsp; Your Voice
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>120 &nbsp; Your Voice
               Notes</span></h2>
 
           <p class="tribute-body">Your voice notes are a different kind of intimacy entirely. There is something
@@ -6170,7 +6164,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>118 &nbsp; When You Says My
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>121 &nbsp; When You Says My
               Name</span></h2>
 
           <p class="tribute-body">You says my name differently depending on what you needs. There is the casual
@@ -6185,7 +6179,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>119 &nbsp; Your Reactions to
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>122 &nbsp; Your Reactions to
               My Words</span></h2>
 
           <p class="tribute-body">I am endlessly fascinated by what my words do to you. A single line sent at the
@@ -6200,7 +6194,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>120 &nbsp; Your Moans</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>123 &nbsp; Your Moans</span>
           </h2>
 
           <p class="tribute-body">The sounds you makes are the most devastating thing about you. Soft, involuntary,
@@ -6216,7 +6210,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>121 &nbsp; Your Breathing When
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>124 &nbsp; Your Breathing When
               Aroused</span></h2>
 
           <p class="tribute-body">I pay attention to your breathing the way some people read poetry carefully,
@@ -6232,7 +6226,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>122 &nbsp; The Moment You
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>125 &nbsp; The Moment You
               Gives In</span></h2>
 
           <p class="tribute-body">There is a precise, perfect moment when you stops holding back and I live for
@@ -6248,7 +6242,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>123 &nbsp; The Way You Bites
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>126 &nbsp; The Way You Bites
               Your Lip</span></h2>
 
           <p class="tribute-body">When you is trying to stay composed and failing, you bites your lip. It is the most
@@ -6264,7 +6258,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>124 &nbsp; Your Eye Contact
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>127 &nbsp; Your Eye Contact
               During Intimacy</span></h2>
 
           <p class="tribute-body">When you holds eye contact in an intimate moment, the whole world narrows to just
@@ -6279,7 +6273,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>125 &nbsp; Your Wetness</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>128 &nbsp; Your Wetness</span>
           </h2>
 
           <p class="tribute-body">There is no more honest or beautiful signal than this the way your body responds
@@ -6295,7 +6289,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>126 &nbsp; Your
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>129 &nbsp; Your
               Goosebumps</span></h2>
 
           <p class="tribute-body">The smallest thing can raise goosebumps on your skin a breath at the back of your
@@ -6310,7 +6304,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>127 &nbsp; Your
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>130 &nbsp; Your
               Trembling</span></h2>
 
           <p class="tribute-body">When you trembles it undoes me completely. That fine, barely-there shaking when
@@ -6325,7 +6319,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>128 &nbsp; The Flush on Your
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>131 &nbsp; The Flush on Your
               Chest</span></h2>
 
           <p class="tribute-body">When you get turned on, a pink flush spreads across your chest soft and warm and
@@ -6340,7 +6334,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>129 &nbsp;Your Arching
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>132 &nbsp;Your Arching
               Back</span></h2>
 
           <p class="tribute-body">When your back arches when your spine curves and your chest lifts and your whole
@@ -6355,7 +6349,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>130 &nbsp; Your Hips Moving
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>133 &nbsp; Your Hips Moving
               Involuntarily</span></h2>
 
           <p class="tribute-body">Before your mind decides anything, your hips move. That small, unconscious rock
@@ -6371,7 +6365,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>131 &nbsp; Cuddling
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>134 &nbsp; Cuddling
               After</span></h2>
 
           <p class="tribute-body">After everything settles, after the breathlessness fades and the world comes
@@ -6386,7 +6380,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>132 &nbsp; Sleeping in His
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>135 &nbsp; Sleeping in His
               Arms</span></h2>
 
           <p class="tribute-body">Watching you fall asleep in my arms would be the most precious thing in the world.
@@ -6402,7 +6396,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>133 &nbsp; The Way You
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>136 &nbsp; The Way You
               Clings</span></h2>
 
           <p class="tribute-body">There are moments when you hold on and does not let go arms wrapped around me
@@ -6417,7 +6411,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>134 &nbsp; Undressing
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>137 &nbsp; Undressing
               You</span></h2>
 
           <p class="tribute-body">Undressing you would be a slow and deliberate act. Not hurried. Not rushed. Each
@@ -6432,7 +6426,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>135 &nbsp; Kissing you
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>138 &nbsp; Kissing you
               Slowly</span></h2>
 
           <p class="tribute-body">A long, slow, unhurried kiss is its own complete universe. No destination, no
@@ -6448,7 +6442,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>136 &nbsp; Your Naked
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>139 &nbsp; Your Naked
               Body</span></h2>
 
           <p class="tribute-body">Seeing you completely bare would be overwhelming in the most beautiful way. Not in
@@ -6464,7 +6458,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>137 &nbsp; Your
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>140 &nbsp; Your
               Vulnerability</span></h2>
 
           <p class="tribute-body">When you lets your guard down completely when you stops managing how you are
@@ -6480,7 +6474,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>138 &nbsp; Your Trust</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>141 &nbsp; Your Trust</span>
           </h2>
 
           <p class="tribute-body">The fact that you trusts me that you has let me this close, this deep into the
@@ -6495,7 +6489,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>139 &nbsp; What you Do Only
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>142 &nbsp; What you Do Only
               for Me</span></h2>
 
           <p class="tribute-body">There is a version of you that only I get to see a private, unguarded, wholly
@@ -6511,7 +6505,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>140 &nbsp; Your Desire</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>143 &nbsp; Your Desire</span>
           </h2>
 
           <p class="tribute-body">The raw, simple fact that you wants me that out of everyone you could want, you
@@ -6527,7 +6521,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>141 &nbsp; Your Confidence
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>144 &nbsp; Your Confidence
               When You are Comfortable</span></h2>
 
           <p class="tribute-body">In private when it is just us and all the performance and self-consciousness
@@ -6542,7 +6536,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>142 &nbsp; Thinking About You
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>145 &nbsp; Thinking About You
               at Random Moments</span></h2>
 
           <p class="tribute-body">You ambushes me at the most ordinary times. I am doing something entirely
@@ -6557,7 +6551,7 @@ END SECTION
 
 
         <div class="tribute">
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>143 &nbsp; What I Would Do
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>146 &nbsp; What I Would Do
               If I Were Together With You Right Now</span></h2>
 
           <p class="tribute-body">If you were here right now I would not say anything clever. I would just pull you
@@ -6573,7 +6567,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>144 &nbsp; The First Time I
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>147 &nbsp; The First Time I
               Would See You</span></h2>
 
           <p class="tribute-body">I think about what that first moment would feel like turning a corner or walking
@@ -6589,7 +6583,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>145 &nbsp; What I Want to
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>148 &nbsp; What I Want to
               Do to You</span></h2>
 
           <p class="tribute-body">I want to take my time with you. That is the beginning and end of it. I want to
@@ -6604,7 +6598,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>146 &nbsp; The Things You
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>149 &nbsp; The Things You
               Whispers</span></h2>
 
           <p class="tribute-body">There is a register of your voice that exists only in close proximity a low,
@@ -6620,7 +6614,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>147 &nbsp; Your Scent</span>
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>150 &nbsp; Your Scent</span>
           </h2>
 
           <p class="tribute-body">Your scent is embedded in me now I could find you in a dark room. The warmth of
@@ -6636,7 +6630,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>148 &nbsp; The Weight of You
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>151 &nbsp; The Weight of You
               in My Arms</span></h2>
 
           <p class="tribute-body">I think about what it would feel like to hold your actual weight not the idea of
@@ -6652,7 +6646,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>149 &nbsp; The First Time You
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>152 &nbsp; The First Time You
               Lets Go Completely</span></h2>
 
           <p class="tribute-body">There will be a first time you lets go entirely stops holding anything back,
@@ -6668,7 +6662,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>150 &nbsp; Afterwards, In the
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>153 &nbsp; Afterwards, In the
               Quiet</span></h2>
 
           <p class="tribute-body">The quiet that comes after is its own kind of sacred. Not the silence of distance
@@ -6687,7 +6681,7 @@ END SECTION
         </div>
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>151 &nbsp; Us On A Rooftop,
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>154 &nbsp; Us On A Rooftop,
               Watching The Sunset</span></h2>
 
           <p class="tribute-body">I keep imagining us on a rooftop somewhere, the city spread out below, the sky doing
@@ -6707,7 +6701,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>152 &nbsp; Making Out Under The
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>155 &nbsp; Making Out Under The
               Moon, On An Abandoned Mountain</span></h2>
 
           <p class="tribute-body">There is this version of us that exists only in my imagination, and it lives on a
@@ -6727,7 +6721,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>153 &nbsp; A Long Drive With Your
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>156 &nbsp; A Long Drive With Your
               Favourite Songs</span></h2>
 
           <p class="tribute-body">I want to drive with you late at night, the road stretching ahead of us into nothing,
@@ -6747,7 +6741,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>154 &nbsp; You Sleeping In My Lap
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>157 &nbsp; You Sleeping In My Lap
               At Sunrise</span></h2>
 
           <p class="tribute-body">You have fallen asleep in my lap. I do not know how long we have been here. I stopped
@@ -6767,7 +6761,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>155 &nbsp; Getting Caught In The
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>158 &nbsp; Getting Caught In The
               Rain Together</span></h2>
 
           <p class="tribute-body">We are somewhere we did not expect to be when the rain starts. It comes fast, the way
@@ -6787,7 +6781,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>156 &nbsp; Reading Together In
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>159 &nbsp; Reading Together In
               Complete Silence</span></h2>
 
           <p class="tribute-body">I have this small, quiet fantasy that I love more than I probably should. We are
@@ -6807,7 +6801,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>157 &nbsp; Cooking Something
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>160 &nbsp; Cooking Something
               Simple, Late At Night</span></h2>
 
           <p class="tribute-body">It is past midnight and neither of us planned to be hungry but here we are, standing
@@ -6827,7 +6821,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>158 &nbsp; You Wearing My Shirt
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>161 &nbsp; You Wearing My Shirt
               In
               The Morning</span></h2>
 
@@ -6848,7 +6842,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>159 &nbsp; Slow Dancing When
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>162 &nbsp; Slow Dancing When
               There
               Is No Music</span></h2>
 
@@ -6869,7 +6863,7 @@ END SECTION
 
         <div class="tribute">
 
-          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>160 &nbsp; Falling Asleep On A
+          <h2 class="tribute-lead"><span class="spark" aria-hidden="true"></span><span>163 &nbsp; Falling Asleep On A
               Call With You</span></h2>
 
           <p class="tribute-body">We have done this before. Stayed on a call long past when we meant to, past when
@@ -8397,6 +8391,8 @@ END SECTION
             var allTributes = document.querySelectorAll('.tribute');
             var attachment = 'scroll';
 
+            // Pre-compute image data for each tribute
+            var tributeData = [];
             var lastImg = '';
             allTributes.forEach(function (tribute, idx) {
               var img = parallaxImages[idx % parallaxImages.length];
@@ -8416,7 +8412,7 @@ END SECTION
                     tribute.classList.add('intimate-card');
                     img = './parallax/parallax_bedroom.png';
                   } else if (lowerText.indexOf('--') === -1) {
-                    // Keyword mapping for top-level sections only (skip sub-sections like "nose--nosetip")
+                    // Keyword mapping for top-level sections only
                     for (var mi = 0; mi < keywordMap.length; mi++) {
                       if (lowerText.indexOf(keywordMap[mi].kw) !== -1) {
                         img = keywordMap[mi].image;
@@ -8424,27 +8420,116 @@ END SECTION
                       }
                     }
                   }
-                  // Sub-sections (containing --) fall through to pool image
                 }
               }
 
-              // No two consecutive sections share the same image
               if (img === lastImg) {
                 var poolIdx = parallaxImages.indexOf(img);
                 img = parallaxImages[(poolIdx + 1) % parallaxImages.length];
               }
               lastImg = img;
 
-              // Apply parallax background via inline style
               var overlayOpacity = isIntimate ? '0.86' : '0.88';
-              var overlayColor = '15, 10, 8';
-              tribute.style.backgroundImage =
-                'linear-gradient(rgba(' + overlayColor + ', ' + overlayOpacity + '), rgba(' + overlayColor + ', 0.95)), url(' + img + ')';
-              tribute.style.backgroundAttachment = attachment;
-              tribute.style.backgroundPosition = 'center';
-              tribute.style.backgroundRepeat = 'no-repeat';
-              tribute.style.backgroundSize = 'cover';
+              tributeData.push({
+                el: tribute,
+                idx: idx,
+                bg: 'linear-gradient(rgba(15, 10, 8, ' + overlayOpacity + '), rgba(15, 10, 8, 0.95)), url(' + img + ')',
+                attachment: attachment
+              });
             });
+
+            // Lazy-load parallax backgrounds via IntersectionObserver
+            var viewedKey = 'ash-viewed-' + location.pathname.replace(/[^a-z0-9]/gi, '_');
+            try { localStorage.setItem(viewedKey + '_count', tributeData.length); } catch(e) {}
+            if ('IntersectionObserver' in window) {
+              var obs = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                  if (entry.isIntersecting) {
+                    var data = entry.target._parallaxData;
+                    if (data) {
+                      if (window.innerWidth >= 768) {
+                        data.el.style.backgroundImage = data.bg;
+                        data.el.style.backgroundAttachment = data.attachment;
+                      } else {
+                        data.el.style.background = 'linear-gradient(rgba(15, 10, 8, 0.88), rgba(15, 10, 8, 0.95))';
+                      }
+                      data.el.style.backgroundPosition = 'center';
+                      data.el.style.backgroundRepeat = 'no-repeat';
+                      data.el.style.backgroundSize = 'cover';
+                      // Mark section as viewed for progress tracking
+                      try {
+                        var v = JSON.parse(localStorage.getItem(viewedKey) || '[]');
+                        if (v.indexOf(data.idx) === -1) { v.push(data.idx); localStorage.setItem(viewedKey, JSON.stringify(v)); }
+                      } catch(e) {}
+                      delete data.el._parallaxData;
+                    }
+                    if (!entry.target.querySelector('.voice-note-btn')) {
+                      var vb = document.createElement('button');
+                      vb.className = 'voice-note-btn';
+                      vb.textContent = '\uD83C\uDF99\uFE0F';
+                      vb.setAttribute('aria-label', 'Record voice note');
+                      vb.title = 'Record a voice note for this section';
+                      vb.style.cssText = 'position:absolute;bottom:16px;right:16px;z-index:10;background:rgba(232,93,58,0.15);border:1px solid rgba(232,93,58,0.3);color:var(--parchment);width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all 0.3s;';
+                      vb.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        if (window._recording) return;
+                        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                          alert('Voice recording not supported in this browser.');
+                          return;
+                        }
+                        var that = this;
+                        that.style.background = 'rgba(232,58,58,0.3)';
+                        that.textContent = '\u26A0\uFE0F';
+                        window._recording = true;
+                        var chunks = [];
+                        navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+                          var mediaRecorder = new MediaRecorder(stream);
+                          mediaRecorder.ondataavailable = function(e) { if (e.data.size > 0) chunks.push(e.data); };
+                          mediaRecorder.onstop = function() {
+                            var blob = new Blob(chunks, { type: 'audio/webm' });
+                            var url = URL.createObjectURL(blob);
+                            that.style.background = 'rgba(58,232,93,0.2)';
+                            that.textContent = '\u25B6\uFE0F';
+                            that.onclick = function(e) { e.stopPropagation(); var a = new Audio(url); a.play(); };
+                            setTimeout(function() {
+                              that.style.background = 'rgba(232,93,58,0.15)';
+                              that.textContent = '\uD83C\uDF99\uFE0F';
+                              that.onclick = null;
+                              URL.revokeObjectURL(url);
+                            }, 60000);
+                            window._recording = false;
+                            stream.getTracks().forEach(function(t) { t.stop(); });
+                          };
+                          mediaRecorder.start();
+                          setTimeout(function() { if (mediaRecorder.state === 'recording') mediaRecorder.stop(); }, 10000);
+                        }).catch(function() {
+                          that.style.background = 'rgba(232,93,58,0.15)';
+                          that.textContent = '\uD83C\uDF99\uFE0F';
+                          window._recording = false;
+                          alert('Microphone access denied.');
+                        });
+                      });
+                      entry.target.style.position = 'relative';
+                      entry.target.appendChild(vb);
+                    }
+                    obs.unobserve(entry.target);
+                  }
+                });
+              }, { rootMargin: '200px' });
+              tributeData.forEach(function (d) {
+                d.el._parallaxData = d;
+                obs.observe(d.el);
+              });
+            } else {
+              // Fallback: apply all immediately
+              tributeData.forEach(function (d) {
+                d.el.style.backgroundImage = d.bg;
+                d.el.style.backgroundAttachment = d.attachment;
+                d.el.style.backgroundPosition = 'center';
+                d.el.style.backgroundRepeat = 'no-repeat';
+                d.el.style.backgroundSize = 'cover';
+              });
+            }
           })();
 
           // --- Bookmarks / Favorites system ---
@@ -8580,6 +8665,184 @@ END SECTION
         } catch (e) { console.error('UX controller error:', e); }
       })();
 
+// Mood filtering
+(function() {
+  var bar = document.querySelector('.mood-filter-bar');
+  if (!bar) return;
+  bar.addEventListener('click', function(e) {
+    var btn = e.target.closest('.mood-btn');
+    if (!btn) return;
+    bar.querySelectorAll('.mood-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    var mood = btn.getAttribute('data-mood');
+    if (mood === 'all') {
+      document.body.classList.remove('filtering-mood');
+      document.querySelectorAll('.tribute').forEach(function(t) { t.classList.remove('mood-match'); });
+    } else {
+      document.body.classList.add('filtering-mood');
+      document.querySelectorAll('.tribute').forEach(function(t) {
+        var m = t.getAttribute('data-mood');
+        t.classList.toggle('mood-match', m === mood);
+      });
+    }
+  });
+  // Tag each tribute with a mood based on its content
+  document.querySelectorAll('.tribute').forEach(function(t) {
+    var text = (t.textContent || '').toLowerCase();
+    var span = t.querySelector('.tribute-lead span:last-child');
+    var title = span ? span.textContent.toLowerCase() : '';
+    var moodTags = [];
+    if (title.indexOf('kiss') !== -1 || title.indexOf('hug') !== -1 || title.indexOf('cuddle') !== -1 || title.indexOf('hold') !== -1 || text.indexOf('soft') !== -1 || text.indexOf('warm') !== -1 || text.indexOf('gentle') !== -1 || text.indexOf('tender') !== -1) moodTags.push('romantic');
+    if (title.indexOf('laugh') !== -1 || title.indexOf('smile') !== -1 || title.indexOf('play') !== -1 || title.indexOf('tease') !== -1 || text.indexOf('funny') !== -1 || text.indexOf('giggle') !== -1) moodTags.push('playful');
+    if (title.indexOf('breast') !== -1 || title.indexOf('nipple') !== -1 || title.indexOf('vagina') !== -1 || title.indexOf('clitor') !== -1 || title.indexOf('wet') !== -1 || title.indexOf('moan') !== -1 || title.indexOf('arous') !== -1 || title.indexOf('penetrat') !== -1 || text.indexOf('naked') !== -1 || text.indexOf('undress') !== -1 || text.indexOf('foreplay') !== -1 || text.indexOf('sext') !== -1) moodTags.push('intimate');
+    if (title.indexOf('thank') !== -1 || title.indexOf('grateful') !== -1 || title.indexOf('bless') !== -1 || text.indexOf('grateful') !== -1 || text.indexOf('thankful') !== -1 || text.indexOf('blessed') !== -1) moodTags.push('grateful');
+    if (title.indexOf('miss') !== -1 || title.indexOf('wish') !== -1 || title.indexOf('dream') !== -1 || title.indexOf('imagin') !== -1 || title.indexOf('can\'t wait') !== -1 || text.indexOf('miss') !== -1 || text.indexOf('wait') !== -1 || text.indexOf('someday') !== -1) moodTags.push('longing');
+    // Default to romantic
+    if (moodTags.length === 0) moodTags.push('romantic');
+    t.setAttribute('data-mood', moodTags.join(' '));
+  });
+})();
+
+// Love Letter Generator
+(function() {
+  var btn = document.createElement('button');
+  btn.textContent = 'Write me a letter';
+  btn.style.cssText = 'position:fixed;bottom:85px;left:25px;z-index:100;background:rgba(232,93,58,0.15);border:1px solid rgba(232,93,58,0.35);color:var(--parchment);padding:10px 18px;border-radius:24px;cursor:pointer;font-family:var(--font-display);font-size:0.85rem;transition:all 0.3s;backdrop-filter:blur(6px);';
+  btn.addEventListener('mouseenter',function(){this.style.background='rgba(232,93,58,0.3)';});
+  btn.addEventListener('mouseleave',function(){this.style.background='rgba(232,93,58,0.15)';});
+  btn.addEventListener('click',function(){
+    var sections=document.querySelectorAll('.tribute');
+    if(sections.length<5)return;
+    var picks=[],used=new Set();
+    while(picks.length<5){
+      var idx=Math.floor(Math.random()*sections.length);
+      if(!used.has(idx)){used.add(idx);picks.push(sections[idx]);}
+    }
+    var html='<div style="position:fixed;inset:0;z-index:9999;background:rgba(15,10,8,0.97);overflow-y:auto;padding:3rem 1.5rem;"><button onclick="this.parentElement.remove()" style="position:fixed;top:16px;right:20px;z-index:10000;background:transparent;border:1px solid rgba(255,255,255,0.15);color:var(--parchment);font-size:1.5rem;width:44px;height:44px;border-radius:50%;cursor:pointer;">\u2716</button><div style="max-width:640px;margin:0 auto;font-family:var(--font-display);">';
+    html+='<h1 style="font-size:2rem;margin-bottom:0.5rem;font-weight:400;">a letter for you</h1>';
+    html+='<p style="color:var(--parchment-dim);margin-bottom:3rem;font-style:italic;">picked from ' + document.title + '</p>';
+    picks.forEach(function(s,i){
+      var title=s.querySelector('.tribute-lead');
+      var body=s.querySelector('.tribute-body');
+      html+='<div style="margin-bottom:2.5rem;padding:1.5rem;border-left:2px solid rgba(232,93,58,0.3);">';
+      if(title)html+=title.outerHTML;
+      if(body)html+=body.outerHTML;
+      html+='</div>';
+    });
+    html+='</div></div>';
+    var div=document.createElement('div');
+    div.innerHTML=html;
+    document.body.appendChild(div.firstChild);
+  });
+  document.body.appendChild(btn);
+})();
+
+
+
+// Wallpaper Download
+(function() {
+  var btn = document.createElement('button');
+  btn.textContent = '\uD83D\uDCF7 Wallpaper';
+  btn.style.cssText = 'position:fixed;bottom:145px;left:25px;z-index:100;background:rgba(100,200,255,0.1);border:1px solid rgba(100,200,255,0.2);color:var(--parchment);padding:10px 18px;border-radius:24px;cursor:pointer;font-family:var(--font-display);font-size:0.85rem;transition:all 0.3s;backdrop-filter:blur(6px);';
+  btn.addEventListener('mouseenter',function(){this.style.background='rgba(100,200,255,0.2)';});
+  btn.addEventListener('mouseleave',function(){this.style.background='rgba(100,200,255,0.1)';});
+  btn.addEventListener('click', function() {
+    var tributes = document.querySelectorAll('.tribute');
+    if (!tributes.length) return;
+    var pick = tributes[Math.floor(Math.random() * tributes.length)];
+    var body = pick.querySelector('.tribute-body');
+    var quote = body ? body.textContent.trim() : 'for eeshah';
+    var titleEl = pick.querySelector('.tribute-lead');
+    var label = titleEl ? titleEl.textContent.trim() : '';
+
+    var ashFiles = ['ash1.jpeg','ash2.jpeg','ash3.jpeg','ash4.jpeg','ash5.jpeg','ash6.jpeg','ash7.jpeg','ash8.jpeg','ash9.jpeg','ash10.jpeg','ash11.jpeg','ash.jpeg','ash_childhood.jpeg','ash_childhood1.jpeg','ash_childhood2.jpeg','ash_childhood3.jpeg'];
+    var imgPath = './ash/' + ashFiles[Math.floor(Math.random() * ashFiles.length)];
+
+    var canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    var ctx = canvas.getContext('2d');
+
+    var img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = function() {
+      var scale = Math.max(canvas.width / img.width, canvas.height / img.height);
+      var x = (canvas.width - img.width * scale) / 2;
+      var y = (canvas.height - img.height * scale) / 2;
+      ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+
+      var overlay = ctx.createLinearGradient(0, canvas.height * 0.35, 0, canvas.height);
+      overlay.addColorStop(0, 'rgba(15,10,8,0.2)');
+      overlay.addColorStop(0.5, 'rgba(15,10,8,0.7)');
+      overlay.addColorStop(1, 'rgba(15,10,8,0.95)');
+      ctx.fillStyle = overlay;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = 'rgba(232,93,58,0.5)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(canvas.width * 0.15, canvas.height * 0.76);
+      ctx.lineTo(canvas.width * 0.85, canvas.height * 0.76);
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffebd2';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      ctx.font = '32px Georgia, serif';
+      ctx.fillText(label || 'for eeshah', canvas.width / 2, canvas.height * 0.12);
+
+      ctx.font = '48px Georgia, serif';
+      var maxWidth = canvas.width * 0.78;
+      var words = quote.split(' ');
+      var lines = [];
+      var line = '';
+      for (var i = 0; i < words.length; i++) {
+        var test = line + words[i] + ' ';
+        if (ctx.measureText(test).width > maxWidth) {
+          lines.push(line.trim());
+          line = words[i] + ' ';
+          if (lines.length >= 7) break;
+        } else {
+          line = test;
+        }
+      }
+      if (line.trim() && lines.length < 7) lines.push(line.trim());
+
+      var lineHeight = 68;
+      var startY = canvas.height * 0.48 - (lines.length * lineHeight) / 2;
+      for (var j = 0; j < lines.length; j++) {
+        ctx.fillText(lines[j], canvas.width / 2, startY + j * lineHeight);
+      }
+
+      ctx.font = '44px serif';
+      ctx.fillText('\u2661', canvas.width / 2, canvas.height * 0.88);
+
+      var link = document.createElement('a');
+      link.download = 'ash-wallpaper.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    };
+    img.onerror = function() {
+      var grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      grad.addColorStop(0, '#2a1f18');
+      grad.addColorStop(1, '#0f0a08');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#ffebd2';
+      ctx.font = '36px Georgia, serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('for eeshah', canvas.width / 2, canvas.height / 2);
+      var link = document.createElement('a');
+      link.download = 'ash-wallpaper.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    };
+    img.src = imgPath;
+  });
+  document.body.appendChild(btn);
+})();
+
       /*======= ACCESSIBILITY =======*/
       (function () {
         try {
@@ -8673,6 +8936,11 @@ END SECTION
     })();
   </script>
   <script defer src="music.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(function () {});
+    }
+  </script>
 
 </body>
 </html>
