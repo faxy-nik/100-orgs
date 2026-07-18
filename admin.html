@@ -8,6 +8,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+  <script src="fb-db.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -344,102 +347,17 @@
 <script>
 (function () {
   var PASSKEY = 'eshah';
-  var DB_NAME = 'ash-jukebox-db';
-  var DB_VER = 3;
-
-  var editingIndex = -1;
   var songs = [];
   var sections = [];
   var galleryItems = [];
 
-  /* ---- IndexedDB ---- */
-  function openDB() {
-    return new Promise(function (resolve, reject) {
-      var req = indexedDB.open(DB_NAME, DB_VER);
-      req.onupgradeneeded = function (e) {
-        var db = e.target.result;
-        if (!db.objectStoreNames.contains('songs')) {
-          db.createObjectStore('songs', { keyPath: 'id', autoIncrement: true });
-        }
-        if (!db.objectStoreNames.contains('config')) {
-          db.createObjectStore('config', { keyPath: 'key' });
-        }
-        if (!db.objectStoreNames.contains('counters')) {
-          db.createObjectStore('counters', { keyPath: 'key' });
-        }
-        if (!db.objectStoreNames.contains('reviews')) {
-          db.createObjectStore('reviews', { keyPath: 'id', autoIncrement: true });
-        }
-      };
-      req.onsuccess = function () { resolve(req.result); };
-      req.onerror = function () { reject(req.error); };
-    });
-  }
-
-  function dbGetAll(storeName) {
-    return openDB().then(function (db) {
-      return new Promise(function (resolve, reject) {
-        var tx = db.transaction(storeName, 'readonly');
-        var store = tx.objectStore(storeName);
-        var req = store.getAll();
-        tx.oncomplete = function () { db.close(); };
-        req.onsuccess = function () { resolve(req.result); };
-        req.onerror = function () { reject(req.error); };
-      });
-    });
-  }
-
-  function dbGet(storeName, key) {
-    return openDB().then(function (db) {
-      return new Promise(function (resolve, reject) {
-        var tx = db.transaction(storeName, 'readonly');
-        var store = tx.objectStore(storeName);
-        var req = store.get(key);
-        tx.oncomplete = function () { db.close(); };
-        req.onsuccess = function () { resolve(req.result); };
-        req.onerror = function () { reject(req.error); };
-      });
-    });
-  }
-
-  function dbPut(storeName, value) {
-    return openDB().then(function (db) {
-      return new Promise(function (resolve, reject) {
-        var tx = db.transaction(storeName, 'readwrite');
-        var store = tx.objectStore(storeName);
-        var req = store.put(value);
-        tx.oncomplete = function () { db.close(); };
-        req.onsuccess = function () { resolve(req.result); };
-        req.onerror = function () { reject(req.error); };
-      });
-    });
-  }
-
-  function dbDelete(storeName, key) {
-    return openDB().then(function (db) {
-      return new Promise(function (resolve, reject) {
-        var tx = db.transaction(storeName, 'readwrite');
-        var store = tx.objectStore(storeName);
-        var req = store.delete(key);
-        tx.oncomplete = function () { db.close(); };
-        req.onsuccess = function () { resolve(); };
-        req.onerror = function () { reject(req.error); };
-      });
-    });
-  }
-
-  function dbClear(storeName) {
-    return openDB().then(function (db) {
-      return new Promise(function (resolve, reject) {
-        var tx = db.transaction(storeName, 'readwrite');
-        var store = tx.objectStore(storeName);
-        var req = store.clear();
-        tx.oncomplete = function () { db.close(); };
-        req.onsuccess = function () { resolve(); };
-        req.onerror = function () { reject(req.error); };
-      });
-    });
-  }
+  /* ---- Firebase DB helpers ---- */
+  function openDB() { return Promise.resolve(true); }
+  function dbGetAll(storeName) { return FB.getAll(storeName); }
+  function dbGet(storeName, key) { return FB.get(storeName, key); }
+  function dbPut(storeName, data) { return FB.put(storeName, data); }
+  function dbDelete(storeName, key) { return FB.delete(storeName, key); }
+  function dbClear(storeName) { return FB.clear(storeName); }
 
   /* ---- Defaults ---- */
   function defaultSections() {
@@ -550,39 +468,38 @@
   function renderRequests() {
     var list = document.getElementById('requestsList');
     if (!list) return;
-    try {
-      var requests = JSON.parse(localStorage.getItem('ash-song-requests') || '[]');
-    } catch(e) { requests = []; }
-    if (!requests.length) {
-      list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F3B6;</div><p>No song requests yet</p></div>';
-      return;
-    }
-    var html = '';
-    for (var i = 0; i < requests.length; i++) {
-      var r = requests[i];
-      var date = r.date ? new Date(r.date).toLocaleDateString() : '';
-      html +=
-        '<div class="song-card">' +
-          '<div class="info">' +
-            '<div class="stitle">' + esc(r.song) + '</div>' +
-            '<div class="smeta">' + date + '</div>' +
-          '</div>' +
-          '<div class="actions">' +
-            '<button class="del-btn" data-index="' + i + '">Done</button>' +
-          '</div>' +
-        '</div>';
-    }
-    list.innerHTML = html;
-    list.querySelectorAll('.del-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var idx = parseInt(this.dataset.index);
-        try {
-          var reqs = JSON.parse(localStorage.getItem('ash-song-requests') || '[]');
-          reqs.splice(idx, 1);
-          localStorage.setItem('ash-song-requests', JSON.stringify(reqs));
-          renderRequests();
-        } catch(e) {}
+    FB.getAll('songRequests').then(function (requests) {
+      if (!requests.length) {
+        list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F3B6;</div><p>No song requests yet</p></div>';
+        return;
+      }
+      var html = '';
+      for (var i = 0; i < requests.length; i++) {
+        var r = requests[i];
+        var date = r.date ? new Date(r.date).toLocaleDateString() : '';
+        html +=
+          '<div class="song-card">' +
+            '<div class="info">' +
+              '<div class="stitle">' + esc(r.song) + '</div>' +
+              '<div class="smeta">' + date + '</div>' +
+            '</div>' +
+            '<div class="actions">' +
+              '<button class="del-btn" data-request-id="' + r.id + '">Done</button>' +
+            '</div>' +
+          '</div>';
+      }
+      list.innerHTML = html;
+      list.querySelectorAll('.del-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var id = this.dataset.requestId;
+          FB.delete('songRequests', id).then(function () {
+            toast('Request completed');
+            renderRequests();
+          });
+        });
       });
+    }).catch(function () {
+      list.innerHTML = '<div class="empty-state"><div class="icon">&#x26A0;&#xFE0F;</div><p>Error loading requests</p></div>';
     });
   }
 
@@ -590,62 +507,76 @@
     var list = document.getElementById('reviewsList');
     if (!list) return;
     list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F3A7;</div><p>Loading reviews...</p></div>';
-    var dbreq = indexedDB.open('ash-jukebox-db', 3);
-    dbreq.onsuccess = function () {
-      var db = dbreq.result;
-      var tx = db.transaction('reviews', 'readonly');
-      var store = tx.objectStore('reviews');
-      var all = store.getAll();
-      all.onsuccess = function () {
-        var reviews = all.result || [];
-        if (!reviews.length) {
-          list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F3A7;</div><p>No voice reviews yet</p></div>';
-          return;
-        }
-        reviews.sort(function (a, b) { return (b.date || '').localeCompare(a.date || ''); });
-        var html = '';
-        for (var i = 0; i < reviews.length; i++) {
-          var r = reviews[i];
+    FB.getAll('reviews').then(function (reviews) {
+      if (!reviews.length) {
+        list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F3A7;</div><p>No reviews yet</p></div>';
+        return;
+      }
+      reviews.sort(function (a, b) { return (b.date || '').localeCompare(a.date || ''); });
+      var textReviews = reviews.filter(function(r) { return r.type === 'text' || (!r.type && !r.audioBlob); });
+      var audioReviews = reviews.filter(function(r) { return r.type === 'audio' || (!r.type && r.audioBlob); });
+      var html = '';
+      if (textReviews.length) {
+        html += '<h3 style="color:var(--accent);margin:0 0 8px 0;font-size:0.95rem;">&#x1F4DD; Text Reviews (' + textReviews.length + ')</h3>';
+        for (var i = 0; i < textReviews.length; i++) {
+          var r = textReviews[i];
           var date = r.date ? new Date(r.date).toLocaleString() : '';
-          var title = r.sectionTitle ? esc(r.sectionTitle) : 'Section #' + (r.sectionIdx != null ? r.sectionIdx : '?');
-          var page = r.page ? esc(r.page) : '';
+          var title = r.section ? esc(r.section) : (r.sectionTitle ? esc(r.sectionTitle) : 'Section #' + (r.sectionIdx != null ? r.sectionIdx : '?'));
+          var page = r.file ? esc(r.file) : (r.page ? esc(r.page) : '');
           var text = r.text ? '<div class="review-text">' + esc(r.text) + '</div>' : '';
-          var audioHtml = '';
-          if (r.audioBlob) {
-            var url = URL.createObjectURL(r.audioBlob);
-            audioHtml = '<audio controls src="' + url + '" style="width:100%;height:32px;"></audio>';
-          }
           html +=
             '<div class="song-card">' +
               '<div class="info" style="flex:1;min-width:0;">' +
                 '<div class="stitle">' + title + '</div>' +
                 '<div class="smeta">' + page + ' &middot; ' + date + '</div>' +
                 (text) +
-                (audioHtml) +
               '</div>' +
               '<div class="actions" style="align-self:flex-start;">' +
                 '<button class="del-btn" data-review-id="' + r.id + '">Delete</button>' +
               '</div>' +
             '</div>';
         }
-        list.innerHTML = html;
-        list.querySelectorAll('.del-btn').forEach(function (btn) {
-          btn.addEventListener('click', function () {
-            var id = parseInt(this.dataset.reviewId);
-            var dbreq2 = indexedDB.open('ash-jukebox-db', 3);
-            dbreq2.onsuccess = function () {
-              var db2 = dbreq2.result;
-              var tx2 = db2.transaction('reviews', 'readwrite');
-              tx2.objectStore('reviews').delete(id);
-              tx2.oncomplete = function () {
-                toast('Review deleted');
-                renderReviews();
-              };
-            };
+      }
+      if (audioReviews.length) {
+        html += '<h3 style="color:var(--accent);margin:16px 0 8px 0;font-size:0.95rem;">&#x1F3A7; Voice Reviews (' + audioReviews.length + ')</h3>';
+        for (var j = 0; j < audioReviews.length; j++) {
+          var a = audioReviews[j];
+          var date2 = a.date ? new Date(a.date).toLocaleString() : '';
+          var title2 = a.section ? esc(a.section) : (a.sectionTitle ? esc(a.sectionTitle) : 'Section #' + (a.sectionIdx != null ? a.sectionIdx : '?'));
+          var page2 = a.file ? esc(a.file) : (a.page ? esc(a.page) : '');
+          var text2 = a.text ? '<div class="review-text">' + esc(a.text) + '</div>' : '';
+          var audioHtml = '';
+          if (a.audioBlob) {
+            var url = URL.createObjectURL(a.audioBlob);
+            audioHtml = '<audio controls src="' + url + '" style="width:100%;height:32px;"></audio>';
+          }
+          html +=
+            '<div class="song-card">' +
+              '<div class="info" style="flex:1;min-width:0;">' +
+                '<div class="stitle">' + title2 + '</div>' +
+                '<div class="smeta">' + page2 + ' &middot; ' + date2 + '</div>' +
+                (text2) +
+                (audioHtml) +
+              '</div>' +
+              '<div class="actions" style="align-self:flex-start;">' +
+                '<button class="del-btn" data-review-id="' + a.id + '">Delete</button>' +
+              '</div>' +
+            '</div>';
+        }
+      }
+      list.innerHTML = html;
+      list.querySelectorAll('.del-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var id = this.dataset.reviewId;
+          FB.delete('reviews', id).then(function () {
+            toast('Review deleted');
+            renderReviews();
           });
         });
-      };
-    };
+      });
+    }).catch(function () {
+      list.innerHTML = '<div class="empty-state"><div class="icon">&#x26A0;&#xFE0F;</div><p>Error loading reviews</p></div>';
+    });
   }
 
   function openGalleryModal(index) {
@@ -714,17 +645,13 @@
       }
 
       if (file) {
-        var reader = new FileReader();
-        reader.onload = function (e) {
-          item.fileData = e.target.result;
-          item.fileType = file.type;
-          item.file = '';
-          saveAndClose();
-        };
-        reader.readAsArrayBuffer(file);
+        item.fileBlob = file;
+        item.fileType = file.type;
+        item.file = '';
+        saveAndClose();
       } else {
-        if (!isNew && g.fileData) {
-          item.fileData = g.fileData;
+        if (!isNew && g.fileBlob) {
+          item.fileBlob = g.fileBlob;
           item.fileType = g.fileType;
         }
         saveAndClose();
@@ -743,8 +670,8 @@
     if (!songs.length) {
       var defaults = defaultSongs();
       for (var i = 0; i < defaults.length; i++) {
-        var id = await dbPut('songs', defaults[i]);
-        defaults[i].id = id;
+        var result = await dbPut('songs', defaults[i]);
+        if (result && result.key) defaults[i].id = result.key;
       }
       songs = defaults;
     }
@@ -780,8 +707,8 @@
     await dbClear('songs');
     for (var i = 0; i < songs.length; i++) {
       var s = songs[i];
-      var id = await dbPut('songs', s);
-      s.id = id;
+      var result = await dbPut('songs', s);
+      if (result && result.key) s.id = result.key;
     }
   }
 
@@ -985,18 +912,14 @@
       }
 
       if (file) {
-        var reader = new FileReader();
-        reader.onload = function (e) {
-          song.audioData = e.target.result; // ArrayBuffer
-          song.audioType = file.type;
-          song.fileName = file.name;
-          song.hasFile = true;
-          saveAndClose();
-        };
-        reader.readAsArrayBuffer(file);
+        song.audioBlob = file;
+        song.audioType = file.type;
+        song.fileName = file.name;
+        song.hasFile = true;
+        saveAndClose();
       } else {
-        if (!isNew && s && s.audioData) {
-          song.audioData = s.audioData;
+        if (!isNew && s && s.audioBlob) {
+          song.audioBlob = s.audioBlob;
           song.audioType = s.audioType;
           song.fileName = s.fileName;
         }
@@ -1008,7 +931,6 @@
 
   function closeModal() {
     document.getElementById('modalOverlay').classList.remove('open');
-    editingIndex = -1;
   }
 
   /* ---- Helpers ---- */
@@ -1077,20 +999,15 @@
     }
 
     if (file) {
-      var reader = new FileReader();
-      reader.onload = function (e) {
-        song.audioData = e.target.result;
-        song.audioType = file.type;
-        song.fileName = file.name;
-        song.hasFile = true;
-        doSave();
-      };
-      reader.readAsArrayBuffer(file);
+      song.audioBlob = file;
+      song.audioType = file.type;
+      song.fileName = file.name;
+      song.hasFile = true;
+      doSave();
     } else {
-      // Preserve existing audio if available
       dbGet('config', 'secretSong').then(function (existing) {
-        if (existing && existing.song && existing.song.audioData) {
-          song.audioData = existing.song.audioData;
+        if (existing && existing.song && existing.song.audioBlob) {
+          song.audioBlob = existing.song.audioBlob;
           song.audioType = existing.song.audioType;
           song.fileName = existing.song.fileName;
         }

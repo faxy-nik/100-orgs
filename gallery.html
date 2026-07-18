@@ -12,8 +12,11 @@
     href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+  <script src="fb-db.js"></script>
   <script>
-    (function(){var k='gallery',n='ash-jukebox-db',r=indexedDB.open(n);r.onerror=function(){};r.onsuccess=function(){var d=r.result,t=d.transaction('config','readonly'),s=t.objectStore('config'),g=s.get('sections');g.onsuccess=function(){var c=g.result&&g.result.data;if(c)for(var i=0;i<c.length;i++)if(c[i].key===k){var u=c[i];if(u.unlockDate&&u.autoUnlock!==false){var p=u.unlockDate.split('-'),un=new Date(+p[0],+p[1]-1,+p[2]),nw=new Date();nw.setHours(0,0,0,0);if(nw<un){document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#181214;color:#ffebd2;font-family:Georgia,serif;padding:2rem;text-align:center"><div><h1 style="font-family:Fraunces,Georgia,serif;color:#ffe680">&#x1F512; Locked</h1><p style="color:#6b5f52;margin-top:1rem">This section unlocks on '+u.unlockDate+'.</p><a href="index.html" style="display:inline-block;margin-top:1.5rem;padding:.6rem 1.5rem;border:1px solid #ffe680;color:#ffe680;border-radius:8px;text-decoration:none;font-family:Fraunces,Georgia,serif">&#x2190; Back home</a></div></div>'}}}};d.close()}})();
+(function(){var k='gallery';document.body.style.display='none';var ck=function(){FB.get('config','sections').then(function(d){document.body.style.display='';var c=d&&d.data;if(c)for(var i=0;i<c.length;i++)if(c[i].key===k){var u=c[i];if(u.unlockDate&&u.autoUnlock!==false){var p=u.unlockDate.split('-'),un=new Date(+p[0],+p[1]-1,+p[2]),nw=new Date();nw.setHours(0,0,0,0);if(nw<un){document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#181214;color:#ffebd2;font-family:Georgia,serif;padding:2rem;text-align:center"><div><h1 style="font-family:Fraunces,Georgia,serif;color:#ffe680">🔒 Locked</h1><p style="color:#6b5f52;margin-top:1rem">This section unlocks on '+u.unlockDate+'.</p><a href="index.html" style="display:inline-block;margin-top:1.5rem;padding:.6rem 1.5rem;border:1px solid #ffe680;color:#ffe680;border-radius:8px;text-decoration:none;font-family:Fraunces,Georgia,serif">← Back home</a></div></div>'}}}).catch(function(){document.body.style.display='';});};if(typeof FB!=='undefined'&&FB.init){FB.init();ck();}else{var iv=setInterval(function(){if(typeof FB!=='undefined'&&FB.init){clearInterval(iv);FB.init();ck();}},10);}})();
   </script>
   <style>
     :root {
@@ -471,8 +474,6 @@
         { type: 'video', file: 'ash/ash9.mp4', label: 'Video 9', note: 'this is you, unguarded and real — and it is the most beautiful thing i have ever seen' }
       ];
 
-      var DB_NAME = 'ash-jukebox-db';
-      var DB_VER = 2;
       var MEDIA = [];
       var grid = document.getElementById('galleryGrid');
       var lightbox = document.getElementById('lightbox');
@@ -483,51 +484,10 @@
       var lbNote = document.getElementById('lbNote');
       var currentIndex = -1;
 
-      function openDB() {
-        return new Promise(function (resolve, reject) {
-          var req = indexedDB.open(DB_NAME, DB_VER);
-          req.onupgradeneeded = function (e) {
-            var db = e.target.result;
-            if (!db.objectStoreNames.contains('config')) db.createObjectStore('config', { keyPath: 'key' });
-            if (!db.objectStoreNames.contains('songs')) db.createObjectStore('songs', { keyPath: 'id', autoIncrement: true });
-            if (!db.objectStoreNames.contains('counters')) db.createObjectStore('counters', { keyPath: 'key' });
-          };
-          req.onsuccess = function () { resolve(req.result); };
-          req.onerror = function () { reject(req.error); };
-        });
-      }
-
-      function dbGet(storeName, key) {
-        return openDB().then(function (db) {
-          return new Promise(function (resolve, reject) {
-            var tx = db.transaction(storeName, 'readonly');
-            var store = tx.objectStore(storeName);
-            var g = store.get(key);
-            tx.oncomplete = function () { db.close(); };
-            g.onsuccess = function () { resolve(g.result); };
-            g.onerror = function () { reject(g.error); };
-          });
-        });
-      }
-
-      function dbPut(storeName, value) {
-        return openDB().then(function (db) {
-          return new Promise(function (resolve, reject) {
-            var tx = db.transaction(storeName, 'readwrite');
-            var store = tx.objectStore(storeName);
-            var req = store.put(value);
-            tx.oncomplete = function () { db.close(); };
-            req.onsuccess = function () { resolve(req.result); };
-            req.onerror = function () { reject(req.error); };
-          });
-        });
-      }
-
       function loadMedia() {
-        return dbGet('config', 'gallery').then(function (data) {
+        return FB.get('config', 'gallery').then(function (data) {
           if (data && data.items && data.items.length) {
             MEDIA = data.items;
-            // Backfill missing notes from defaults
             var noteMap = {};
             for (var di = 0; di < DEFAULT_MEDIA.length; di++) noteMap[DEFAULT_MEDIA[di].file] = DEFAULT_MEDIA[di].note;
             var changed = false;
@@ -538,7 +498,7 @@
               }
             }
             if (changed) {
-              dbPut('config', { key: 'gallery', items: MEDIA });
+              FB.put('config', { id: 'gallery', items: MEDIA });
             }
           } else {
             MEDIA = DEFAULT_MEDIA.slice();

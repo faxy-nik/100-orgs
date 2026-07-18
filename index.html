@@ -12,6 +12,9 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap"
     rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+  <script src="fb-db.js"></script>
   <style>
     :root {
       --ink: #17130f;
@@ -379,32 +382,7 @@
         'gallery':     { year: 2026, month: 6, day: 28, file: 'gallery.html' }
       };
 
-      // Load section dates from IndexedDB (admin panel)
-      (function() {
-        var r = indexedDB.open('ash-jukebox-db', 2);
-        r.onsuccess = function() {
-          var db = r.result;
-          try {
-            var tx = db.transaction('config', 'readonly');
-            var store = tx.objectStore('config');
-            var g = store.get('sections');
-            g.onsuccess = function() {
-              var data = g.result && g.result.data;
-              if (data && data.length) {
-                for (var i = 0; i < data.length; i++) {
-                  var s = data[i];
-                  if (s.key && s.unlockDate && UNLOCK_DATES[s.key]) {
-                    var parts = s.unlockDate.split('-');
-                    UNLOCK_DATES[s.key].year = parseInt(parts[0]);
-                    UNLOCK_DATES[s.key].month = parseInt(parts[1]) - 1;
-                    UNLOCK_DATES[s.key].day = parseInt(parts[2]);
-                  }
-                }
-              }
-            };
-          } catch(e) {}
-        };
-      })();
+      FB.init();FB.get('config','index').catch(function(){});
 
       var TEASERS = {
         '100-organs': '"the curve of her waist, the arch of her neck — catalogued in devotion..."',
@@ -675,8 +653,8 @@
       /* ================================================================
          READING PROGRESS
          ================================================================ */
-      var progressEl = document.getElementById('readingProgress');
       function updateProgress() {
+        var progressEl = document.getElementById('readingProgress');
         if (!progressEl) return;
         var pages = [
           { key: '100-organs', file: '100-organs.html', label: '100 Organs' },
@@ -711,22 +689,21 @@
         var now = Date.now();
         var unlocked = 0;
         SECTIONS.forEach(function(s) {
-          var t = s.unlock.date ? new Date(s.unlock.date).getTime() : s.unlock.timestamp || 0;
+          var t = new Date(s.unlock.year, s.unlock.month - 1, s.unlock.day).getTime();
           if (t < earliest) earliest = t;
           if (t <= now) unlocked++;
         });
-        var daysSince = earliest ? Math.floor((now - earliest) / 86400000) : 0;
+        var daysSince = earliest !== Infinity ? Math.floor((now - earliest) / 86400000) : 0;
         daysEl.textContent = daysSince || '--';
 
         var nextUnlock = Infinity;
         SECTIONS.forEach(function(s) {
-          var t = s.unlock.date ? new Date(s.unlock.date).getTime() : s.unlock.timestamp || 0;
+          var t = new Date(s.unlock.year, s.unlock.month - 1, s.unlock.day).getTime();
           if (t > now && t < nextUnlock) nextUnlock = t;
         });
         var daysUntil = nextUnlock !== Infinity ? Math.floor((nextUnlock - now) / 86400000) : '--';
         unlockEl.textContent = daysUntil;
         countEl.textContent = unlocked;
-        setInterval(function() {}, 60000);
       })();
 
       // Song request
@@ -738,14 +715,13 @@
         btn.addEventListener('click', function() {
           var val = input.value.trim();
           if (!val) { status.textContent = 'Please enter a song!'; status.style.color = 'var(--ember)'; return; }
-          try {
-            var requests = JSON.parse(localStorage.getItem('ash-song-requests') || '[]');
-            requests.push({ song: val, date: new Date().toISOString() });
-            localStorage.setItem('ash-song-requests', JSON.stringify(requests));
+          FB.put('songRequests', { song: val, date: new Date().toISOString() }).then(function() {
             status.textContent = 'Your request was sent.';
             status.style.color = 'var(--parchment-dim)';
             input.value = '';
-          } catch(e) { status.textContent = 'Could not save request.'; }
+          }).catch(function() {
+            status.textContent = 'Could not save request.';
+          });
         });
         input.addEventListener('keydown', function(e) {
           if (e.key === 'Enter') btn.click();

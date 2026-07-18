@@ -10,52 +10,20 @@
     'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23182020%22/%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2220%22 fill=%22%23ff6347%22 opacity=%22.15%22/%3E%3C/svg%3E'
   ];
 
-  var DB_NAME = 'ash-jukebox-db';
-  var DB_VER = 3;
-
   var STORAGE_KEY = 'ash-jukebox';
   var audioUrls = [];
 
-  function openDB() {
-    return new Promise(function (resolve, reject) {
-      var req = indexedDB.open(DB_NAME, DB_VER);
-      req.onupgradeneeded = function (e) {
-        var db = e.target.result;
-        if (!db.objectStoreNames.contains('songs')) db.createObjectStore('songs', { keyPath: 'id', autoIncrement: true });
-        if (!db.objectStoreNames.contains('config')) db.createObjectStore('config', { keyPath: 'key' });
-        if (!db.objectStoreNames.contains('counters')) db.createObjectStore('counters', { keyPath: 'key' });
-        if (!db.objectStoreNames.contains('reviews')) db.createObjectStore('reviews', { keyPath: 'id', autoIncrement: true });
-      };
-      req.onsuccess = function () { resolve(req.result); };
-      req.onerror = function () { reject(req.error); };
-    });
-  }
+  function openDB() { return Promise.resolve(true); }
 
-  function dbGetAll(storeName) {
-    return openDB().then(function (db) {
-      return new Promise(function (resolve, reject) {
-        var tx = db.transaction(storeName, 'readonly');
-        var store = tx.objectStore(storeName);
-        var req = store.getAll();
-        tx.oncomplete = function () { db.close(); };
-        req.onsuccess = function () { resolve(req.result); };
-        req.onerror = function () { reject(req.error); };
-      });
-    });
-  }
+  function dbGetAll(storeName) { return FB.getAll(storeName); }
 
-  function dbGet(storeName, key) {
-    return openDB().then(function (db) {
-      return new Promise(function (resolve, reject) {
-        var tx = db.transaction(storeName, 'readonly');
-        var store = tx.objectStore(storeName);
-        var req = store.get(key);
-        tx.oncomplete = function () { db.close(); };
-        req.onsuccess = function () { resolve(req.result); };
-        req.onerror = function () { reject(req.error); };
-      });
-    });
-  }
+  function dbGet(storeName, key) { return FB.get(storeName, key); }
+
+  function dbPut(storeName, data) { return FB.put(storeName, data); }
+
+  function dbDelete(storeName, key) { return FB.delete(storeName, key); }
+
+  function dbClear(storeName) { return FB.clear(storeName); }
 
   function revokeAudioUrls() {
     for (var i = 0; i < audioUrls.length; i++) {
@@ -71,10 +39,9 @@
       for (var i = 0; i < records.length; i++) {
         var r = records[i];
         var audioUrl = null;
-        if (r.audioData) {
+        if (r.audioBlob) {
           try {
-            var blob = new Blob([r.audioData], { type: r.audioType || 'audio/mpeg' });
-            audioUrl = URL.createObjectURL(blob);
+            audioUrl = URL.createObjectURL(r.audioBlob);
             audioUrls.push(audioUrl);
           } catch(e) {}
         }
@@ -932,10 +899,9 @@
           if (secretData && secretData.song) {
             var sec = secretData.song;
             var secAudioUrl = null;
-            if (sec.audioData) {
+            if (sec.audioBlob) {
               try {
-                var blob = new Blob([sec.audioData], { type: sec.audioType || 'audio/mpeg' });
-                secAudioUrl = URL.createObjectURL(blob);
+                secAudioUrl = URL.createObjectURL(sec.audioBlob);
                 audioUrls.push(secAudioUrl);
               } catch(e) {}
             }
