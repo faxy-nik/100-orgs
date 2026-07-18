@@ -36,8 +36,9 @@
         var tx = db.transaction(storeName, 'readonly');
         var store = tx.objectStore(storeName);
         var req = store.getAll();
-        req.onsuccess = function () { db.close(); resolve(req.result); };
-        req.onerror = function () { db.close(); reject(req.error); };
+        tx.oncomplete = function () { db.close(); };
+        req.onsuccess = function () { resolve(req.result); };
+        req.onerror = function () { reject(req.error); };
       });
     });
   }
@@ -48,8 +49,9 @@
         var tx = db.transaction(storeName, 'readonly');
         var store = tx.objectStore(storeName);
         var req = store.get(key);
-        req.onsuccess = function () { db.close(); resolve(req.result); };
-        req.onerror = function () { db.close(); reject(req.error); };
+        tx.oncomplete = function () { db.close(); };
+        req.onsuccess = function () { resolve(req.result); };
+        req.onerror = function () { reject(req.error); };
       });
     });
   }

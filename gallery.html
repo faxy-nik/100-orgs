@@ -502,8 +502,9 @@
             var tx = db.transaction(storeName, 'readonly');
             var store = tx.objectStore(storeName);
             var g = store.get(key);
-            g.onsuccess = function () { db.close(); resolve(g.result); };
-            g.onerror = function () { db.close(); reject(g.error); };
+            tx.oncomplete = function () { db.close(); };
+            g.onsuccess = function () { resolve(g.result); };
+            g.onerror = function () { reject(g.error); };
           });
         });
       }
@@ -514,8 +515,9 @@
             var tx = db.transaction(storeName, 'readwrite');
             var store = tx.objectStore(storeName);
             var req = store.put(value);
-            req.onsuccess = function () { db.close(); resolve(req.result); };
-            req.onerror = function () { db.close(); reject(req.error); };
+            tx.oncomplete = function () { db.close(); };
+            req.onsuccess = function () { resolve(req.result); };
+            req.onerror = function () { reject(req.error); };
           });
         });
       }
