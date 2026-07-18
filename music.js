@@ -6,7 +6,7 @@
     'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%231c1620%22/%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2220%22 fill=%22%23e85d3a%22 opacity=%22.15%22/%3E%3C/svg%3E',
     'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23181820%22/%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2220%22 fill=%22%23ffd700%22 opacity=%22.12%22/%3E%3C/svg%3E',
     'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23221828%22/%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2220%22 fill=%22%23ffb6c1%22 opacity=%22.15%22/%3E%3C/svg%3E',
-    'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23202018%22/%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2220%22 fill=%22%23ffa500%22 opacity=%22.15%22/%3E%3Csvg%3E',
+    'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23202018%22/%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2220%22 fill=%22%23ffa500%22 opacity=%22.15%22/%3E%3C/svg%3E',
     'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%23182020%22/%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2220%22 fill=%22%23ff6347%22 opacity=%22.15%22/%3E%3C/svg%3E'
   ];
 
@@ -178,7 +178,7 @@
       if (state.favorites) this.favorites = state.favorites;
       if (state.shuffleOrder) this.shuffleOrder = state.shuffleOrder;
       if (state.shuffleIndex !== undefined) this.shuffleIndex = state.shuffleIndex;
-      if (state.currentTime) this.currentTime = state.currentTime;
+      if (state.currentTime !== undefined) this.currentTime = state.currentTime;
       this._autoPlay = !!state.isPlaying;
     } catch (e) {}
   };
@@ -372,8 +372,8 @@
       this.audio.load();
     }
 
-    var s = this.songs[this.currentIndex];
-    var src = s.src || '';
+    var s = this.songs && this.songs[this.currentIndex];
+    var src = s ? s.src || '' : '';
 
     this.audio = new Audio(src);
     this.audio.preload = 'auto';
@@ -469,7 +469,7 @@
   Jukebox.prototype.trackPlay = function () {
     var s = this.songs[this.currentIndex];
     if (s && window.Track) {
-      Track.increment('song_' + s.title);
+      window.Track.increment('song_' + s.title);
     }
   };
 
@@ -916,7 +916,7 @@
             unlocked++;
           }
         }
-        if (unlocked >= 3) {
+        if (unlocked >= 4) {
           var secretData = await dbGet('config', 'secretSong');
           if (secretData && secretData.song) {
             var sec = secretData.song;
@@ -961,6 +961,8 @@
       document.head.appendChild(script);
     }
   }
+
+  window.addEventListener('beforeunload', revokeAudioUrls);
 
   init();
 })();

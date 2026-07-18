@@ -1787,10 +1787,11 @@ END SECTION
       background: linear-gradient(135deg, rgba(232, 93, 58, 0.05), rgba(15, 10, 8, 0.95)) !important;
       background-image: 
         linear-gradient(rgba(15, 10, 8, 0.86), rgba(15, 10, 8, 0.94)), 
-        url('./parallax_bedroom.png') !important;
+        url('./parallax/parallax_bedroom.png') !important;
       background-attachment: fixed !important;
       background-position: center !important;
       background-size: cover !important;
+      background-repeat: no-repeat !important;
       border-color: rgba(232, 93, 58, 0.35) !important;
       box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
       transition: border-color 0.5s ease, box-shadow 0.5s ease, background-color 0.4s ease, transform .5s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -1806,7 +1807,9 @@ END SECTION
     body.day-mode .tribute.intimate-card {
       background-image: 
         linear-gradient(rgba(255, 248, 241, 0.92), rgba(255, 248, 241, 0.96)), 
-        url('./parallax_bedroom.png') !important;
+        url('./parallax/parallax_bedroom.png') !important;
+      background-size: cover !important;
+      background-repeat: no-repeat !important;
       border-color: rgba(162, 71, 43, 0.35) !important;
     }
 
@@ -2026,7 +2029,7 @@ END SECTION
           And I hope we never will be.</p>
       </section>
 
-      <div class="parallax-divider" style="background-image: url('./parallax_candle.png');">
+      <div class="parallax-divider" style="background-image: url('./ash/ash_childhood.jpeg');">
         <div class="parallax-overlay"></div>
         <div class="parallax-text">A single light in the dark...</div>
       </div>
@@ -3107,6 +3110,7 @@ END SECTION
 
       var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       var isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      if (isTouch) document.documentElement.classList.add('is-touch');
       var isMobileView = window.innerWidth <= 800;
       var safeEl = function (sel) { try { return document.querySelector(sel) } catch (e) { return null } };
 
@@ -4131,64 +4135,70 @@ END SECTION
           }
 
           // --- Parallax backgrounds for ALL sections ---
-          // 19 images: 9 general + 10 section-specific
+          // 20 original PNGs + a few ash photos in pool; keyword map uses old PNGs
           (function applyParallaxToAll() {
             var parallaxImages = [
-              './parallax_candle.png',
-              './parallax_hands.png',
-              './parallax_notebook.png',
-              './parallax_rooftop.png',
-              './parallax_bedroom.png',
-              './parallax_stars.png',
-              './parallax_rain.png',
-              './parallax_petals.png',
-              './parallax_fire.png',
-              './parallax_eyes.png',
-              './parallax_smile.png',
-              './parallax_lips.png',
-              './parallax_hair.png',
-              './parallax_cheeks.png',
-              './parallax_nose.png',
-              './parallax_face.png',
-              './parallax_ears.png',
-              './parallax_forehead.png',
-              './parallax_eyebrows.png',
-              './parallax_mole.png'
+              './parallax/parallax_candle.png',
+              './parallax/parallax_hands.png',
+              './parallax/parallax_notebook.png',
+              './parallax/parallax_rooftop.png',
+              './parallax/parallax_bedroom.png',
+              './parallax/parallax_stars.png',
+              './parallax/parallax_rain.png',
+              './parallax/parallax_petals.png',
+              './parallax/parallax_fire.png',
+              './parallax/parallax_eyes.png',
+              './parallax/parallax_smile.png',
+              './parallax/parallax_lips.png',
+              './parallax/parallax_hair.png',
+              './parallax/parallax_cheeks.png',
+              './parallax/parallax_nose.png',
+              './parallax/parallax_face.png',
+              './parallax/parallax_ears.png',
+              './parallax/parallax_forehead.png',
+              './parallax/parallax_eyebrows.png',
+              './parallax/parallax_mole.png',
+              './ash/ash_childhood.jpeg',
+              './ash/ash_childhood3.jpeg',
+              './ash/ash1.jpeg',
+              './ash/ash2.jpeg',
+              './ash/ash.jpeg',
+              './ash/ash6.jpeg'
             ];
 
             // Keyword-to-image mapping for section-specific parallax backgrounds
             var keywordMap = [
-              { kw: 'eyebrow', image: './parallax_eyebrows.png' },
-              { kw: 'eye', image: './parallax_eyes.png' },
-              { kw: 'pupil', image: './parallax_eyes.png' },
-              { kw: 'eyelash', image: './parallax_eyes.png' },
-              { kw: 'eyelid', image: './parallax_eyes.png' },
-              { kw: 'smile', image: './parallax_smile.png' },
-              { kw: 'laugh', image: './parallax_smile.png' },
-              { kw: 'lip', image: './parallax_lips.png' },
-              { kw: 'hairline', image: './parallax_hair.png' },
-              { kw: 'baby hair', image: './parallax_hair.png' },
-              { kw: 'scalp', image: './parallax_hair.png' },
-              { kw: 'hair', image: './parallax_hair.png' },
-              { kw: 'cheek', image: './parallax_cheeks.png' },
-              { kw: 'dimple', image: './parallax_cheeks.png' },
-              { kw: 'nose', image: './parallax_nose.png' },
-              { kw: 'face', image: './parallax_face.png' },
-              { kw: 'feature', image: './parallax_face.png' },
-              { kw: 'jawline', image: './parallax_face.png' },
-              { kw: 'chin', image: './parallax_face.png' },
-              { kw: 'ear', image: './parallax_ears.png' },
-              { kw: 'forehead', image: './parallax_forehead.png' },
-              { kw: 'mole', image: './parallax_mole.png' },
-              { kw: 'beauty', image: './parallax_mole.png' },
-              { kw: 'cleavage', image: './parallax_mole.png' },
-              { kw: 'breast', image: './parallax_mole.png' }
+              { kw: 'eyebrow', image: './ash/ash8.jpeg' },
+              { kw: 'forehead', image: './ash/ash8.jpeg' },
+              { kw: 'eye', image: './ash/ash1.jpeg' },
+              { kw: 'pupil', image: './ash/ash1.jpeg' },
+              { kw: 'eyelash', image: './ash/ash1.jpeg' },
+              { kw: 'eyelid', image: './ash/ash1.jpeg' },
+              { kw: 'smile', image: './ash/ash2.jpeg' },
+              { kw: 'laugh', image: './ash/ash2.jpeg' },
+              { kw: 'lip', image: './ash/ash2.jpeg' },
+              { kw: 'cheek', image: './ash/ash4.jpeg' },
+              { kw: 'dimple', image: './ash/ash4.jpeg' },
+              { kw: 'nose', image: './ash/ash5.jpeg' },
+              { kw: 'face', image: './ash/ash6.jpeg' },
+              { kw: 'feature', image: './ash/ash.jpeg' },
+              { kw: 'jawline', image: './ash/ash6.jpeg' },
+              { kw: 'chin', image: './ash/ash6.jpeg' },
+              { kw: 'ear', image: './parallax/parallax_ears.png' },
+              { kw: 'hairline', image: './parallax/parallax_hair.png' },
+              { kw: 'baby hair', image: './parallax/parallax_hair.png' },
+              { kw: 'scalp', image: './parallax/parallax_hair.png' },
+              { kw: 'hair', image: './parallax/parallax_hair.png' },
+              { kw: 'mole', image: './parallax/parallax_mole.png' },
+              { kw: 'beauty', image: './parallax/parallax_mole.png' },
+              { kw: 'cleavage', image: './parallax/parallax_mole.png' },
+              { kw: 'breast', image: './parallax/parallax_mole.png' }
             ];
 
             var allTributes = document.querySelectorAll('.tribute');
-            var isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-            var attachment = isTouch ? 'scroll' : 'fixed';
+            var attachment = 'scroll';
 
+            var lastImg = '';
             allTributes.forEach(function (tribute, idx) {
               var img = parallaxImages[idx % parallaxImages.length];
               var isIntimate = false;
@@ -4200,14 +4210,14 @@ END SECTION
                   var rawText = titleSpan.textContent.trim();
                   var lowerText = rawText.toLowerCase();
 
-                  // Intimate sections (161+) use bedroom — find first number (may follow emoji prefix)
+                  // Intimate sections (48+) use bedroom
                   var numMatch = rawText.match(/(\d+)/);
-                  if (numMatch && parseInt(numMatch[1], 10) >= 161) {
+                  if (numMatch && parseInt(numMatch[1], 10) >= 48) {
                     isIntimate = true;
                     tribute.classList.add('intimate-card');
-                    img = './parallax_bedroom.png';
-                  } else {
-                    // Keyword-based section-specific image
+                    img = './parallax/parallax_bedroom.png';
+                  } else if (lowerText.indexOf('--') === -1) {
+                    // Keyword mapping for top-level sections only (skip sub-sections like "nose--nosetip")
                     for (var mi = 0; mi < keywordMap.length; mi++) {
                       if (lowerText.indexOf(keywordMap[mi].kw) !== -1) {
                         img = keywordMap[mi].image;
@@ -4215,8 +4225,16 @@ END SECTION
                       }
                     }
                   }
+                  // Sub-sections (containing --) fall through to pool image
                 }
               }
+
+              // No two consecutive sections share the same image
+              if (img === lastImg) {
+                var poolIdx = parallaxImages.indexOf(img);
+                img = parallaxImages[(poolIdx + 1) % parallaxImages.length];
+              }
+              lastImg = img;
 
               // Apply parallax background via inline style
               var overlayOpacity = isIntimate ? '0.86' : '0.88';
@@ -4225,6 +4243,7 @@ END SECTION
                 'linear-gradient(rgba(' + overlayColor + ', ' + overlayOpacity + '), rgba(' + overlayColor + ', 0.95)), url(' + img + ')';
               tribute.style.backgroundAttachment = attachment;
               tribute.style.backgroundPosition = 'center';
+              tribute.style.backgroundRepeat = 'no-repeat';
               tribute.style.backgroundSize = 'cover';
             });
           })();
@@ -4359,26 +4378,6 @@ END SECTION
 
           // Run IMMEDIATELY — no deferral, content-visibility is removed so all DOM is accessible
           initHeartButtons();
-
-          // --- Dedication staggered reveal ---
-          const dedBody = document.querySelector('.dedication-body');
-          if (dedBody) {
-            const raw = dedBody.innerHTML;
-            const lines = raw.split('\n').map(line => {
-              if (!line.trim()) return '';
-              return '<span class="dedication-line">' + line + '</span>';
-            });
-            dedBody.innerHTML = lines.join('\n');
-
-            setTimeout(() => {
-              const spanLines = dedBody.querySelectorAll('.dedication-line');
-              spanLines.forEach((span, idx) => {
-                setTimeout(() => {
-                  span.classList.add('reveal');
-                }, idx * 100);
-              });
-            }, 1800);
-          }
         } catch (e) { console.error('UX controller error:', e); }
       })();
 
@@ -4420,11 +4419,12 @@ END SECTION
             observer.disconnect();
             ded.classList.add('typing');
             var i = 0;
-            var speed = 8;
+            var speed = 10;
+            var batch = Math.max(1, Math.ceil(text.length / 5000));
             var timer = setInterval(function () {
               if (i < text.length) {
-                ded.textContent = text.slice(0, i + 1);
-                i++;
+                i = Math.min(i + batch, text.length);
+                ded.textContent = text.slice(0, i);
               } else {
                 clearInterval(timer);
                 ded.classList.add('done');

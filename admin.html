@@ -234,6 +234,7 @@
     <button class="tab active" data-tab="sections">&#x1F4C5; Unlock Dates</button>
     <button class="tab" data-tab="songs">&#x1F3B5; Songs</button>
     <button class="tab" data-tab="secret">&#x2728; Secret</button>
+    <button class="tab" data-tab="gallery">&#x1F5BC;&#xFE0F; Gallery</button>
   </div>
 
   <!-- Tab: Sections -->
@@ -256,7 +257,7 @@
   <!-- Tab: Secret -->
   <div class="tab-content" id="tabSecret">
     <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
-      This song appears when <strong>all three sections</strong> are unlocked. A little reward for making it through everything.
+      This song appears when <strong>all four sections</strong> are unlocked. A little reward for making it through everything.
     </p>
     <div id="secretForm">
       <div class="field" style="margin-bottom:.85rem;">
@@ -302,6 +303,15 @@
       <button id="secNoteSaveBtn" style="padding:.45rem 1.25rem;border-radius:6px;cursor:pointer;font-family:'Fraunces',Georgia,serif;font-size:.8rem;background:rgba(255,230,128,.1);border:1px solid #ffe680;color:#ffe680;">Save Note</button>
     </div>
   </div>
+
+  <!-- Tab: Gallery -->
+  <div class="tab-content" id="tabGallery">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Manage gallery images and videos. Add notes to each item.
+    </p>
+    <div class="song-list" id="galleryList"></div>
+    <button class="add-btn" id="galleryAddBtn">+ Add Gallery Item</button>
+  </div>
 </div>
 
 <!-- Modal -->
@@ -320,6 +330,7 @@
   var editingIndex = -1;
   var songs = [];
   var sections = [];
+  var galleryItems = [];
 
   /* ---- IndexedDB ---- */
   function openDB() {
@@ -410,7 +421,9 @@
       { key: 'love',        label: 'Love',        file: 'love.html',        icon: '\uD83D\uDC98',
         unlockDate: '2026-07-21', autoUnlock: true },
       { key: 'fantasies',   label: 'Fantasies',   file: 'fantasies.html',   icon: '\uD83D\uDD25',
-        unlockDate: '2026-07-25', autoUnlock: true }
+        unlockDate: '2026-07-25', autoUnlock: true },
+      { key: 'gallery',     label: 'Gallery',     file: 'gallery.html',     icon: '\uD83D\uDDBC\uFE0F',
+        unlockDate: '2026-07-28', autoUnlock: true }
     ];
   }
 
@@ -423,6 +436,171 @@
       { title: 'Photograph',        artist: 'Ed Sheeran',       duration: 259, unlockDate: '', autoUnlock: true, hasFile: false },
       { title: 'I Wanna Be Yours',  artist: 'Arctic Monkeys',   duration: 184, unlockDate: '', autoUnlock: true, hasFile: false }
     ];
+  }
+
+  function defaultGallery() {
+    return [
+      { type: 'image', file: 'ash/ash.jpeg', label: 'Ash', note: 'the way light falls on you — i could spend forever just watching' },
+      { type: 'image', file: 'ash/ash1.jpeg', label: 'Ash 1', note: 'that look in your eyes, soft and infinite, like i have known you for a thousand lifetimes' },
+      { type: 'image', file: 'ash/ash2.jpeg', label: 'Ash 2', note: 'there is a quiet poetry in the way you exist — unapologetic and beautiful' },
+      { type: 'image', file: 'ash/ash3.jpeg', label: 'Ash 3', note: 'the kind of beauty that makes the world stop and forget to breathe' },
+      { type: 'image', file: 'ash/ash4.jpeg', label: 'Ash 4', note: 'in a room full of people, my eyes will always find you first' },
+      { type: 'image', file: 'ash/ash5.jpeg', label: 'Ash 5', note: 'you carry the warmth of a thousand sunsets in your smile' },
+      { type: 'image', file: 'ash/ash6.jpeg', label: 'Ash 6', note: 'gentle like the first rain, fierce like a fire that refuses to die' },
+      { type: 'image', file: 'ash/ash7.jpeg', label: 'Ash 7', note: 'if i could freeze any moment, it would be this — you, being you' },
+      { type: 'image', file: 'ash/ash8.jpeg', label: 'Ash 8', note: 'every photograph of you is a love letter i did not write but the universe did' },
+      { type: 'image', file: 'ash/ash9.jpeg', label: 'Ash 9', note: 'there are galaxies in your eyes and i want to get lost in every single one' },
+      { type: 'image', file: 'ash/ash10.jpeg', label: 'Ash 10', note: 'even the stars envy the way you shine without trying' },
+      { type: 'image', file: 'ash/ash11.jpeg', label: 'Ash 11', note: 'this is the version of you i carry with me everywhere — perfect and real' },
+      { type: 'image', file: 'ash/ash_childhood.jpeg', label: 'Childhood', note: 'even then, before i knew you, the world was preparing you for me' },
+      { type: 'image', file: 'ash/ash_childhood1.jpeg', label: 'Childhood 1', note: 'innocence that time could not erase — the beginning of someone extraordinary' },
+      { type: 'image', file: 'ash/ash_childhood2.jpeg', label: 'Childhood 2', note: 'somewhere in these years, your soul learned how to hold all the love it would one day deserve' },
+      { type: 'image', file: 'ash/ash_childhood3.jpeg', label: 'Childhood 3', note: 'the world did not know it yet, but it was raising the girl who would become my everything' },
+      { type: 'video', file: 'ash/ash1.mp4', label: 'Video 1', note: 'a moment stolen from time — i wish i could live here forever' },
+      { type: 'video', file: 'ash/ash2.mp4', label: 'Video 2', note: 'even in motion, you move like poetry — every gesture a verse i want to memorize' },
+      { type: 'video', file: 'ash/ash3.mp4', label: 'Video 3', note: 'this is what it sounds like when everything feels right in the world' },
+      { type: 'video', file: 'ash/ash4.mp4', label: 'Video 4', note: 'if my life were a film, this would be the scene i would replay on loop' },
+      { type: 'video', file: 'ash/ash5.mp4', label: 'Video 5', note: 'there is music in the way you move, and i cannot stop listening' },
+      { type: 'video', file: 'ash/ash6.mp4', label: 'Video 6', note: 'some memories are better than dreams — this is one of them' },
+      { type: 'video', file: 'ash/ash7.mp4', label: 'Video 7', note: 'the camera loves you, but not as much as i do' },
+      { type: 'video', file: 'ash/ash8.mp4', label: 'Video 8', note: 'you exist the way autumn feels — warm, fleeting, and unforgettable' },
+      { type: 'video', file: 'ash/ash9.mp4', label: 'Video 9', note: 'this is you, unguarded and real — and it is the most beautiful thing i have ever seen' }
+    ];
+  }
+
+  /* ---- Gallery ---- */
+  async function loadGallery() {
+    var data = await dbGet('config', 'gallery');
+    galleryItems = (data && data.items && data.items.length) ? data.items : [];
+  }
+
+  async function saveGallery() {
+    await dbPut('config', { key: 'gallery', items: galleryItems });
+  }
+
+  function renderGallery() {
+    var list = document.getElementById('galleryList');
+    if (!galleryItems.length) {
+      list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F5BC;&#xFE0F;</div><p>No gallery items yet</p></div>';
+      return;
+    }
+    var html = '';
+    for (var i = 0; i < galleryItems.length; i++) {
+      var g = galleryItems[i];
+      var icon = g.type === 'video' ? '\uD83C\uDFA5' : '\uD83D\uDDBC\uFE0F';
+      var notePreview = g.note ? esc(g.note).substring(0, 60) + (g.note.length > 60 ? '...' : '') : '';
+      html +=
+        '<div class="song-card">' +
+          '<div class="thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.2rem;">' + icon + '</div>' +
+          '<div class="info">' +
+            '<div class="stitle">' + esc(g.label) + '</div>' +
+            '<div class="sartist">' + (g.file || 'uploaded file') + '</div>' +
+            (notePreview ? '<div class="sartist" style="font-style:italic;color:#6b5f52;">' + notePreview + '</div>' : '') +
+          '</div>' +
+          '<div class="actions">' +
+            '<button class="edit-btn gal-edit" data-index="' + i + '" title="Edit">&#x270E;</button>' +
+            '<button class="del-btn gal-del" data-index="' + i + '" title="Delete">&#x2716;</button>' +
+          '</div>' +
+        '</div>';
+    }
+    list.innerHTML = html;
+
+    list.querySelectorAll('.gal-edit').forEach(function (btn) {
+      btn.addEventListener('click', function () { openGalleryModal(parseInt(this.dataset.index)); });
+    });
+    list.querySelectorAll('.gal-del').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var idx = parseInt(this.dataset.index);
+        if (confirm('Delete "' + galleryItems[idx].label + '"?')) {
+          galleryItems.splice(idx, 1);
+          saveGallery().then(function () { renderGallery(); toast('Gallery item deleted'); });
+        }
+      });
+    });
+  }
+
+  function openGalleryModal(index) {
+    var isNew = index === -1;
+    var g = isNew ? {} : galleryItems[index];
+    var label = isNew ? '' : esc(g.label);
+    var note = isNew ? '' : esc(g.note);
+    var type = isNew ? 'image' : g.type;
+    var hasFile = !isNew && g.fileData;
+
+    document.getElementById('modalContent').innerHTML =
+      '<h2>' + (isNew ? 'Add Gallery Item' : 'Edit Gallery Item') + '</h2>' +
+      '<div class="field"><label>Type</label>' +
+        '<select id="fGalType" style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;">' +
+          '<option value="image"' + (type === 'image' ? ' selected' : '') + '>Image</option>' +
+          '<option value="video"' + (type === 'video' ? ' selected' : '') + '>Video</option>' +
+        '</select>' +
+      '</div>' +
+      '<div class="field"><label>Label</label><input type="text" id="fGalLabel" value="' + label + '" placeholder="e.g. Sunset"></div>' +
+      '<div class="field"><label>Note</label><textarea id="fGalNote" rows="3" placeholder="A short caption for this image..." style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;resize:vertical;">' + note + '</textarea></div>' +
+      '<div class="field"><label>File' + (hasFile ? ' (current: file saved)' : '') + '</label>' +
+        '<input type="file" id="fGalFile" accept="image/*,video/*">' +
+        '<div class="file-info" id="fGalFileInfo">' + (g.file && !g.fileData ? 'Path: ' + g.file : '') + '</div>' +
+      '</div>' +
+      '<div class="modal-actions">' +
+        '<button class="btn-cancel" id="modalCancel">Cancel</button>' +
+        '<button class="btn-save" id="modalGalSave">' + (isNew ? 'Add' : 'Save') + '</button>' +
+      '</div>';
+    document.getElementById('modalOverlay').classList.add('open');
+
+    document.getElementById('fGalFile').addEventListener('change', function () {
+      var f = this.files[0];
+      document.getElementById('fGalFileInfo').textContent = f ? f.name + ' (' + Math.round(f.size / 1024) + ' KB)' : '';
+    });
+
+    document.getElementById('modalCancel').addEventListener('click', closeModal);
+    document.getElementById('modalGalSave').addEventListener('click', function () {
+      var label = document.getElementById('fGalLabel').value.trim();
+      var note = document.getElementById('fGalNote').value.trim();
+      var type = document.getElementById('fGalType').value;
+      var fileInput = document.getElementById('fGalFile');
+      var file = fileInput.files[0];
+
+      if (!label) { toast('Label is required'); return; }
+
+      if (!file && isNew && !g.file) { toast('Please select a file'); return; }
+
+      var item = {
+        type: type,
+        label: label,
+        note: note,
+        file: g.file || '',
+        fileData: null,
+        fileType: g.fileType || ''
+      };
+
+      function saveAndClose() {
+        if (isNew) {
+          galleryItems.push(item);
+        } else {
+          galleryItems[index] = item;
+        }
+        saveGallery().then(function () {
+          renderGallery(); closeModal(); toast('Gallery item saved!');
+        });
+      }
+
+      if (file) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+          item.fileData = e.target.result;
+          item.fileType = file.type;
+          item.file = '';
+          saveAndClose();
+        };
+        reader.readAsArrayBuffer(file);
+      } else {
+        if (!isNew && g.fileData) {
+          item.fileData = g.fileData;
+          item.fileType = g.fileType;
+        }
+        saveAndClose();
+      }
+    });
   }
 
   /* ---- Load / Save ---- */
@@ -445,6 +623,25 @@
     if (!sections.length) {
       sections = defaultSections();
       await dbPut('config', { key: 'sections', data: sections });
+    } else {
+      var defaults = defaultSections();
+      var hasKey = {};
+      for (var si = 0; si < sections.length; si++) hasKey[sections[si].key] = true;
+      var changed = false;
+      for (var di = 0; di < defaults.length; di++) {
+        if (!hasKey[defaults[di].key]) {
+          sections.push(defaults[di]);
+          changed = true;
+        }
+      }
+      if (changed) await dbPut('config', { key: 'sections', data: sections });
+    }
+
+    // Gallery
+    await loadGallery();
+    if (!galleryItems.length) {
+      galleryItems = defaultGallery();
+      await saveGallery();
     }
 
     updateStatus();
@@ -470,7 +667,8 @@
     document.getElementById('statusText').textContent =
       songCount + ' song' + (songCount !== 1 ? 's' : '') +
       (fileCount ? ' (' + fileCount + ' with audio)' : '') +
-      ' \u2022 ' + sections.length + ' section' + (sections.length !== 1 ? 's' : '');
+      ' \u2022 ' + sections.length + ' section' + (sections.length !== 1 ? 's' : '') +
+      ' \u2022 ' + galleryItems.length + ' gallery item' + (galleryItems.length !== 1 ? 's' : '');
   }
 
   /* ---- Render Sections ---- */
@@ -578,12 +776,7 @@
         renderSections(); closeModal(); toast('Unlock date saved!');
       });
     });
-    document.getElementById('modalOverlay').addEventListener('click', function (e) {
-      if (e.target === this) closeModal();
-    });
-  }
-
-  /* ---- Song Modal ---- */
+    /* ---- Song Modal ---- */
   function openSongModal(index) {
     var isNew = index === -1;
     var s = isNew ? {} : songs[index];
@@ -670,9 +863,6 @@
       }
     });
 
-    document.getElementById('modalOverlay').addEventListener('click', function (e) {
-      if (e.target === this) closeModal();
-    });
   }
 
   function closeModal() {
@@ -776,6 +966,11 @@
     }).catch(function () { toast('Error clearing secret song'); });
   }
 
+  // Single overlay close listener (not duplicated per modal open)
+  document.getElementById('modalOverlay').addEventListener('click', function (e) {
+    if (e.target === this) closeModal();
+  });
+
   /* ---- Init ---- */
   async function init() {
     if (localStorage.getItem('ash-admin-auth') === '1') {
@@ -810,13 +1005,14 @@
     });
 
     document.getElementById('addBtn').addEventListener('click', function () { openSongModal(-1); });
+    document.getElementById('galleryAddBtn').addEventListener('click', function () { openGalleryModal(-1); });
 
     // Reset
     document.getElementById('resetBtn').addEventListener('click', function () {
       if (!confirm('Reset all data to defaults? This will delete all uploaded songs and custom unlock dates.')) return;
       dbClear('songs').then(function () {
         dbClear('config').then(function () {
-          loadAll().then(function () { renderSections(); renderSongs(); toast('Reset to defaults'); });
+          loadAll().then(function () { renderSections(); renderSongs(); renderGallery(); toast('Reset to defaults'); });
         });
       });
     });
@@ -828,8 +1024,9 @@
         document.querySelectorAll('.tab-content').forEach(function (t) { t.classList.remove('active'); });
         this.classList.add('active');
         document.getElementById('tab' + this.dataset.tab.charAt(0).toUpperCase() + this.dataset.tab.slice(1)).classList.add('active');
-        // Load secret form when switching to secret tab
+        // Load tab-specific data
         if (this.dataset.tab === 'secret') loadSecretForm();
+        if (this.dataset.tab === 'gallery') renderGallery();
       });
     });
 
