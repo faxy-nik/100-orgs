@@ -115,6 +115,7 @@
     .song-card .info .stitle { font-family: 'Fraunces', Georgia, serif; font-size: .85rem; color: #ffebd2; }
     .song-card .info .sartist { font-size: .72rem; color: #6b5f52; }
     .song-card .info .smeta { font-size: .65rem; color: #6b5f52; margin-top: 1px; display: flex; gap: .75rem; }
+    .song-card .info .review-text { font-size: .78rem; color: #d4c5a9; margin-top: 6px; padding: 6px 8px; background: rgba(255,255,255,0.04); border-radius: 4px; border-left: 2px solid rgba(232,93,58,0.3); }
     .song-card .info .smeta .locked { color: #e85d3a; }
     .song-card .info .smeta .has-file { color: #6fcf97; }
     .song-card .actions { display: flex; gap: 4px; flex-shrink: 0; }
@@ -236,6 +237,8 @@
     <button class="tab" data-tab="songs">&#x1F3B5; Songs</button>
     <button class="tab" data-tab="secret">&#x2728; Secret</button>
     <button class="tab" data-tab="gallery">&#x1F5BC;&#xFE0F; Gallery</button>
+    <button class="tab" data-tab="requests">&#x1F3B6; Requests</button>
+    <button class="tab" data-tab="reviews">&#x1F3A7; Reviews</button>
   </div>
 
   <!-- Tab: Sections -->
@@ -313,6 +316,22 @@
     <div class="song-list" id="galleryList"></div>
     <button class="add-btn" id="galleryAddBtn">+ Add Gallery Item</button>
   </div>
+
+  <!-- Tab: Requests -->
+  <div class="tab-content" id="tabRequests">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Song requests submitted from the landing page.
+    </p>
+    <div id="requestsList"></div>
+  </div>
+
+  <!-- Tab: Reviews -->
+  <div class="tab-content" id="tabReviews">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Voice recordings and text reviews submitted from tribute sections.
+    </p>
+    <div id="reviewsList"></div>
+  </div>
 </div>
 
 <!-- Modal -->
@@ -326,7 +345,7 @@
 (function () {
   var PASSKEY = 'eshah';
   var DB_NAME = 'ash-jukebox-db';
-  var DB_VER = 2;
+  var DB_VER = 3;
 
   var editingIndex = -1;
   var songs = [];
@@ -347,6 +366,9 @@
         }
         if (!db.objectStoreNames.contains('counters')) {
           db.createObjectStore('counters', { keyPath: 'key' });
+        }
+        if (!db.objectStoreNames.contains('reviews')) {
+          db.createObjectStore('reviews', { keyPath: 'id', autoIncrement: true });
         }
       };
       req.onsuccess = function () { resolve(req.result); };
@@ -523,6 +545,107 @@
         }
       });
     });
+  }
+
+  function renderRequests() {
+    var list = document.getElementById('requestsList');
+    if (!list) return;
+    try {
+      var requests = JSON.parse(localStorage.getItem('ash-song-requests') || '[]');
+    } catch(e) { requests = []; }
+    if (!requests.length) {
+      list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F3B6;</div><p>No song requests yet</p></div>';
+      return;
+    }
+    var html = '';
+    for (var i = 0; i < requests.length; i++) {
+      var r = requests[i];
+      var date = r.date ? new Date(r.date).toLocaleDateString() : '';
+      html +=
+        '<div class="song-card">' +
+          '<div class="info">' +
+            '<div class="stitle">' + esc(r.song) + '</div>' +
+            '<div class="smeta">' + date + '</div>' +
+          '</div>' +
+          '<div class="actions">' +
+            '<button class="del-btn" data-index="' + i + '">Done</button>' +
+          '</div>' +
+        '</div>';
+    }
+    list.innerHTML = html;
+    list.querySelectorAll('.del-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var idx = parseInt(this.dataset.index);
+        try {
+          var reqs = JSON.parse(localStorage.getItem('ash-song-requests') || '[]');
+          reqs.splice(idx, 1);
+          localStorage.setItem('ash-song-requests', JSON.stringify(reqs));
+          renderRequests();
+        } catch(e) {}
+      });
+    });
+  }
+
+  function renderReviews() {
+    var list = document.getElementById('reviewsList');
+    if (!list) return;
+    list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F3A7;</div><p>Loading reviews...</p></div>';
+    var dbreq = indexedDB.open('ash-jukebox-db', 3);
+    dbreq.onsuccess = function () {
+      var db = dbreq.result;
+      var tx = db.transaction('reviews', 'readonly');
+      var store = tx.objectStore('reviews');
+      var all = store.getAll();
+      all.onsuccess = function () {
+        var reviews = all.result || [];
+        if (!reviews.length) {
+          list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F3A7;</div><p>No voice reviews yet</p></div>';
+          return;
+        }
+        reviews.sort(function (a, b) { return (b.date || '').localeCompare(a.date || ''); });
+        var html = '';
+        for (var i = 0; i < reviews.length; i++) {
+          var r = reviews[i];
+          var date = r.date ? new Date(r.date).toLocaleString() : '';
+          var title = r.sectionTitle ? esc(r.sectionTitle) : 'Section #' + (r.sectionIdx != null ? r.sectionIdx : '?');
+          var page = r.page ? esc(r.page) : '';
+          var text = r.text ? '<div class="review-text">' + esc(r.text) + '</div>' : '';
+          var audioHtml = '';
+          if (r.audioBlob) {
+            var url = URL.createObjectURL(r.audioBlob);
+            audioHtml = '<audio controls src="' + url + '" style="width:100%;height:32px;"></audio>';
+          }
+          html +=
+            '<div class="song-card">' +
+              '<div class="info" style="flex:1;min-width:0;">' +
+                '<div class="stitle">' + title + '</div>' +
+                '<div class="smeta">' + page + ' &middot; ' + date + '</div>' +
+                (text) +
+                (audioHtml) +
+              '</div>' +
+              '<div class="actions" style="align-self:flex-start;">' +
+                '<button class="del-btn" data-review-id="' + r.id + '">Delete</button>' +
+              '</div>' +
+            '</div>';
+        }
+        list.innerHTML = html;
+        list.querySelectorAll('.del-btn').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var id = parseInt(this.dataset.reviewId);
+            var dbreq2 = indexedDB.open('ash-jukebox-db', 3);
+            dbreq2.onsuccess = function () {
+              var db2 = dbreq2.result;
+              var tx2 = db2.transaction('reviews', 'readwrite');
+              tx2.objectStore('reviews').delete(id);
+              tx2.oncomplete = function () {
+                toast('Review deleted');
+                renderReviews();
+              };
+            };
+          });
+        });
+      };
+    };
   }
 
   function openGalleryModal(index) {
@@ -1045,6 +1168,8 @@
         // Load tab-specific data
         if (this.dataset.tab === 'secret') loadSecretForm();
         if (this.dataset.tab === 'gallery') renderGallery();
+        if (this.dataset.tab === 'requests') renderRequests();
+        if (this.dataset.tab === 'reviews') renderReviews();
       });
     });
 

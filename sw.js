@@ -1,4 +1,4 @@
-var CACHE = 'ash-v1';
+var CACHE = 'ash-v2';
 var urlsToCache = [
   '/',
   '/index.html',
@@ -7,7 +7,12 @@ var urlsToCache = [
   '/fantasies.html',
   '/gallery.html',
   '/admin.html',
+  '/stats.html',
+  '/404.html',
   '/music.js',
+  '/skies.js',
+  '/sky-living.js',
+  '/track.js',
   '/style.css'
 ];
 

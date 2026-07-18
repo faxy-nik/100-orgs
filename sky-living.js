@@ -1,0 +1,1157 @@
+/* ===================================================================
+   SKY LIVING — additive enhancement layer for skies.js
+   ---------------------------------------------------------------------
+   WHAT THIS FILE IS
+   skies.js owns two private <canvas> layers, its own SkyInstance /
+   OverlayManager / AnimationManager, and the SKIES config array. All of
+   that is closed over inside skies.js's IIFE and is NOT touched here —
+   nothing in this file edits skies.js, its canvases, its rAF loop, or
+   its data. This file adds a THIRD canvas on top (its own tiny rAF
+   loop, paused with the same discipline skies.js uses: prefers-
+   reduced-motion => static frame, tab hidden => stop) and hooks into
+   the sky lifecycle the only way an outside script safely can: by
+   wrapping the public window.Skies.apply() function.
+
+   LOAD ORDER: this file must load AFTER skies.js.
+     <script src="skies.js"></script>
+     <script src="sky-living.js"></script>
+
+   WHAT'S IMPLEMENTED
+     1. Dynamic Moon System        (phase per sky, drift, glow halo, rise)
+     2. Shooting Star System       (random spawn, click -> floating message)
+     3. Interactive Star Field     (hover glow/scale, click ripple+sparkle)
+     4. Constellation Generator    (heart / infinity / crescent / butterfly /
+                                     rose / random-walk, click -> message)
+     5. Floating Celestial Objects (per-sky weighted glyph drifters)
+     6. Living Sky Evolution       (stars grow in, fog eases in, moon rises,
+                                     slowly, for as long as a sky stays open)
+     7. Rare Sky Events            (low-probability burst on sky change:
+                                     meteor storm, aurora surge, comet,
+                                     double rainbow, moon flare, lantern
+                                     festival — visual only, self-clearing)
+     8. Sky Journey Journal        (localStorage log of skies seen + a
+                                     small toggleable panel to view it)
+     9. Hidden Easter Eggs         (click counters -> unlock message)
+    10. Ambient audio hook         (separate <audio> elements, own gain,
+                                     never touches music.js's Jukebox/
+                                     AudioContext — see SkyAmbience below.
+                                     YOU must supply real file URLs; there
+                                     are none built in.)
+    11. Paragraph-reactive hook    (SkyLiving.setMood(mood) — call this
+                                     from your own scroll/IntersectionObserver
+                                     code in 100-organs.html / fantasies.html;
+                                     this file can't discover your paragraph
+                                     markup on its own, so it exposes the
+                                     hook instead of guessing at it)
+
+   WHAT'S DELIBERATELY NOT ATTEMPTED HERE (would need engine-level
+   access this file doesn't have, or assets you haven't given me):
+     - true cloud-occlusion of the moon (skies.js's CloudLayer is
+       private canvas noise, not discrete sprites you can test moon-vs-
+       cloud collision against) — approximated instead with a soft
+       periodic dimming so the moon still visibly "breathes"
+     - HDR exposure / bloom shader passes — this is 2D canvas, no WebGL
+     - solar/lunar eclipse astronomy — "eclipse" rare event is a visual
+       flourish, not a real ephemeris
+   =================================================================== */
+(function () {
+  'use strict';
+
+  if (!window.Skies) {
+    console.warn('[SkyLiving] window.Skies not found — load skies.js before sky-living.js. Aborting.');
+    return;
+  }
+
+  var JOURNAL_KEY = 'ash-sky-journal';
+  var EGGS_KEY = 'ash-sky-eggs';
+  var reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function rand(a, b) { return a + Math.random() * (b - a); }
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function hashStr(s) {
+    var h = 0;
+    for (var i = 0; i < s.length; i++) { h = ((h << 5) - h + s.charCodeAt(i)) | 0; }
+    return Math.abs(h);
+  }
+
+  /* ===================== OVERLAY CANVAS ===================== */
+  // A single extra canvas, above skies.js's two canvases, below page
+  // content. pointer-events stays 'none' on the canvas itself so
+  // scrolling/reading is never blocked — interactivity is done via a
+  // document-level click/move listener that hit-tests our own object
+  // list and only acts when a hit lands on something of ours.
+  var canvas, ctx, W = 0, H = 0, DPR = 1;
+
+  function ensureCanvas() {
+    if (canvas) return;
+    var host = document.getElementById('skyOverlay') || document.body;
+    canvas = document.createElement('canvas');
+    canvas.id = 'skyLivingCanvas';
+    canvas.style.cssText = 'position:fixed;inset:0;z-index:1;pointer-events:none;';
+    // Sits after skies.js's own canvases in DOM order (painted on top),
+    // still below page content because content uses z-index:2 (see
+    // sky-generator.html's .content rule) — matches existing stacking.
+    host.appendChild(canvas);
+    ctx = canvas.getContext('2d');
+    resize();
+    window.addEventListener('resize', debounce(resize, 150));
+  }
+
+  function resize() {
+    if (!canvas) return;
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * DPR;
+    canvas.height = H * DPR;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  }
+
+  function debounce(fn, ms) {
+    var t;
+    return function () { clearTimeout(t); t = setTimeout(fn, ms); };
+  }
+
+  /* ===================== EMOTION ENGINE ===================== */
+  var EMOTION_ENGINE = {
+    "Sunrise": { mood:"hopeful", category:"day", weather:"clear", lighting:"golden", musicMood:"soft", rarity:"common", ambience:"wind", celestialObjects:["bird","balloon","paperplane","kite"] },
+    "Sunset": { mood:"romantic", category:"day", weather:"clear", lighting:"warm", musicMood:"soft", rarity:"common", ambience:"wind", celestialObjects:["lantern","lantern","balloon"] },
+    "Rain": { mood:"melancholic", category:"weather", weather:"rainy", lighting:"cool", musicMood:"emotional", rarity:"common", ambience:"rain", celestialObjects:["bird"] },
+    "Clouds": { mood:"peaceful", category:"weather", weather:"cloudy", lighting:"soft", musicMood:"ambient", rarity:"common", ambience:"wind", celestialObjects:["island","balloon"] },
+    "Starry Night": { mood:"romantic", category:"night", weather:"clear", lighting:"dark", musicMood:"soft", rarity:"common", ambience:"nightInsects", celestialObjects:["firefly","firefly","owl","dragon"] },
+    "Storm": { mood:"storm", category:"weather", weather:"stormy", lighting:"dark", musicMood:"dramatic", rarity:"common", ambience:"thunder", celestialObjects:["bird"] },
+    "Aurora": { mood:"magical", category:"night", weather:"clear", lighting:"dark", musicMood:"ambient", rarity:"uncommon", ambience:"nightInsects", celestialObjects:["owl","dragon","firefly"] },
+    "Fog": { mood:"peaceful", category:"weather", weather:"foggy", lighting:"soft", musicMood:"ambient", rarity:"common", ambience:"wind", celestialObjects:["island","balloon"] },
+    "Clear Day": { mood:"hopeful", category:"day", weather:"clear", lighting:"bright", musicMood:"happy", rarity:"common", ambience:"wind", celestialObjects:["bird","balloon","kite"] },
+    "Twilight": { mood:"romantic", category:"day", weather:"clear", lighting:"golden", musicMood:"soft", rarity:"common", ambience:"nightInsects", celestialObjects:["lantern","lantern","firefly"] },
+    "Midnight Galaxy": { mood:"cosmic", category:"night", weather:"clear", lighting:"dark", musicMood:"ambient", rarity:"uncommon", ambience:"nightInsects", celestialObjects:["firefly","owl","dragon"] },
+    "Sakura Petals": { mood:"romantic", category:"seasonal", weather:"clear", lighting:"soft", musicMood:"soft", rarity:"common", ambience:"wind", celestialObjects:["butterfly","bird"] },
+    "Gentle Snowfall": { mood:"peaceful", category:"seasonal", weather:"snowy", lighting:"soft", musicMood:"soft", rarity:"common", ambience:"wind", celestialObjects:["crane","bird"] },
+    "Meteor Shower": { mood:"cosmic", category:"night", weather:"clear", lighting:"dark", musicMood:"dramatic", rarity:"epic", ambience:"nightInsects", celestialObjects:["owl","dragon"] },
+    "Moonlit Clouds": { mood:"romantic", category:"night", weather:"cloudy", lighting:"dark", musicMood:"soft", rarity:"uncommon", ambience:"nightInsects", celestialObjects:["lantern","owl","airship"] },
+    "Floating Lanterns": { mood:"magical", category:"fantasy", weather:"clear", lighting:"warm", musicMood:"soft", rarity:"uncommon", ambience:"fireCrackling", celestialObjects:["lantern","lantern","lantern"] },
+    "Fireflies at Night": { mood:"magical", category:"night", weather:"clear", lighting:"dark", musicMood:"ambient", rarity:"uncommon", ambience:"nightInsects", celestialObjects:["firefly","firefly","firefly","owl"] },
+    "Cotton Candy Sky": { mood:"dreamy", category:"day", weather:"clear", lighting:"golden", musicMood:"happy", rarity:"common", ambience:"wind", celestialObjects:["balloon","butterfly"] },
+    "Fantasy Nebula": { mood:"fantasy", category:"night", weather:"clear", lighting:"dark", musicMood:"ambient", rarity:"epic", ambience:"nightInsects", celestialObjects:["dragon","owl","firefly"] },
+    "Cosmic Space": { mood:"cosmic", category:"night", weather:"clear", lighting:"dark", musicMood:"ambient", rarity:"uncommon", ambience:"nightInsects", celestialObjects:["owl","dragon","airship"] },
+    "Rainbow After Rain": { mood:"hopeful", category:"weather", weather:"rainy", lighting:"bright", musicMood:"happy", rarity:"uncommon", ambience:"wind", celestialObjects:["bird","butterfly"] },
+    "Magical Starfield": { mood:"magical", category:"night", weather:"clear", lighting:"dark", musicMood:"ambient", rarity:"common", ambience:"nightInsects", celestialObjects:["owl","dragon","firefly"] },
+    "Celestial Heaven": { mood:"ethereal", category:"fantasy", weather:"clear", lighting:"golden", musicMood:"soft", rarity:"epic", ambience:"templeBells", celestialObjects:["bird","feather","crane"] },
+    "Ocean Horizon": { mood:"peaceful", category:"day", weather:"clear", lighting:"bright", musicMood:"ambient", rarity:"common", ambience:"ocean", celestialObjects:["whale","jellyfish","bird"] },
+    "Dream Clouds": { mood:"dreamy", category:"day", weather:"cloudy", lighting:"soft", musicMood:"soft", rarity:"common", ambience:"wind", celestialObjects:["island","balloon","butterfly"] },
+    "Desert Dusk": { mood:"peaceful", category:"day", weather:"clear", lighting:"golden", musicMood:"soft", rarity:"uncommon", ambience:"wind", celestialObjects:["lantern","bird"] },
+    "Autumn Leaves": { mood:"nostalgic", category:"seasonal", weather:"clear", lighting:"warm", musicMood:"melancholic", rarity:"common", ambience:"wind", celestialObjects:["butterfly","bird"] },
+    "Butterfly Meadow": { mood:"peaceful", category:"day", weather:"clear", lighting:"bright", musicMood:"happy", rarity:"common", ambience:"forest", celestialObjects:["butterfly","butterfly","bird"] },
+    "Bubble Dream": { mood:"dreamy", category:"fantasy", weather:"clear", lighting:"bright", musicMood:"happy", rarity:"common", ambience:"wind", celestialObjects:["balloon","butterfly"] },
+    "Eclipse Night": { mood:"melancholic", category:"night", weather:"clear", lighting:"dark", musicMood:"dramatic", rarity:"epic", ambience:"nightInsects", celestialObjects:["owl","dragon"] },
+    "Winter Blizzard": { mood:"storm", category:"weather", weather:"snowy", lighting:"cool", musicMood:"dramatic", rarity:"common", ambience:"wind", celestialObjects:["crane"] },
+    "Golden Hour Haze": { mood:"hopeful", category:"day", weather:"clear", lighting:"golden", musicMood:"soft", rarity:"common", ambience:"wind", celestialObjects:["bird","balloon"] },
+    "Dawn Light": { mood:"hopeful", category:"day", weather:"clear", lighting:"golden", musicMood:"soft", rarity:"common", ambience:"wind", celestialObjects:["bird","balloon","kite"] },
+    "Misty Coast": { mood:"peaceful", category:"weather", weather:"foggy", lighting:"soft", musicMood:"ambient", rarity:"common", ambience:"ocean", celestialObjects:["whale","jellyfish","bird"] },
+    "Spring Meadow": { mood:"peaceful", category:"seasonal", weather:"clear", lighting:"bright", musicMood:"happy", rarity:"common", ambience:"forest", celestialObjects:["butterfly","bird","firefly"] },
+    "Harvest Sun": { mood:"nostalgic", category:"day", weather:"clear", lighting:"golden", musicMood:"soft", rarity:"common", ambience:"wind", celestialObjects:["bird","lantern"] },
+    "Heavy Rain": { mood:"melancholic", category:"weather", weather:"rainy", lighting:"cool", musicMood:"emotional", rarity:"common", ambience:"rain", celestialObjects:["bird"] },
+    "Cherry Blossom Rain": { mood:"romantic", category:"seasonal", weather:"clear", lighting:"soft", musicMood:"soft", rarity:"uncommon", ambience:"wind", celestialObjects:["butterfly","bird","petal"] },
+    "Northern Lights": { mood:"magical", category:"night", weather:"clear", lighting:"dark", musicMood:"ambient", rarity:"epic", ambience:"nightInsects", celestialObjects:["owl","dragon","firefly"] },
+    "Autumn Sunset": { mood:"nostalgic", category:"day", weather:"clear", lighting:"golden", musicMood:"melancholic", rarity:"common", ambience:"wind", celestialObjects:["lantern","bird"] },
+    "White Sands": { mood:"peaceful", category:"day", weather:"clear", lighting:"bright", musicMood:"ambient", rarity:"common", ambience:"ocean", celestialObjects:["bird","whale"] },
+    "Purple Night": { mood:"romantic", category:"night", weather:"clear", lighting:"dark", musicMood:"soft", rarity:"common", ambience:"nightInsects", celestialObjects:["firefly","owl","butterfly"] },
+    "Emerald Aurora": { mood:"magical", category:"night", weather:"clear", lighting:"dark", musicMood:"ambient", rarity:"uncommon", ambience:"nightInsects", celestialObjects:["owl","dragon"] },
+    "Soft Dawn": { mood:"hopeful", category:"day", weather:"clear", lighting:"golden", musicMood:"soft", rarity:"common", ambience:"wind", celestialObjects:["bird","balloon"] },
+    "Campfire Nights": { mood:"peaceful", category:"night", weather:"clear", lighting:"warm", musicMood:"soft", rarity:"common", ambience:"fireCrackling", celestialObjects:["lantern","firefly"] },
+    "Deep Space": { mood:"cosmic", category:"night", weather:"clear", lighting:"dark", musicMood:"ambient", rarity:"common", ambience:"nightInsects", celestialObjects:["owl","dragon","airship"] },
+    "Galactic Drift": { mood:"cosmic", category:"night", weather:"clear", lighting:"dark", musicMood:"ambient", rarity:"uncommon", ambience:"nightInsects", celestialObjects:["dragon","owl","firefly"] },
+    "Stardust": { mood:"magical", category:"night", weather:"clear", lighting:"dark", musicMood:"ambient", rarity:"uncommon", ambience:"nightInsects", celestialObjects:["firefly","owl","dragon"] },
+    "Nebula Dream": { mood:"dreamy", category:"night", weather:"clear", lighting:"dark", musicMood:"ambient", rarity:"uncommon", ambience:"nightInsects", celestialObjects:["dragon","owl","butterfly"] },
+    "Void": { mood:"melancholic", category:"night", weather:"clear", lighting:"dark", musicMood:"ambient", rarity:"epic", ambience:"wind", celestialObjects:[] },
+    "Cosmic Bloom": { mood:"magical", category:"night", weather:"clear", lighting:"dark", musicMood:"ambient", rarity:"uncommon", ambience:"nightInsects", celestialObjects:["dragon","butterfly","firefly"] },
+    "Shooting Stars": { mood:"romantic", category:"night", weather:"clear", lighting:"dark", musicMood:"soft", rarity:"common", ambience:"nightInsects", celestialObjects:["owl","firefly"] },
+    "Solar Wind": { mood:"cosmic", category:"night", weather:"clear", lighting:"dark", musicMood:"dramatic", rarity:"uncommon", ambience:"wind", celestialObjects:["dragon","owl"] },
+    "Sunshower": { mood:"hopeful", category:"weather", weather:"rainy", lighting:"bright", musicMood:"happy", rarity:"uncommon", ambience:"wind", celestialObjects:["bird","butterfly","rainbow"] },
+    "Thunderstorm": { mood:"storm", category:"weather", weather:"stormy", lighting:"dark", musicMood:"dramatic", rarity:"common", ambience:"thunder", celestialObjects:["bird"] },
+    "Winter Sky": { mood:"peaceful", category:"seasonal", weather:"snowy", lighting:"soft", musicMood:"soft", rarity:"common", ambience:"wind", celestialObjects:["crane","bird"] },
+    "Pale Winter Sun": { mood:"peaceful", category:"seasonal", weather:"cloudy", lighting:"soft", musicMood:"soft", rarity:"common", ambience:"wind", celestialObjects:["bird","crane"] },
+    "Spring Rain": { mood:"peaceful", category:"seasonal", weather:"rainy", lighting:"soft", musicMood:"soft", rarity:"common", ambience:"rain", celestialObjects:["bird","butterfly"] },
+    "Golden Autumn": { mood:"nostalgic", category:"seasonal", weather:"clear", lighting:"golden", musicMood:"melancholic", rarity:"common", ambience:"wind", celestialObjects:["bird","butterfly"] },
+    "Light Snowfall": { mood:"peaceful", category:"seasonal", weather:"snowy", lighting:"soft", musicMood:"soft", rarity:"common", ambience:"wind", celestialObjects:["crane","bird"] },
+    "Steady Rain": { mood:"melancholic", category:"weather", weather:"rainy", lighting:"cool", musicMood:"emotional", rarity:"common", ambience:"rain", celestialObjects:["bird"] },
+    "Jungle Canopy": { mood:"peaceful", category:"day", weather:"cloudy", lighting:"soft", musicMood:"ambient", rarity:"uncommon", ambience:"forest", celestialObjects:["butterfly","bird","firefly"] },
+    "Golden Glow": { mood:"hopeful", category:"day", weather:"clear", lighting:"golden", musicMood:"soft", rarity:"common", ambience:"wind", celestialObjects:["bird","balloon"] },
+    "Purple Aurora": { mood:"magical", category:"night", weather:"clear", lighting:"dark", musicMood:"ambient", rarity:"epic", ambience:"nightInsects", celestialObjects:["owl","dragon","firefly"] },
+    "Blue Hour": { mood:"peaceful", category:"night", weather:"clear", lighting:"cool", musicMood:"soft", rarity:"common", ambience:"nightInsects", celestialObjects:["owl","firefly"] },
+    "Night Fog": { mood:"peaceful", category:"weather", weather:"foggy", lighting:"dark", musicMood:"ambient", rarity:"common", ambience:"wind", celestialObjects:["island","owl"] },
+    "Glacier Sky": { mood:"peaceful", category:"day", weather:"clear", lighting:"cool", musicMood:"ambient", rarity:"uncommon", ambience:"wind", celestialObjects:["bird","whale"] },
+    "Crimson Sky": { mood:"romantic", category:"night", weather:"clear", lighting:"warm", musicMood:"dramatic", rarity:"uncommon", ambience:"wind", celestialObjects:["lantern","owl"] },
+    "Tiny Star": { mood:"romantic", category:"night", weather:"clear", lighting:"dark", musicMood:"soft", rarity:"common", ambience:"nightInsects", celestialObjects:["firefly","owl"] },
+    "Binary Stars": { mood:"romantic", category:"night", weather:"clear", lighting:"dark", musicMood:"soft", rarity:"common", ambience:"nightInsects", celestialObjects:["firefly","owl"] },
+    "Blizzard": { mood:"storm", category:"weather", weather:"snowy", lighting:"cool", musicMood:"dramatic", rarity:"uncommon", ambience:"wind", celestialObjects:["crane"] },
+    "Candlelight": { mood:"romantic", category:"night", weather:"clear", lighting:"warm", musicMood:"soft", rarity:"common", ambience:"fireCrackling", celestialObjects:["lantern","firefly"] },
+    "Coastal Mist": { mood:"peaceful", category:"weather", weather:"foggy", lighting:"soft", musicMood:"ambient", rarity:"common", ambience:"ocean", celestialObjects:["whale","jellyfish"] },
+    "Cotton Candy Dream": { mood:"dreamy", category:"day", weather:"clear", lighting:"golden", musicMood:"happy", rarity:"common", ambience:"wind", celestialObjects:["balloon","butterfly"] },
+    "Cyan Aurora": { mood:"magical", category:"night", weather:"clear", lighting:"dark", musicMood:"ambient", rarity:"uncommon", ambience:"nightInsects", celestialObjects:["owl","dragon","firefly"] },
+    "Deep Forest": { mood:"peaceful", category:"day", weather:"cloudy", lighting:"soft", musicMood:"ambient", rarity:"common", ambience:"forest", celestialObjects:["butterfly","bird","firefly"] },
+    "Desert Night": { mood:"peaceful", category:"night", weather:"clear", lighting:"dark", musicMood:"ambient", rarity:"uncommon", ambience:"nightInsects", celestialObjects:["owl","firefly"] },
+    "Desert Star": { mood:"romantic", category:"night", weather:"clear", lighting:"dark", musicMood:"soft", rarity:"common", ambience:"nightInsects", celestialObjects:["owl","firefly"] },
+    "Forest Canopy": { mood:"peaceful", category:"day", weather:"cloudy", lighting:"soft", musicMood:"ambient", rarity:"common", ambience:"forest", celestialObjects:["butterfly","bird"] },
+    "Forest Night": { mood:"peaceful", category:"night", weather:"clear", lighting:"dark", musicMood:"ambient", rarity:"uncommon", ambience:"nightInsects", celestialObjects:["firefly","owl"] },
+    "Heavenly Light": { mood:"ethereal", category:"fantasy", weather:"clear", lighting:"golden", musicMood:"soft", rarity:"epic", ambience:"templeBells", celestialObjects:["feather","crane","bird"] },
+    "Honey Light": { mood:"hopeful", category:"day", weather:"clear", lighting:"golden", musicMood:"happy", rarity:"common", ambience:"wind", celestialObjects:["bird","balloon"] },
+    "Infinite Love": { mood:"romantic", category:"fantasy", weather:"clear", lighting:"golden", musicMood:"soft", rarity:"epic", ambience:"templeBells", celestialObjects:["dragon","butterfly","crane"] },
+    "Lavender Sky": { mood:"dreamy", category:"day", weather:"clear", lighting:"soft", musicMood:"happy", rarity:"common", ambience:"wind", celestialObjects:["bird","butterfly"] },
+    "Lilac Evening": { mood:"romantic", category:"day", weather:"clear", lighting:"golden", musicMood:"soft", rarity:"common", ambience:"nightInsects", celestialObjects:["lantern","butterfly"] },
+    "Mars Red": { mood:"cosmic", category:"night", weather:"clear", lighting:"warm", musicMood:"dramatic", rarity:"uncommon", ambience:"wind", celestialObjects:["dragon","owl"] },
+    "Midnight Eclipse": { mood:"cosmic", category:"night", weather:"clear", lighting:"dark", musicMood:"dramatic", rarity:"epic", ambience:"nightInsects", celestialObjects:["owl","dragon"] },
+    "Morning Cream": { mood:"hopeful", category:"day", weather:"clear", lighting:"golden", musicMood:"happy", rarity:"common", ambience:"wind", celestialObjects:["bird","balloon","kite"] },
+    "Navy Night": { mood:"peaceful", category:"night", weather:"clear", lighting:"dark", musicMood:"ambient", rarity:"common", ambience:"nightInsects", celestialObjects:["owl","firefly"] },
+    "Ocean Blue": { mood:"peaceful", category:"day", weather:"clear", lighting:"bright", musicMood:"happy", rarity:"common", ambience:"ocean", celestialObjects:["whale","jellyfish","bird"] },
+    "Rainbow Sky": { mood:"hopeful", category:"weather", weather:"clear", lighting:"bright", musicMood:"happy", rarity:"uncommon", ambience:"wind", celestialObjects:["bird","butterfly"] },
+    "Rose Nebula": { mood:"romantic", category:"night", weather:"clear", lighting:"dark", musicMood:"ambient", rarity:"uncommon", ambience:"nightInsects", celestialObjects:["dragon","butterfly","firefly"] },
+    "Rosy Dawn": { mood:"hopeful", category:"day", weather:"clear", lighting:"golden", musicMood:"soft", rarity:"common", ambience:"wind", celestialObjects:["bird","balloon"] },
+    "Sky Blue": { mood:"hopeful", category:"day", weather:"clear", lighting:"bright", musicMood:"happy", rarity:"common", ambience:"wind", celestialObjects:["bird","balloon","kite"] },
+    "Snow White": { mood:"peaceful", category:"seasonal", weather:"snowy", lighting:"soft", musicMood:"ambient", rarity:"common", ambience:"wind", celestialObjects:["crane","bird"] },
+    "Starfall": { mood:"romantic", category:"night", weather:"clear", lighting:"dark", musicMood:"soft", rarity:"common", ambience:"nightInsects", celestialObjects:["owl","firefly"] },
+    "Violet Twilight": { mood:"romantic", category:"day", weather:"clear", lighting:"golden", musicMood:"soft", rarity:"uncommon", ambience:"nightInsects", celestialObjects:["lantern","firefly"] },
+    "Warm Morning": { mood:"hopeful", category:"day", weather:"clear", lighting:"golden", musicMood:"happy", rarity:"common", ambience:"wind", celestialObjects:["bird","balloon","kite"] },
+    "Winter Morning": { mood:"hopeful", category:"seasonal", weather:"snowy", lighting:"soft", musicMood:"soft", rarity:"common", ambience:"wind", celestialObjects:["bird","crane"] },
+    "Wisteria Sky": { mood:"dreamy", category:"day", weather:"clear", lighting:"soft", musicMood:"happy", rarity:"uncommon", ambience:"wind", celestialObjects:["butterfly","bird","balloon"] },
+  };
+
+  function getMeta(sky) {
+    return (sky && EMOTION_ENGINE[sky.name]) || null;
+  }
+  var currentSky = null;
+  var currentIndex = -1;
+
+  var moon = null;          // { phase, x, y, r, brightness, riseT, clickCount }
+  var stars = [];           // interactive star field, independent of skies.js's own particle stars
+  var shootingStars = [];   // active streaks
+  var constellation = null; // { name, points:[{x,y}], lines:[[i,j]], message, revealed }
+  var floaters = [];        // celestial objects (lanterns, birds, etc.)
+  var rareEvent = null;     // { type, t, duration }
+  var evolution = { age: 0, fogAlpha: 0, extraStars: 0 };
+  var lastShootingStarSpawn = 0;
+  var nextShootingStarGap = rand(4, 11);
+
+  var floatingMsgs = []; // DOM nodes for click-revealed messages, tracked so we can cap concurrency
+
+  /* ===================== MOON SYSTEM ===================== */
+  var MOON_PHASES = [
+    { name: 'Crescent Moon', lit: 0.22, rarity: 1 },
+    { name: 'Half Moon', lit: 0.5, rarity: 1 },
+    { name: 'Full Moon', lit: 1.0, rarity: 1 },
+    { name: 'Super Moon', lit: 1.0, rarity: 0.12, sizeMul: 1.35 },
+    { name: 'Blue Moon', lit: 1.0, rarity: 0.08, tint: '#cfe0ff' },
+    { name: 'Blood Moon', lit: 1.0, rarity: 0.08, tint: '#ff6a4a' }
+  ];
+
+  // Only give a moon to skies that read as "night" — reuses the same
+  // signal skies.js already encodes (a stars config on the sky, or a
+  // dark first gradient stop) rather than a hardcoded name list, so
+  // it keeps working if you add more night skies later.
+  function skyIsNight(sky) {
+    var meta = getMeta(sky);
+    if (meta) return meta.category === 'night' || meta.category === 'cosmic' || meta.category === 'fantasy';
+    if (sky.stars) return true;
+    var first = sky.gradient && sky.gradient[0] && sky.gradient[0][1];
+    if (!first) return false;
+    var n = parseInt(first.replace('#', ''), 16);
+    var r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+    return (r + g + b) / 3 < 60; // dark top-of-sky stop
+  }
+
+  function pickMoonPhase(sky) {
+    if (!skyIsNight(sky)) return null;
+    // Deterministic base phase per sky name (same sky -> same phase
+    // most of the time) with a small chance of rolling a rare phase,
+    // so returning to "Starry Night" doesn't feel randomly different
+    // every single time, but rare moons still surface occasionally.
+    var seed = hashStr(sky.name) % 100;
+    var roll = Math.random();
+    var phase;
+    if (roll < 0.08) phase = MOON_PHASES[3]; // Super Moon
+    else if (roll < 0.14) phase = MOON_PHASES[4]; // Blue Moon
+    else if (roll < 0.20) phase = MOON_PHASES[5]; // Blood Moon
+    else phase = MOON_PHASES[seed % 3];
+
+    var existingLight = (sky.lights && sky.lights[0]) || null;
+    return {
+      def: phase,
+      x: existingLight ? existingLight.x : rand(0.62, 0.88),
+      y0: existingLight ? existingLight.y : rand(0.1, 0.22),
+      y: existingLight ? existingLight.y : rand(0.1, 0.22),
+      r: (existingLight ? existingLight.r : 30) * (phase.sizeMul || 1),
+      driftPhase: Math.random() * Math.PI * 2,
+      breathePhase: Math.random() * Math.PI * 2,
+      clickCount: 0
+    };
+  }
+
+  function drawMoon(dt, t) {
+    if (!moon) return;
+    // slow horizontal drift + gentle vertical bob
+    var dx = Math.sin(t * 0.02 + moon.driftPhase) * 10;
+    var dy = Math.sin(t * 0.05 + moon.driftPhase) * 4;
+    // "Living Sky Evolution": moon rises slowly the longer this sky stays open
+    var riseAmt = clamp(evolution.age / 90, 0, 1) * 0.03; // rises up to 3% of viewport height over 90s
+    var cx = moon.x * W + dx;
+    var cy = (moon.y0 - riseAmt) * H + dy;
+    var r = moon.r;
+
+    // brightness breathing + a soft periodic dip standing in for "clouds passing in front"
+    var breathe = 0.85 + 0.15 * Math.sin(t * 0.15 + moon.breathePhase);
+    var passOver = 0.75 + 0.25 * Math.sin(t * 0.035 + moon.driftPhase * 3);
+    var brightness = breathe * passOver;
+
+    var tint = moon.def.tint || '#fff8e6';
+    ctx.save();
+    // halo
+    var haloR = r * 3.4;
+    var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, haloR);
+    g.addColorStop(0, hexA(tint, 0.35 * brightness));
+    g.addColorStop(0.4, hexA(tint, 0.14 * brightness));
+    g.addColorStop(1, hexA(tint, 0));
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(cx, cy, haloR, 0, Math.PI * 2); ctx.fill();
+
+    // disc with terminator shading for lit fraction (crescent/half/full)
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fillStyle = hexA('#2a2a38', 0.9); // dark base disc
+    ctx.fill();
+
+    ctx.save();
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.clip();
+    var lit = moon.def.lit;
+    var g2 = ctx.createRadialGradient(cx - r * (1 - lit), cy, r * 0.1, cx, cy, r * 1.05);
+    g2.addColorStop(0, hexA(tint, brightness));
+    g2.addColorStop(1, hexA(tint, brightness * 0.55));
+    ctx.fillStyle = g2;
+    ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
+    ctx.restore();
+    ctx.restore();
+
+    moon._hit = { x: cx, y: cy, r: r * 1.4 };
+  }
+
+  function hexA(hex, a) {
+    var h = hex.replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    var n = parseInt(h, 16);
+    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+  }
+
+  /* ===================== INTERACTIVE STAR FIELD ===================== */
+  // Independent of skies.js's own background star particles (those stay
+  // untouched). These are a smaller, hoverable/clickable set drawn on
+  // top, sized down so they read as "extra sparkle" rather than doubling
+  // star density.
+  function buildStars(sky) {
+    stars = [];
+    if (!skyIsNight(sky)) return;
+    var base = sky.stars ? Math.min(sky.stars.count, 60) : 24; // cap: this layer is for interaction, not density
+    var count = Math.round(base * 0.35);
+    for (var i = 0; i < count; i++) {
+      stars.push({
+        x: rand(0.02, 0.98), y: rand(0.02, (sky.stars ? sky.stars.maxY : 70) / 100),
+        r: rand(0.8, 2.2),
+        twinklePhase: Math.random() * Math.PI * 2,
+        twinkleSpeed: rand(0.6, 2.2),
+        hoverT: 0, // eases toward 1 on hover, back to 0 otherwise
+        clickPulse: 0 // 0..1, decays after click
+      });
+    }
+  }
+
+  function drawStars(dt, t) {
+    for (var i = 0; i < stars.length; i++) {
+      var s = stars[i];
+      var px = s.x * W, py = s.y * H;
+      var twinkle = 0.4 + 0.6 * (0.5 + 0.5 * Math.sin(t * s.twinkleSpeed + s.twinklePhase));
+      s.hoverT = lerp(s.hoverT, s._hover ? 1 : 0, clamp(dt * 6, 0, 1));
+      s.clickPulse = Math.max(0, s.clickPulse - dt * 1.4);
+
+      var scale = 1 + s.hoverT * 0.9 + s.clickPulse * 1.6;
+      var op = twinkle * (1 + s.hoverT * 0.5);
+      var r = s.r * scale;
+
+      ctx.save();
+      ctx.globalAlpha = clamp(op, 0, 1);
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = '#fff';
+      ctx.shadowBlur = r * (3 + s.hoverT * 4 + s.clickPulse * 6);
+      ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+
+      // click ripple
+      if (s.clickPulse > 0) {
+        ctx.save();
+        ctx.globalAlpha = s.clickPulse * 0.6;
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(px, py, r + (1 - s.clickPulse) * 18, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      s._hit = { x: px, y: py, r: Math.max(8, r * 3) }; // generous hit radius, real star is tiny
+    }
+  }
+
+  /* ===================== SHOOTING STARS ===================== */
+  var WISH_MESSAGES = [
+    'I wished for you.',
+    'Every star reminds me of you.',
+    'You are my favorite constellation.',
+    'Some wishes come true slowly. You were worth the wait.',
+    'I keep making the same wish, just in case.'
+  ];
+
+  function maybeSpawnShootingStar(dt, t) {
+    if (!currentSky || !skyIsNight(currentSky)) return;
+    lastShootingStarSpawn += dt;
+    if (lastShootingStarSpawn < nextShootingStarGap) return;
+    lastShootingStarSpawn = 0;
+    nextShootingStarGap = rand(5, 14);
+    if (shootingStars.length > 3) return; // cap concurrency
+
+    var startX = rand(0.1, 0.85) * W;
+    var startY = rand(0.02, 0.35) * H;
+    var angle = rand(0.35, 0.75); // radians-ish downward-right sweep
+    var speed = rand(420, 900); // px/sec
+    shootingStars.push({
+      x: startX, y: startY,
+      vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+      life: 0, maxLife: rand(0.7, 1.4),
+      brightness: rand(0.6, 1),
+      trail: [],
+      caught: false
+    });
+  }
+
+  function drawShootingStars(dt) {
+    for (var i = shootingStars.length - 1; i >= 0; i--) {
+      var s = shootingStars[i];
+      s.life += dt;
+      s.x += s.vx * dt;
+      s.y += s.vy * dt;
+      s.trail.push({ x: s.x, y: s.y });
+      if (s.trail.length > 14) s.trail.shift();
+
+      var fade = clamp(1 - s.life / s.maxLife, 0, 1);
+      if (fade <= 0 || s.x > W + 50 || s.y > H + 50) {
+        shootingStars.splice(i, 1);
+        continue;
+      }
+
+      ctx.save();
+      ctx.globalAlpha = fade * s.brightness;
+      var grad = ctx.createLinearGradient(
+        s.trail[0] ? s.trail[0].x : s.x, s.trail[0] ? s.trail[0].y : s.y, s.x, s.y
+      );
+      grad.addColorStop(0, 'rgba(255,255,255,0)');
+      grad.addColorStop(1, 'rgba(255,255,255,0.95)');
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      if (s.trail.length) {
+        ctx.moveTo(s.trail[0].x, s.trail[0].y);
+        for (var j = 1; j < s.trail.length; j++) ctx.lineTo(s.trail[j].x, s.trail[j].y);
+      }
+      ctx.lineTo(s.x, s.y);
+      ctx.stroke();
+
+      ctx.shadowColor = '#fff';
+      ctx.shadowBlur = 12;
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(s.x, s.y, 2.2, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+
+      s._hit = { x: s.x, y: s.y, r: 16 };
+    }
+  }
+
+  function catchShootingStar(s) {
+    if (s.caught) return;
+    s.caught = true;
+    showFloatingMessage(s.x, s.y, pick(WISH_MESSAGES));
+    var count = bumpEgg('shootingStarsCaught');
+    if (count === 5) unlockEgg('Five wishes caught — some things really do come true.');
+    var idx = shootingStars.indexOf(s);
+    if (idx >= 0) shootingStars.splice(idx, 1);
+  }
+
+  /* ===================== FLOATING MESSAGES (click-reveal) ===================== */
+  function showFloatingMessage(x, y, text) {
+    if (floatingMsgs.length > 4) {
+      var old = floatingMsgs.shift();
+      if (old && old.parentNode) old.parentNode.removeChild(old);
+    }
+    var el = document.createElement('div');
+    el.textContent = text;
+    el.style.cssText =
+      'position:fixed;left:' + x + 'px;top:' + y + 'px;transform:translate(-50%,-100%);' +
+      'font-family:Fraunces,Georgia,serif;font-style:italic;font-size:.95rem;color:#ffe680;' +
+      'text-shadow:0 2px 12px rgba(0,0,0,.7);pointer-events:none;z-index:10000;' +
+      'opacity:0;transition:opacity 1.4s ease, transform 3.5s ease;white-space:nowrap;max-width:80vw;';
+    document.body.appendChild(el);
+    floatingMsgs.push(el);
+    requestAnimationFrame(function () {
+      el.style.opacity = '1';
+      el.style.transform = 'translate(-50%,-160%)';
+    });
+    setTimeout(function () { el.style.opacity = '0'; }, 3200);
+    setTimeout(function () {
+      if (el.parentNode) el.parentNode.removeChild(el);
+      var idx = floatingMsgs.indexOf(el);
+      if (idx >= 0) floatingMsgs.splice(idx, 1);
+    }, 4600);
+  }
+
+  /* ===================== CONSTELLATIONS ===================== */
+  // Parametric point generators, normalized to a 0..1 box, then placed
+  // at a random spot in the sky per visit.
+  function heartPoints(n) {
+    var pts = [];
+    for (var i = 0; i < n; i++) {
+      var t = (i / n) * Math.PI * 2;
+      var x = 16 * Math.pow(Math.sin(t), 3);
+      var y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+      pts.push({ x: x / 34 + 0.5, y: y / 34 + 0.5 });
+    }
+    return pts;
+  }
+  function infinityPoints(n) {
+    var pts = [];
+    for (var i = 0; i < n; i++) {
+      var t = (i / n) * Math.PI * 2;
+      var denom = 1 + Math.sin(t) * Math.sin(t);
+      var x = Math.cos(t) / denom;
+      var y = (Math.sin(t) * Math.cos(t)) / denom;
+      pts.push({ x: x * 0.4 + 0.5, y: y * 0.6 + 0.5 });
+    }
+    return pts;
+  }
+  function crescentPoints(n) {
+    var pts = [];
+    for (var i = 0; i < n; i++) {
+      var t = Math.PI * 0.15 + (i / (n - 1)) * Math.PI * 1.5;
+      pts.push({ x: 0.5 + 0.35 * Math.cos(t), y: 0.5 + 0.35 * Math.sin(t) });
+    }
+    return pts;
+  }
+  function butterflyPoints(n) {
+    var pts = [];
+    for (var i = 0; i < n; i++) {
+      var t = (i / n) * Math.PI * 2 * 6; // classic butterfly curve needs several turns
+      var r = Math.exp(Math.sin(t)) - 2 * Math.cos(4 * t) + Math.pow(Math.sin((2 * t - Math.PI) / 24), 5);
+      pts.push({ x: (r * Math.sin(t)) / 6 + 0.5, y: -(r * Math.cos(t)) / 6 + 0.5 });
+    }
+    return pts;
+  }
+  function rosePoints(n, k) {
+    var pts = [];
+    for (var i = 0; i < n; i++) {
+      var t = (i / n) * Math.PI * 2;
+      var r = Math.cos((k || 4) * t);
+      pts.push({ x: r * Math.cos(t) * 0.4 + 0.5, y: r * Math.sin(t) * 0.4 + 0.5 });
+    }
+    return pts;
+  }
+  function randomWalkPoints(n) {
+    var pts = [{ x: 0.5, y: 0.5 }];
+    for (var i = 1; i < n; i++) {
+      var prev = pts[i - 1];
+      pts.push({
+        x: clamp(prev.x + rand(-0.18, 0.18), 0.05, 0.95),
+        y: clamp(prev.y + rand(-0.18, 0.18), 0.05, 0.95)
+      });
+    }
+    return pts;
+  }
+
+  var CONSTELLATION_SHAPES = {
+    heart: function () { return heartPoints(9); },
+    infinity: function () { return infinityPoints(10); },
+    crescent: function () { return crescentPoints(8); },
+    butterfly: function () { return butterflyPoints(11); },
+    rose: function () { return rosePoints(10, 4); },
+    random: function () { return randomWalkPoints(rand(6, 9) | 0); }
+  };
+  // Optional: window.SkyLiving.CONSTELLATION_SHAPES.initials = function(){...}
+  // to add a custom point set (e.g. shaped like two initials) later.
+
+  var CONSTELLATION_MESSAGES = {
+    heart: 'Even the stars couldn\u2019t help but draw your shape.',
+    infinity: 'This is how long I plan on loving you.',
+    crescent: 'A sliver of light, and it still outshines everything else up there.',
+    butterfly: 'Something in me still hasn\u2019t stopped fluttering since you.',
+    rose: 'I would have picked you a real one, but the stars insisted.',
+    random: 'I don\u2019t know what this constellation is either. I just know it made me think of you.'
+  };
+
+  function generateConstellation(sky) {
+    if (!skyIsNight(sky)) return null;
+    var keys = Object.keys(CONSTELLATION_SHAPES);
+    var name = pick(keys);
+    var raw = CONSTELLATION_SHAPES[name]();
+    var boxSize = rand(0.16, 0.28); // fraction of viewport the shape occupies
+    var originX = rand(0.08, 0.62);
+    var originY = rand(0.06, 0.55);
+    var points = raw.map(function (p) {
+      return { x: originX + p.x * boxSize, y: originY + p.y * boxSize, twinklePhase: Math.random() * Math.PI * 2 };
+    });
+    var lines = [];
+    for (var i = 0; i < points.length - 1; i++) lines.push([i, i + 1]);
+    return { name: name, points: points, lines: lines, message: CONSTELLATION_MESSAGES[name], revealed: false };
+  }
+
+  function drawConstellation(t) {
+    if (!constellation) return;
+    var pts = constellation.points.map(function (p) { return { x: p.x * W, y: p.y * H }; });
+
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,230,180,0.28)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    constellation.lines.forEach(function (l) {
+      ctx.moveTo(pts[l[0]].x, pts[l[0]].y);
+      ctx.lineTo(pts[l[1]].x, pts[l[1]].y);
+    });
+    ctx.stroke();
+    ctx.restore();
+
+    constellation.points.forEach(function (p, i) {
+      var px = pts[i].x, py = pts[i].y;
+      var tw = 0.6 + 0.4 * Math.sin(t * 1.2 + p.twinklePhase);
+      ctx.save();
+      ctx.globalAlpha = tw;
+      ctx.fillStyle = '#fff6d8';
+      ctx.shadowColor = '#ffe680';
+      ctx.shadowBlur = 6;
+      ctx.beginPath(); ctx.arc(px, py, 2.1, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    });
+
+    // single hit region: bounding box of the shape, generous, so any
+    // point near the constellation reveals it — precise per-star
+    // hit-testing would be frustrating on a shape this small.
+    var xs = pts.map(function (p) { return p.x; }), ys = pts.map(function (p) { return p.y; });
+    constellation._hit = {
+      x1: Math.min.apply(null, xs) - 14, y1: Math.min.apply(null, ys) - 14,
+      x2: Math.max.apply(null, xs) + 14, y2: Math.max.apply(null, ys) + 14
+    };
+  }
+
+  /* ===================== FLOATING CELESTIAL OBJECTS ===================== */
+  var OBJECT_GLYPHS = {
+    lantern: '\uD83C\uDFEE', balloon: '\uD83C\uDF88', paperplane: '\u2708\uFE0F',
+    butterfly: '\uD83E\uDD8B', bird: '\uD83D\uDC26', owl: '\uD83E\uDD89',
+    firefly: '\u2726', jellyfish: '\uD83E\uDEBC', whale: '\uD83D\uDC33',
+    dragon: '\uD83D\uDC09', island: '\uD83C\uDFDD\uFE0F', airship: '\uD83D\uDEF8',
+    kite: '\uD83E\uDEC1', crane: '\uD83E\uDDA2'
+  };
+
+  // Weighted per-sky-name-keyword tables. Falls back to a small
+  // generic set for skies that don't match a keyword, so every sky
+  // gets *something* rather than a hard dependency on exact names.
+  function objectsForSky(sky) {
+    var meta = getMeta(sky);
+    if (meta && meta.celestialObjects && meta.celestialObjects.length) return meta.celestialObjects;
+    var n = sky.name.toLowerCase();
+    if (/night|star|galaxy|cosmic|nebula|void|space/.test(n)) return ['firefly', 'firefly', 'owl', 'dragon', 'airship'];
+    if (/rain|storm|thunder/.test(n)) return ['bird'];
+    if (/snow|winter|blizzard/.test(n)) return ['crane', 'bird'];
+    if (/sunrise|dawn|morning/.test(n)) return ['bird', 'balloon', 'paperplane', 'kite'];
+    if (/sunset|dusk|twilight|lantern|golden/.test(n)) return ['lantern', 'lantern', 'balloon'];
+    if (/ocean|sea|coast|wave/.test(n)) return ['whale', 'jellyfish'];
+    if (/forest|jungle|meadow|spring|leaf|leaves/.test(n)) return ['butterfly', 'bird', 'firefly'];
+    if (/cloud|fog|mist/.test(n)) return ['island', 'balloon'];
+    return ['bird', 'butterfly', 'balloon'];
+  }
+
+  function spawnFloaters(sky) {
+    floaters = [];
+    var pool = objectsForSky(sky);
+    var count = Math.round(rand(2, 5));
+    for (var i = 0; i < count; i++) {
+      var type = pick(pool);
+      floaters.push({
+        type: type, glyph: OBJECT_GLYPHS[type] || '\u2726',
+        x: rand(-0.1, 1.1), y: rand(0.15, 0.85),
+        size: rand(14, 26),
+        speed: rand(0.004, 0.012) * (Math.random() < 0.5 ? 1 : -1),
+        bobPhase: Math.random() * Math.PI * 2,
+        opacity: rand(0.5, 0.85)
+      });
+    }
+  }
+
+  function drawFloaters(dt, t) {
+    floaters.forEach(function (f) {
+      f.x += f.speed * dt;
+      if (f.x < -0.15) f.x = 1.15;
+      if (f.x > 1.15) f.x = -0.15;
+      var px = f.x * W;
+      var py = f.y * H + Math.sin(t * 0.6 + f.bobPhase) * 10;
+      ctx.save();
+      ctx.globalAlpha = f.opacity;
+      ctx.font = f.size + 'px serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(f.glyph, px, py);
+      ctx.restore();
+    });
+  }
+
+  /* ===================== LIVING SKY EVOLUTION ===================== */
+  function updateEvolution(dt) {
+    evolution.age += dt;
+    // fog eases in softly over the first two minutes a sky is open,
+    // capped low so it never obscures the reading content
+    evolution.fogAlpha = clamp(evolution.age / 120, 0, 1) * 0.06;
+  }
+
+  function drawEvolutionFog() {
+    if (evolution.fogAlpha <= 0) return;
+    ctx.save();
+    ctx.globalAlpha = evolution.fogAlpha;
+    var g = ctx.createLinearGradient(0, H * 0.6, 0, H);
+    g.addColorStop(0, 'rgba(200,200,210,0)');
+    g.addColorStop(1, 'rgba(200,200,210,1)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+  }
+
+  /* ===================== RARE SKY EVENTS ===================== */
+  var RARE_EVENT_CHANCE = 0.035; // ~3.5% per sky change — deliberately rare, per the brief
+  var RARE_EVENTS = ['meteorStorm', 'auroraSurge', 'comet', 'doubleRainbow', 'moonFlare', 'lanternFestival'];
+
+  function maybeTriggerRareEvent(sky) {
+    rareEvent = null;
+    if (Math.random() > RARE_EVENT_CHANCE) return;
+    var candidates = RARE_EVENTS.filter(function (type) {
+      if ((type === 'moonFlare') && !moon) return false;
+      if ((type === 'meteorStorm' || type === 'auroraSurge' || type === 'moonFlare') && !skyIsNight(sky)) return false;
+      return true;
+    });
+    if (!candidates.length) return;
+    rareEvent = { type: pick(candidates), t: 0, duration: rand(6, 11), burstDone: false };
+  }
+
+  function drawRareEvent(dt, t) {
+    if (!rareEvent) return;
+    rareEvent.t += dt;
+    var progress = rareEvent.t / rareEvent.duration;
+    if (progress >= 1) { rareEvent = null; return; }
+    var fade = progress < 0.15 ? progress / 0.15 : (progress > 0.8 ? (1 - progress) / 0.2 : 1);
+
+    ctx.save();
+    ctx.globalAlpha = clamp(fade, 0, 1);
+    switch (rareEvent.type) {
+      case 'meteorStorm':
+        if (!rareEvent.burstDone) {
+          for (var i = 0; i < 3; i++) {
+            shootingStars.push({
+              x: rand(0.1, 0.9) * W, y: rand(0.02, 0.3) * H,
+              vx: rand(400, 800), vy: rand(250, 500),
+              life: 0, maxLife: rand(0.8, 1.3), brightness: 1, trail: [], caught: false
+            });
+          }
+        }
+        break;
+      case 'auroraSurge':
+        var grad = ctx.createLinearGradient(0, 0, 0, H * 0.6);
+        grad.addColorStop(0, 'rgba(80,255,180,' + (0.12 * fade) + ')');
+        grad.addColorStop(0.5, 'rgba(90,140,255,' + (0.10 * fade) + ')');
+        grad.addColorStop(1, 'rgba(90,140,255,0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H * 0.6);
+        break;
+      case 'comet':
+        var cx = lerp(-0.1, 1.1, progress) * W, cy = 0.2 * H;
+        ctx.strokeStyle = 'rgba(255,240,220,' + (0.9 * fade) + ')';
+        ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(cx - 90, cy - 45); ctx.lineTo(cx, cy); ctx.stroke();
+        ctx.fillStyle = '#fff';
+        ctx.shadowColor = '#ffe680'; ctx.shadowBlur = 20;
+        ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI * 2); ctx.fill();
+        break;
+      case 'doubleRainbow':
+        drawArc(0.55, 0.4 * fade);
+        drawArc(0.62, 0.25 * fade);
+        break;
+      case 'moonFlare':
+        if (moon && moon._hit) {
+          var g2 = ctx.createRadialGradient(moon._hit.x, moon._hit.y, 0, moon._hit.x, moon._hit.y, moon.r * 6);
+          g2.addColorStop(0, 'rgba(255,255,240,' + (0.5 * fade) + ')');
+          g2.addColorStop(1, 'rgba(255,255,240,0)');
+          ctx.fillStyle = g2;
+          ctx.beginPath(); ctx.arc(moon._hit.x, moon._hit.y, moon.r * 6, 0, Math.PI * 2); ctx.fill();
+        }
+        break;
+      case 'lanternFestival':
+        if (!rareEvent.burstDone) {
+          for (var j = 0; j < 8; j++) {
+            floaters.push({
+              type: 'lantern', glyph: OBJECT_GLYPHS.lantern,
+              x: rand(0, 1), y: 1.05, size: rand(16, 24),
+              speed: rand(-0.002, 0.002), bobPhase: Math.random() * Math.PI * 2, opacity: rand(0.6, 0.9),
+              rising: true
+            });
+          }
+        }
+        break;
+    }
+    rareEvent.burstDone = true;
+    ctx.restore();
+  }
+
+  function drawArc(topFrac, alpha) {
+    var cx = W / 2, cy = H * topFrac + H * 0.55, r = H * 0.55;
+    var colors = ['#ff5b5b', '#ffb35c', '#ffe680', '#7ed17e', '#5c9dff', '#a06cff'];
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    for (var i = 0; i < colors.length; i++) {
+      ctx.strokeStyle = colors[i];
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r - i * 6, Math.PI, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  /* ===================== SKY JOURNEY JOURNAL ===================== */
+  function loadJournal() {
+    try { return JSON.parse(localStorage.getItem(JOURNAL_KEY)) || {}; } catch (e) { return {}; }
+  }
+  function saveJournal(j) {
+    try { localStorage.setItem(JOURNAL_KEY, JSON.stringify(j)); } catch (e) {}
+  }
+  function recordVisit(name) {
+    var j = loadJournal();
+    j[name] = (j[name] || 0) + 1;
+    saveJournal(j);
+    renderJournalPanel();
+  }
+
+  var journalPanel = null, journalToggle = null;
+  function ensureJournalUI() {
+    if (journalToggle) return;
+    journalToggle = document.createElement('button');
+    journalToggle.textContent = '\u2661 journal';
+    journalToggle.style.cssText =
+      'position:fixed;bottom:1.2rem;right:1.2rem;z-index:10001;background:rgba(255,220,160,.08);' +
+      'border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;' +
+      'cursor:pointer;font-family:Georgia,serif;font-size:.8rem;transition:all .25s;';
+    journalToggle.addEventListener('mouseenter', function () { this.style.color = '#ffe680'; this.style.borderColor = '#ffe680'; });
+    journalToggle.addEventListener('mouseleave', function () { this.style.color = '#6b5f52'; this.style.borderColor = 'rgba(255,210,150,.15)'; });
+    journalToggle.addEventListener('click', function () {
+      journalPanel.style.display = journalPanel.style.display === 'none' ? 'block' : 'none';
+    });
+    document.body.appendChild(journalToggle);
+
+    journalPanel = document.createElement('div');
+    journalPanel.style.cssText =
+      'position:fixed;bottom:3.4rem;right:1.2rem;z-index:10001;max-width:min(90vw,280px);max-height:50vh;' +
+      'overflow:auto;background:rgba(24,18,20,.92);border:1px solid rgba(255,210,150,.2);border-radius:10px;' +
+      'padding:.8rem 1rem;font-family:Georgia,serif;font-size:.82rem;color:#c7b8a1;display:none;';
+    document.body.appendChild(journalPanel);
+  }
+  function renderJournalPanel() {
+    ensureJournalUI();
+    var j = loadJournal();
+    var names = Object.keys(j);
+    if (!names.length) { journalPanel.innerHTML = '<em>No skies visited yet.</em>'; return; }
+    journalPanel.innerHTML = '<div style="color:#ffe680;font-family:Fraunces,Georgia,serif;margin-bottom:.5rem;">Sky Journey</div>' +
+      names.sort().map(function (n) {
+        return '<div style="padding:.15rem 0;">' + n + ' <span style="opacity:.6;">\u2713 &times;' + j[n] + '</span></div>';
+      }).join('');
+  }
+
+  /* ===================== HIDDEN EASTER EGGS ===================== */
+  function loadEggs() { try { return JSON.parse(localStorage.getItem(EGGS_KEY)) || {}; } catch (e) { return {}; } }
+  function saveEggs(e) { try { localStorage.setItem(EGGS_KEY, JSON.stringify(e)); } catch (e) {} }
+  function bumpEgg(key) {
+    var e = loadEggs();
+    e[key] = (e[key] || 0) + 1;
+    saveEggs(e);
+    return e[key];
+  }
+  function unlockEgg(message) {
+    showFloatingMessage(W / 2, H * 0.4, message);
+  }
+
+  function onMoonClicked() {
+    var count = bumpEgg('moonClicks');
+    if (count === 10) unlockEgg('Ten moon-taps in. It\u2019s still watching over you.');
+  }
+  function onStarClicked() {
+    var count = bumpEgg('starClicks');
+    if (count === 100) unlockEgg('A hundred stars, one wish repeated a hundred times.');
+  }
+
+  /* ===================== AMBIENT AUDIO (independent of music.js) ===================== */
+  // Deliberately separate from Jukebox in music.js — its own <audio>
+  // elements and its own volume, so nothing about the existing player
+  // (its AudioContext, gainNode, crossfade timers, or UI) is touched.
+  // NOTE: no audio files are bundled here — fill in real URLs in
+  // AMBIENCE_SOURCES before this does anything audible.
+  var AMBIENCE_SOURCES = {
+    wind: '', rain: '', ocean: '', forest: '', nightInsects: '',
+    thunder: '', templeBells: '', fireCrackling: ''
+  };
+  var ambienceState = { current: null, audioEl: null, volume: 0.35 };
+
+  function ambienceKeyForSky(sky) {
+    var meta = getMeta(sky);
+    if (meta && meta.ambience) return meta.ambience;
+    var n = sky.name.toLowerCase();
+    if (/thunder/.test(n)) return 'thunder';
+    if (/rain|shower/.test(n)) return 'rain';
+    if (/ocean|sea|coast|wave/.test(n)) return 'ocean';
+    if (/forest|jungle|canopy/.test(n)) return 'forest';
+    if (/night|star|galaxy|cosmic|nebula|void/.test(n)) return 'nightInsects';
+    if (/fire|ember|lantern|candle/.test(n)) return 'fireCrackling';
+    if (/temple|heaven|angel|celestial/.test(n)) return 'templeBells';
+    if (/cloud|fog|mist|wind|breeze/.test(n)) return 'wind';
+    return null;
+  }
+
+  function setAmbienceForSky(sky) {
+    var key = ambienceKeyForSky(sky);
+    if (key === ambienceState.current) return;
+    var oldEl = ambienceState.audioEl;
+    if (oldEl) fadeAudio(oldEl, 0, 1200, function () { oldEl.pause(); });
+    ambienceState.current = key;
+    ambienceState.audioEl = null;
+    if (!key || !AMBIENCE_SOURCES[key]) return; // no source configured — silently no-op
+    var el = new Audio(AMBIENCE_SOURCES[key]);
+    el.loop = true;
+    el.volume = 0;
+    el.play().catch(function () {}); // autoplay may be blocked until a user gesture; that's fine, it'll retry on next interaction below
+    fadeAudio(el, ambienceState.volume, 1500);
+    ambienceState.audioEl = el;
+  }
+  function fadeAudio(el, target, ms, done) {
+    var start = el.volume, t0 = performance.now();
+    function step(now) {
+      var p = clamp((now - t0) / ms, 0, 1);
+      el.volume = lerp(start, target, p);
+      if (p < 1) requestAnimationFrame(step); else if (done) done();
+    }
+    requestAnimationFrame(step);
+  }
+  // retry autoplay on first real user gesture (browser autoplay policies)
+  document.addEventListener('click', function retryOnce() {
+    if (ambienceState.audioEl && ambienceState.audioEl.paused) ambienceState.audioEl.play().catch(function () {});
+    document.removeEventListener('click', retryOnce);
+  });
+
+  /* ===================== PARAGRAPH-REACTIVE HOOK ===================== */
+  // This file can't discover your paragraph markup — call this from
+  // your own scroll / IntersectionObserver logic in 100-organs.html /
+  // fantasies.html, e.g.:
+  //   SkyLiving.setMood('romantic')   // more fireflies
+  //   SkyLiving.setMood('happy')      // more stars
+  //   SkyLiving.setMood('emotional')  // gentle mist
+  //   SkyLiving.setMood('hopeful')    // warm light pulse
+  //   SkyLiving.setMood('ending')     // floating lanterns
+  //   SkyLiving.setMood(null)         // clear back to baseline
+  var currentMood = null;
+  var moodFogBoost = 0, moodWarmBoost = 0;
+  function setMood(mood) {
+    currentMood = mood;
+    if (mood === 'romantic') spawnMoodFloaters('firefly', 6);
+    if (mood === 'happy') stars.forEach(function (s) { s._moodBoost = true; });
+    if (mood === 'ending') spawnMoodFloaters('lantern', 5);
+  }
+  function spawnMoodFloaters(type, count) {
+    for (var i = 0; i < count; i++) {
+      floaters.push({
+        type: type, glyph: OBJECT_GLYPHS[type] || '\u2726',
+        x: rand(0, 1), y: rand(0.3, 0.9), size: rand(10, 18),
+        speed: rand(-0.003, 0.003), bobPhase: Math.random() * Math.PI * 2, opacity: rand(0.5, 0.8)
+      });
+    }
+    if (floaters.length > 40) floaters.splice(0, floaters.length - 40); // cap
+  }
+  function drawMoodOverlay(dt, t) {
+    if (currentMood === 'emotional') {
+      moodFogBoost = lerp(moodFogBoost, 0.05, dt * 0.5);
+    } else {
+      moodFogBoost = lerp(moodFogBoost, 0, dt * 0.5);
+    }
+    if (currentMood === 'hopeful') {
+      moodWarmBoost = lerp(moodWarmBoost, 0.06, dt * 0.5);
+    } else {
+      moodWarmBoost = lerp(moodWarmBoost, 0, dt * 0.5);
+    }
+    if (moodFogBoost > 0.002) {
+      ctx.save();
+      ctx.globalAlpha = moodFogBoost;
+      ctx.fillStyle = '#cfd6e0';
+      ctx.fillRect(0, H * 0.5, W, H * 0.5);
+      ctx.restore();
+    }
+    if (moodWarmBoost > 0.002) {
+      ctx.save();
+      ctx.globalAlpha = moodWarmBoost;
+      var g = ctx.createRadialGradient(W / 2, H * 0.3, 0, W / 2, H * 0.3, H * 0.6);
+      g.addColorStop(0, 'rgba(255,210,140,1)');
+      g.addColorStop(1, 'rgba(255,210,140,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+    }
+  }
+
+  /* ===================== POINTER INTERACTION ===================== */
+  // No pointer-events on the canvas — we hit-test manually so the page
+  // underneath keeps scrolling and existing buttons/links keep working.
+  function withinCircle(px, py, hit) { return hit && Math.hypot(px - hit.x, py - hit.y) <= hit.r; }
+  function withinBox(px, py, hit) { return hit && px >= hit.x1 && px <= hit.x2 && py >= hit.y1 && py <= hit.y2; }
+
+  function onDocMove(e) {
+    var px = e.clientX, py = e.clientY;
+    var any = false;
+    stars.forEach(function (s) {
+      s._hover = withinCircle(px, py, s._hit);
+      if (s._hover) any = true;
+    });
+    document.body.style.cursor = any ? 'pointer' : '';
+  }
+
+  function onDocClick(e) {
+    var px = e.clientX, py = e.clientY;
+
+    if (moon && withinCircle(px, py, moon._hit)) { onMoonClicked(); return; }
+
+    for (var i = 0; i < shootingStars.length; i++) {
+      if (withinCircle(px, py, shootingStars[i]._hit)) { catchShootingStar(shootingStars[i]); return; }
+    }
+
+    for (var j = 0; j < stars.length; j++) {
+      if (withinCircle(px, py, stars[j]._hit)) {
+        stars[j].clickPulse = 1;
+        onStarClicked();
+        return;
+      }
+    }
+
+    if (constellation && !constellation.revealed && withinBox(px, py, constellation._hit)) {
+      constellation.revealed = true;
+      showFloatingMessage(px, py, constellation.message);
+      return;
+    }
+  }
+
+  document.addEventListener('mousemove', throttle(onDocMove, 60));
+  document.addEventListener('click', onDocClick);
+
+  function throttle(fn, ms) {
+    var last = 0;
+    return function () {
+      var now = Date.now();
+      if (now - last > ms) { last = now; fn.apply(null, arguments); }
+    };
+  }
+
+  /* ===================== MAIN LOOP ===================== */
+  var running = false, lastT = 0;
+  function frame(now) {
+    if (!running) return;
+    var dt = Math.min((now - lastT) / 1000, 0.05);
+    lastT = now;
+    var t = now / 1000;
+
+    ctx.clearRect(0, 0, W, H);
+
+    if (!reducedMotion) {
+      updateEvolution(dt);
+      maybeSpawnShootingStar(dt, t);
+    }
+
+    drawMoon(dt, t);
+    drawStars(dt, t);
+    drawShootingStars(dt);
+    if (constellation) drawConstellation(t);
+    drawFloaters(dt, t);
+    drawEvolutionFog();
+    drawMoodOverlay(dt, t);
+    drawRareEvent(dt, t);
+
+    if (!reducedMotion) requestAnimationFrame(frame);
+    else running = false; // one static frame under reduced-motion, matches skies.js's own behavior
+  }
+
+  function start() {
+    ensureCanvas();
+    if (running) return;
+    running = true;
+    lastT = performance.now();
+    requestAnimationFrame(frame);
+  }
+  function stop() { running = false; }
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) stop(); else if (currentSky) start();
+  });
+
+  /* ===================== SKY CHANGE HOOK ===================== */
+  function onSkyChanged(index) {
+    var sky = window.Skies.SKIES[index];
+    if (!sky) return;
+    currentSky = sky;
+    currentIndex = index;
+
+    ensureCanvas();
+    moon = pickMoonPhase(sky);
+    buildStars(sky);
+    constellation = generateConstellation(sky);
+    spawnFloaters(sky);
+    shootingStars = [];
+    evolution = { age: 0, fogAlpha: 0, extraStars: 0 };
+    lastShootingStarSpawn = 0;
+
+    recordVisit(sky.name);
+    maybeTriggerRareEvent(sky);
+    setAmbienceForSky(sky);
+
+    if (reducedMotion) { running = true; lastT = performance.now(); frame(lastT); running = false; }
+    else start();
+  }
+
+  // Wrap the public API instead of touching skies.js's private internals.
+  var originalApply = window.Skies.apply;
+  window.Skies.apply = function (index) {
+    originalApply.call(window.Skies, index);
+    onSkyChanged(index);
+  };
+
+  /* ===================== PUBLIC API ===================== */
+  window.SkyLiving = {
+    setMood: setMood,
+    getJournal: loadJournal,
+    CONSTELLATION_SHAPES: CONSTELLATION_SHAPES,
+    AMBIENCE_SOURCES: AMBIENCE_SOURCES,
+    EMOTION_ENGINE: EMOTION_ENGINE,
+    getMeta: getMeta,
+    setAmbienceVolume: function (v) {
+      ambienceState.volume = clamp(v, 0, 1);
+      if (ambienceState.audioEl) ambienceState.audioEl.volume = ambienceState.volume;
+    }
+  };
+
+  /* ===================== INIT ===================== */
+  var savedIndex = window.Skies.getCurrent ? window.Skies.getCurrent() : -1;
+  if (savedIndex >= 0 && window.Skies.SKIES[savedIndex]) {
+    onSkyChanged(savedIndex);
+  }
+})();

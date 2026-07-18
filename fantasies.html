@@ -3068,6 +3068,13 @@ END SECTION
         activeObservers.forEach(function (o) {
           try { o.observer.unobserve(o.target); } catch (e) { }
         });
+        var disconnected = {};
+        activeObservers.forEach(function (o) {
+          if (!disconnected[o.observer]) {
+            try { o.observer.disconnect(); } catch (e) { }
+            disconnected[o.observer] = true;
+          }
+        });
         activeIntervals = [];
         activeTimeouts = [];
         activeObservers = [];
@@ -4178,13 +4185,22 @@ END SECTION
                       } catch(e) {}
                       delete data.el._parallaxData;
                     }
-                    if (!entry.target.querySelector('.voice-note-btn')) {
+                    if (!entry.target.querySelector('.voice-controls')) {
+                      var wrapper = document.createElement('div');
+                      wrapper.className = 'voice-controls';
+                      wrapper.style.cssText = 'position:absolute;bottom:16px;right:16px;z-index:10;display:flex;flex-direction:column;align-items:flex-end;gap:6px;';
+                      var ti = document.createElement('input');
+                      ti.type = 'text';
+                      ti.className = 'voice-text-input';
+                      ti.placeholder = 'Review (max 1000 chars)...';
+                      ti.maxLength = 1000;
+                      ti.style.cssText = 'background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:var(--parchment);padding:6px 10px;border-radius:6px;font-family:inherit;font-size:0.75rem;width:180px;outline:none;box-sizing:border-box;';
                       var vb = document.createElement('button');
                       vb.className = 'voice-note-btn';
                       vb.textContent = '\uD83C\uDF99\uFE0F';
                       vb.setAttribute('aria-label', 'Record voice note');
                       vb.title = 'Record a voice note for this section';
-                      vb.style.cssText = 'position:absolute;bottom:16px;right:16px;z-index:10;background:rgba(232,93,58,0.15);border:1px solid rgba(232,93,58,0.3);color:var(--parchment);width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all 0.3s;';
+                      vb.style.cssText = 'background:rgba(232,93,58,0.15);border:1px solid rgba(232,93,58,0.3);color:var(--parchment);width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all 0.3s;';
                       vb.addEventListener('click', function(e) {
                         e.stopPropagation();
                         if (window._recording) return;
@@ -4192,31 +4208,67 @@ END SECTION
                           alert('Voice recording not supported in this browser.');
                           return;
                         }
+                        var toast = function(m, bg, dur) {
+                          var t = document.createElement('div');
+                          t.textContent = m;
+                          t.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:' + (bg||'rgba(0,0,0,0.85)') + ';color:#ffe680;padding:10px 24px;border-radius:8px;font-family:var(--font-body);font-size:0.9rem;z-index:99999;pointer-events:none;opacity:0;transition:opacity 0.4s;';
+                          document.body.appendChild(t);
+                          requestAnimationFrame(function(){ t.style.opacity = '1'; });
+                          setTimeout(function(){ t.style.opacity = '0'; setTimeout(function(){ t.remove(); },500); }, dur||2500);
+                          return t;
+                        };
+                        toast('Voice message limit: 120 seconds', 'rgba(0,0,0,0.85)', 3000);
                         var that = this;
+                        var input = that.parentNode.querySelector('.voice-text-input');
                         that.style.background = 'rgba(232,58,58,0.3)';
-                        that.textContent = '\u26A0\uFE0F';
+                        that.textContent = '\u23F1\uFE0F';
                         window._recording = true;
                         var chunks = [];
+                        var maxDuration = 120000;
+                        var hardMax = 180000;
+                        var warningShown = false;
                         navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
                           var mediaRecorder = new MediaRecorder(stream);
                           mediaRecorder.ondataavailable = function(e) { if (e.data.size > 0) chunks.push(e.data); };
+                          var warnTimeout = setTimeout(function() {
+                            if (mediaRecorder.state === 'recording') {
+                              warningShown = true;
+                              toast('Warning: 120s exceeded! Max 180s.', 'rgba(180,40,40,0.9)', 5000);
+                            }
+                          }, maxDuration);
+                          var hardTimeout = setTimeout(function() {
+                            if (mediaRecorder.state === 'recording') mediaRecorder.stop();
+                          }, hardMax);
                           mediaRecorder.onstop = function() {
+                            clearTimeout(warnTimeout);
+                            clearTimeout(hardTimeout);
                             var blob = new Blob(chunks, { type: 'audio/webm' });
-                            var url = URL.createObjectURL(blob);
+                            var heading = '';
+                            var p = that.parentNode;
+                            while (p) {
+                              var h = p.querySelector('h2, h3, h4');
+                              if (h) { heading = h.textContent; break; }
+                              p = p.parentElement;
+                            }
+                            var textVal = input ? input.value.trim() : '';
+                            var review = { sectionIdx: data.idx || 0, sectionTitle: heading, page: 'fantasies', audioBlob: blob, text: textVal, date: new Date().toISOString() };
+                            var dbreq = indexedDB.open('ash-jukebox-db', 3);
+                            dbreq.onsuccess = function() {
+                              var db = dbreq.result;
+                              var tx = db.transaction('reviews', 'readwrite');
+                              tx.objectStore('reviews').add(review);
+                              toast('\u2714\uFE0F Voice review saved', 'rgba(40,180,40,0.9)', 2500);
+                            };
                             that.style.background = 'rgba(58,232,93,0.2)';
-                            that.textContent = '\u25B6\uFE0F';
-                            that.onclick = function(e) { e.stopPropagation(); var a = new Audio(url); a.play(); };
+                            that.textContent = '\u2714\uFE0F';
                             setTimeout(function() {
                               that.style.background = 'rgba(232,93,58,0.15)';
                               that.textContent = '\uD83C\uDF99\uFE0F';
-                              that.onclick = null;
-                              URL.revokeObjectURL(url);
-                            }, 60000);
+                            }, 3000);
                             window._recording = false;
                             stream.getTracks().forEach(function(t) { t.stop(); });
                           };
                           mediaRecorder.start();
-                          setTimeout(function() { if (mediaRecorder.state === 'recording') mediaRecorder.stop(); }, 10000);
                         }).catch(function() {
                           that.style.background = 'rgba(232,93,58,0.15)';
                           that.textContent = '\uD83C\uDF99\uFE0F';
@@ -4224,8 +4276,10 @@ END SECTION
                           alert('Microphone access denied.');
                         });
                       });
+                      wrapper.appendChild(ti);
+                      wrapper.appendChild(vb);
                       entry.target.style.position = 'relative';
-                      entry.target.appendChild(vb);
+                      entry.target.appendChild(wrapper);
                     }
                     obs.unobserve(entry.target);
                   }
@@ -4233,7 +4287,7 @@ END SECTION
               }, { rootMargin: '200px' });
               tributeData.forEach(function (d) {
                 d.el._parallaxData = d;
-                obs.observe(d.el);
+                safeObserve(obs, d.el);
               });
             } else {
               tributeData.forEach(function (d) {
@@ -4396,7 +4450,7 @@ END SECTION
       document.body.classList.add('filtering-mood');
       document.querySelectorAll('.tribute').forEach(function(t) {
         var m = t.getAttribute('data-mood');
-        t.classList.toggle('mood-match', m === mood);
+        t.classList.toggle('mood-match', m && m.split(' ').indexOf(mood) !== -1);
       });
     }
   });
@@ -4406,11 +4460,11 @@ END SECTION
     var span = t.querySelector('.tribute-lead span:last-child');
     var title = span ? span.textContent.toLowerCase() : '';
     var moodTags = [];
-    if (title.indexOf('kiss') !== -1 || title.indexOf('hug') !== -1 || title.indexOf('cuddle') !== -1 || title.indexOf('hold') !== -1 || text.indexOf('soft') !== -1 || text.indexOf('warm') !== -1 || text.indexOf('gentle') !== -1 || text.indexOf('tender') !== -1) moodTags.push('romantic');
-    if (title.indexOf('laugh') !== -1 || title.indexOf('smile') !== -1 || title.indexOf('play') !== -1 || title.indexOf('tease') !== -1 || text.indexOf('funny') !== -1 || text.indexOf('giggle') !== -1) moodTags.push('playful');
-    if (title.indexOf('breast') !== -1 || title.indexOf('nipple') !== -1 || title.indexOf('vagina') !== -1 || title.indexOf('clitor') !== -1 || title.indexOf('wet') !== -1 || title.indexOf('moan') !== -1 || title.indexOf('arous') !== -1 || title.indexOf('penetrat') !== -1 || text.indexOf('naked') !== -1 || text.indexOf('undress') !== -1 || text.indexOf('foreplay') !== -1 || text.indexOf('sext') !== -1) moodTags.push('intimate');
-    if (title.indexOf('thank') !== -1 || title.indexOf('grateful') !== -1 || title.indexOf('bless') !== -1 || text.indexOf('grateful') !== -1 || text.indexOf('thankful') !== -1 || text.indexOf('blessed') !== -1) moodTags.push('grateful');
-    if (title.indexOf('miss') !== -1 || title.indexOf('wish') !== -1 || title.indexOf('dream') !== -1 || title.indexOf('imagin') !== -1 || title.indexOf('can\'t wait') !== -1 || text.indexOf('miss') !== -1 || text.indexOf('wait') !== -1 || text.indexOf('someday') !== -1) moodTags.push('longing');
+    if (title.indexOf('kiss') !== -1 || title.indexOf('hug') !== -1 || title.indexOf('cuddle') !== -1 || title.indexOf('hold') !== -1 || text.indexOf('soft') !== -1 || text.indexOf('warm') !== -1 || text.indexOf('gentle') !== -1 || text.indexOf('tender') !== -1 || text.indexOf('adore') !== -1 || text.indexOf('cherish') !== -1) moodTags.push('romantic');
+    if (title.indexOf('laugh') !== -1 || title.indexOf('smile') !== -1 || title.indexOf('play') !== -1 || title.indexOf('tease') !== -1 || title.indexOf('banter') !== -1 || title.indexOf('silly') !== -1 || text.indexOf('funny') !== -1 || text.indexOf('giggle') !== -1 || text.indexOf('fun') !== -1 || text.indexOf('joke') !== -1 || text.indexOf('humor') !== -1) moodTags.push('playful');
+    if (title.indexOf('breast') !== -1 || title.indexOf('nipple') !== -1 || title.indexOf('vagina') !== -1 || title.indexOf('clitor') !== -1 || title.indexOf('wet') !== -1 || title.indexOf('moan') !== -1 || title.indexOf('arous') !== -1 || title.indexOf('penetrat') !== -1 || title.indexOf('touch') !== -1 || title.indexOf('skin') !== -1 || title.indexOf('body') !== -1 || text.indexOf('naked') !== -1 || text.indexOf('undress') !== -1 || text.indexOf('foreplay') !== -1 || text.indexOf('sext') !== -1 || text.indexOf('caress') !== -1 || text.indexOf('desire') !== -1 || text.indexOf('passion') !== -1) moodTags.push('intimate');
+    if (title.indexOf('thank') !== -1 || title.indexOf('grateful') !== -1 || title.indexOf('bless') !== -1 || text.indexOf('grateful') !== -1 || text.indexOf('thankful') !== -1 || text.indexOf('blessed') !== -1 || text.indexOf('gratitude') !== -1 || text.indexOf('appreciate') !== -1 || text.indexOf('lucky') !== -1) moodTags.push('grateful');
+    if (title.indexOf('miss') !== -1 || title.indexOf('wish') !== -1 || title.indexOf('dream') !== -1 || title.indexOf('imagin') !== -1 || title.indexOf('can\'t wait') !== -1 || title.indexOf('future') !== -1 || text.indexOf('miss') !== -1 || text.indexOf('wait') !== -1 || text.indexOf('someday') !== -1 || text.indexOf('yearn') !== -1 || text.indexOf('crave') !== -1 || text.indexOf('ache') !== -1) moodTags.push('longing');
     // Default to romantic
     if (moodTags.length === 0) moodTags.push('romantic');
     t.setAttribute('data-mood', moodTags.join(' '));
@@ -4571,14 +4625,17 @@ END SECTION
 
   <div id="diagnostics-log" style="display:none;"></div>
   <script>
-    function writeLogs() {
-      var logEl = document.getElementById('diagnostics-log');
-      if (logEl) {
-        logEl.textContent = JSON.stringify(window.globalErrors || []);
+    (function () {
+      function writeLogs() {
+        var logEl = document.getElementById('diagnostics-log');
+        if (logEl) {
+          logEl.textContent = JSON.stringify(window.globalErrors || []);
+        }
       }
-    }
-    writeLogs();
-    setInterval(writeLogs, 3000);
+      writeLogs();
+      var _logInt = setInterval(writeLogs, 3000);
+      window.addEventListener('pagehide', function () { clearInterval(_logInt); });
+    })();
   </script>
 
   <script>
@@ -4609,12 +4666,13 @@ END SECTION
           }
         });
       }, { threshold: 0.3 });
-      observer.observe(ded);
+      safeObserve(observer, ded);
     })();
   </script>
 
   <script src="track.js"></script>
   <script src="skies.js"></script>
+  <script src="sky-living.js"></script>
   <script>
     (function() {
       var c = document.createElement('div');

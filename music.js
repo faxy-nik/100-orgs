@@ -11,7 +11,7 @@
   ];
 
   var DB_NAME = 'ash-jukebox-db';
-  var DB_VER = 2;
+  var DB_VER = 3;
 
   var STORAGE_KEY = 'ash-jukebox';
   var audioUrls = [];
@@ -24,6 +24,7 @@
         if (!db.objectStoreNames.contains('songs')) db.createObjectStore('songs', { keyPath: 'id', autoIncrement: true });
         if (!db.objectStoreNames.contains('config')) db.createObjectStore('config', { keyPath: 'key' });
         if (!db.objectStoreNames.contains('counters')) db.createObjectStore('counters', { keyPath: 'key' });
+        if (!db.objectStoreNames.contains('reviews')) db.createObjectStore('reviews', { keyPath: 'id', autoIncrement: true });
       };
       req.onsuccess = function () { resolve(req.result); };
       req.onerror = function () { reject(req.error); };
