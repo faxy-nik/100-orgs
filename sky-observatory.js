@@ -25,11 +25,36 @@
     if (!config.luckyStar) config.luckyStar = {};
     if (!config.radio) config.radio = false;
     if (!config.coffeeAt) config.coffeeAt = 0;
+    if (!config.feathers) config.feathers = { count: 0, rewards: [] };
+    if (!config.fireflies) config.fireflies = { caught: 0 };
+    if (!config.wishes) config.wishes = [];
+    if (!config.balloonNotes) config.balloonNotes = [];
+    if (!config.fragments) config.fragments = [];
+    if (!config.invisibleMsgs) config.invisibleMsgs = [];
   }
   function save() {
     try { localStorage.setItem(OBS_KEY, JSON.stringify(config)); } catch (e) {}
   }
   defaults();
+
+  /* ---------- category filter state ---------- */
+  var activeCat = 'All';
+  function setActiveCat(cat) {
+    activeCat = cat;
+    var bar = document.getElementById('obsCats');
+    if (!bar) return;
+    bar.querySelectorAll('button').forEach(function(b) {
+      if (b.dataset.cat === cat) {
+        b.style.background = 'rgba(255,230,128,.15)';
+        b.style.borderColor = 'rgba(255,230,128,.35)';
+        b.style.color = 'var(--gold)';
+      } else {
+        b.style.background = 'var(--glass)';
+        b.style.borderColor = 'var(--glassBorder)';
+        b.style.color = 'var(--parchment-dim)';
+      }
+    });
+  }
 
   /* ---------- categories ---------- */
   function getCategory(sky) {
@@ -226,22 +251,16 @@
 
     // Category buttons
     var CATS = ['All','Dawn','Day','Sunset','Night','Aurora','Cosmic','Rain','Snow','Storm','Rainbow','Fog','Water','Seasonal','Nature','Cozy','Fantasy','Misc'];
-    var activeCat = 'All';
     CATS.forEach(function(c) {
       var btn = document.createElement('button');
       btn.textContent = c;
       btn.dataset.cat = c;
-      btn.style.cssText = 'background:'+(c==='All'?'rgba(255,230,128,.15)':'var(--glass)')+';border:1px solid '+(c==='All'?'rgba(255,230,128,.35)':'var(--glassBorder)')+';color:'+(c==='All'?'var(--gold)':'var(--parchment-dim)')+';padding:0.3rem 0.7rem;border-radius:6px;cursor:pointer;font-family:var(--font-body);font-size:0.75rem;transition:all 0.25s;';
+      btn.style.cssText = 'padding:0.3rem 0.7rem;border-radius:6px;cursor:pointer;font-family:var(--font-body);font-size:0.75rem;transition:all 0.25s;';
+      btn.style.background = 'var(--glass)';
+      btn.style.border = '1px solid var(--glassBorder)';
+      btn.style.color = 'var(--parchment-dim)';
       btn.addEventListener('click', function() {
-        catBar.querySelectorAll('button').forEach(function(b) {
-          b.style.background = 'var(--glass)';
-          b.style.borderColor = 'var(--glassBorder)';
-          b.style.color = 'var(--parchment-dim)';
-        });
-        this.style.background = 'rgba(255,230,128,.15)';
-        this.style.borderColor = 'rgba(255,230,128,.35)';
-        this.style.color = 'var(--gold)';
-        activeCat = this.dataset.cat;
+        setActiveCat(this.dataset.cat);
         renderGrid();
       });
       catBar.appendChild(btn);
@@ -267,6 +286,7 @@
 
     if (oldGrid) oldGrid.replaceWith(obs); else main.appendChild(obs);
     container = obs;
+    setActiveCat('All');
 
     renderRecent();
     renderGrid();
@@ -306,9 +326,6 @@
     var SKIES = window.Skies && window.Skies.SKIES;
     if (!SKIES || !gridEl) return;
     var q = (searchEl.value || '').toLowerCase().trim();
-    var activeCat = 'All';
-    var activeBtn = catBar.querySelector('button[style*="rgba(255,230,128,.15)"]');
-    if (activeBtn) activeCat = activeBtn.dataset.cat;
 
     var filtered = [], indices = [];
     for (var i=0;i<SKIES.length;i++) {
@@ -404,7 +421,8 @@
         '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:0.5rem;">' +
           tags.map(function(t){return '<span style="background:rgba(255,230,128,.1);border:1px solid rgba(255,230,128,.2);color:var(--gold);padding:2px 6px;border-radius:4px;font-size:0.65rem;">'+t+'</span>';}).join('') +
         '</div>' +
-        '<p style="font-size:0.85rem;color:var(--parchment-dim);font-style:italic;line-height:1.5;margin:0 0 0.8rem;">'+(sky.message||'')+'</p>' +
+        '<p style="font-size:0.85rem;color:var(--parchment-dim);font-style:italic;line-height:1.5;margin:0 0 0.5rem;">'+(sky.message||'')+'</p>' +
+        '<div style="font-size:0.6rem;color:var(--ash);font-family:monospace;letter-spacing:1px;margin-bottom:0.5rem;">DNA: '+getSkyDNA(sky)+'</div>' +
         '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
           '<button id="obsApplyBtn" style="background:rgba(255,230,128,.15);border:1px solid rgba(255,230,128,.35);color:var(--gold);padding:0.5rem 1.2rem;border-radius:8px;cursor:pointer;font-family:var(--font-display);font-size:0.85rem;transition:all 0.3s;">\u2728 Apply Sky</button>' +
           '<button id="obsFavBtn" style="background:var(--glass);border:1px solid var(--glassBorder);color:'+(isFav?'var(--gold)':'var(--parchment-dim)')+';padding:0.5rem 1rem;border-radius:8px;cursor:pointer;font-family:var(--font-display);font-size:0.85rem;transition:all 0.3s;">'+(isFav?'\u2605 Favorited':'\u2606 Favorite')+'</button>' +
@@ -487,35 +505,43 @@
     });
   }
 
+  var catW = 80, catH = 80, catCols = 6;
+  var catStyle = document.createElement('style');
+  catStyle.textContent = '@keyframes catWalk{0%{background-position:0 0}100%{background-position:-'+(catCols*catW)+'px 0}}';
+  document.head.appendChild(catStyle);
+
   function spawnCat() {
     var cat = document.createElement('div');
-    cat.textContent = '\uD83D\uDC31';
-    cat.style.cssText = 'position:fixed;bottom:10px;font-size:2rem;z-index:9999;pointer-events:auto;cursor:pointer;transform:scaleX(-1);transition:left 8s linear;left:-60px;';
+    cat.style.cssText = 'position:fixed;bottom:10px;z-index:9999;pointer-events:auto;cursor:pointer;' +
+      'width:'+catW+'px;height:'+catH+'px;' +
+      'background:url("cat-animation.png") 0 0 / '+(catCols*catW)+'px '+(catH*4)+'px no-repeat;' +
+      'animation:catWalk 0.7s steps('+catCols+') infinite;' +
+      'transition:left 10s cubic-bezier(0.2,0.8,0.3,1);left:-100px;';
     document.body.appendChild(cat);
 
-    // Walk across
     requestAnimationFrame(function() {
-      cat.style.left = (window.innerWidth + 60) + 'px';
+      cat.style.left = (window.innerWidth + 100) + 'px';
     });
 
     var clicked = false;
     cat.addEventListener('click', function(e) {
       if (clicked) return;
       clicked = true;
+      cat.style.animation = 'none';
       cat.style.transition = 'none';
-      cat.style.left = e.clientX + 'px';
-      cat.textContent = '\uD83D\uDC31\u200D\u2B1B'; // Black cat emoji + look
+      cat.style.left = (e.clientX - catW/2) + 'px';
+      cat.style.backgroundPosition = '-'+(2*catW)+'px -'+(2*catH)+'px';
+      cat.style.backgroundSize = (catCols*catW)+'px '+(catH*4)+'px';
       setTimeout(function() {
-        cat.style.transition = 'left 1.5s ease-in';
-        cat.style.left = '-60px';
+        cat.style.transition = 'left 1.8s ease-in';
+        cat.style.left = '-100px';
         setTimeout(function() { cat.remove(); }, 2000);
-      }, 800);
+      }, 1200);
     });
 
-    // Remove after walk
     setTimeout(function() {
       if (!clicked) cat.remove();
-    }, 9000);
+    }, 11000);
   }
 
   /* ---------- 3. Real Time World ---------- */
@@ -537,24 +563,104 @@
     setInterval(updateTime, 30000);
   }
 
+  /* ---------- sky luminance ---------- */
+  function hexLuminance(hex) {
+    var h = hex.replace('#','');
+    if (h.length===3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+    var n = parseInt(h,16);
+    var r = (n>>16)&255, g = (n>>8)&255, b = n&255;
+    return (0.299*r + 0.587*g + 0.114*b) / 255;
+  }
+  function getSkyLuminance() {
+    var SKIES = window.Skies && window.Skies.SKIES;
+    var idx = window.Skies && window.Skies.getCurrent();
+    var sky = (idx >= 0 && SKIES && SKIES[idx]) ? SKIES[idx] : null;
+    if (!sky || !sky.gradient || !sky.gradient.length) return 0.5;
+    var total = 0, count = 0;
+    for (var gi=0;gi<sky.gradient.length;gi++) {
+      var c = sky.gradient[gi][1];
+      if (c && c[0]==='#') { total += hexLuminance(c); count++; }
+    }
+    return count ? total/count : 0.5;
+  }
+  function updateMoonTheme(btn) {
+    if (!btn) btn = document.getElementById('obsMoonBtn');
+    if (!btn) return;
+    var lum = getSkyLuminance();
+    var isBright = lum > 0.5;
+    btn.style.background = isBright ? 'rgba(0,0,0,0.45)' : 'rgba(255,255,255,0.2)';
+    btn.style.borderColor = isBright ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.2)';
+    btn.style.color = isBright ? '#ffebd2' : '#1a1a2a';
+    btn.style.boxShadow = isBright ? '0 0 12px rgba(255,200,100,0.15)' : '0 0 12px rgba(0,0,0,0.15)';
+  }
+
   /* ---------- 4. Moon Click Counter ---------- */
+  var moonMilestones = {
+    5: '\u2728 First moon secret \u2014 she whispers to the night',
+    10: '\uD83C\uDF19 Moon child \u2014 the stars lean closer',
+    15: '\uD83C\uDF1B Crescent glow \u2014 a gentle smile in the dark',
+    20: '\u2B50 Twenty clicks \u2014 the sky remembers your touch',
+    25: '\uD83C\uDF1A New moon magic \u2014 something stirs in shadow...',
+    30: '\uD83C\uDF15 Half-lit \u2014 balanced between earth and sky',
+    35: '\u2728 Thirty-five \u2014 the moon keeps your secrets',
+    40: '\uD83C\uDF12 Waxing strong \u2014 the light grows with you',
+    45: '\uD83C\uDF14 Almost full \u2014 devotion written in orbit',
+    50: '\uD83C\uDF1D Half moon wisdom \u2014 the sky knows your name'
+  };
   function initMoonCounter() {
+    config.moonClicks = 0;
+    save();
+    FB.put('stats', { moonClicks: 0 }).catch(function(){});
     var moonBtn = document.createElement('button');
     moonBtn.id = 'obsMoonBtn';
-    moonBtn.title = 'Click the moon \uD83C\uDF19';
+    moonBtn.title = 'Click the moon \u2728';
     moonBtn.textContent = '\uD83C\uDF19';
-    moonBtn.style.cssText = 'position:fixed;bottom:5rem;right:1rem;z-index:100;background:var(--glass);border:1px solid var(--glassBorder);border-radius:50%;width:40px;height:40px;font-size:1.2rem;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;';
+    moonBtn.style.cssText = 'position:fixed;bottom:8rem;right:1rem;z-index:10000;border-radius:50%;width:40px;height:40px;font-size:1.2rem;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;';
     moonBtn.addEventListener('click', function() {
       config.moonClicks = (config.moonClicks || 0) + 1;
       save();
-      var msgs = {5:'\u2728 You found a moon secret!',10:'\uD83C\uDF19 Moon child \u2728',25:'\uD83C\uDF1B Crescent of secrets...',50:'\uD83C\uDF15 Half moon wisdom',100:'\uD83C\uDF1D Full moon — you are devoted \u2728'};
-      var next = null;
-      for (var k in msgs) { if (config.moonClicks == k) next = msgs[k]; }
-      if (next) toast(next, 'rgba(200,180,255,0.85)', 4000);
-      else toast('\uD83C\uDF19 Moon click #'+config.moonClicks, 'rgba(200,180,255,0.6)', 1500);
-      if (config.moonClicks===25) spawnCat();
+      FB.put('stats', { moonClicks: config.moonClicks }).catch(function(){});
+      var next = moonMilestones[config.moonClicks];
+      if (next) {
+        toast('\uD83C\uDF19 ' + next, 'rgba(200,180,255,0.9)', 5000);
+        if (config.moonClicks === 25) spawnCat();
+      } else {
+        toast('\uD83C\uDF19 Moon click #'+config.moonClicks, 'rgba(200,180,255,0.6)', 1500);
+      }
+      // Moon Ripple
+      var rect = moonBtn.getBoundingClientRect();
+      var cx = rect.left + rect.width/2, cy = rect.top + rect.height/2;
+      var ripple = document.createElement('div');
+      ripple.style.cssText = 'position:fixed;left:'+(cx-30)+'px;top:'+(cy-30)+'px;width:60px;height:60px;border-radius:50%;border:2px solid rgba(255,230,128,0.6);z-index:9999;pointer-events:none;animation:rippleAnim 1s ease-out forwards;';
+      document.body.appendChild(ripple);
+      setTimeout(function() { if (ripple.parentNode) ripple.remove(); }, 1200);
     });
     document.body.appendChild(moonBtn);
+    updateMoonTheme(moonBtn);
+  }
+
+  /* ---------- 4b. Clean View Toggle ---------- */
+  var cleanView = false;
+  var obsUIElements = [];
+  function initCleanViewToggle() {
+    var btn = document.createElement('button');
+    btn.id = 'obsCleanBtn';
+    btn.title = 'Toggle clean view';
+    btn.textContent = '\u25A1';
+    btn.style.cssText = 'position:fixed;top:1rem;left:1rem;z-index:10001;background:var(--glass);border:1px solid var(--glassBorder);border-radius:50%;width:36px;height:36px;font-size:1rem;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;color:var(--parchment-dim);';
+    btn.addEventListener('click', function() {
+      cleanView = !cleanView;
+      btn.textContent = cleanView ? '\u25A3' : '\u25A1';
+      btn.style.color = cleanView ? 'var(--gold)' : 'var(--parchment-dim)';
+      btn.style.borderColor = cleanView ? 'var(--gold)' : 'var(--glassBorder)';
+      var els = document.querySelectorAll('#observatory, #obsMoonBtn, #obsRealTime, #obsProgress, .footer, .page-header, #heartContainer, #skyBtnContainer, [href="stats.html"], [href="admin.html"]');
+      els.forEach(function(el) {
+        if (el) el.style.display = cleanView ? 'none' : '';
+      });
+      if (cleanView) toast('\u2728 Clean view — just the sky', 'rgba(255,230,128,0.7)', 2000);
+      else toast('UI restored', 'rgba(255,230,128,0.7)', 1500);
+    });
+    document.body.appendChild(btn);
   }
 
   /* ---------- 5. Hidden Radio (type "radio") ---------- */
@@ -778,38 +884,806 @@
         {key:'fantasies',file:'fantasies.html',label:'Fantasies'}
       ];
       var total = 0, viewed = 0;
+      var loaded = 0;
       pages.forEach(function(p) {
         var vk = 'ash-viewed-' + p.file.replace(/[^a-z0-9]/gi,'_');
+        var lk = vk + '_count';
         try {
           var v = JSON.parse(localStorage.getItem(vk) || '[]');
-          var count = parseInt(localStorage.getItem(vk+'_count') || '0');
+          var count = parseInt(localStorage.getItem(lk) || '0');
           total += count;
           viewed += v.length;
         } catch(e) {}
+        FB.get('viewed', p.key).then(function(d) {
+          if (d && d.data) {
+            if (d.data.entries) {
+              viewed += d.data.entries.length;
+            }
+            if (d.data.count) {
+              total += parseInt(d.data.count);
+            }
+          }
+          loaded++;
+          if (loaded === pages.length) renderProgress();
+        }).catch(function() { loaded++; if (loaded === pages.length) renderProgress(); });
       });
-      var pct = total > 0 ? Math.min(100, Math.round(viewed/total*100)) : 0;
-      el.innerHTML = '<div style="font-family:var(--font-display);color:var(--gold);margin-bottom:4px;">\uD83D\uDCD6 Progress</div>' +
-        '<div style="color:var(--parchment-dim);">' + viewed + ' / ' + total + ' memories</div>' +
-        '<div style="margin-top:4px;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;">' +
-          '<div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,var(--gold),var(--ember));border-radius:2px;transition:width 0.6s ease;"></div>' +
-        '</div>' +
-        '<div style="font-size:0.6rem;color:var(--ash);margin-top:2px;">Click for details</div>';
+      function renderProgress() {
+        var pct = total > 0 ? Math.min(100, Math.round(viewed/total*100)) : 0;
+        el.innerHTML = '<div style="font-family:var(--font-display);color:var(--gold);margin-bottom:4px;">\uD83D\uDCD6 Progress</div>' +
+          '<div style="color:var(--parchment-dim);">' + viewed + ' / ' + total + ' memories</div>' +
+          '<div style="margin-top:4px;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;">' +
+            '<div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,var(--gold),var(--ember));border-radius:2px;transition:width 0.6s ease;"></div>' +
+          '</div>' +
+          '<div style="font-size:0.6rem;color:var(--ash);margin-top:2px;">Click for details</div>';
+      }
+      renderProgress();
     }
     updateProgress();
     document.body.appendChild(el);
-    setInterval(updateProgress, 10000);
+    setInterval(updateProgress, 30000);
+  }
+
+  /* =====================================================
+     PART 3 — FEATURES 11–20
+     ===================================================== */
+
+  /* ---------- 11. Feather Collector ---------- */
+  function initFeatherCollector() {
+    setInterval(function() {
+      if (Math.random() > 0.008) return;
+      var f = document.createElement('div');
+      f.textContent = '\uD83E\uDEB6';
+      var startX = 5 + Math.random() * 80;
+      f.style.cssText = 'position:fixed;top:-20px;left:'+startX+'vw;font-size:'+(12+Math.random()*10)+'px;z-index:9996;pointer-events:auto;cursor:pointer;opacity:0.7;transition:all 4s linear;';
+      document.body.appendChild(f);
+      requestAnimationFrame(function() {
+        f.style.top = (window.innerHeight + 20) + 'px';
+        f.style.left = (startX + (Math.random()-0.5)*15) + 'vw';
+      });
+      f.addEventListener('click', function() {
+        config.feathers.count = (config.feathers.count || 0) + 1;
+        save();
+        var rewards = {3:'\uD83E\uDEB6 3 feathers \u2014 the breeze notices you',7:'\uD83E\uDEB6 7 feathers \u2014 you are becoming lighter',15:'\uD83E\uDEB6 15 feathers \u2014 almost floating',30:'\uD83E\uDEB6 30 feathers \u2014 you could fly'};
+        var msg = null;
+        for (var rk in rewards) { if (config.feathers.count == rk) msg = rewards[rk]; }
+        toast(msg || '\uD83E\uDEB6 +1 feather ('+config.feathers.count+')', 'rgba(200,180,150,0.8)', 2000);
+        f.remove();
+      });
+      setTimeout(function() { if (f.parentNode) f.remove(); }, 5000);
+    }, 12000);
+  }
+
+  /* ---------- 12. Daily Sky ---------- */
+  function initDailySky() {
+    var SKIES = window.Skies && window.Skies.SKIES;
+    if (!SKIES) return;
+    var today = new Date();
+    var dateStr = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    var hash = 0;
+    for (var di=0;di<dateStr.length;di++) { hash = ((hash<<5)-hash)+dateStr.charCodeAt(di); hash &= hash; }
+    var idx = Math.abs(hash) % SKIES.length;
+    var dailyEl = document.createElement('div');
+    dailyEl.id = 'obsDaily';
+    dailyEl.style.cssText = 'margin-bottom:0.8rem;padding:0.45rem 0.8rem;background:rgba(255,230,128,.08);border:1px solid rgba(255,230,128,.2);border-radius:8px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:all 0.3s;';
+    dailyEl.innerHTML = '<span style="font-size:1rem;">\uD83C\uDF1F</span><span style="font-size:0.75rem;color:var(--gold);font-family:var(--font-display);">Sky of the Day</span><span style="font-size:0.7rem;color:var(--parchment-dim);margin-left:auto;">'+SKIES[idx].name+'</span>';
+    dailyEl.addEventListener('mouseenter', function() { this.style.borderColor = 'var(--gold)'; });
+    dailyEl.addEventListener('mouseleave', function() { this.style.borderColor = 'rgba(255,230,128,.2)'; });
+    dailyEl.addEventListener('click', function() { SkyObservatory.selectSky(idx); });
+    var controls = document.getElementById('obsCats');
+    if (controls) {
+      var parent = controls.parentNode;
+      parent.insertBefore(dailyEl, controls.nextSibling);
+    }
+  }
+
+  /* ---------- 13. Sky DNA ---------- */
+  function getSkyDNA(sky) {
+    if (!sky) return '';
+    var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    var seed = (sky.name||'').length * 13 + ((sky.gradient&&sky.gradient.length)||0) * 7 + (sky.stars?Math.min(sky.stars.count,500):0) * 3 + (sky.clouds?sky.clouds.length:0) * 11 + (sky.particles?sky.particles.length:0) * 5 + (sky.lights?sky.lights.length:0) * 17;
+    var dna = '', s = seed || 1;
+    for (var dnai=0;dnai<8;dnai++) {
+      s = (s * 9301 + 49297) % 233280;
+      dna += chars[Math.floor((s / 233280) * chars.length)];
+    }
+    return dna;
+  }
+
+  /* ---------- 14. Firefly Jar ---------- */
+  function initFireflyJar() {
+    var jar = document.createElement('div');
+    jar.id = 'obsFireflyJar';
+    jar.title = 'Firefly Jar \u2728';
+    jar.style.cssText = 'position:fixed;bottom:12rem;left:1rem;z-index:100;font-size:1.5rem;cursor:pointer;transition:all 0.5s;';
+    jar.textContent = '\uD83C\uDFF6\uFE0F';
+    document.body.appendChild(jar);
+    jar.addEventListener('click', function() {
+      var count = config.fireflies.caught || 0;
+      toast('\uD83C\uDFF6\uFE0F Firefly Jar: '+count+' fireflies'+(count>=10?' \u2728 the jar glows!':''), 'rgba(255,230,100,0.8)', 3000);
+    });
+    function updateJar() {
+      var count = config.fireflies.caught || 0;
+      var bright = Math.min(1, count / 15);
+      jar.style.textShadow = '0 0 '+(5+bright*25)+'px rgba(255,230,100,'+(0.2+bright*0.6)+')';
+      jar.style.filter = 'brightness('+(0.7+bright*0.5)+')';
+    }
+    setInterval(function() {
+      if (Math.random() > 0.004) return;
+      var ff = document.createElement('div');
+      ff.textContent = '\u2728';
+      ff.style.cssText = 'position:fixed;z-index:9995;font-size:'+(10+Math.random()*8)+'px;pointer-events:auto;cursor:pointer;opacity:0.8;transition:all 3s ease-in-out;';
+      ff.style.left = (5+Math.random()*90)+'vw';
+      ff.style.top = (10+Math.random()*60)+'vh';
+      document.body.appendChild(ff);
+      var drift = setInterval(function() {
+        if (!ff.parentNode) { clearInterval(drift); return; }
+        ff.style.top = (parseFloat(ff.style.top) + (Math.random()-0.5)*20) + 'px';
+        ff.style.left = (parseFloat(ff.style.left) + (Math.random()-0.5)*20) + 'px';
+      }, 800);
+      ff.addEventListener('click', function() {
+        clearInterval(drift);
+        config.fireflies.caught = (config.fireflies.caught || 0) + 1;
+        save();
+        updateJar();
+        toast('\u2728 Caught! ('+config.fireflies.caught+')', 'rgba(255,230,100,0.7)', 1200);
+        ff.style.transform = 'scale(2)';
+        ff.style.opacity = '0';
+        setTimeout(function() { if (ff.parentNode) ff.remove(); }, 400);
+      });
+      setTimeout(function() {
+        if (!ff.parentNode) return;
+        clearInterval(drift);
+        ff.style.opacity = '0';
+        setTimeout(function() { if (ff.parentNode) ff.remove(); }, 1000);
+      }, 8000);
+    }, 10000);
+    updateJar();
+  }
+
+  /* ---------- 15. Fortune Scroll ---------- */
+  function initFortuneScroll() {
+    var fortunes = [
+      'The stars whisper your name tonight.',
+      'A gentle answer turns away wrath.',
+      'What you seek is seeking you.',
+      'The moon remembers what the sun forgot.',
+      'Someone is thinking of you right now.',
+      'Patience is not passive — it is gathering strength.',
+      'The best time to plant a tree was 20 years ago.',
+      'You are closer than you think.',
+      'Love is not found. It builds itself.',
+      'The sky is not the limit — it is the beginning.',
+      'Every sky tells a story. This one is yours.',
+      'Something beautiful is about to happen.',
+      'Trust the timing of your life.',
+      'You are exactly where you need to be.',
+      'The universe has been arranging this moment.'
+    ];
+    setInterval(function() {
+      if (Math.random() > 0.004) return;
+      var scroll = document.createElement('div');
+      scroll.textContent = '\uD83D\uDCDC';
+      scroll.style.cssText = 'position:fixed;z-index:9995;font-size:1.5rem;pointer-events:auto;cursor:pointer;opacity:0.6;transition:all 0.5s;animation:luckyFloat 3s ease-in-out infinite;';
+      scroll.style.left = (5+Math.random()*40)+'vw';
+      scroll.style.top = (10+Math.random()*50)+'vh';
+      scroll.title = 'A fortune waits...';
+      document.body.appendChild(scroll);
+      scroll.addEventListener('mouseenter', function() { this.style.opacity = '1'; this.style.transform = 'scale(1.2)'; });
+      scroll.addEventListener('mouseleave', function() { this.style.opacity = '0.6'; this.style.transform = 'scale(1)'; });
+      scroll.addEventListener('click', function() {
+        var msg = fortunes[Math.floor(Math.random()*fortunes.length)];
+        toast('\uD83D\uDCDC '+msg, 'rgba(200,170,130,0.85)', 5000);
+        scroll.style.transform = 'scale(1.5)';
+        scroll.style.opacity = '0';
+        setTimeout(function() { if (scroll.parentNode) scroll.remove(); }, 600);
+      });
+      setTimeout(function() {
+        if (scroll.parentNode) { scroll.style.opacity = '0'; setTimeout(function() { if (scroll.parentNode) scroll.remove(); }, 1000); }
+      }, 15000);
+    }, 15000);
+  }
+
+  /* ---------- 16. Earth View ---------- */
+  function initEarthView() {
+    _afterApply.push(function(idx) {
+      var SKIES = window.Skies && window.Skies.SKIES;
+      if (!SKIES || !SKIES[idx]) return;
+      if (Math.random() < 0.12) {
+        setTimeout(function() {
+          var earth = document.createElement('div');
+          earth.textContent = '\uD83C\uDF0D';
+          earth.style.cssText = 'position:fixed;bottom:'+(15+Math.random()*30)+'%;right:'+(10+Math.random()*30)+'%;font-size:'+(24+Math.random()*20)+'px;z-index:9995;pointer-events:none;animation:earthFloat 15s ease-in-out infinite;opacity:0.5;';
+          document.body.appendChild(earth);
+          setTimeout(function() {
+            earth.style.opacity = '0';
+            earth.style.transition = 'opacity 2s';
+            setTimeout(function() { if (earth.parentNode) earth.remove(); }, 2500);
+          }, 12000);
+        }, 3000);
+      }
+    });
+  }
+
+  /* ---------- 17. Lost Balloon ---------- */
+  function initLostBalloon() {
+    var balloonMsgs = [
+      'I wonder who is looking at this sky too...',
+      'If you find this, know that someone loves you.',
+      'The higher we go, the smaller our problems seem.',
+      'I wish I could stay up here forever.',
+      'Hello, stranger. I hope your day is beautiful.',
+      'This balloon has travelled further than I ever have.',
+      'Let go of what holds you down.',
+      'Somewhere, someone is waiting for a sign. This is it.'
+    ];
+    setInterval(function() {
+      if (Math.random() > 0.003) return;
+      var balloon = document.createElement('div');
+      balloon.textContent = '\uD83C\uDF88';
+      balloon.style.cssText = 'position:fixed;bottom:-40px;left:'+(10+Math.random()*60)+'vw;font-size:2rem;z-index:9995;pointer-events:auto;cursor:pointer;transition:all 12s linear;opacity:0.8;';
+      document.body.appendChild(balloon);
+      requestAnimationFrame(function() {
+        balloon.style.bottom = (window.innerHeight + 60) + 'px';
+        balloon.style.left = (parseFloat(balloon.style.left) + (Math.random()-0.5)*100) + 'px';
+      });
+      balloon.addEventListener('click', function() {
+        var msg = balloonMsgs[Math.floor(Math.random()*balloonMsgs.length)];
+        toast('\uD83C\uDF88 '+msg, 'rgba(200,180,220,0.85)', 5000);
+        balloon.style.transform = 'scale(0.3)';
+        balloon.style.opacity = '0';
+        setTimeout(function() { if (balloon.parentNode) balloon.remove(); }, 800);
+      });
+      setTimeout(function() {
+        if (balloon.parentNode) { balloon.style.opacity = '0'; setTimeout(function() { if (balloon.parentNode) balloon.remove(); }, 1500); }
+      }, 14000);
+    }, 18000);
+  }
+
+  /* ---------- 18. Make A Wish ---------- */
+  function initMakeAWish() {
+    var wishTimeout = null;
+    document.addEventListener('dblclick', function(e) {
+      if (wishTimeout) { clearTimeout(wishTimeout); wishTimeout = null; }
+      // Check if click is on observatory area (not on UI elements)
+      var t = e.target;
+      if (t.closest && (t.closest('#observatory') || t.closest('.page-header') || t === document.body)) {
+        showWishModal(e.clientX, e.clientY);
+      }
+    });
+    function showWishModal(x, y) {
+      var overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;';
+      var modal = document.createElement('div');
+      modal.style.cssText = 'background:var(--ink-soft);border:1px solid var(--gold);border-radius:16px;padding:1.5rem;width:300px;box-shadow:0 8px 40px rgba(0,0,0,.7);animation:fadeIn 0.3s ease;text-align:center;';
+      modal.innerHTML =
+        '<div style="font-size:2rem;margin-bottom:0.5rem;">\u2B50</div>' +
+        '<div style="font-family:var(--font-display);color:var(--gold);font-size:1rem;margin-bottom:0.8rem;">Make a wish</div>' +
+        '<textarea id="wishInput" placeholder="What do you wish for?" style="width:100%;background:var(--glass);border:1px solid var(--glassBorder);color:var(--parchment);padding:0.6rem;border-radius:8px;font-family:var(--font-body);font-size:0.85rem;resize:none;height:80px;outline:none;"></textarea>' +
+        '<div style="display:flex;gap:8px;justify-content:center;margin-top:0.8rem;">' +
+          '<button id="wishSaveBtn" style="background:rgba(255,230,128,.15);border:1px solid rgba(255,230,128,.35);color:var(--gold);padding:0.4rem 1rem;border-radius:6px;cursor:pointer;font-family:var(--font-display);font-size:0.8rem;">\u2728 Save Wish</button>' +
+          '<button id="wishCancelBtn" style="background:var(--glass);border:1px solid var(--glassBorder);color:var(--parchment-dim);padding:0.4rem 1rem;border-radius:6px;cursor:pointer;font-family:var(--font-display);font-size:0.8rem;">Cancel</button>' +
+        '</div>';
+      overlay.appendChild(modal);
+      document.body.appendChild(overlay);
+      document.getElementById('wishInput').focus();
+
+      document.getElementById('wishSaveBtn').addEventListener('click', function() {
+        var text = document.getElementById('wishInput').value.trim();
+        if (text) {
+          if (!config.wishes) config.wishes = [];
+          config.wishes.push({ text: text, at: Date.now() });
+          save();
+          toast('\u2B50 Wish saved \u2728', 'rgba(255,230,128,0.8)', 2500);
+        }
+        overlay.remove();
+      });
+      document.getElementById('wishCancelBtn').addEventListener('click', function() { overlay.remove(); });
+      overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+    }
+  }
+
+  /* ---------- 20. Screenshot Mode ---------- */
+  var cuteLines = [
+    'To the girl who carries entire galaxies inside her chest',
+    'Your eyes hold an entire storm and an entire sunrise',
+    'Suddenly sunsets lasted longer. Songs felt written for us.',
+    'You became the place my heart returned to without asking',
+    'My most beautiful accident. My quietest peace.',
+    'You are my favorite because you are the only you',
+    'The world feels gentler simply because you are happy',
+    'Your smile is my favorite proof that happiness is contagious',
+    'My home was never a place. It was always you.',
+    'You are one of the most beautiful things this world ever created'
+  ];
+  function initScreenshotMode() {
+    var btn = document.createElement('button');
+    btn.id = 'obsScreenshotBtn';
+    btn.title = 'Download sky screenshot';
+    btn.textContent = '\uD83D\uDCF7';
+    btn.style.cssText = 'position:fixed;top:1rem;left:3.5rem;z-index:10002;background:var(--glass);border:1px solid var(--glassBorder);border-radius:50%;width:36px;height:36px;font-size:0.9rem;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;';
+    btn.addEventListener('click', function() {
+      var uiEls = document.querySelectorAll('#observatory, #obsMoonBtn, #obsRealTime, #obsProgress, #obsCleanBtn, #obsDaily, #obsFireflyJar, #obsMoodBtn, #obsScreenshotBtn, .footer, .page-header, #heartContainer, #skyBtnContainer, [href="stats.html"], [href="admin.html"]');
+      uiEls.forEach(function(el) { if (el) el.style.display = 'none'; });
+      requestAnimationFrame(function() {
+        var skyCanvases = document.querySelectorAll('#skyOverlay canvas');
+        if (skyCanvases.length) {
+          var w = window.innerWidth, h = window.innerHeight;
+          var cap = document.createElement('canvas');
+          cap.width = w * 2; cap.height = h * 2;
+          var cx = cap.getContext('2d');
+          cx.scale(2, 2);
+          for (var sci=0;sci<skyCanvases.length;sci++) {
+            cx.drawImage(skyCanvases[sci], 0, 0, w, h);
+          }
+          // Bottom gradient for text readability
+          var grad = cx.createLinearGradient(0, h*0.7, 0, h);
+          grad.addColorStop(0, 'rgba(0,0,0,0)');
+          grad.addColorStop(1, 'rgba(0,0,0,0.65)');
+          cx.fillStyle = grad;
+          cx.fillRect(0, h*0.7, w, h*0.3);
+          // Sky info
+          var skyObj = getCurrentSkyObj();
+          var skyName = skyObj ? skyObj.name : 'Unknown Sky';
+          var dna = skyObj ? getSkyDNA(skyObj) : '';
+          // Pick a cute line based on sky index for uniqueness
+          var skyIdx = window.Skies && window.Skies.getCurrent();
+          var line = cuteLines[Math.abs(skyIdx || 0) % cuteLines.length];
+          // Draw line at center bottom
+          cx.textAlign = 'center';
+          cx.textBaseline = 'bottom';
+          cx.fillStyle = '#ffebd2';
+          cx.font = 'italic 22px Georgia, serif';
+          var lx = w/2, ly = h*0.82;
+          // Word wrap
+          var words = line.split(' '), wrapped = [], cur = '';
+          for (var wi=0;wi<words.length;wi++) {
+            var test = cur ? cur+' '+words[wi] : words[wi];
+            if (cx.measureText(test).width > w*0.75) { wrapped.push(cur); cur = words[wi]; }
+            else cur = test;
+          }
+          if (cur) wrapped.push(cur);
+          var lh = 30;
+          var startY = ly - (wrapped.length-1)*lh/2;
+          for (var li=0;li<wrapped.length;li++) {
+            cx.fillText(wrapped[li], lx, startY + li*lh);
+          }
+          // Sky name + DNA at very bottom
+          cx.fillStyle = 'rgba(255,235,210,0.6)';
+          cx.font = '14px Georgia, serif';
+          cx.fillText(skyName+'  \u2022  DNA: '+dna, lx, h-16);
+          // Download
+          cap.toBlob(function(blob) {
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'sky-'+(skyObj?skyObj.id||skyObj.name.replace(/[^a-z0-9]/gi,'_'):'unknown')+'.png';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          });
+        }
+        uiEls.forEach(function(el) { if (el) el.style.display = ''; });
+      });
+      toast('\u2B50 Sky saved \u2014 look for DNA: '+(getCurrentSkyObj()?getSkyDNA(getCurrentSkyObj()):''), null, 3000);
+    });
+    document.body.appendChild(btn);
+    document.addEventListener('keydown', function(e) {
+      if (e.ctrlKey && e.shiftKey && (e.key === 'S' || e.key === 's')) {
+        e.preventDefault();
+        btn.click();
+      }
+    });
+  }
+
+  /* =====================================================
+     PART 4 — FEATURES 21–30
+     ===================================================== */
+
+  /* ---------- 21. Mood Randomizer ---------- */
+  var moodOverlay = null;
+  function initMoodRandomizer() {
+    var btn = document.createElement('button');
+    btn.id = 'obsMoodBtn';
+    btn.title = 'Randomize atmosphere';
+    btn.textContent = '\uD83C\uDFA8';
+    btn.style.cssText = 'position:fixed;top:1rem;left:6rem;z-index:10002;background:var(--glass);border:1px solid var(--glassBorder);border-radius:50%;width:36px;height:36px;font-size:0.9rem;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;';
+    btn.addEventListener('click', function() {
+      if (moodOverlay) { moodOverlay.remove(); moodOverlay = null; return; }
+      var moods = [
+        { name: 'Warm Glow', bg: 'rgba(255,150,50,0.06)' },
+        { name: 'Cool Breeze', bg: 'rgba(100,180,255,0.06)' },
+        { name: 'Golden Hour', bg: 'rgba(255,200,100,0.08)' },
+        { name: 'Moonlit', bg: 'rgba(200,200,255,0.05)' },
+        { name: 'Ember', bg: 'rgba(255,80,50,0.05)' },
+        { name: 'Forest', bg: 'rgba(100,200,100,0.05)' },
+        { name: 'Twilight', bg: 'rgba(150,100,200,0.06)' },
+        { name: 'Dream', bg: 'rgba(255,200,255,0.05)' }
+      ];
+      var m = moods[Math.floor(Math.random()*moods.length)];
+      moodOverlay = document.createElement('div');
+      moodOverlay.id = 'obsMoodOverlay';
+      moodOverlay.style.cssText = 'position:fixed;inset:0;z-index:9994;pointer-events:none;transition:background 1.5s ease;background:'+m.bg+';';
+      document.body.appendChild(moodOverlay);
+      toast('\uD83C\uDFA8 '+m.name, 'rgba(255,200,150,0.7)', 2000);
+      btn.style.borderColor = 'var(--gold)';
+    });
+    // Remove mood on sky change
+    _afterApply.push(function() {
+      if (moodOverlay) { moodOverlay.remove(); moodOverlay = null; }
+      var mb = document.getElementById('obsMoodBtn');
+      if (mb) mb.style.borderColor = 'var(--glassBorder)';
+    });
+    document.body.appendChild(btn);
+  }
+
+  /* ---------- 22. Constellation Names ---------- */
+  var constNames = [
+    { name: 'Lyra', desc: 'The Harp \u2014 a melody written in stars' },
+    { name: 'Orion', desc: 'The Hunter \u2014 eternal guardian of the night' },
+    { name: 'Cassiopeia', desc: 'The Seated Queen \u2014 vanity immortalized' },
+    { name: 'Ursa Major', desc: 'The Great Bear \u2014 wanderer of the north' },
+    { name: 'Cygnus', desc: 'The Swan \u2014 graceful across the milky way' },
+    { name: 'Draco', desc: 'The Dragon \u2014 coiled around the pole' },
+    { name: 'Pegasus', desc: 'The Winged Horse \u2014 freedom carved in light' },
+    { name: 'Scorpius', desc: 'The Scorpion \u2014 burning bright and low' },
+    { name: 'Aquila', desc: 'The Eagle \u2014 soaring through the heavens' },
+    { name: 'Corona', desc: 'The Crown \u2014 a circle of forgotten light' }
+  ];
+  var constTimer = null;
+  function initConstellationNames() {
+    var el = document.createElement('div');
+    el.id = 'obsConst';
+    el.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9993;pointer-events:none;text-align:center;opacity:0;transition:opacity 2s ease;';
+    document.body.appendChild(el);
+    var lastShow = 0;
+    document.addEventListener('mousemove', function(e) {
+      var now = Date.now();
+      if (now - lastShow < 8000) return;
+      if (Math.random() > 0.003) return;
+      var sky = getCurrentSkyObj();
+      if (!sky || !sky.stars) return;
+      lastShow = now;
+      var c = constNames[Math.floor(Math.random()*constNames.length)];
+      el.innerHTML = '<div style="font-family:var(--font-display);color:var(--gold);font-size:1.2rem;letter-spacing:3px;text-shadow:0 0 20px rgba(255,230,128,0.3);">' + c.name + '</div>' +
+        '<div style="font-family:var(--font-body);color:var(--parchment-dim);font-size:0.75rem;font-style:italic;margin-top:4px;">' + c.desc + '</div>';
+      el.style.opacity = '1';
+      clearTimeout(constTimer);
+      constTimer = setTimeout(function() { el.style.opacity = '0'; }, 4000);
+    });
+  }
+  function getCurrentSkyObj() {
+    var SKIES = window.Skies && window.Skies.SKIES;
+    var idx = window.Skies && window.Skies.getCurrent();
+    return (idx >= 0 && SKIES && SKIES[idx]) ? SKIES[idx] : null;
+  }
+
+  /* ---------- 23. Music Sync ---------- */
+  var musicSyncInterval = null;
+  function initMusicSync() {
+    musicSyncInterval = setInterval(function() {
+      var isPlaying = false;
+      // Check if jukebox is playing
+      var btn = document.getElementById('jukeboxBtn');
+      if (btn && btn.classList.contains('playing')) isPlaying = true;
+      // Apply subtle pulse to sky stars via a global style
+      if (isPlaying) {
+        var intensity = 0.3 + Math.random() * 0.2;
+        var ms = document.getElementById('obsMusicStyle');
+        if (!ms) {
+          ms = document.createElement('style');
+          ms.id = 'obsMusicStyle';
+          document.head.appendChild(ms);
+        }
+        ms.textContent = '#skyOverlay canvas { filter: brightness('+(1+intensity*0.05)+') drop-shadow(0 0 '+(intensity*4)+'px rgba(255,230,128,0.1)); transition: filter 0.3s ease; }';
+      } else {
+        var ms = document.getElementById('obsMusicStyle');
+        if (ms) ms.remove();
+      }
+    }, 500);
+  }
+
+  /* ---------- 24. Floating Letters ---------- */
+  function initFloatingLetters() {
+    var notes = [
+      'I wrote this for you on a quiet night\u2026',
+      'Remember that time we watched the stars?',
+      'You are the most beautiful thought I have ever had.',
+      'Somewhere, somehow, this sky remembers us.',
+      'I hope you are smiling right now.',
+      'This is our universe. No one else\u2019s.',
+      'Every sky I see, I see it with you.',
+      'I wish I could fold this note into a paper star and send it to you.',
+      'You are my favourite atmosphere.',
+      'The moon is jealous of how I look at you.'
+    ];
+
+    var LETTER_KEY = 'obs-letter-found';
+    setInterval(function() {
+      if (Math.random() > 0.002) return;
+      var env = document.createElement('div');
+      env.textContent = '\uD83D\uDCE8';
+      env.style.cssText = 'position:fixed;z-index:9995;font-size:1.8rem;pointer-events:auto;cursor:pointer;opacity:0;transition:all 0.6s ease;filter:drop-shadow(0 2px 8px rgba(0,0,0,0.3));';
+      env.style.left = (5+Math.random()*40)+'vw';
+      env.style.top = (5+Math.random()*50)+'vh';
+      document.body.appendChild(env);
+      requestAnimationFrame(function() { env.style.opacity = '0.7'; env.style.transform = 'scale(1)'; });
+      env.addEventListener('mouseenter', function() { this.style.opacity = '1'; this.style.transform = 'scale(1.15)'; });
+      env.addEventListener('mouseleave', function() { this.style.opacity = '0.7'; this.style.transform = 'scale(1)'; });
+      env.addEventListener('click', function() {
+        var msg = notes[Math.floor(Math.random()*notes.length)];
+        toast('\uD83D\uDCE8 ' + msg, 'rgba(220,200,170,0.85)', 6000);
+        document.getElementById('obsConst').innerHTML = '<div style="font-family:var(--font-display);color:var(--gold);font-size:0.9rem;text-shadow:0 0 20px rgba(255,230,128,0.2);">\uD83D\uDCE8 ' + msg + '</div>';
+        document.getElementById('obsConst').style.opacity = '1';
+        clearTimeout(constTimer);
+        constTimer = setTimeout(function() {
+          var cel = document.getElementById('obsConst');
+          if (cel) cel.style.opacity = '0';
+        }, 6000);
+        env.style.transform = 'scale(0.3) rotate(20deg)';
+        env.style.opacity = '0';
+        setTimeout(function() { if (env.parentNode) env.remove(); }, 600);
+      });
+      setTimeout(function() {
+        if (env.parentNode) { env.style.opacity = '0'; setTimeout(function() { if (env.parentNode) env.remove(); }, 1000); }
+      }, 20000);
+    }, 20000);
+  }
+
+  /* ---------- 25. Silent Owl ---------- */
+  function initSilentOwl() {
+    setInterval(function() {
+      var sky = getCurrentSkyObj();
+      if (!sky) return;
+      var cat = getCategory(sky);
+      var isNight = cat === 'Night' || cat === 'Cosmic' || cat === 'Aurora';
+      if (!isNight) return;
+      if (Math.random() > 0.004) return;
+      var owl = document.createElement('div');
+      owl.textContent = '\uD83E\uDD89';
+      owl.style.cssText = 'position:fixed;top:-50px;left:'+(10+Math.random()*60)+'vw;font-size:2rem;z-index:9996;pointer-events:auto;cursor:pointer;transition:all 3s ease-in;opacity:0;';
+      document.body.appendChild(owl);
+      requestAnimationFrame(function() { owl.style.top = (15+Math.random()*30)+'vh'; owl.style.opacity = '0.8'; });
+      owl.addEventListener('click', function() {
+        toast('\uD83E\uDD89 The owl looks at you knowingly...', 'rgba(150,150,200,0.8)', 3000);
+        owl.style.transition = 'all 1s ease-out';
+        owl.style.top = '-80px';
+        owl.style.opacity = '0';
+        setTimeout(function() { if (owl.parentNode) owl.remove(); }, 1500);
+      });
+      setTimeout(function() {
+        if (owl.parentNode) {
+          owl.style.transition = 'all 1.5s ease-out';
+          owl.style.top = '-80px';
+          owl.style.opacity = '0';
+          setTimeout(function() { if (owl.parentNode) owl.remove(); }, 2000);
+        }
+      }, 6000);
+    }, 15000);
+  }
+
+  /* ---------- 26. Puzzle Fragments ---------- */
+  function initPuzzleFragments() {
+    var fragments = [
+      { id: 1, msg: 'Fragment of Dawn \u2014 the first light remembers' },
+      { id: 2, msg: 'Fragment of Dusk \u2014 the last sigh of day' },
+      { id: 3, msg: 'Fragment of Storm \u2014 chaos has a pattern' },
+      { id: 4, msg: 'Fragment of Stars \u2014 each one a witness' },
+      { id: 5, msg: 'Fragment of Rain \u2014 tears that nourish' },
+      { id: 6, msg: 'Fragment of Aurora \u2014 the sky is alive' },
+      { id: 7, msg: 'Fragment of Silence \u2014 the loudest truth' },
+      { id: 8, msg: 'Fragment of Light \u2014 found at last' }
+    ];
+    // After sky apply, small chance to find a fragment
+    _afterApply.push(function(idx) {
+      if (!config.fragments) config.fragments = [];
+      if (config.fragments.length >= fragments.length) return;
+      if (Math.random() > 0.08) return;
+      var SKIES = window.Skies && window.Skies.SKIES;
+      if (!SKIES || !SKIES[idx]) return;
+      var sky = SKIES[idx];
+      var cat = getCategory(sky);
+      // Pick a fragment matching the sky type
+      var candidates = [];
+      for (var fi=0;fi<fragments.length;fi++) {
+        var already = false;
+        for (var cfi=0;cfi<config.fragments.length;cfi++) { if (config.fragments[cfi].id === fragments[fi].id) { already = true; break; } }
+        if (!already) candidates.push(fragments[fi]);
+      }
+      if (!candidates.length) return;
+      var f = candidates[Math.floor(Math.random()*candidates.length)];
+      config.fragments.push(f);
+      save();
+      toast('\uD83E\uDDE9 ' + f.msg + ' (' + config.fragments.length + '/' + fragments.length + ')', 'rgba(200,180,255,0.85)', 5000);
+      if (config.fragments.length === fragments.length) {
+        setTimeout(function() {
+          toast('\uD83C\uDF1F ALL FRAGMENTS COLLECTED! The sky reveals its secret...', 'rgba(255,230,128,0.95)', 6000);
+          // Apply a special reward sky
+          var rewardSky = {
+            gradient: [[0,'#1a0033'],[0.3,'#2d1b4e'],[0.6,'#4a2c6e'],[1,'#1a0033']],
+            stars: { count: 300, maxY: 100, minR: 0.5, maxR: 3 },
+            aurora: { colors: ['rgba(200,150,255,.4)','rgba(255,200,255,.3)','rgba(150,100,255,.25)','rgba(255,150,200,.2)'], speed: 0.05, band: 120, thickness: 100 },
+            lights: [{ x: 0.5, y: 0.3, r: 0.15, core: '#ffd700', glow: 'rgba(255,215,0,0.3)' }],
+            particles: [{ type: 'sparkle', count: 50 }],
+            name: 'The Hidden Sky \u2728',
+            message: 'You found every piece. This sky is yours.'
+          };
+          if (window.Skies) {
+            window.Skies.SKIES.push(rewardSky);
+            window.Skies.apply(window.Skies.SKIES.length-1);
+          }
+        }, 1000);
+      }
+    });
+  }
+
+  /* ---------- 27. Growing Vine ---------- */
+  var vineEl = null;
+  function initGrowingVine() {
+    vineEl = document.createElement('div');
+    vineEl.id = 'obsVine';
+    vineEl.style.cssText = 'position:fixed;bottom:0;left:0;right:0;height:0;z-index:9992;pointer-events:none;background:linear-gradient(0deg,rgba(100,200,100,0.08),transparent);transition:height 2s ease;';
+    document.body.appendChild(vineEl);
+    updateVine();
+    setInterval(updateVine, 10000);
+  }
+  function updateVine() {
+    if (!vineEl) return;
+    var total = 0, viewed = 0;
+    var pages = ['100-organs','love','fantasies'];
+    pages.forEach(function(p) {
+      var vk = 'ash-viewed-' + p.replace(/-/g,'_') + '_html';
+      try {
+        var v = JSON.parse(localStorage.getItem(vk) || '[]');
+        viewed += v.length;
+        var count = parseInt(localStorage.getItem(vk+'_count') || '0');
+        total += count;
+      } catch(e) {}
+    });
+    var pct = total > 0 ? Math.min(1, viewed/total) : 0;
+    var maxH = 120;
+    vineEl.style.height = Math.round(pct * maxH) + 'px';
+    if (pct >= 0.8) {
+      vineEl.style.background = 'linear-gradient(0deg,rgba(255,200,100,0.12),rgba(200,100,255,0.05),transparent)';
+      vineEl.innerHTML = '<div style="position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:1.2rem;opacity:'+Math.min(1,(pct-0.8)*10)+';">\uD83C\uDF3C</div>';
+    } else if (pct > 0) {
+      vineEl.style.background = 'linear-gradient(0deg,rgba(100,200,100,0.08),transparent)';
+      vineEl.innerHTML = '';
+    }
+  }
+
+  /* ---------- 28. Bubble Messages ---------- */
+  function initBubbleMessages() {
+    var bubbleMsgs = [
+      'You are loved beyond measure.',
+      'The sky is proud of you.',
+      'Keep going. Something beautiful is waiting.',
+      'You make the world brighter.',
+      'This moment is a gift.',
+      'Breathe. You are exactly on time.',
+      'The stars align for you today.',
+      'Your heart knows the way.',
+      'You are someone\u2019s favourite sky.',
+      'Everything is going to be okay.'
+    ];
+    setInterval(function() {
+      if (Math.random() > 0.003) return;
+      var bubble = document.createElement('div');
+      bubble.textContent = '\uD83C\uDF2C\uFE0F';
+      bubble.style.cssText = 'position:fixed;z-index:9995;font-size:1.2rem;pointer-events:auto;cursor:pointer;opacity:0.6;transition:all 0.4s ease;filter:drop-shadow(0 1px 4px rgba(255,255,255,0.1));';
+      bubble.style.left = (5+Math.random()*70)+'vw';
+      bubble.style.bottom = '-20px';
+      document.body.appendChild(bubble);
+      // Float up
+      var targetBottom = 50 + Math.random() * 40;
+      var floatDur = 4000 + Math.random() * 4000;
+      bubble.style.transition = 'bottom '+floatDur+'ms linear, opacity 0.4s';
+      requestAnimationFrame(function() {
+        bubble.style.bottom = targetBottom + 'vh';
+        bubble.style.opacity = '0.3';
+      });
+      bubble.addEventListener('mouseenter', function() { this.style.opacity = '0.9'; this.style.transform = 'scale(1.2)'; });
+      bubble.addEventListener('mouseleave', function() { this.style.opacity = '0.3'; this.style.transform = 'scale(1)'; });
+      bubble.addEventListener('click', function() {
+        var msg = bubbleMsgs[Math.floor(Math.random()*bubbleMsgs.length)];
+        toast('\uD83C\uDF2C\uFE0F ' + msg, 'rgba(180,220,255,0.8)', 4000);
+        bubble.style.transform = 'scale(2)';
+        bubble.style.opacity = '0';
+        setTimeout(function() { if (bubble.parentNode) bubble.remove(); }, 500);
+      });
+      setTimeout(function() {
+        if (bubble.parentNode) { bubble.style.opacity = '0'; setTimeout(function() { if (bubble.parentNode) bubble.remove(); }, 1000); }
+      }, floatDur + 2000);
+    }, 12000);
+  }
+
+  /* ---------- 29. Seasonal Color Grading ---------- */
+  var seasonStyle = null;
+  function initSeasonalGrading() {
+    var month = new Date().getMonth();
+    var grade = null;
+    if (month >= 2 && month <= 4) grade = { name: 'Spring', filter: 'sepia(0.15) hue-rotate(-10deg) saturate(1.1)', opacity: 0.15 };
+    else if (month >= 5 && month <= 7) grade = { name: 'Summer', filter: 'brightness(1.05) saturate(1.15)', opacity: 0.1 };
+    else if (month >= 8 && month <= 10) grade = { name: 'Autumn', filter: 'sepia(0.2) hue-rotate(-5deg) saturate(1.2)', opacity: 0.2 };
+    else grade = { name: 'Winter', filter: 'brightness(0.95) saturate(0.85) hue-rotate(10deg)', opacity: 0.15 };
+    seasonStyle = document.createElement('style');
+    seasonStyle.id = 'obsSeasonStyle';
+    seasonStyle.textContent = '#seasonGradeOverlay { position:fixed; inset:0; z-index:9991; pointer-events:none; background:rgba(255,255,255,'+grade.opacity+'); mix-blend-mode:overlay; } #skyOverlay { filter: '+grade.filter+'; transition: filter 1.5s ease; }';
+    document.head.appendChild(seasonStyle);
+    var overlay = document.createElement('div');
+    overlay.id = 'seasonGradeOverlay';
+    document.body.appendChild(overlay);
+    // Show season name on init
+    setTimeout(function() {
+      var se = document.getElementById('obsConst');
+      if (se) {
+        se.innerHTML = '<div style="font-family:var(--font-display);color:var(--gold);font-size:0.9rem;letter-spacing:2px;">\uD83C\uDF43 '+grade.name+' Tint</div><div style="font-family:var(--font-body);color:var(--parchment-dim);font-size:0.65rem;font-style:italic;">The sky wears the season</div>';
+        se.style.opacity = '1';
+        setTimeout(function() { if (se) se.style.opacity = '0'; }, 3000);
+      }
+    }, 2000);
+  }
+
+  /* ---------- 30. Invisible Ink ---------- */
+  var mouseStillTimer = null;
+  var mouseStillDuration = 0;
+  var inkShown = {};
+  function initInvisibleInk() {
+    var inkMsgs = [
+      'You are patient. The sky rewards that.',
+      'Stillness speaks louder than words.',
+      'In the quiet, the universe whispers.',
+      'You noticed. That is everything.',
+      'Some secrets only reveal themselves to those who wait.',
+      'The stars have been watching you. They approve.',
+      'Not all messages shout. Some bloom in silence.',
+      'You found hidden ink. The sky trusts you.'
+    ];
+    document.addEventListener('mousemove', function() { mouseStillDuration = 0; });
+    setInterval(function() {
+      mouseStillDuration += 2;
+      if (mouseStillDuration < 8) return;
+      // Pick an unseen message
+      var available = [];
+      for (var ii=0;ii<inkMsgs.length;ii++) {
+        if (!inkShown[ii]) available.push(ii);
+      }
+      if (!available.length) {
+        // Reset
+        inkShown = {};
+        available = [];
+        for (var ri=0;ri<inkMsgs.length;ri++) available.push(ri);
+      }
+      var idx = available[Math.floor(Math.random()*available.length)];
+      inkShown[idx] = true;
+      mouseStillDuration = 0;
+      var inkEl = document.createElement('div');
+      inkEl.style.cssText = 'position:fixed;z-index:9990;pointer-events:none;font-family:var(--font-display);font-style:italic;color:rgba(255,230,128,0.15);font-size:1.2rem;text-align:center;width:300px;opacity:0;transition:opacity 3s ease;transform:translate(-50%,-50%);';
+      inkEl.style.left = (15+Math.random()*50)+'vw';
+      inkEl.style.top = (20+Math.random()*40)+'vh';
+      inkEl.textContent = inkMsgs[idx];
+      document.body.appendChild(inkEl);
+      requestAnimationFrame(function() { inkEl.style.opacity = '1'; });
+      setTimeout(function() {
+        inkEl.style.opacity = '0';
+        setTimeout(function() { if (inkEl.parentNode) inkEl.remove(); }, 4000);
+      }, 7000);
+    }, 2000);
   }
 
   /* ---------- Toast helper ---------- */
-  function toast(msg, bg, dur) {
+  function toast(msg, accent, dur) {
     var t = document.createElement('div');
     t.textContent = msg;
-    t.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);z-index:99999;background:'+(bg||'rgba(0,0,0,0.85)')+';color:#ffebd2;padding:0.8rem 1.5rem;border-radius:10px;font-family:Lora,Georgia,serif;font-size:0.85rem;max-width:80vw;text-align:center;pointer-events:none;opacity:0;transition:opacity 0.4s;box-shadow:0 4px 20px rgba(0,0,0,.4);';
+    t.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);z-index:99999;background:rgba(0,0,0,0.88);border-left:3px solid '+(accent||'rgba(255,230,128,0.7)')+';color:#ffebd2;padding:0.8rem 1.5rem;border-radius:10px;font-family:Lora,Georgia,serif;font-size:0.85rem;max-width:80vw;text-align:center;pointer-events:none;opacity:0;transition:opacity 0.4s;box-shadow:0 4px 20px rgba(0,0,0,.4);';
     document.body.appendChild(t);
     requestAnimationFrame(function(){ t.style.opacity = '1'; });
     setTimeout(function(){ t.style.opacity = '0'; setTimeout(function(){ t.remove(); },500); }, dur||2500);
     return t;
   }
+
+  /* ---------- post-apply hooks ---------- */
+  var _afterApply = [];
 
   /* ---------- Init ---------- */
   function init() {
@@ -818,6 +1692,7 @@
     initBlackCat();
     initRealTime();
     initMoonCounter();
+    initCleanViewToggle();
     initHiddenRadio();
     initKonami();
     initLuckyStar();
@@ -825,13 +1700,54 @@
     initCoffeeBreak();
     initProgress();
 
-    // CSS for lucky float, rainbow glow, coffee bounce
+    initFeatherCollector();
+    initDailySky();
+    initFireflyJar();
+    initFortuneScroll();
+    initEarthView();
+    initLostBalloon();
+    initMakeAWish();
+    initScreenshotMode();
+    initMoodRandomizer();
+    initConstellationNames();
+    initMusicSync();
+    initFloatingLetters();
+    initSilentOwl();
+    initPuzzleFragments();
+    initGrowingVine();
+    initBubbleMessages();
+    initSeasonalGrading();
+    initInvisibleInk();
+
+    // Moon ripple hooks onto existing moon button click — no init needed
+
+    // Sky DNA is shown in preview — handled in selectSky
+
+    // CSS for animations
     var css = document.createElement('style');
     css.textContent = '@keyframes luckyFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}' +
       '@keyframes rainbowGlow{0%,100%{opacity:0;transform:translateX(-50%) scale(0.8)}20%,80%{opacity:1;transform:translateX(-50%) scale(1)}}' +
       '@keyframes coffeeBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}' +
-      '@keyframes fadeIn{from{opacity:0;transform:translate(-50%,-50%) scale(0.9)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}';
+      '@keyframes fadeIn{from{opacity:0;transform:translate(-50%,-50%) scale(0.9)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}' +
+      '@keyframes featherFloat{0%{transform:translateY(0) rotate(0deg)}100%{transform:translateY(100vh) rotate(360deg)}}' +
+      '@keyframes earthFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}' +
+      '@keyframes jarGlow{0%,100%{box-shadow:0 0 10px rgba(255,230,100,0.2)}50%{box-shadow:0 0 30px rgba(255,230,100,0.5)}}' +
+      '@keyframes rippleAnim{0%{transform:scale(0);opacity:0.8}100%{transform:scale(4);opacity:0}}' +
+      '@keyframes constFade{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}' +
+      '@keyframes bubbleFloat{0%{transform:translateY(0) scale(1)}50%{transform:translateY(-10px) scale(1.05)}100%{transform:translateY(0) scale(1)}}';
     document.head.appendChild(css);
+
+    // Hook sky changes: chain all post-apply callbacks
+    if (window.Skies && window.Skies.apply) {
+      var origApply = window.Skies.apply;
+      window.Skies.apply = function(idx) {
+        origApply(idx);
+        updateMoonTheme();
+        for (var hi=0;hi<_afterApply.length;hi++) {
+          try { _afterApply[hi](idx); } catch(e) {}
+        }
+      };
+    }
 
     // Expose for onclick
     window.SkyObservatory = { selectSky: selectSky };

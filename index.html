@@ -379,16 +379,18 @@
         '100-organs':  { year: 2026, month: 6, day: 20, file: '100-organs.html' },
         'love':        { year: 2026, month: 6, day: 21, file: 'love.html' },
         'fantasies':   { year: 2026, month: 6, day: 25, file: 'fantasies.html' },
-        'gallery':     { year: 2026, month: 6, day: 28, file: 'gallery.html' }
+        'gallery':     { year: 2026, month: 6, day: 28, file: 'gallery.html' },
+        'photo-gallery': { year: 2026, month: 6, day: 28, file: 'photo-gallery.html' }
       };
 
-      FB.init();FB.get('config','index').catch(function(){});
+      FB.init();
 
       var TEASERS = {
         '100-organs': '"the curve of her waist, the arch of her neck — catalogued in devotion..."',
         'love': '"your morning voice, raspy and warm — the sound of someone who hasn\'t yet put up their walls..."',
         'fantasies': '"when our skin finally meets, when there is no distance left between us..."',
-        'gallery': '"fragments of light, caught in silver and shadow — moments I never want to forget..."'
+        'gallery': '"fragments of light, caught in silver and shadow — moments I never want to forget..."',
+        'photo-gallery': '"every photograph holds a story, every story holds a piece of you..."'
       };
 
       var MOODS = [
@@ -423,15 +425,61 @@
         },
         {
           id: 'gallery',
-          title: 'Gallery',
-          desc: 'Fragments of light, caught in silver and shadow \u2014 photographs and moments that hold the warmth of her presence, frozen in time.',
+          title: 'Sky Observatory',
+          desc: 'Browse every sky. Find your atmosphere \u2014 a celestial journey through light, colour, and wonder.',
           unlock: UNLOCK_DATES['gallery'],
           teaser: TEASERS['gallery']
+        },
+        {
+          id: 'photo-gallery',
+          title: 'Photo Gallery',
+          desc: 'Fragments of light, caught in silver and shadow \u2014 photographs and moments that hold the warmth of her presence, frozen in time.',
+          unlock: UNLOCK_DATES['photo-gallery'],
+          teaser: TEASERS['photo-gallery']
         }
       ];
 
       var container = document.getElementById('cardsContainer');
       if (!container) return;
+
+      /* ---- Load unlock dates from Firebase ---- */
+      function loadFirebaseDates() {
+        FB.get('config', 'sections').then(function(d) {
+          var arr = d && d.data;
+          if (!arr) return;
+          var changed = false;
+          for (var fi = 0; fi < arr.length; fi++) {
+            var fs = arr[fi];
+            for (var si = 0; si < SECTIONS.length; si++) {
+              if (SECTIONS[si].id === fs.key) {
+                var newUnlock = { file: fs.file || SECTIONS[si].unlock.file };
+                if (fs.unlockDate) {
+                  var p = fs.unlockDate.split('-');
+                  newUnlock.year = parseInt(p[0]);
+                  newUnlock.month = parseInt(p[1]) - 1;
+                  newUnlock.day = parseInt(p[2]);
+                } else {
+                  // No date = unlocked immediately
+                  newUnlock.year = 2000;
+                  newUnlock.month = 1;
+                  newUnlock.day = 1;
+                }
+                if (fs.autoUnlock === false) {
+                  // Auto-unlock disabled = unlocked immediately
+                  newUnlock.year = 2000;
+                  newUnlock.month = 1;
+                  newUnlock.day = 1;
+                }
+                SECTIONS[si].unlock = newUnlock;
+                changed = true;
+                break;
+              }
+            }
+          }
+          if (changed) { render(); updateProgress(); }
+        }).catch(function(){});
+      }
+      loadFirebaseDates();
 
       /* ================================================================
          EMBER PARTICLES

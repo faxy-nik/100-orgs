@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photo Gallery — 100 prghs for eeshah</title>
+  <meta name="description" content="Fragments of light, caught in silver and shadow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+  <script src="fb-db.js"></script>
+  <script>
+(function(){var k='photo-gallery';document.body.style.display='none';var ck=function(){FB.get('config','sections').then(function(d){document.body.style.display='';var c=d&&d.data;if(c)for(var i=0;i<c.length;i++)if(c[i].key===k){var u=c[i];if(u.unlockDate&&u.autoUnlock!==false){var p=u.unlockDate.split('-'),un=new Date(+p[0],+p[1]-1,+p[2]),nw=new Date();nw.setHours(0,0,0,0);if(nw<un){document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#181214;color:#ffebd2;font-family:Georgia,serif;padding:2rem;text-align:center"><div><h1 style="font-family:Fraunces,Georgia,serif;color:#ffe680">🔒 Locked</h1><p style="color:#6b5f52;margin-top:1rem">This section unlocks on '+u.unlockDate+'.</p><a href="index.html" style="display:inline-block;margin-top:1.5rem;padding:.6rem 1.5rem;border:1px solid #ffe680;color:#ffe680;border-radius:8px;text-decoration:none;font-family:Fraunces,Georgia,serif">← Back home</a></div></div>'}}}).catch(function(){document.body.style.display='';});};if(typeof FB!=='undefined'&&FB.init){FB.init();ck();}else{var iv=setInterval(function(){if(typeof FB!=='undefined'&&FB.init){clearInterval(iv);FB.init();ck();}},10);}})();
+  </script>
+  <style>
+    :root {
+      --ink: #17130f;
+      --ink-soft: #1e1811;
+      --ink-line: #33291e;
+      --parchment: #ffebd2;
+      --parchment-dim: #c7b8a1;
+      --ash: #6b5f52;
+      --gold: #ffe680;
+      --ember: #e85d3a;
+      --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+      --font-body: "Lora", Georgia, "Times New Roman", serif;
+      --pad-inline: clamp(1.25rem, 6vw, 2.25rem);
+      --glass: rgba(255, 220, 160, .08);
+      --glassBorder: rgba(255, 210, 150, .35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background-color: #181214;
+      color: var(--parchment);
+      font-family: var(--font-body);
+      font-size: 1.0625rem;
+      line-height: 1.8;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(160, 110, 60, 0.1), transparent 60%),
+        radial-gradient(ellipse 60% 40% at 50% 100%, rgba(130, 50, 40, 0.06), transparent 60%);
+    }
+    .page-header {
+      padding: clamp(3rem, 10vh, 5rem) var(--pad-inline) clamp(1.5rem, 4vh, 2.5rem);
+      text-align: center;
+    }
+    .page-header h1 {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: clamp(2rem, 7vw, 3.5rem);
+      color: var(--parchment);
+      margin: 0 0 0.5rem;
+      text-shadow: 0 0 30px rgba(255, 230, 128, .3), 0 2px 4px rgba(0,0,0,.6);
+    }
+    .page-header p {
+      color: var(--parchment-dim);
+      font-size: clamp(0.9rem, 2vw, 1rem);
+      font-style: italic;
+      margin: 0;
+    }
+    .gallery {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--pad-inline) clamp(4rem, 10vh, 6rem);
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 12px;
+      content-visibility: auto;
+    }
+    .gallery-item {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--glass);
+      border: 1px solid var(--glassBorder);
+      cursor: pointer;
+      transition: border-color 0.3s, transform 0.25s, box-shadow 0.3s;
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .gallery-item:hover {
+      border-color: var(--gold);
+      transform: scale(1.02);
+      box-shadow: 0 0 30px rgba(255, 230, 128, .12);
+      z-index: 2;
+    }
+    .gallery-item img,
+    .gallery-item video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: opacity 0.4s ease;
+    }
+    .gallery-item img { background: rgba(255, 220, 160, .04); }
+    .gallery-item img, .gallery-item video { opacity: 0; }
+    .gallery-item img.loaded, .gallery-item video.loaded { opacity: 1; }
+    .gallery-item .play-badge {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .gallery-item:hover .play-badge { opacity: 1; }
+    .gallery-item .play-badge svg {
+      width: 48px;
+      height: 48px;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,.5));
+    }
+    .item-glass {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      pointer-events: none;
+      background: rgba(24, 18, 20, 0.55);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .gallery-item:hover .item-glass { opacity: 1; }
+    .gallery-item .item-label {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 1.2rem 0.75rem 0.6rem;
+      background: linear-gradient(transparent, rgba(0,0,0,.7));
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      color: var(--parchment);
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 3;
+    }
+    .gallery-item:hover .item-label { opacity: 1; }
+    .gallery-item .item-note {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      transform: translateY(-50%);
+      padding: 0.75rem 1rem;
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      font-style: italic;
+      color: var(--parchment);
+      opacity: 0;
+      transition: opacity 0.4s;
+      pointer-events: none;
+      text-align: center;
+      line-height: 1.5;
+      z-index: 3;
+      text-shadow: 0 1px 4px rgba(0,0,0,.6);
+    }
+    .gallery-item:hover .item-note { opacity: 1; }
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0,0,0,.92);
+      backdrop-filter: blur(12px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .lightbox.open { display: flex; opacity: 1; }
+    .lightbox-media {
+      max-width: 90vw;
+      max-height: 85vh;
+      border-radius: 8px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.6);
+      object-fit: contain;
+    }
+    .lightbox-media.video-el {
+      max-width: 90vw;
+      max-height: 85vh;
+      border-radius: 8px;
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 1rem;
+      right: 1.25rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,210,150,.15);
+      background: rgba(0,0,0,.4);
+      color: var(--parchment);
+      font-size: 1.3rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s;
+      z-index: 10;
+    }
+    .lightbox-close:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: rgba(255,230,128,.1);
+    }
+    .lightbox-prev, .lightbox-next {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,210,150,.1);
+      background: rgba(0,0,0,.3);
+      color: var(--parchment);
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s;
+      z-index: 10;
+    }
+    .lightbox-prev { left: 1rem; }
+    .lightbox-next { right: 1rem; }
+    .lightbox-prev:hover, .lightbox-next:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: rgba(255,230,128,.1);
+    }
+    .lightbox-counter {
+      position: absolute;
+      bottom: 1.25rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      color: var(--ash);
+      z-index: 10;
+    }
+    .lightbox-note {
+      position: absolute;
+      bottom: 3.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: min(80vw, 500px);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-style: italic;
+      color: var(--parchment-dim);
+      text-align: center;
+      line-height: 1.5;
+      z-index: 10;
+      padding: 0.75rem 1.25rem;
+      background: rgba(0,0,0,.4);
+      border-radius: 8px;
+      backdrop-filter: blur(4px);
+      pointer-events: none;
+    }
+    #skyOverlay { z-index: 0 !important; opacity: 1 !important; }
+    body { background: transparent !important; }
+    .page-header, .gallery, .footer { position: relative; z-index: 1; }
+    @media (max-width: 600px) {
+      .gallery { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .lightbox { padding: 0.75rem; }
+      .lightbox-prev, .lightbox-next { width: 36px; height: 36px; font-size: 1rem; }
+      .lightbox-prev { left: 0.5rem; }
+      .lightbox-next { right: 0.5rem; }
+    }
+    @media (max-width: 400px) { .gallery { grid-template-columns: 1fr 1fr; gap: 6px; } }
+  </style>
+</head>
+<body>
+
+  <main>
+    <div class="page-header">
+      <h1>&#x2B50; Photo Gallery</h1>
+      <p>Fragments of light, caught in silver and shadow</p>
+    </div>
+
+    <div class="gallery" id="galleryGrid"></div>
+
+    <div class="footer" style="text-align:center;padding:2rem var(--pad-inline);border-top:1px solid var(--ink-line);max-width:1200px;margin:0 auto;">
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center;margin-bottom:1rem;">
+        <a href="index.html" style="background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;text-decoration:none;transition:all .25s;" onmouseover="this.style.borderColor='#ffe680';this.style.color='#ffe680'" onmouseout="this.style.borderColor='rgba(255,210,150,.15)';this.style.color='#6b5f52'">&#x2190; Home</a>
+        <a href="admin.html" style="background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;text-decoration:none;transition:all .25s;" onmouseover="this.style.borderColor='#ffe680';this.style.color='#ffe680'" onmouseout="this.style.borderColor='rgba(255,210,150,.15)';this.style.color='#6b5f52'">&#x2699; Admin</a>
+        <a href="gallery.html" style="background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;text-decoration:none;transition:all .25s;" onmouseover="this.style.borderColor='#ffe680';this.style.color='#ffe680'" onmouseout="this.style.borderColor='rgba(255,210,150,.15)';this.style.color='#6b5f52'">&#x1F52D; Sky Observatory</a>
+      </div>
+      <p style="color:var(--ash);font-size:0.85rem;margin:0;">for eeshah &mdash; always</p>
+    </div>
+  </main>
+
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lbClose">&times;</button>
+    <button class="lightbox-prev" id="lbPrev">&#x2039;</button>
+    <button class="lightbox-next" id="lbNext">&#x203A;</button>
+    <div class="lightbox-counter" id="lbCounter"></div>
+    <div class="lightbox-note" id="lbNote"></div>
+  </div>
+
+  <script src="track.js"></script>
+  <script src="skies.js"></script>
+  <script src="sky-living.js"></script>
+  <script>
+    (function() {
+      var c = document.createElement('div');
+      c.id = 'heartContainer';
+      c.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9998;';
+      document.body.appendChild(c);
+      document.addEventListener('mousemove', function(e) {
+        if (Math.random() > 0.12) return;
+        var h = document.createElement('span');
+        h.textContent = '\u2661';
+        h.setAttribute('aria-hidden', 'true');
+        h.style.cssText = 'position:absolute;left:' + e.clientX + 'px;top:' + e.clientY + 'px;font-size:' + (8 + Math.random() * 14) + 'px;color:rgba(255,100,150,' + (0.25 + Math.random() * 0.4) + ');pointer-events:none;animation:hFloat ' + (1.5 + Math.random() * 2) + 's ease-out forwards;';
+        c.appendChild(h);
+        setTimeout(function() { h.remove(); }, 3500);
+      });
+      var s = document.createElement('style');
+      s.textContent = '@keyframes hFloat{0%{opacity:1;transform:translateY(0) scale(1) rotate(0deg)}100%{opacity:0;transform:translateY(-90px) scale(0.2) rotate(20deg)}}';
+      document.head.appendChild(s);
+      var b = document.createElement('div');
+      b.style.cssText = 'text-align:center;padding:2rem 1rem;';
+      var l = document.createElement('a');
+      l.href = 'stats.html';
+      l.textContent = '\uD83D\uDCCA Stats';
+      l.style.cssText = 'background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;text-decoration:none;transition:all .25s;display:inline-block;margin:0 .4rem;';
+      l.onmouseover = function() { this.style.borderColor = '#ffe680'; this.style.color = '#ffe680'; };
+      l.onmouseout = function() { this.style.borderColor = 'rgba(255,210,150,.15)'; this.style.color = '#6b5f52'; };
+      b.appendChild(l);
+      var sb = document.createElement('span');
+      sb.id = 'skyBtnContainer';
+      b.appendChild(sb);
+      document.body.appendChild(b);
+      if (window.Skies) Skies.createButton(document.getElementById('skyBtnContainer'));
+    })();
+  </script>
+
+  <script>
+    (function () {
+      var DEFAULT_MEDIA = [
+        { type: 'image', file: 'ash/ash.jpeg', label: 'Ash', note: 'the way light falls on you — i could spend forever just watching' },
+        { type: 'image', file: 'ash/ash1.jpeg', label: 'Ash 1', note: 'that look in your eyes, soft and infinite, like i have known you for a thousand lifetimes' },
+        { type: 'image', file: 'ash/ash2.jpeg', label: 'Ash 2', note: 'there is a quiet poetry in the way you exist — unapologetic and beautiful' },
+        { type: 'image', file: 'ash/ash3.jpeg', label: 'Ash 3', note: 'the kind of beauty that makes the world stop and forget to breathe' },
+        { type: 'image', file: 'ash/ash4.jpeg', label: 'Ash 4', note: 'in a room full of people, my eyes will always find you first' },
+        { type: 'image', file: 'ash/ash5.jpeg', label: 'Ash 5', note: 'you carry the warmth of a thousand sunsets in your smile' },
+        { type: 'image', file: 'ash/ash6.jpeg', label: 'Ash 6', note: 'gentle like the first rain, fierce like a fire that refuses to die' },
+        { type: 'image', file: 'ash/ash7.jpeg', label: 'Ash 7', note: 'if i could freeze any moment, it would be this — you, being you' },
+        { type: 'image', file: 'ash/ash8.jpeg', label: 'Ash 8', note: 'every photograph of you is a love letter i did not write but the universe did' },
+        { type: 'image', file: 'ash/ash9.jpeg', label: 'Ash 9', note: 'there are galaxies in your eyes and i want to get lost in every single one' },
+        { type: 'image', file: 'ash/ash10.jpeg', label: 'Ash 10', note: 'even the stars envy the way you shine without trying' },
+        { type: 'image', file: 'ash/ash11.jpeg', label: 'Ash 11', note: 'this is the version of you i carry with me everywhere — perfect and real' },
+        { type: 'image', file: 'ash/ash_childhood.jpeg', label: 'Childhood', note: 'even then, before i knew you, the world was preparing you for me' },
+        { type: 'image', file: 'ash/ash_childhood1.jpeg', label: 'Childhood 1', note: 'innocence that time could not erase — the beginning of someone extraordinary' },
+        { type: 'image', file: 'ash/ash_childhood2.jpeg', label: 'Childhood 2', note: 'somewhere in these years, your soul learned how to hold all the love it would one day deserve' },
+        { type: 'image', file: 'ash/ash_childhood3.jpeg', label: 'Childhood 3', note: 'the world did not know it yet, but it was raising the girl who would become my everything' },
+        { type: 'video', file: 'ash/ash1.mp4', label: 'Video 1', note: 'a moment stolen from time — i wish i could live here forever' },
+        { type: 'video', file: 'ash/ash2.mp4', label: 'Video 2', note: 'even in motion, you move like poetry — every gesture a verse i want to memorize' },
+        { type: 'video', file: 'ash/ash3.mp4', label: 'Video 3', note: 'this is what it sounds like when everything feels right in the world' },
+        { type: 'video', file: 'ash/ash4.mp4', label: 'Video 4', note: 'if my life were a film, this would be the scene i would replay on loop' },
+        { type: 'video', file: 'ash/ash5.mp4', label: 'Video 5', note: 'there is music in the way you move, and i cannot stop listening' },
+        { type: 'video', file: 'ash/ash6.mp4', label: 'Video 6', note: 'some memories are better than dreams — this is one of them' },
+        { type: 'video', file: 'ash/ash7.mp4', label: 'Video 7', note: 'the camera loves you, but not as much as i do' },
+        { type: 'video', file: 'ash/ash8.mp4', label: 'Video 8', note: 'you exist the way autumn feels — warm, fleeting, and unforgettable' },
+        { type: 'video', file: 'ash/ash9.mp4', label: 'Video 9', note: 'you, unguarded and real — and it is the most beautiful thing i have ever seen' }
+      ];
+
+      var MEDIA = [];
+      var grid = document.getElementById('galleryGrid');
+      var lightbox = document.getElementById('lightbox');
+      var lbClose = document.getElementById('lbClose');
+      var lbPrev = document.getElementById('lbPrev');
+      var lbNext = document.getElementById('lbNext');
+      var lbCounter = document.getElementById('lbCounter');
+      var lbNote = document.getElementById('lbNote');
+      var currentIndex = -1;
+
+      function loadMedia() {
+        return FB.get('config', 'gallery').then(function (data) {
+          if (data && data.items && data.items.length) {
+            MEDIA = data.items;
+            var noteMap = {};
+            for (var di = 0; di < DEFAULT_MEDIA.length; di++) noteMap[DEFAULT_MEDIA[di].file] = DEFAULT_MEDIA[di].note;
+            var changed = false;
+            for (var mi = 0; mi < MEDIA.length; mi++) {
+              if (!MEDIA[mi].note && noteMap[MEDIA[mi].file]) {
+                MEDIA[mi].note = noteMap[MEDIA[mi].file];
+                changed = true;
+              }
+            }
+            if (changed) { FB.put('config', { id: 'gallery', items: MEDIA }); }
+          } else {
+            MEDIA = DEFAULT_MEDIA.slice();
+          }
+          render();
+        }).catch(function () {
+          MEDIA = DEFAULT_MEDIA.slice();
+          render();
+        });
+      }
+
+      function getUrl(m) {
+        if (m.fileData) {
+          return URL.createObjectURL(new Blob([m.fileData], { type: m.fileType || 'image/jpeg' }));
+        }
+        return m.file;
+      }
+
+      function render() {
+        var html = '';
+        for (var i = 0; i < MEDIA.length; i++) {
+          var m = MEDIA[i];
+          var isVideo = m.type === 'video';
+          var src = getUrl(m);
+          html += '<div class="gallery-item" data-index="' + i + '">';
+          html += '<div class="item-glass"></div>';
+          if (isVideo) {
+            html += '<video preload="metadata" muted playsinline>' +
+              '<source src="' + src + '" type="' + (m.fileType || 'video/mp4') + '">' +
+              '</video>';
+            html += '<div class="play-badge"><svg viewBox="0 0 24 24" fill="rgba(255,230,128,.9)"><path d="M8 5v14l11-7z"/></svg></div>';
+          } else {
+            html += '<img src="' + src + '" alt="' + m.label + '" loading="lazy">';
+          }
+          html += '<div class="item-label">' + esc(m.label) + '</div>';
+          if (m.note) {
+            html += '<div class="item-note">' + esc(m.note) + '</div>';
+          }
+          html += '</div>';
+        }
+        grid.innerHTML = html;
+
+        grid.querySelectorAll('img').forEach(function (img) {
+          if (img.complete) { img.classList.add('loaded'); }
+          else { img.addEventListener('load', function () { this.classList.add('loaded'); }); }
+        });
+        grid.querySelectorAll('video').forEach(function (v) {
+          if (v.readyState >= 2) { v.classList.add('loaded'); }
+          else { v.addEventListener('loadeddata', function () { this.classList.add('loaded'); }); }
+        });
+
+        grid.querySelectorAll('.gallery-item').forEach(function (item) {
+          item.addEventListener('click', function () {
+            var idx = parseInt(this.dataset.index);
+            openLightbox(idx);
+          });
+        });
+      }
+
+      function openLightbox(idx) {
+        currentIndex = idx;
+        var m = MEDIA[idx];
+        updateLightbox(m, idx);
+        lightbox.classList.add('open');
+      }
+
+      function updateLightbox(m, idx) {
+        var old = lightbox.querySelector('.lightbox-media, .lightbox-media.video-el');
+        if (old) old.remove();
+
+        var src = getUrl(m);
+        var el;
+        if (m.type === 'video') {
+          el = document.createElement('video');
+          el.className = 'lightbox-media video-el';
+          el.controls = true;
+          el.autoplay = true;
+          el.innerHTML = '<source src="' + src + '" type="' + (m.fileType || 'video/mp4') + '">';
+        } else {
+          el = document.createElement('img');
+          el.className = 'lightbox-media';
+          el.src = src;
+          el.alt = m.label;
+        }
+        lightbox.insertBefore(el, lightbox.querySelector('.lightbox-counter'));
+        lbCounter.textContent = (idx + 1) + ' / ' + MEDIA.length;
+        lbNote.textContent = m.note || '';
+      }
+
+      lbClose.addEventListener('click', function closeLightbox() {
+        lightbox.classList.remove('open');
+        var video = lightbox.querySelector('video.lightbox-media');
+        if (video) { video.pause(); video.src = ''; video.load(); }
+        currentIndex = -1;
+      });
+
+      lbPrev.addEventListener('click', function () {
+        if (currentIndex <= 0) return;
+        var video = lightbox.querySelector('video.lightbox-media');
+        if (video) { video.pause(); video.src = ''; video.load(); }
+        currentIndex--;
+        updateLightbox(MEDIA[currentIndex], currentIndex);
+      });
+
+      lbNext.addEventListener('click', function () {
+        if (currentIndex >= MEDIA.length - 1) return;
+        var video = lightbox.querySelector('video.lightbox-media');
+        if (video) { video.pause(); video.src = ''; video.load(); }
+        currentIndex++;
+        updateLightbox(MEDIA[currentIndex], currentIndex);
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (!lightbox.classList.contains('open')) return;
+        if (e.key === 'Escape') { lightbox.classList.remove('open'); var v = lightbox.querySelector('video.lightbox-media'); if (v) { v.pause(); v.src = ''; v.load(); } currentIndex = -1; }
+        if (e.key === 'ArrowLeft') lbPrev.click();
+        if (e.key === 'ArrowRight') lbNext.click();
+      });
+
+      lightbox.addEventListener('click', function (e) {
+        if (e.target === lightbox) { lightbox.classList.remove('open'); var v = lightbox.querySelector('video.lightbox-media'); if (v) { v.pause(); v.src = ''; v.load(); } currentIndex = -1; }
+      });
+
+      function esc(str) {
+        if (typeof str !== 'string') return '';
+        var d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+      }
+
+      loadMedia();
+    })();
+  </script>
+  <script defer src="music.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(function () {});
+    }
+  </script>
+
+</body>
+</html>
