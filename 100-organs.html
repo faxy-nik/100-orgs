@@ -82,6 +82,8 @@
 
     main {
       display: block;
+      position: relative;
+      z-index: 2;
     }
 
     /* ---------------- Reading progress rail ---------------- */
@@ -7390,7 +7392,7 @@ END SECTION
         }
       });
     }, { threshold: 0.3 });
-    safeObserve(observer, ded);
+    observer.observe(ded);
   })();
   </script>
 
