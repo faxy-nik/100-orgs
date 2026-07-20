@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jukebox Admin</title>
+  <title>Admin Dashboard</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%A1%3C/text%3E%3C/svg%3E">
+  <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
@@ -203,6 +204,48 @@
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+    /* ---- Access Control ---- */
+    .access-card {
+      background: rgba(255,220,160,.04); border: 1px solid rgba(255,210,150,.1);
+      border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: .75rem;
+    }
+    .access-header {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    }
+    .access-header .info { flex: 1; }
+    .access-header .info .name { font-family: 'Fraunces', Georgia, serif; font-size: .9rem; }
+    .access-header .info .file { font-size: .75rem; color: #6b5f52; }
+    .toggle-wrap {
+      display: flex; align-items: center; gap: .5rem; flex-shrink: 0;
+    }
+    .toggle-wrap label { font-size: .75rem; color: #6b5f52; cursor: pointer; }
+    .toggle {
+      position: relative; width: 40px; height: 22px; flex-shrink: 0;
+      background: rgba(255,220,160,.08); border-radius: 11px; cursor: pointer;
+      transition: background .25s; border: 1px solid rgba(255,210,150,.1);
+    }
+    .toggle.active { background: rgba(111,207,151,.3); border-color: #6fcf97; }
+    .toggle::after {
+      content: ''; position: absolute; top: 2px; left: 2px;
+      width: 16px; height: 16px; border-radius: 50%; background: #6b5f52;
+      transition: all .25s;
+    }
+    .toggle.active::after { left: 20px; background: #6fcf97; }
+    .quiz-section {
+      margin-top: .75rem; padding-top: .75rem;
+      border-top: 1px solid rgba(255,210,150,.08); display: none;
+    }
+    .quiz-section.open { display: block; }
+    .quiz-section .q-field { margin-bottom: .6rem; }
+    .quiz-section .q-field label { display: block; font-size: .7rem; color: #6b5f52; margin-bottom: 2px; }
+    .quiz-section .q-field input {
+      width: 100%; padding: .4rem .6rem; border-radius: 5px;
+      background: rgba(255,220,160,.03); border: 1px solid rgba(255,210,150,.08);
+      color: #ffebd2; font-family: inherit; font-size: .8rem; outline: none;
+    }
+    .quiz-section .q-field input:focus { border-color: #ffe680; }
+    .quiz-section .quiz-note { font-size: .72rem; color: #6b5f52; font-style: italic; margin-bottom: .5rem; }
+
     @media (max-width: 600px) {
       #app { padding: 1rem; }
       .modal { padding: 1.25rem; }
@@ -215,8 +258,8 @@
 
 <div id="loginGate">
   <div class="login-box">
-    <h1>&#x1F3B5; Jukebox Admin</h1>
-    <p>Manage songs, set unlock dates</p>
+    <h1>&#x1F3B5; Admin Dashboard</h1>
+    <p>Manage the website</p>
     <input type="password" id="loginPass" placeholder="Passkey" autofocus>
     <div class="err" id="loginErr">Incorrect passkey</div>
     <button id="loginBtn">Unlock</button>
@@ -226,7 +269,7 @@
 <div id="app">
   <header>
     <div>
-      <h1>&#x1F3B5; Jukebox Admin</h1>
+      <h1>&#x1F3B5; Admin Dashboard</h1>
       <div class="sub" id="statusText">Loading...</div>
     </div>
     <div class="header-actions">
@@ -240,8 +283,11 @@
     <button class="tab" data-tab="songs">&#x1F3B5; Songs</button>
     <button class="tab" data-tab="secret">&#x2728; Secret</button>
     <button class="tab" data-tab="gallery">&#x1F5BC;&#xFE0F; Gallery</button>
+    <button class="tab" data-tab="wishes">&#x2728; Wishes</button>
     <button class="tab" data-tab="requests">&#x1F3B6; Requests</button>
     <button class="tab" data-tab="reviews">&#x1F3A7; Reviews</button>
+    <button class="tab" data-tab="settings">&#x2699;&#xFE0F; Settings</button>
+    <button class="tab" data-tab="access">&#x1F510; Access</button>
   </div>
 
   <!-- Tab: Sections -->
@@ -320,6 +366,33 @@
     <button class="add-btn" id="galleryAddBtn">+ Add Gallery Item</button>
   </div>
 
+  <!-- Tab: Wishes -->
+  <div class="tab-content" id="tabWishes">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Wishes submitted from the Sky Observatory and other interactions. Search, sort, filter, and manage.
+    </p>
+    <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;align-items:center;">
+      <input type="text" id="wishSearch" placeholder="Search wishes..." style="flex:1;min-width:120px;padding:.5rem .7rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;">
+      <select id="wishSort" style="padding:.5rem .7rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;">
+        <option value="newest">Newest</option>
+        <option value="oldest">Oldest</option>
+        <option value="text">Text A-Z</option>
+        <option value="source">Source</option>
+      </select>
+      <select id="wishFilter" style="padding:.5rem .7rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;">
+        <option value="all">All</option>
+        <option value="pending">Pending</option>
+        <option value="granted">Granted</option>
+        <option value="released">Released</option>
+        <option value="favourite">Favourited</option>
+      </select>
+      <button id="wishExportBtn" style="padding:.5rem .9rem;border-radius:6px;background:rgba(255,230,128,.08);border:1px solid rgba(255,230,128,.2);color:#ffe680;cursor:pointer;font-family:inherit;font-size:.8rem;">Export</button>
+      <button id="wishExportCsvBtn" style="padding:.5rem .9rem;border-radius:6px;background:rgba(255,230,128,.08);border:1px solid rgba(255,230,128,.2);color:#ffe680;cursor:pointer;font-family:inherit;font-size:.8rem;">CSV</button>
+    </div>
+    <div style="font-size:.75rem;color:#6b5f52;margin-bottom:.5rem;" id="wishStats"></div>
+    <div class="song-list" id="wishList"></div>
+  </div>
+
   <!-- Tab: Requests -->
   <div class="tab-content" id="tabRequests">
     <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
@@ -335,6 +408,31 @@
     </p>
     <div id="reviewsList"></div>
   </div>
+
+  <!-- Tab: Settings -->
+  <div class="tab-content" id="tabSettings">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Admin settings.
+    </p>
+    <div class="section-dates" id="settingsList">
+      <div class="date-item">
+        <div style="flex:1;">
+          <div class="date-label">Admin Password</div>
+          <div class="date-meta">Current password: <span id="currentPassDisplay">****</span></div>
+        </div>
+        <input type="password" id="newPassInput" placeholder="New password" style="background:#1a1520;border:1px solid #332a3a;color:#c8b9a6;padding:0.4rem 0.7rem;border-radius:6px;font-size:0.85rem;width:140px;">
+        <button id="changePassBtn" class="icon-btn" style="background:rgba(255,230,128,0.1);border:1px solid rgba(255,230,128,0.2);color:#ffe680;padding:0.4rem 0.8rem;border-radius:6px;cursor:pointer;font-size:0.8rem;">Change</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab: Access -->
+  <div class="tab-content" id="tabAccess">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Control access to each section. Locked sections show a gate on the landing page. The Fantasies section uses a 5-question quiz.
+    </p>
+    <div class="section-dates" id="accessList"></div>
+  </div>
 </div>
 
 <!-- Modal -->
@@ -346,7 +444,7 @@
 
 <script>
 (function () {
-  var PASSKEY = 'eshah';
+  var PASSKEY = localStorage.getItem('ash-admin-passkey') || 'eshah';
   var songs = [];
   var sections = [];
   var galleryItems = [];
@@ -465,6 +563,155 @@
         }
       });
     });
+  }
+
+  /* ---- Wishes ---- */
+  var allWishes = [];
+
+  function loadWishes() {
+    return FB.getAll('wishes').then(function (wishes) {
+      allWishes = wishes || [];
+      if (allWishes.length) renderWishes();
+    }).catch(function () { allWishes = []; });
+  }
+
+  function renderWishes() {
+    var list = document.getElementById('wishList');
+    var stats = document.getElementById('wishStats');
+    if (!list) return;
+
+    var search = (document.getElementById('wishSearch').value || '').toLowerCase();
+    var sort = document.getElementById('wishSort').value;
+    var filter = document.getElementById('wishFilter').value;
+
+    var filtered = allWishes.filter(function (w) {
+      if (filter === 'pending' && w.granted) return false;
+      if (filter === 'granted' && !w.granted) return false;
+      if (filter === 'released' && !w.released) return false;
+      if (filter === 'favourite' && !w.favourite) return false;
+      if (search && w.text && w.text.toLowerCase().indexOf(search) === -1) return false;
+      return true;
+    });
+
+    filtered.sort(function (a, b) {
+      if (sort === 'oldest') return (a.createdAt || 0) - (b.createdAt || 0);
+      if (sort === 'text') return (a.text || '').localeCompare(b.text || '');
+      if (sort === 'source') return (a.source || '').localeCompare(b.source || '');
+      return (b.createdAt || 0) - (a.createdAt || 0); // newest
+    });
+
+    var granted = filtered.filter(function (w) { return w.granted; }).length;
+    var pending = filtered.filter(function (w) { return !w.granted && !w.released; }).length;
+    var released = filtered.filter(function (w) { return w.released; }).length;
+    if (stats) stats.textContent = allWishes.length + ' total \u00B7 ' + filtered.length + ' shown \u00B7 ' + granted + ' granted \u00B7 ' + pending + ' pending \u00B7 ' + released + ' released';
+
+    if (!filtered.length) {
+      list.innerHTML = '<div class="empty-state"><div class="icon">&#x2728;</div><p>No wishes match your criteria</p></div>';
+      return;
+    }
+
+    var html = '';
+    for (var i = 0; i < filtered.length; i++) {
+      var w = filtered[i];
+      var date = w.createdAt ? new Date(w.createdAt).toLocaleDateString() + ' ' + new Date(w.createdAt).toLocaleTimeString() : 'Unknown';
+      var grantedDate = w.grantedAt ? '\u00B7 Granted: ' + new Date(w.grantedAt).toLocaleDateString() : '';
+      var releasedDate = w.releasedAt ? '\u00B7 Released: ' + new (w.releasedAt).toLocaleDateString() : '';
+      var statusIcon = w.granted ? '\u2705' : (w.released ? '\uD83C\uDFEE' : '\u23F3');
+      var favIcon = w.favourite ? '\u2B50 ' : '';
+      var source = w.source || 'observatory';
+      var text = w.text || '(empty)';
+      var lantern = w.lanternColour ? ' \u00B7 \uD83C\uDFEE ' + w.lanternColour : '';
+      html +=
+        '<div class="song-card" data-wish-id="' + esc(w.id) + '">' +
+          '<div class="info" style="flex:1;min-width:0;">' +
+            '<div class="stitle">' + favIcon + statusIcon + ' ' + esc(text) + '</div>' +
+            '<div class="smeta">' + date + ' \u00B7 ' + source + grantedDate + releasedDate + lantern + '</div>' +
+            (w.released && w.lanternColour ? '<div class="smeta" style="color:#ffe680;">\uD83C\uDFEE Lantern: ' + esc(w.lanternColour) + ' | Glow: ' + (w.lanternGlow || 1) + ' | Size: ' + (w.lanternSize || 1) + '</div>' : '') +
+          '</div>' +
+          '<div class="actions" style="flex-shrink:0;display:flex;gap:3px;flex-wrap:wrap;">' +
+            (w.granted ? '' : '<button class="wish-grant-btn" data-wish-id="' + esc(w.id) + '" style="padding:.3rem .5rem;border-radius:5px;background:rgba(111,207,151,.1);border:1px solid #6fcf97;color:#6fcf97;cursor:pointer;font-size:.7rem;">Grant</button>') +
+            '<button class="wish-del-btn" data-wish-id="' + esc(w.id) + '" style="padding:.3rem .5rem;border-radius:5px;background:rgba(232,93,58,.1);border:1px solid #e85d3a;color:#e85d3a;cursor:pointer;font-size:.7rem;">Delete</button>' +
+          '</div>' +
+        '</div>';
+    }
+    list.innerHTML = html;
+
+    // Grant buttons
+    list.querySelectorAll('.wish-grant-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = this.dataset.wishId;
+        if (confirm('Grant this wish?')) {
+          FB.get('wishes', id).then(function (result) {
+            if (result && result.data) {
+              var w = result.data;
+              w.id = result.key;
+              w.granted = true;
+              w.grantedAt = Date.now();
+              FB.put('wishes', w).then(function () {
+                loadWishes();
+                toast('Wish granted!');
+              });
+            }
+          });
+        }
+      });
+    });
+
+    // Delete buttons
+    list.querySelectorAll('.wish-del-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = this.dataset.wishId;
+        if (confirm('Delete this wish permanently?')) {
+          FB.delete('wishes', id).then(function () {
+            loadWishes();
+            toast('Wish deleted');
+          });
+        }
+      });
+    });
+  }
+
+  function exportWishes(format) {
+    if (!allWishes.length) { toast('No wishes to export'); return; }
+    var data = allWishes.map(function (w) {
+      return {
+        id: w.id,
+        text: w.text,
+        createdAt: new Date(w.createdAt).toISOString(),
+        source: w.source,
+        granted: w.granted,
+        grantedAt: w.grantedAt ? new Date(w.grantedAt).toISOString() : '',
+        favourite: w.favourite,
+        released: w.released,
+        releasedAt: w.releasedAt ? new Date(w.releasedAt).toISOString() : '',
+        lanternColour: w.lanternColour || '',
+        lanternGlow: w.lanternGlow || '',
+        lanternSize: w.lanternSize || ''
+      };
+    });
+
+    if (format === 'csv') {
+      var headers = 'id,text,createdAt,source,granted,grantedAt,favourite,released,releasedAt,lanternColour,lanternGlow,lanternSize\n';
+      var csv = headers;
+      data.forEach(function (r) {
+        csv += '"' + (r.id || '') + '","' + (r.text || '').replace(/"/g, '""') + '","' + r.createdAt + '","' + r.source + '","' + r.granted + '","' + r.grantedAt + '","' + r.favourite + '","' + r.released + '","' + r.releasedAt + '","' + r.lanternColour + '","' + r.lanternGlow + '","' + r.lanternSize + '"\n';
+      });
+      downloadFile(csv, 'wishes-export.csv', 'text/csv');
+    } else {
+      downloadFile(JSON.stringify(data, null, 2), 'wishes-export.json', 'application/json');
+    }
+    toast('Wishes exported as ' + format.toUpperCase());
+  }
+
+  function downloadFile(content, filename, mime) {
+    var blob = new Blob([content], { type: mime });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 100);
   }
 
   function renderRequests() {
@@ -702,6 +949,9 @@
       await saveGallery();
     }
 
+    // Wishes
+    await loadWishes();
+
     updateStatus();
   }
 
@@ -726,7 +976,8 @@
       songCount + ' song' + (songCount !== 1 ? 's' : '') +
       (fileCount ? ' (' + fileCount + ' with audio)' : '') +
       ' \u2022 ' + sections.length + ' section' + (sections.length !== 1 ? 's' : '') +
-      ' \u2022 ' + galleryItems.length + ' gallery item' + (galleryItems.length !== 1 ? 's' : '');
+      ' \u2022 ' + galleryItems.length + ' gallery item' + (galleryItems.length !== 1 ? 's' : '') +
+      ' \u2022 ' + allWishes.length + ' wish' + (allWishes.length !== 1 ? 'es' : '');
   }
 
   /* ---- Render Sections ---- */
@@ -957,6 +1208,137 @@
     el._t = setTimeout(function () { el.classList.remove('show'); }, 2500);
   }
 
+  /* ---- Access Control ---- */
+  var SECTION_ACCESS_KEY = 'ash-section-access';
+  var QUIZ_KEY = 'ash-quiz-questions';
+
+  function defaultAccess() {
+    return {
+      '100-organs': { adminLocked: false },
+      'love': { adminLocked: false },
+      'fantasies': { adminLocked: true },
+      'gallery': { adminLocked: false },
+      'photo-gallery': { adminLocked: false }
+    };
+  }
+
+  function defaultQuiz() {
+    return [
+      { question: 'What pet name does she call you?', answer: 'babe' },
+      { question: 'What is her favorite color?', answer: 'purple' },
+      { question: 'What month did you first meet?', answer: 'june' },
+      { question: 'What is the admin passkey for this site?', answer: 'eshah' },
+      { question: 'What city does she live in?', answer: 'lahore' }
+    ];
+  }
+
+  function getAccessConfig() {
+    var raw = localStorage.getItem(SECTION_ACCESS_KEY);
+    if (raw) {
+      try { return JSON.parse(raw); } catch(e) {}
+    }
+    var def = defaultAccess();
+    localStorage.setItem(SECTION_ACCESS_KEY, JSON.stringify(def));
+    return def;
+  }
+
+  function saveAccessConfig(cfg) {
+    localStorage.setItem(SECTION_ACCESS_KEY, JSON.stringify(cfg));
+  }
+
+  function getQuizQuestions() {
+    var raw = localStorage.getItem(QUIZ_KEY);
+    if (raw) {
+      try { return JSON.parse(raw); } catch(e) {}
+    }
+    var def = defaultQuiz();
+    localStorage.setItem(QUIZ_KEY, JSON.stringify(def));
+    return def;
+  }
+
+  function saveQuizQuestions(qs) {
+    localStorage.setItem(QUIZ_KEY, JSON.stringify(qs));
+  }
+
+  var accessCfg = null;
+  var quizQuestions = null;
+
+  function renderAccess() {
+    var list = document.getElementById('accessList');
+    if (!list) return;
+    accessCfg = getAccessConfig();
+    quizQuestions = getQuizQuestions();
+    var html = '';
+    for (var i = 0; i < sections.length; i++) {
+      var s = sections[i];
+      var ac = accessCfg[s.key] || { adminLocked: false };
+      var locked = !!ac.adminLocked;
+      html += '<div class="access-card" data-section="' + s.key + '">' +
+        '<div class="access-header">' +
+          '<div class="info">' +
+            '<div class="name">' + s.icon + ' ' + s.label + '</div>' +
+            '<div class="file">' + s.file + '</div>' +
+          '</div>' +
+          '<div class="toggle-wrap">' +
+            '<span class="toggle' + (locked ? ' active' : '') + '" data-section="' + s.key + '"></span>' +
+            '<label>' + (locked ? 'Locked' : 'Open') + '</label>' +
+          '</div>' +
+        '</div>' +
+        (s.key === 'fantasies' ? buildQuizEditor(quizQuestions) : '') +
+      '</div>';
+    }
+    list.innerHTML = html;
+
+    // Toggle clicks
+    list.querySelectorAll('.toggle').forEach(function (el) {
+      el.addEventListener('click', function () {
+        var key = this.dataset.section;
+        var ac2 = accessCfg[key] || { adminLocked: false };
+        ac2.adminLocked = !ac2.adminLocked;
+        accessCfg[key] = ac2;
+        saveAccessConfig(accessCfg);
+        this.classList.toggle('active');
+        var label = this.nextElementSibling;
+        label.textContent = ac2.adminLocked ? 'Locked' : 'Open';
+        // Show/hide quiz editor for fantasies
+        if (key === 'fantasies') {
+          var qs = this.closest('.access-card').querySelector('.quiz-section');
+          if (qs) qs.classList.toggle('open', ac2.adminLocked);
+        }
+      });
+    });
+
+    // Quiz field saves — resets quizPassed so she must retake
+    list.querySelectorAll('.quiz-section input').forEach(function (el) {
+      el.addEventListener('change', function () {
+        var idx = parseInt(this.dataset.idx);
+        var field = this.dataset.field;
+        quizQuestions[idx][field] = this.value;
+        saveQuizQuestions(quizQuestions);
+        // Reset quizPassed when questions change
+        if (accessCfg.fantasies) {
+          accessCfg.fantasies.quizPassed = false;
+          saveAccessConfig(accessCfg);
+        }
+      });
+    });
+  }
+
+  function buildQuizEditor(qs) {
+    var html = '<div class="quiz-section' + (accessCfg && accessCfg.fantasies && accessCfg.fantasies.adminLocked ? ' open' : '') + '">';
+    html += '<div class="quiz-note">5 questions she must answer correctly to unlock this section. Edit below:</div>';
+    for (var i = 0; i < qs.length; i++) {
+      html +=
+        '<div class="q-field">' +
+          '<label>Q' + (i+1) + '</label>' +
+          '<input type="text" data-idx="' + i + '" data-field="question" value="' + esc(qs[i].question) + '" placeholder="Question">' +
+          '<input type="text" data-idx="' + i + '" data-field="answer" value="' + esc(qs[i].answer) + '" placeholder="Answer" style="margin-top:3px;">' +
+        '</div>';
+    }
+    html += '</div>';
+    return html;
+  }
+
   /* ---- Secret Song ---- */
   function loadSecretForm() {
     dbGet('config', 'secretSong').then(function (data) {
@@ -1087,10 +1469,22 @@
         // Load tab-specific data
         if (this.dataset.tab === 'secret') loadSecretForm();
         if (this.dataset.tab === 'gallery') renderGallery();
+        if (this.dataset.tab === 'wishes') { loadWishes(); }
         if (this.dataset.tab === 'requests') renderRequests();
         if (this.dataset.tab === 'reviews') renderReviews();
+        if (this.dataset.tab === 'settings') { document.getElementById('currentPassDisplay').textContent = PASSKEY; document.getElementById('newPassInput').value = ''; }
+        if (this.dataset.tab === 'access') renderAccess();
       });
     });
+
+    // Wishes search/sort/filter
+    var wishInputs = ['wishSearch', 'wishSort', 'wishFilter'];
+    wishInputs.forEach(function (id) {
+      document.getElementById(id).addEventListener('input', function () { renderWishes(); });
+      document.getElementById(id).addEventListener('change', function () { renderWishes(); });
+    });
+    document.getElementById('wishExportBtn').addEventListener('click', function () { exportWishes('json'); });
+    document.getElementById('wishExportCsvBtn').addEventListener('click', function () { exportWishes('csv'); });
 
     // Secret song
     document.getElementById('secSaveBtn').addEventListener('click', saveSecretSong);
@@ -1122,6 +1516,18 @@
     // Patch loadSecretForm to also load note
     var origLoad = loadSecretForm;
     loadSecretForm = function() { origLoad(); loadPersonalNote(); };
+
+    // Password change
+    document.getElementById('changePassBtn').addEventListener('click', function () {
+      var newPass = document.getElementById('newPassInput').value.trim();
+      if (!newPass) { toast('Enter a new password'); return; }
+      if (newPass.length < 3) { toast('Password must be at least 3 characters'); return; }
+      PASSKEY = newPass;
+      localStorage.setItem('ash-admin-passkey', PASSKEY);
+      document.getElementById('currentPassDisplay').textContent = PASSKEY;
+      document.getElementById('newPassInput').value = '';
+      toast('Password changed');
+    });
   }
 
   init();
@@ -1132,5 +1538,9 @@
       navigator.serviceWorker.register('/sw.js').catch(function () {});
     }
   </script>
+<script src="living-world-global.js"></script>
+<script src="matrix-rain.js"></script>
+<script src="global-easter-eggs.js"></script>
+<script src="phase3-cinematic.js"></script>
 </body>
 </html>

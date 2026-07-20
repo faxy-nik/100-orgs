@@ -489,18 +489,17 @@
   var catInterval = null;
   function initBlackCat() {
     if (catInterval) return;
-    catInterval = setInterval(function() {
-      if (Math.random() > 0.006) return;
-      spawnCat();
-    }, 10000);
-    // Also check on page visibility
+    function startCatInterval() {
+      return setInterval(function() {
+        if (Math.random() > 0.006) return;
+        spawnCat();
+      }, 10000);
+    }
+    catInterval = startCatInterval();
     document.addEventListener('visibilitychange', function() {
       if (!document.hidden) {
         clearInterval(catInterval);
-        catInterval = setInterval(function() {
-          if (Math.random() > 0.006) return;
-          spawnCat();
-        }, 10000);
+        catInterval = startCatInterval();
       }
     });
   }
@@ -608,9 +607,7 @@
     50: '\uD83C\uDF1D Half moon wisdom \u2014 the sky knows your name'
   };
   function initMoonCounter() {
-    config.moonClicks = 0;
-    save();
-    FB.put('stats', { moonClicks: 0 }).catch(function(){});
+    if (typeof config.moonClicks !== 'number') config.moonClicks = 0;
     var moonBtn = document.createElement('button');
     moonBtn.id = 'obsMoonBtn';
     moonBtn.title = 'Click the moon \u2728';
@@ -653,13 +650,35 @@
       btn.textContent = cleanView ? '\u25A3' : '\u25A1';
       btn.style.color = cleanView ? 'var(--gold)' : 'var(--parchment-dim)';
       btn.style.borderColor = cleanView ? 'var(--gold)' : 'var(--glassBorder)';
-      var els = document.querySelectorAll('#observatory, #obsMoonBtn, #obsRealTime, #obsProgress, .footer, .page-header, #heartContainer, #skyBtnContainer, [href="stats.html"], [href="admin.html"]');
+      var els = document.querySelectorAll(            '#observatory, #obsMoonBtn, #obsRealTime, #obsProgress, #obsLandscapeBtn, .footer, .page-header, #heartContainer, #skyBtnContainer, [href="stats.html"], [href="admin.html"]');
       els.forEach(function(el) {
         if (el) el.style.display = cleanView ? 'none' : '';
       });
       if (cleanView) toast('\u2728 Clean view — just the sky', 'rgba(255,230,128,0.7)', 2000);
       else toast('UI restored', 'rgba(255,230,128,0.7)', 1500);
     });
+    document.body.appendChild(btn);
+  }
+
+  /* ---------- 4c. Landscape Toggle ---------- */
+  var landscapeOn = (function () { try { return localStorage.getItem('sky-landscape-visible') === 'true'; } catch (e) { return false; } })();
+  function initLandscapeToggle() {
+    var btn = document.createElement('button');
+    btn.id = 'obsLandscapeBtn';
+    btn.title = 'Toggle landscape';
+    btn.textContent = '☰ landscape';
+    btn.style.cssText = 'position:fixed;top:calc(1rem + 42px);left:1rem;z-index:10001;background:rgba(255,220,160,.12);border:1px solid rgba(255,210,150,.35);border-radius:8px;padding:4px 10px;cursor:pointer;font-family:Georgia,serif;font-size:.75rem;color:var(--parchment-dim,#c7b8a1);transition:all .3s;';
+    if (landscapeOn) { btn.style.color = '#ffe680'; btn.style.borderColor = '#ffe680'; btn.textContent = '☰ landscape on'; }
+    btn.onclick = function() {
+      landscapeOn = !landscapeOn;
+      btn.textContent = landscapeOn ? '☰ landscape on' : '☰ landscape';
+      btn.style.color = landscapeOn ? '#ffe680' : 'var(--parchment-dim,#c7b8a1)';
+      btn.style.borderColor = landscapeOn ? '#ffe680' : 'rgba(255,210,150,.35)';
+      try { localStorage.setItem('sky-landscape-visible', landscapeOn ? 'true' : 'false'); } catch (e) {}
+      if (window.SkyLiving && window.SkyLiving.setLandscapeVisible) window.SkyLiving.setLandscapeVisible(landscapeOn);
+      if (landscapeOn) toast('🌿 Landscape on', 'rgba(255,230,128,0.7)', 1500);
+      else toast('Landscape off', 'rgba(255,230,128,0.7)', 1500);
+    };
     document.body.appendChild(btn);
   }
 
@@ -801,24 +820,19 @@
   /* ---------- 8. Double Rainbow ---------- */
   var lastRainIdx = -1;
   function initDoubleRainbow() {
-    // Hook into applySky to detect rain skies
-    var origApply = window.Skies && window.Skies.apply;
-    if (!origApply) return;
-    window.Skies.apply = function(idx) {
-      origApply(idx);
-      var sky = window.Skies.SKIES[idx];
-      if (sky) {
-        var n = (sky.name||'').toLowerCase();
-        var isRain = n.indexOf('rain')>=0||n.indexOf('storm')>=0||n.indexOf('shower')>=0;
-        if (isRain && lastRainIdx !== idx && Math.random() < 0.2) {
-          setTimeout(function() { showRainbow(false); }, 3000);
-          if (Math.random() < 0.08) {
-            setTimeout(function() { showRainbow(true); }, 4000);
-          }
+    _afterApply.push(function(idx) {
+      var sky = window.Skies && window.Skies.SKIES && window.Skies.SKIES[idx];
+      if (!sky) return;
+      var n = (sky.name||'').toLowerCase();
+      var isRain = n.indexOf('rain')>=0||n.indexOf('storm')>=0||n.indexOf('shower')>=0;
+      if (isRain && lastRainIdx !== idx && Math.random() < 0.2) {
+        setTimeout(function() { showRainbow(false); }, 3000);
+        if (Math.random() < 0.08) {
+          setTimeout(function() { showRainbow(true); }, 4000);
         }
-        lastRainIdx = idx;
       }
-    };
+      lastRainIdx = idx;
+    });
   }
 
   function showRainbow(double) {
@@ -1173,6 +1187,7 @@
           if (!config.wishes) config.wishes = [];
           config.wishes.push({ text: text, at: Date.now() });
           save();
+          try { if (window.WishSystem) WishSystem.addWish(text, 'observatory'); } catch(e) {}
           toast('\u2B50 Wish saved \u2728', 'rgba(255,230,128,0.8)', 2500);
         }
         overlay.remove();
@@ -1180,6 +1195,29 @@
       document.getElementById('wishCancelBtn').addEventListener('click', function() { overlay.remove(); });
       overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
     }
+  }
+
+  /* ---------- 19. Floating Hearts ---------- */
+  function initFloatingHearts() {
+    var heartInterval = null;
+    function spawnHearts() {
+      var count = 3 + Math.floor(Math.random() * 3);
+      for (var i = 0; i < count; i++) {
+        var el = document.createElement('div');
+        el.textContent = '\u2764\uFE0F';
+        el.style.cssText = 'position:fixed;bottom:-40px;z-index:10001;font-size:' + (14 + Math.random() * 18) + 'px;pointer-events:none;opacity:0.7;left:' + (5 + Math.random() * 90) + 'vw;transition:transform ' + (5 + Math.random() * 3) + 's linear, opacity ' + (5 + Math.random() * 3) + 's ease;';
+        document.body.appendChild(el);
+        requestAnimationFrame(function () {
+          el.style.transform = 'translateY(-' + (window.innerHeight + 80) + 'px)';
+          el.style.opacity = '0';
+        });
+        setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 9000);
+      }
+    }
+    function startHearts() { if (!heartInterval) { heartInterval = setInterval(spawnHearts, 30000 + Math.random() * 30000); spawnHearts(); } }
+    function stopHearts() { if (heartInterval) { clearInterval(heartInterval); heartInterval = null; } }
+    document.addEventListener('visibilitychange', function () { if (document.hidden) stopHearts(); else startHearts(); });
+    startHearts();
   }
 
   /* ---------- 20. Screenshot Mode ---------- */
@@ -1202,7 +1240,7 @@
     btn.textContent = '\uD83D\uDCF7';
     btn.style.cssText = 'position:fixed;top:1rem;left:3.5rem;z-index:10002;background:var(--glass);border:1px solid var(--glassBorder);border-radius:50%;width:36px;height:36px;font-size:0.9rem;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;';
     btn.addEventListener('click', function() {
-      var uiEls = document.querySelectorAll('#observatory, #obsMoonBtn, #obsRealTime, #obsProgress, #obsCleanBtn, #obsDaily, #obsFireflyJar, #obsMoodBtn, #obsScreenshotBtn, .footer, .page-header, #heartContainer, #skyBtnContainer, [href="stats.html"], [href="admin.html"]');
+      var uiEls = document.querySelectorAll('#observatory, #obsMoonBtn, #obsRealTime, #obsProgress, #obsCleanBtn, #obsLandscapeBtn, #obsDaily, #obsFireflyJar, #obsMoodBtn, #obsScreenshotBtn, .footer, .page-header, #heartContainer, #skyBtnContainer, [href="stats.html"], [href="admin.html"]');
       uiEls.forEach(function(el) { if (el) el.style.display = 'none'; });
       requestAnimationFrame(function() {
         var skyCanvases = document.querySelectorAll('#skyOverlay canvas');
@@ -1504,7 +1542,7 @@
             stars: { count: 300, maxY: 100, minR: 0.5, maxR: 3 },
             aurora: { colors: ['rgba(200,150,255,.4)','rgba(255,200,255,.3)','rgba(150,100,255,.25)','rgba(255,150,200,.2)'], speed: 0.05, band: 120, thickness: 100 },
             lights: [{ x: 0.5, y: 0.3, r: 0.15, core: '#ffd700', glow: 'rgba(255,215,0,0.3)' }],
-            particles: [{ type: 'sparkle', count: 50 }],
+            particles: [{ type: 'stars', count: 50, maxY: 100, minR: 1, maxR: 2.5 }],
             name: 'The Hidden Sky \u2728',
             message: 'You found every piece. This sky is yours.'
           };
@@ -1693,6 +1731,7 @@
     initRealTime();
     initMoonCounter();
     initCleanViewToggle();
+    initLandscapeToggle();
     initHiddenRadio();
     initKonami();
     initLuckyStar();
@@ -1707,6 +1746,7 @@
     initEarthView();
     initLostBalloon();
     initMakeAWish();
+    initFloatingHearts();
     initScreenshotMode();
     initMoodRandomizer();
     initConstellationNames();
@@ -1729,12 +1769,8 @@
       '@keyframes rainbowGlow{0%,100%{opacity:0;transform:translateX(-50%) scale(0.8)}20%,80%{opacity:1;transform:translateX(-50%) scale(1)}}' +
       '@keyframes coffeeBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}' +
       '@keyframes fadeIn{from{opacity:0;transform:translate(-50%,-50%) scale(0.9)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}' +
-      '@keyframes featherFloat{0%{transform:translateY(0) rotate(0deg)}100%{transform:translateY(100vh) rotate(360deg)}}' +
       '@keyframes earthFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}' +
-      '@keyframes jarGlow{0%,100%{box-shadow:0 0 10px rgba(255,230,100,0.2)}50%{box-shadow:0 0 30px rgba(255,230,100,0.5)}}' +
-      '@keyframes rippleAnim{0%{transform:scale(0);opacity:0.8}100%{transform:scale(4);opacity:0}}' +
-      '@keyframes constFade{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}' +
-      '@keyframes bubbleFloat{0%{transform:translateY(0) scale(1)}50%{transform:translateY(-10px) scale(1.05)}100%{transform:translateY(0) scale(1)}}';
+      '@keyframes rippleAnim{0%{transform:scale(0);opacity:0.8}100%{transform:scale(4);opacity:0}}';
     document.head.appendChild(css);
 
     // Hook sky changes: chain all post-apply callbacks

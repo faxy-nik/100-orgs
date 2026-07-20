@@ -96,6 +96,8 @@
     host.appendChild(canvas);
     ctx = canvas.getContext('2d');
     resize();
+    var L = window.SkyLiving && window.SkyLiving.Landscape;
+    if (L) L.init(ctx, W, H, rand, pick, getMeta);
     window.addEventListener('resize', debounce(resize, 150));
   }
 
@@ -109,6 +111,8 @@
     canvas.style.width = W + 'px';
     canvas.style.height = H + 'px';
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    var L = window.SkyLiving && window.SkyLiving.Landscape;
+    if (L) L.updateSize(W, H);
   }
 
   function debounce(fn, ms) {
@@ -653,25 +657,32 @@
     butterfly: '\uD83E\uDD8B', bird: '\uD83D\uDC26', owl: '\uD83E\uDD89',
     firefly: '\u2726', jellyfish: '\uD83E\uDEBC', whale: '\uD83D\uDC33',
     dragon: '\uD83D\uDC09', island: '\uD83C\uDFDD\uFE0F', airship: '\uD83D\uDEF8',
-    kite: '\uD83E\uDEC1', crane: '\uD83E\uDDA2'
+    kite: '\uD83E\uDEC1', crane: '\uD83E\uDDA2',
+    feather: '\uD83E\uDEB6', petal: '\uD83C\uDF38'
   };
 
   // Weighted per-sky-name-keyword tables. Falls back to a small
   // generic set for skies that don't match a keyword, so every sky
   // gets *something* rather than a hard dependency on exact names.
+  function filterCelestial(arr) {
+    // Remove emoji dragon since procedural dragon handles it
+    return arr.filter(function (s) { return s !== 'dragon'; });
+  }
+
   function objectsForSky(sky) {
     var meta = getMeta(sky);
-    if (meta && meta.celestialObjects && meta.celestialObjects.length) return meta.celestialObjects;
+    if (meta && meta.celestialObjects && meta.celestialObjects.length) return filterCelestial(meta.celestialObjects);
     var n = sky.name.toLowerCase();
-    if (/night|star|galaxy|cosmic|nebula|void|space/.test(n)) return ['firefly', 'firefly', 'owl', 'dragon', 'airship'];
-    if (/rain|storm|thunder/.test(n)) return ['bird'];
+    if (/night|star|galaxy|cosmic|nebula|void|space/.test(n)) return filterCelestial(['firefly', 'firefly', 'owl', 'dragon', 'airship']);
+    if (/rain|storm|thunder/.test(n)) return filterCelestial(['bird']);
+    if (/aurora/.test(n)) return filterCelestial(['owl', 'dragon', 'firefly']);
     if (/snow|winter|blizzard/.test(n)) return ['crane', 'bird'];
     if (/sunrise|dawn|morning/.test(n)) return ['bird', 'balloon', 'paperplane', 'kite'];
     if (/sunset|dusk|twilight|lantern|golden/.test(n)) return ['lantern', 'lantern', 'balloon'];
     if (/ocean|sea|coast|wave/.test(n)) return ['whale', 'jellyfish'];
     if (/forest|jungle|meadow|spring|leaf|leaves/.test(n)) return ['butterfly', 'bird', 'firefly'];
-    if (/cloud|fog|mist/.test(n)) return ['island', 'balloon'];
-    return ['bird', 'butterfly', 'balloon'];
+    if (/cloud|fog|mist/.test(n)) return filterCelestial(['island', 'balloon']);
+    return filterCelestial(['bird', 'butterfly', 'balloon']);
   }
 
   function spawnFloaters(sky) {
@@ -725,6 +736,408 @@
     g.addColorStop(1, 'rgba(200,200,210,1)');
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+  }
+
+  /* ===================== LIVING LANDSCAPE SYSTEM ===================== */
+  var landscapeType = null;
+  var landscapeVisible = (function () { try { return localStorage.getItem('sky-landscape-visible') === 'true'; } catch (e) { return false; } })();
+
+  function setLandscapeVisible(v) {
+    landscapeVisible = v;
+    try { localStorage.setItem('sky-landscape-visible', v ? 'true' : 'false'); } catch (e) {}
+    if (v) {
+      ensureCanvas();
+      if (!running) start();
+      if (!currentSky && window.Skies) {
+        var idx = window.Skies.getCurrent ? window.Skies.getCurrent() : -1;
+        if (idx >= 0) onSkyChanged(idx);
+      }
+      var L = window.SkyLiving && window.SkyLiving.Landscape;
+      if (L && landscapeType) L.build(landscapeType);
+    }
+  }
+
+  /* ===================== SLEEPING BIRD SYSTEM ===================== */
+  var BIRD_FLOCK = [];
+  var NESTS = [];
+  var OWLS = [];
+  var birdTimeOfDay = 'day';
+
+  function updateBirdTime(sky) {
+    if (!sky) return;
+    var meta = getMeta(sky);
+    var cat = meta ? meta.category : '';
+    var n = sky.name.toLowerCase();
+    if (cat === 'night' || cat === 'cosmic' || /night|dark|eclipse|midnight/.test(n)) {
+      birdTimeOfDay = 'night';
+    } else if (/sunset|dusk|twilight|evening/.test(n)) {
+      birdTimeOfDay = 'evening';
+    } else if (/sunrise|dawn|morning/.test(n)) {
+      birdTimeOfDay = 'morning';
+    } else {
+      birdTimeOfDay = 'day';
+    }
+  }
+
+  function buildNests(sky) {
+    NESTS = [];
+    if (!landscapeType) return;
+    var count = landscapeType === 'fantasy' ? 3 : landscapeType === 'night' ? 4 : landscapeType === 'day' ? 3 : 2;
+    for (var i = 0; i < count; i++) {
+      NESTS.push({
+        x: W * rand(0.15, 0.85),
+        y: H - H * rand(0.12, 0.18) - rand(30, 60),
+        birdsHere: birdTimeOfDay === 'night' ? 0 : rand(1, 3) | 0,
+        hasOwl: false
+      });
+    }
+  }
+
+  function initBirds() {
+    BIRD_FLOCK = [];
+    if (birdTimeOfDay === 'night') return;
+    var count = birdTimeOfDay === 'morning' ? rand(5, 9) : rand(3, 6);
+    for (var i = 0; i < count; i++) {
+      BIRD_FLOCK.push({
+        x: rand(-0.2, 1.2) * W,
+        y: H * rand(0.12, 0.35),
+        vx: rand(30, 70) * (Math.random() < 0.5 ? 1 : -1),
+        vy: 0,
+        size: rand(5, 8),
+        wingPhase: Math.random() * Math.PI * 2,
+        wingSpeed: rand(4, 8),
+        bobPhase: Math.random() * Math.PI * 2,
+        resting: false,
+        restTimer: 0
+      });
+    }
+  }
+
+  function initOwls() {
+    OWLS = [];
+    if (birdTimeOfDay !== 'night') return;
+    var count = rand(1, 2) | 0;
+    for (var i = 0; i < count; i++) {
+      OWLS.push({
+        x: W * rand(0.2, 0.8),
+        y: H * rand(0.1, 0.25),
+        perchX: 0,
+        perchY: 0,
+        blinkTimer: rand(2, 6),
+        blinkDuration: 0,
+        isBlinking: false,
+        headAngle: 0,
+        headTarget: rand(-0.4, 0.4),
+        flying: false,
+        flyTimer: 0,
+        flyTarget: null,
+        size: rand(12, 16),
+        wingPhase: Math.random() * Math.PI * 2
+      });
+    }
+    // assign perches (tree branches in landscape)
+    OWLS.forEach(function (owl) {
+      owl.perchX = W * rand(0.25, 0.75);
+      owl.perchY = H - H * rand(0.12, 0.16) - rand(5, 15);
+      owl.x = owl.perchX;
+      owl.y = owl.perchY;
+    });
+  }
+
+  function drawBirds(dt, t) {
+    if (birdTimeOfDay === 'night') return;
+
+    BIRD_FLOCK.forEach(function (b) {
+      if (b.resting) {
+        b.restTimer -= dt;
+        if (b.restTimer <= 0) { b.resting = false; b.vx = rand(30, 60) * (Math.random() < 0.5 ? 1 : -1); }
+        return;
+      }
+      b.x += b.vx * dt;
+      b.y += Math.sin(t * b.wingSpeed + b.wingPhase) * 1.2 * dt * 10;
+      b.vy += Math.sin(t * 1.5 + b.bobPhase) * 0.5 * dt;
+      b.vy *= 0.98;
+      b.y += b.vy * dt;
+      // wrap
+      if (b.x < -60) b.x = W + 50;
+      if (b.x > W + 60) b.x = -50;
+      // occasional rest in afternoon
+      if (birdTimeOfDay === 'day' && Math.random() < 0.001) {
+        b.resting = true;
+        b.restTimer = rand(2, 6);
+      }
+      // draw bird
+      ctx.save();
+      ctx.globalAlpha = 0.7;
+      var wingY = Math.sin(t * b.wingSpeed + b.wingPhase) * 3;
+      ctx.translate(b.x, b.y);
+      ctx.fillStyle = '#3a3538';
+      ctx.beginPath();
+      ctx.ellipse(0, 0, b.size, b.size * 0.6, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // wings
+      ctx.fillStyle = '#4a4548';
+      ctx.beginPath();
+      ctx.ellipse(-b.size * 0.6, -1 + wingY, b.size * 0.5, 3 + wingY * 0.5, -0.3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(b.size * 0.6, -1 - wingY, b.size * 0.5, 3 - wingY * 0.5, 0.3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    });
+  }
+
+  function drawOwls(dt, t) {
+    if (birdTimeOfDay !== 'night') return;
+
+    OWLS.forEach(function (owl) {
+      owl.blinkTimer -= dt;
+      if (owl.blinkTimer <= 0 && !owl.isBlinking) {
+        owl.isBlinking = true;
+        owl.blinkDuration = rand(0.1, 0.25);
+      }
+      if (owl.isBlinking) {
+        owl.blinkDuration -= dt;
+        if (owl.blinkDuration <= 0) {
+          owl.isBlinking = false;
+          owl.blinkTimer = rand(3, 8);
+        }
+      }
+      // head rotation
+      owl.headAngle = lerp(owl.headAngle, owl.headTarget, dt * 0.5);
+      if (Math.abs(owl.headAngle - owl.headTarget) < 0.01) {
+        owl.headTarget = rand(-0.5, 0.5);
+      }
+      // occasional flight between trees
+      if (!owl.flying && Math.random() < 0.002) {
+        owl.flying = true;
+        owl.flyTimer = 0;
+        owl.flyTarget = { x: W * rand(0.2, 0.8), y: H * rand(0.1, 0.2) };
+      }
+      if (owl.flying) {
+        owl.flyTimer += dt;
+        var progress = clamp(owl.flyTimer / 3, 0, 1);
+        owl.x = lerp(owl.perchX, owl.flyTarget.x, progress);
+        owl.y = lerp(owl.perchY, owl.flyTarget.y, progress) - Math.sin(progress * Math.PI) * 30;
+        if (progress >= 1) {
+          owl.flying = false;
+          owl.perchX = owl.flyTarget.x;
+          owl.perchY = owl.flyTarget.y;
+          owl.x = owl.perchX;
+          owl.y = owl.perchY;
+        }
+      }
+      // draw owl
+      ctx.save();
+      ctx.globalAlpha = 0.75;
+      ctx.translate(owl.x, owl.y);
+      var s = owl.size;
+      // body
+      ctx.fillStyle = '#2a2528';
+      ctx.beginPath();
+      ctx.ellipse(0, 0, s, s * 0.75, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // head
+      ctx.save();
+      ctx.translate(0, -s * 0.6);
+      ctx.rotate(owl.headAngle * 0.3);
+      ctx.fillStyle = '#2a2528';
+      ctx.beginPath();
+      ctx.arc(0, 0, s * 0.55, 0, Math.PI * 2);
+      ctx.fill();
+      // ears (tufts)
+      ctx.fillStyle = '#1a1518';
+      ctx.beginPath();
+      ctx.moveTo(-s * 0.3, -s * 0.4);
+      ctx.lineTo(-s * 0.15, -s * 0.8);
+      ctx.lineTo(-s * 0.05, -s * 0.4);
+      ctx.closePath(); ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(s * 0.3, -s * 0.4);
+      ctx.lineTo(s * 0.15, -s * 0.8);
+      ctx.lineTo(s * 0.05, -s * 0.4);
+      ctx.closePath(); ctx.fill();
+      // eyes
+      if (owl.isBlinking) {
+        ctx.strokeStyle = '#c8a040';
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(-s * 0.2, -s * 0.1); ctx.lineTo(-s * 0.05, -s * 0.05); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(s * 0.2, -s * 0.1); ctx.lineTo(s * 0.05, -s * 0.05); ctx.stroke();
+      } else {
+        ctx.fillStyle = '#c8a040';
+        ctx.beginPath(); ctx.arc(-s * 0.15, -s * 0.08, s * 0.12, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(s * 0.15, -s * 0.08, s * 0.12, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#1a1015';
+        ctx.beginPath(); ctx.arc(-s * 0.15, -s * 0.08, s * 0.06, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(s * 0.15, -s * 0.08, s * 0.06, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.restore();
+      // wings (when flying)
+      if (owl.flying) {
+        var wingFlap = Math.sin(t * 3 + owl.wingPhase) * 5;
+        ctx.fillStyle = '#2a2528';
+        ctx.beginPath();
+        ctx.ellipse(-s * 0.7, -wingFlap, s * 0.6, 4 + wingFlap, -0.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(s * 0.7, wingFlap, s * 0.6, 4 - wingFlap, 0.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    });
+  }
+
+  function drawNests(t) {
+    NESTS.forEach(function (nest) {
+      ctx.save();
+      ctx.globalAlpha = 0.5;
+      // nest cup
+      ctx.strokeStyle = '#4a3525';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(nest.x - 10, nest.y);
+      ctx.quadraticCurveTo(nest.x - 12, nest.y + 8, nest.x, nest.y + 10);
+      ctx.quadraticCurveTo(nest.x + 12, nest.y + 8, nest.x + 10, nest.y);
+      ctx.stroke();
+      // eggs/birds in nest
+      if (birdTimeOfDay === 'morning' || birdTimeOfDay === 'day') {
+        for (var bi = 0; bi < Math.min(nest.birdsHere, 2); bi++) {
+          ctx.fillStyle = '#5a4a3a';
+          ctx.beginPath();
+          ctx.arc(nest.x - 3 + bi * 6, nest.y + 2, 3, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      ctx.restore();
+    });
+  }
+
+  /* ===================== GLOBAL LIVING EVENTS (Dragon / UFO) ===================== */
+  var flyingDragon = null;
+  var flyingUFO = null;
+
+  function maybeSpawnDragon(t) {
+    if (flyingDragon) return;
+    // ~0.05% chance per frame (~every 33 min at 60fps)
+    if (Math.random() > 0.0005) return;
+    var fromLeft = Math.random() < 0.5;
+    flyingDragon = {
+      x: fromLeft ? -100 : W + 100,
+      y: H * rand(0.08, 0.25),
+      vx: (fromLeft ? 1 : -1) * rand(40, 70),
+      t: 0,
+      duration: rand(5, 9),
+      wingPhase: 0,
+      bodyWave: 0,
+      opacity: 1
+    };
+  }
+
+  function drawDragon(dt, t) {
+    if (!flyingDragon) return;
+    flyingDragon.t += dt;
+    flyingDragon.x += flyingDragon.vx * dt;
+    flyingDragon.y += Math.sin(flyingDragon.t * 0.8) * 8;
+    flyingDragon.wingPhase += dt * 4;
+    var progress = flyingDragon.t / flyingDragon.duration;
+    if (progress > 1 || flyingDragon.x < -200 || flyingDragon.x > W + 200) {
+      flyingDragon = null;
+      return;
+    }
+    var fade = progress < 0.1 ? progress / 0.1 : progress > 0.85 ? (1 - progress) / 0.15 : 1;
+    ctx.save();
+    ctx.globalAlpha = fade * 0.6;
+    var dx = flyingDragon.x, dy = flyingDragon.y;
+    // body (segmented curve)
+    ctx.translate(dx, dy);
+    var bodyLen = 80;
+    ctx.strokeStyle = '#5a4040';
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    for (var i = 0; i < 12; i++) {
+      var px = i * bodyLen / 12 - bodyLen / 2;
+      var py = Math.sin(i * 0.8 + flyingDragon.t * 1.2) * 6;
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+    // wings
+    ctx.fillStyle = 'rgba(80,50,50,0.4)';
+    var wingUp = Math.sin(flyingDragon.wingPhase) * 15;
+    ctx.beginPath();
+    ctx.moveTo(-10, 0);
+    ctx.lineTo(-30, -20 - wingUp);
+    ctx.lineTo(-20, 0);
+    ctx.lineTo(-30, 20 + wingUp);
+    ctx.closePath(); ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(10, 0);
+    ctx.lineTo(30, -20 - wingUp);
+    ctx.lineTo(20, 0);
+    ctx.lineTo(30, 20 + wingUp);
+    ctx.closePath(); ctx.fill();
+    // head
+    ctx.fillStyle = '#6a5050';
+    ctx.beginPath();
+    ctx.arc(bodyLen/2 - 5, -2, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#ff6644';
+    ctx.beginPath(); ctx.arc(bodyLen/2 + 2, -3, 2, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  function maybeSpawnUFO(t) {
+    if (flyingUFO) return;
+    // ~0.02% chance per frame (~every 80 min at 60fps)
+    if (Math.random() > 0.0002) return;
+    var fromLeft = Math.random() < 0.5;
+    flyingUFO = {
+      x: fromLeft ? -50 : W + 50,
+      y: H * rand(0.1, 0.3),
+      vx: (fromLeft ? 1 : -1) * rand(80, 150),
+      t: 0,
+      duration: rand(1.5, 3),
+      glowPhase: 0
+    };
+  }
+
+  function drawUFO(dt, t) {
+    if (!flyingUFO) return;
+    flyingUFO.t += dt;
+    flyingUFO.x += flyingUFO.vx * dt;
+    flyingUFO.y += Math.sin(flyingUFO.t * 2) * 5;
+    var progress = flyingUFO.t / flyingUFO.duration;
+    if (progress > 1 || flyingUFO.x < -80 || flyingUFO.x > W + 80) {
+      flyingUFO = null;
+      return;
+    }
+    var fade = progress < 0.15 ? progress / 0.15 : progress > 0.8 ? (1 - progress) / 0.2 : 1;
+    ctx.save();
+    ctx.globalAlpha = fade * 0.5;
+    var ux = flyingUFO.x, uy = flyingUFO.y;
+    // glow
+    var grd = ctx.createRadialGradient(ux, uy + 5, 0, ux, uy + 5, 30);
+    grd.addColorStop(0, 'rgba(100,200,255,0.3)');
+    grd.addColorStop(1, 'rgba(100,200,255,0)');
+    ctx.fillStyle = grd;
+    ctx.beginPath(); ctx.arc(ux, uy + 5, 30, 0, Math.PI * 2); ctx.fill();
+    // disc
+    ctx.fillStyle = 'rgba(180,220,255,0.4)';
+    ctx.beginPath();
+    ctx.ellipse(ux, uy, 15, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // dome
+    ctx.fillStyle = 'rgba(200,230,255,0.3)';
+    ctx.beginPath();
+    ctx.arc(ux, uy - 2, 6, Math.PI, 0);
+    ctx.fill();
+    // lights
+    for (var li = 0; li < 3; li++) {
+      ctx.fillStyle = pick(['rgba(100,255,200,0.5)', 'rgba(255,100,200,0.5)', 'rgba(200,255,100,0.5)']);
+      ctx.beginPath();
+      ctx.arc(ux - 8 + li * 8, uy + 3, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
     ctx.restore();
   }
 
@@ -892,22 +1305,143 @@
     var count = bumpEgg('moonClicks');
     if (count === 10) unlockEgg('Ten moon-taps in. It\u2019s still watching over you.');
   }
-  function onStarClicked() {
+  function onStarClicked(x, y) {
     var count = bumpEgg('starClicks');
     if (count === 100) unlockEgg('A hundred stars, one wish repeated a hundred times.');
+    try {
+      document.dispatchEvent(new CustomEvent('starClicked', { detail: { x: x, y: y, count: count } }));
+    } catch (e) {}
   }
 
-  /* ===================== AMBIENT AUDIO (independent of music.js) ===================== */
-  // Deliberately separate from Jukebox in music.js — its own <audio>
-  // elements and its own volume, so nothing about the existing player
-  // (its AudioContext, gainNode, crossfade timers, or UI) is touched.
-  // NOTE: no audio files are bundled here — fill in real URLs in
-  // AMBIENCE_SOURCES before this does anything audible.
-  var AMBIENCE_SOURCES = {
-    wind: '', rain: '', ocean: '', forest: '', nightInsects: '',
-    thunder: '', templeBells: '', fireCrackling: ''
+  /* ===================== AMBIENT AUDIO (procedural, no external files) ===================== */
+  // Generates all ambience sounds at runtime using the Web Audio API.
+  // No audio files needed — wind, rain, ocean, etc. are synthesized.
+  var ambienceCtx = null;
+  function getAC() {
+    if (!ambienceCtx) {
+      var C = window.AudioContext || window.webkitAudioContext;
+      if (C) ambienceCtx = new C();
+    }
+    return ambienceCtx;
+  }
+
+  function makeNoiseBuffer(ctx, dur) {
+    var len = Math.floor(ctx.sampleRate * dur);
+    var buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    var d = buf.getChannelData(0);
+    for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    return buf;
+  }
+
+  // Each gen returns {start(gain), stop()} — stop is optional
+  var AMBIENCE_GENS = {
+    wind: function (ctx) {
+      var buf = makeNoiseBuffer(ctx, 3);
+      var src = ctx.createBufferSource();
+      src.buffer = buf; src.loop = true;
+      var lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass'; lp.frequency.value = 500; lp.Q.value = 0.5;
+      src.connect(lp);
+      return { node: lp, start: function (g) { lp.connect(g); src.start(); }, stop: function () { try { src.stop(); } catch (e) {} } };
+    },
+    rain: function (ctx) {
+      var buf = makeNoiseBuffer(ctx, 3);
+      var src = ctx.createBufferSource();
+      src.buffer = buf; src.loop = true;
+      var bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass'; bp.frequency.value = 3500; bp.Q.value = 0.4;
+      src.connect(bp);
+      return { node: bp, start: function (g) { bp.connect(g); src.start(); }, stop: function () { try { src.stop(); } catch (e) {} } };
+    },
+    ocean: function (ctx) {
+      var buf = makeNoiseBuffer(ctx, 5);
+      var src = ctx.createBufferSource();
+      src.buffer = buf; src.loop = true;
+      var bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass'; bp.frequency.value = 400; bp.Q.value = 0.7;
+      var lfo = ctx.createOscillator();
+      lfo.frequency.value = 0.06;
+      var lfoG = ctx.createGain();
+      lfoG.gain.value = 300;
+      lfo.connect(lfoG); lfoG.connect(bp.frequency);
+      src.connect(bp);
+      lfo.start();
+      return { node: bp, start: function (g) { bp.connect(g); src.start(); }, stop: function () { try { src.stop(); lfo.stop(); } catch (e) {} } };
+    },
+    forest: function (ctx) {
+      var buf = makeNoiseBuffer(ctx, 3);
+      var src = ctx.createBufferSource();
+      src.buffer = buf; src.loop = true;
+      var lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass'; lp.frequency.value = 1200; lp.Q.value = 0.4;
+      src.connect(lp);
+      return { node: lp, start: function (g) { lp.connect(g); src.start(); }, stop: function () { try { src.stop(); } catch (e) {} } };
+    },
+    nightInsects: function (ctx) {
+      var mix = ctx.createGain();
+      mix.gain.value = 0.3;
+      var oscs = [];
+      for (var i = 0; i < 4; i++) {
+        var o = ctx.createOscillator();
+        o.type = 'sine'; o.frequency.value = 3000 + i * 700 + Math.random() * 400;
+        var a = ctx.createGain(); a.gain.value = 0;
+        var l = ctx.createOscillator(); l.frequency.value = 3 + Math.random() * 4;
+        var lg = ctx.createGain(); lg.gain.value = 0.15;
+        l.connect(lg); lg.connect(a.gain);
+        o.connect(a); a.connect(mix);
+        o.start(); l.start();
+        oscs.push(o, l);
+      }
+      return { node: mix, start: function (g) { mix.connect(g); }, stop: function () { oscs.forEach(function (o) { try { o.stop(); } catch (e) {} }); } };
+    },
+    thunder: function (ctx) {
+      var buf = makeNoiseBuffer(ctx, 3);
+      var d = buf.getChannelData(0);
+      for (var i = 0; i < d.length; i++) d[i] *= Math.exp(-i / (ctx.sampleRate * 0.6));
+      var src = ctx.createBufferSource();
+      src.buffer = buf; src.loop = true;
+      var lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass'; lp.frequency.value = 100;
+      src.connect(lp);
+      return { node: lp, start: function (g) { lp.connect(g); src.start(); }, stop: function () { try { src.stop(); } catch (e) {} } };
+    },
+    templeBells: function (ctx) {
+      var mix = ctx.createGain();
+      mix.gain.value = 0.35;
+      var now = ctx.currentTime;
+      var oscs = [];
+      [220, 330, 440].forEach(function (freq, i) {
+        var o = ctx.createOscillator();
+        o.type = 'sine'; o.frequency.value = freq;
+        var a = ctx.createGain();
+        a.gain.setValueAtTime(0, now + i * 0.6);
+        a.gain.linearRampToValueAtTime(0.15, now + i * 0.6 + 0.04);
+        a.gain.exponentialRampToValueAtTime(0.001, now + i * 0.6 + 2.5);
+        o.connect(a); a.connect(mix);
+        o.start(now + i * 0.6); o.stop(now + i * 0.6 + 3);
+        oscs.push(o);
+      });
+      return { node: mix, start: function (g) { mix.connect(g); }, stop: function () { oscs.forEach(function (o) { try { o.stop(); } catch (e) {} }); } };
+    },
+    fireCrackling: function (ctx) {
+      var mix = ctx.createGain();
+      mix.gain.value = 0.4;
+      var interval = setInterval(function () {
+        var buf = makeNoiseBuffer(ctx, 0.08);
+        var d = buf.getChannelData(0);
+        for (var i = 0; i < d.length; i++) d[i] *= Math.exp(-i / (ctx.sampleRate * 0.012));
+        var src = ctx.createBufferSource();
+        src.buffer = buf;
+        var hp = ctx.createBiquadFilter();
+        hp.type = 'highpass'; hp.frequency.value = 2000;
+        src.connect(hp); hp.connect(mix);
+        src.start();
+      }, 250);
+      return { node: mix, start: function (g) { mix.connect(g); }, stop: function () { clearInterval(interval); } };
+    }
   };
-  var ambienceState = { current: null, audioEl: null, volume: 0.35 };
+
+  var ambienceState = { current: null, gain: null, gen: null, volume: 0.35 };
 
   function ambienceKeyForSky(sky) {
     var meta = getMeta(sky);
@@ -927,32 +1461,37 @@
   function setAmbienceForSky(sky) {
     var key = ambienceKeyForSky(sky);
     if (key === ambienceState.current) return;
-    var oldEl = ambienceState.audioEl;
-    if (oldEl) fadeAudio(oldEl, 0, 1200, function () { oldEl.pause(); });
+    var ctx = getAC();
+    if (!ctx) return;
+    // fade out + cleanup previous
+    if (ambienceState.gain) {
+      var oldGain = ambienceState.gain;
+      fadeGain(ambienceState.gain, 0, 1200, function () {
+        try { oldGain.disconnect(); } catch (e) {}
+        if (ambienceState.gen) ambienceState.gen.stop();
+      });
+    }
     ambienceState.current = key;
-    ambienceState.audioEl = null;
-    if (!key || !AMBIENCE_SOURCES[key]) return; // no source configured — silently no-op
-    var el = new Audio(AMBIENCE_SOURCES[key]);
-    el.loop = true;
-    el.volume = 0;
-    el.play().catch(function () {}); // autoplay may be blocked until a user gesture; that's fine, it'll retry on next interaction below
-    fadeAudio(el, ambienceState.volume, 1500);
-    ambienceState.audioEl = el;
+    ambienceState.gain = null;
+    ambienceState.gen = null;
+    if (!key || !AMBIENCE_GENS[key]) return;
+    var gen = AMBIENCE_GENS[key](ctx);
+    var g = ctx.createGain();
+    g.gain.value = 0;
+    gen.start(g);
+    ambienceState.gain = g;
+    ambienceState.gen = gen;
+    fadeGain(g, ambienceState.volume, 1500);
   }
-  function fadeAudio(el, target, ms, done) {
-    var start = el.volume, t0 = performance.now();
+  function fadeGain(gain, target, ms, done) {
+    var start = gain.gain.value, t0 = performance.now();
     function step(now) {
       var p = clamp((now - t0) / ms, 0, 1);
-      el.volume = lerp(start, target, p);
+      gain.gain.value = lerp(start, target, p);
       if (p < 1) requestAnimationFrame(step); else if (done) done();
     }
     requestAnimationFrame(step);
   }
-  // retry autoplay on first real user gesture (browser autoplay policies)
-  document.addEventListener('click', function retryOnce() {
-    if (ambienceState.audioEl && ambienceState.audioEl.paused) ambienceState.audioEl.play().catch(function () {});
-    document.removeEventListener('click', retryOnce);
-  });
 
   /* ===================== PARAGRAPH-REACTIVE HOOK ===================== */
   // This file can't discover your paragraph markup — call this from
@@ -1040,7 +1579,7 @@
     for (var j = 0; j < stars.length; j++) {
       if (withinCircle(px, py, stars[j]._hit)) {
         stars[j].clickPulse = 1;
-        onStarClicked();
+        onStarClicked(px, py);
         return;
       }
     }
@@ -1071,21 +1610,35 @@
     lastT = now;
     var t = now / 1000;
 
+    if (!currentSky) {
+      var Ld = window.SkyLiving && window.SkyLiving.Landscape;
+      if (Ld && landscapeVisible) Ld.draw(t);
+      if (!reducedMotion) requestAnimationFrame(frame); else running = false;
+      return;
+    }
     ctx.clearRect(0, 0, W, H);
 
     if (!reducedMotion) {
       updateEvolution(dt);
       maybeSpawnShootingStar(dt, t);
+      maybeSpawnDragon(t);
+      maybeSpawnUFO(t);
     }
 
     drawMoon(dt, t);
     drawStars(dt, t);
     drawShootingStars(dt);
     if (constellation) drawConstellation(t);
+    if (landscapeVisible && window.SkyLiving && window.SkyLiving.Landscape) window.SkyLiving.Landscape.draw(t);
+    drawNests(t);
+    drawBirds(dt, t);
+    drawOwls(dt, t);
     drawFloaters(dt, t);
     drawEvolutionFog();
     drawMoodOverlay(dt, t);
     drawRareEvent(dt, t);
+    drawDragon(dt, t);
+    drawUFO(dt, t);
 
     if (!reducedMotion) requestAnimationFrame(frame);
     else running = false; // one static frame under reduced-motion, matches skies.js's own behavior
@@ -1104,6 +1657,29 @@
     if (document.hidden) stop(); else if (currentSky) start();
   });
 
+  function pickCategory(sky) {
+    if (!sky) return null;
+    var meta = getMeta(sky);
+    var cat = meta ? meta.category : '';
+    var n = sky.name.toLowerCase();
+    if (cat === 'fantasy') return 'fantasy';
+    if (cat === 'night' || cat === 'cosmic') return 'night';
+    if (cat === 'day') return /sunset|dusk|twilight|golden/.test(n) ? 'sunset' : 'day';
+    if (cat === 'seasonal') {
+      if (/cherry|sakura|spring/.test(n)) return 'spring';
+      if (/autumn|fall|leaves/.test(n)) return 'autumn';
+      if (/snow|winter/.test(n)) return 'snow';
+      return 'spring';
+    }
+    if (cat === 'weather') {
+      if (/rain|storm|thunder/.test(n)) return 'rain';
+      if (/snow|blizzard/.test(n)) return 'snow';
+      if (/fog|mist/.test(n)) return 'fog';
+      return 'day';
+    }
+    return 'day';
+  }
+
   /* ===================== SKY CHANGE HOOK ===================== */
   function onSkyChanged(index) {
     var sky = window.Skies.SKIES[index];
@@ -1119,6 +1695,19 @@
     shootingStars = [];
     evolution = { age: 0, fogAlpha: 0, extraStars: 0 };
     lastShootingStarSpawn = 0;
+
+    landscapeType = null;
+    var L = window.SkyLiving && window.SkyLiving.Landscape;
+    if (L) {
+      landscapeType = L.pick(sky);
+      L.build(landscapeType);
+    } else {
+      landscapeType = sky ? pickCategory(sky) : null;
+    }
+    updateBirdTime(sky);
+    buildNests(sky);
+    initBirds();
+    initOwls();
 
     recordVisit(sky.name);
     maybeTriggerRareEvent(sky);
@@ -1140,18 +1729,30 @@
     setMood: setMood,
     getJournal: loadJournal,
     CONSTELLATION_SHAPES: CONSTELLATION_SHAPES,
-    AMBIENCE_SOURCES: AMBIENCE_SOURCES,
+    AMBIENCE_SOURCES: (function () { var o = {}; for (var k in AMBIENCE_GENS) o[k] = '(procedural)'; return o; })(),
     EMOTION_ENGINE: EMOTION_ENGINE,
     getMeta: getMeta,
+    setLandscapeVisible: setLandscapeVisible,
     setAmbienceVolume: function (v) {
       ambienceState.volume = clamp(v, 0, 1);
-      if (ambienceState.audioEl) ambienceState.audioEl.volume = ambienceState.volume;
-    }
+      if (ambienceState.gain) ambienceState.gain.gain.value = ambienceState.volume;
+    },
+    // Internal helpers for landscape.js
+    _ctx: ctx,
+    _W: function () { return W; },
+    _H: function () { return H; },
+    _rand: rand,
+    _pick: pick,
+    _getMeta: getMeta,
+    get _currentSky() { return currentSky; },
+    get _landscapeType() { return landscapeType; }
   };
 
   /* ===================== INIT ===================== */
   var savedIndex = window.Skies.getCurrent ? window.Skies.getCurrent() : -1;
   if (savedIndex >= 0 && window.Skies.SKIES[savedIndex]) {
     onSkyChanged(savedIndex);
+  } else if (landscapeVisible) {
+    ensureCanvas();
   }
 })();

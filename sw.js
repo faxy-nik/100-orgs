@@ -6,13 +6,16 @@ var urlsToCache = [
   '/love.html',
   '/fantasies.html',
   '/gallery.html',
+  '/photo-gallery.html',
   '/admin.html',
   '/stats.html',
   '/404.html',
   '/music.js',
   '/skies.js',
+  '/sky-observatory.js',
   '/sky-living.js',
   '/track.js',
+  '/fb-db.js',
   '/style.css'
 ];
 

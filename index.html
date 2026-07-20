@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>100 prghs for eeshah</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%A1%3C/text%3E%3C/svg%3E">
+  <link rel="manifest" href="manifest.json">
   <meta name="description" content="A love letter written in a hundred pieces">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -309,6 +310,70 @@
     @media (max-width: 480px) {
       .card { padding: 1.2rem; }
     }
+
+    /* ---- Quiz Overlay ---- */
+    .quiz-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      display: none; align-items: center; justify-content: center;
+      background: rgba(0,0,0,.7); backdrop-filter: blur(8px);
+      padding: 1.5rem;
+    }
+    .quiz-overlay.open { display: flex; }
+    .quiz-box {
+      background: rgba(24,18,20,.96); border: 1px solid rgba(255,210,150,.12);
+      border-radius: 16px; width: 480px; max-width: 100%; max-height: 90vh;
+      overflow-y: auto; padding: 1.75rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    }
+    .quiz-box h2 { font-family: 'Fraunces', Georgia, serif; font-size: 1.2rem; color: #ffe680; margin-bottom: .5rem; }
+    .quiz-box .quiz-intro { color: #6b5f52; font-size: .85rem; margin-bottom: 1.25rem; font-style: italic; }
+    .quiz-box .quiz-q { margin-bottom: 1rem; }
+    .quiz-box .quiz-q label { display: block; font-size: .85rem; color: #ffebd2; margin-bottom: 4px; }
+    .quiz-box .quiz-q input {
+      width: 100%; padding: .5rem .75rem; border-radius: 6px;
+      background: rgba(255,220,160,.04); border: 1px solid rgba(255,210,150,.1);
+      color: #ffebd2; font-family: inherit; font-size: .85rem; outline: none;
+    }
+    .quiz-box .quiz-q input:focus { border-color: #ffe680; }
+    .quiz-box .quiz-q input.correct { border-color: #6fcf97; }
+    .quiz-box .quiz-q input.wrong { border-color: #e85d3a; }
+    .quiz-box .quiz-err { color: #e85d3a; font-size: .8rem; margin-bottom: .75rem; display: none; }
+    .quiz-box .quiz-err.show { display: block; }
+    .quiz-box .quiz-actions { display: flex; gap: .75rem; justify-content: flex-end; margin-top: 1rem; }
+    .quiz-box .quiz-actions button {
+      padding: .45rem 1.25rem; border-radius: 6px; cursor: pointer;
+      font-family: 'Fraunces', Georgia, serif; font-size: .8rem; transition: all .25s;
+    }
+    .quiz-box .quiz-actions .btn-cancel { background: transparent; border: 1px solid rgba(255,210,150,.1); color: #6b5f52; }
+    .quiz-box .quiz-actions .btn-cancel:hover { border-color: rgba(255,210,150,.25); color: #ffebd2; }
+    .quiz-box .quiz-actions .btn-submit { background: rgba(255,230,128,.1); border: 1px solid #ffe680; color: #ffe680; }
+    .quiz-box .quiz-actions .btn-submit:hover { background: #ffe680; color: #181214; }
+    .quiz-box .quiz-success { text-align: center; padding: 2rem 0; }
+    .quiz-box .quiz-success .icon { font-size: 3rem; margin-bottom: .5rem; }
+    .quiz-box .quiz-success p { color: #6fcf97; font-size: .95rem; }
+
+    /* ---- Locked Gate ---- */
+    .gate-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      display: none; align-items: center; justify-content: center;
+      background: rgba(0,0,0,.7); backdrop-filter: blur(8px);
+      padding: 1.5rem;
+    }
+    .gate-overlay.open { display: flex; }
+    .gate-box {
+      background: rgba(24,18,20,.96); border: 1px solid rgba(255,210,150,.12);
+      border-radius: 16px; width: 400px; max-width: 100%; padding: 2rem;
+      text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    }
+    .gate-box .icon { font-size: 3rem; margin-bottom: .5rem; }
+    .gate-box h2 { font-family: 'Fraunces', Georgia, serif; font-size: 1.1rem; color: #6b5f52; margin-bottom: .5rem; }
+    .gate-box p { color: #6b5f52; font-size: .85rem; margin-bottom: 1.25rem; }
+    .gate-box button {
+      padding: .45rem 1.5rem; border-radius: 6px; cursor: pointer;
+      font-family: 'Fraunces', Georgia, serif; font-size: .85rem; transition: all .25s;
+      background: transparent; border: 1px solid rgba(255,210,150,.1); color: #6b5f52;
+    }
+    .gate-box button:hover { border-color: rgba(255,210,150,.25); color: #ffebd2; }
   </style>
 </head>
 
@@ -367,6 +432,30 @@
   </main>
 
   <canvas id="emberCanvas"></canvas>
+
+  <!-- Quiz Overlay -->
+  <div class="quiz-overlay" id="quizOverlay">
+    <div class="quiz-box" id="quizBox">
+      <h2 id="quizTitle">One small test</h2>
+      <p class="quiz-intro" id="quizIntro">Answer these questions to unlock the Fantasies section.</p>
+      <div id="quizQuestions"></div>
+      <div class="quiz-err" id="quizErr">Some answers are wrong. Try again.</div>
+      <div class="quiz-actions">
+        <button class="btn-cancel" id="quizCancel">Cancel</button>
+        <button class="btn-submit" id="quizSubmit">Unlock</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Locked Gate Overlay -->
+  <div class="gate-overlay" id="gateOverlay">
+    <div class="gate-box">
+      <div class="icon">&#x1F512;</div>
+      <h2>Section Locked</h2>
+      <p id="gateMsg">This section is currently locked by the admin.</p>
+      <button id="gateClose">Close</button>
+    </div>
+  </div>
 
   <script src="track.js"></script>
   <script>
@@ -638,6 +727,191 @@
       updateProgress();
 
       /* ================================================================
+         ACCESS CONTROL (Admin Locks + Quiz Gate)
+         ================================================================ */
+      var SECTION_ACCESS_KEY = 'ash-section-access';
+      var QUIZ_KEY = 'ash-quiz-questions';
+
+      function defaultAccess() {
+        return {
+          '100-organs': { adminLocked: false },
+          'love': { adminLocked: false },
+          'fantasies': { adminLocked: true },
+          'gallery': { adminLocked: false },
+          'photo-gallery': { adminLocked: false }
+        };
+      }
+
+      function getAccessConfig() {
+        var raw = localStorage.getItem(SECTION_ACCESS_KEY);
+        if (raw) {
+          try { return JSON.parse(raw); } catch(e) {}
+        }
+        var def = defaultAccess();
+        localStorage.setItem(SECTION_ACCESS_KEY, JSON.stringify(def));
+        return def;
+      }
+
+      function getQuizQuestions() {
+        var raw = localStorage.getItem(QUIZ_KEY);
+        if (raw) {
+          try { return JSON.parse(raw); } catch(e) {}
+        }
+        return [
+          { question: 'What pet name does she call you?', answer: 'babe' },
+          { question: 'What is her favorite color?', answer: 'purple' },
+          { question: 'What month did you first meet?', answer: 'june' },
+          { question: 'What is the admin passkey for this site?', answer: 'eshah' },
+          { question: 'What city does she live in?', answer: 'lahore' }
+        ];
+      }
+
+      function esc(str) {
+        if (typeof str !== 'string') return '';
+        var d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+      }
+
+      var pendingSection = null;
+
+      function showQuiz(sectionId, sectionFile) {
+        pendingSection = { id: sectionId, file: sectionFile };
+        var questions = getQuizQuestions();
+        var html = '';
+        for (var qi = 0; qi < questions.length; qi++) {
+          html +=
+            '<div class="quiz-q">' +
+              '<label>' + (qi + 1) + '. ' + esc(questions[qi].question) + '</label>' +
+              '<input type="text" id="quizInput' + qi + '" data-answer="' + esc(questions[qi].answer.toLowerCase()) + '" placeholder="Your answer...">' +
+            '</div>';
+        }
+        document.getElementById('quizQuestions').innerHTML = html;
+        document.getElementById('quizErr').classList.remove('show');
+        document.getElementById('quizOverlay').classList.add('open');
+        document.getElementById('quizSubmit').onclick = checkQuiz;
+        document.getElementById('quizCancel').onclick = closeQuiz;
+        // Submit on Enter key
+        function onQuizKey(e) {
+          if (e.key === 'Enter') checkQuiz();
+        }
+        document.addEventListener('keydown', onQuizKey);
+        // Clean up listener when quiz closes
+        var origClose = closeQuiz;
+        closeQuiz = function () {
+          document.removeEventListener('keydown', onQuizKey);
+          origClose();
+        };
+        setTimeout(function () {
+          var first = document.getElementById('quizInput0');
+          if (first) first.focus();
+        }, 100);
+      }
+
+      function closeQuiz() {
+        document.getElementById('quizOverlay').classList.remove('open');
+        pendingSection = null;
+      }
+
+      function checkQuiz() {
+        var questions = getQuizQuestions();
+        var allCorrect = true;
+        for (var qi = 0; qi < questions.length; qi++) {
+          var input = document.getElementById('quizInput' + qi);
+          var answer = input.value.trim().toLowerCase();
+          var expected = questions[qi].answer.toLowerCase().trim();
+          if (answer === expected) {
+            input.className = 'correct';
+          } else {
+            input.className = 'wrong';
+            allCorrect = false;
+          }
+        }
+        if (allCorrect) {
+          var cfg = getAccessConfig();
+          if (!cfg.fantasies) cfg.fantasies = {};
+          cfg.fantasies.quizPassed = true;
+          localStorage.setItem(SECTION_ACCESS_KEY, JSON.stringify(cfg));
+          document.getElementById('quizQuestions').innerHTML =
+            '<div class="quiz-success"><div class="icon">&#x2728;</div><p>All answers correct. Welcome.</p></div>';
+          document.querySelector('.quiz-actions').style.display = 'none';
+          document.querySelector('.quiz-intro').style.display = 'none';
+          document.getElementById('quizTitle').textContent = 'Unlocked';
+          setTimeout(function () {
+            closeQuiz();
+            if (pendingSection) {
+              window.location.href = pendingSection.file;
+            }
+          }, 1200);
+        } else {
+          document.getElementById('quizErr').classList.add('show');
+        }
+      }
+
+      // Close quiz on overlay click
+      document.getElementById('quizOverlay').addEventListener('click', function (e) {
+        if (e.target === this) closeQuiz();
+      });
+
+      // Gate overlay
+      function showGate(msg) {
+        document.getElementById('gateMsg').innerHTML = msg || 'This section is currently locked by the admin.';
+        document.getElementById('gateOverlay').classList.add('open');
+        document.getElementById('gateClose').onclick = function () {
+          document.getElementById('gateOverlay').classList.remove('open');
+        };
+      }
+
+      // Close gate on overlay click
+      document.getElementById('gateOverlay').addEventListener('click', function (e) {
+        if (e.target === this) document.getElementById('gateOverlay').classList.remove('open');
+      });
+
+      // Intercept Enter button clicks on section cards
+      container.addEventListener('click', function (e) {
+        var btn = e.target.closest('.enter-btn');
+        if (!btn) return;
+
+        var card = btn.closest('.card');
+        if (!card) return;
+        var sectionId = card.dataset.id;
+
+        // Find the section object
+        var section = null;
+        for (var si = 0; si < SECTIONS.length; si++) {
+          if (SECTIONS[si].id === sectionId) {
+            section = SECTIONS[si];
+            break;
+          }
+        }
+        if (!section) return;
+
+        // Check if still date-locked
+        var diffMs = getDiff(section.unlock);
+        if (diffMs > 0) return; // Still date-locked, let default behavior happen
+
+        // Check access control
+        var cfg = getAccessConfig();
+        var sc = cfg[sectionId];
+
+        if (sc) {
+          if (sectionId === 'fantasies' && sc.adminLocked) {
+            if (sc.quizPassed) {
+              return; // Already passed quiz, navigate normally
+            }
+            e.preventDefault();
+            showQuiz(sectionId, section.unlock.file);
+            return;
+          }
+          if (sc.adminLocked) {
+            e.preventDefault();
+            showGate('&ldquo;' + section.title + '&rdquo; is currently locked by the admin.');
+            return;
+          }
+        }
+      });
+
+      /* ================================================================
          LIVE COUNTDOWN + SMOOTH UNLOCK
          ================================================================ */
       setInterval(function () {
@@ -791,6 +1065,10 @@
       navigator.serviceWorker.register('/sw.js').catch(function () {});
     }
   </script>
+<script src="living-world-global.js"></script>
+<script src="matrix-rain.js"></script>
+<script src="global-easter-eggs.js"></script>
+<script src="phase3-cinematic.js"></script>
 </body>
 
 </html>

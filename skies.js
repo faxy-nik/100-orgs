@@ -95,7 +95,7 @@
     for (var i = 0; i < count; i++) this.particles[i] = this.spawn(null, true);
   }
   ParticleSystem.prototype.spawn = function (p, initial) {
-    var o = this.opts, w = 1, h = 1;
+    var o = this.opts;
     p = p || {};
     switch (this.type) {
       case 'rain':
@@ -459,7 +459,6 @@
     this.clouds.forEach(function (c) { c.resize(w, h); });
   };
   SkyInstance.prototype.update = function (dt, t) {
-    var self = this;
     this.clouds.forEach(function (c) { c.update(dt, t); });
     this.particles.forEach(function (p) { p.update(dt, WindField, t); });
     if (this.stars) this.stars.update(dt, WindField, t);
@@ -523,6 +522,8 @@
     }
     function swapTo(cfg) {
       ensureHost();
+      var prevActive = active;
+      incoming = prevActive ? { canvas: prevActive.canvas, ctx: prevActive.ctx, instance: prevActive.instance } : null;
       var targetCanvas = activeCanvas === canvasA ? canvasB : canvasA;
       var targetCtx = targetCanvas === canvasA ? ctxA : ctxB;
       var w = window.innerWidth, h = window.innerHeight;
@@ -533,10 +534,9 @@
       var outgoing = activeCanvas;
       if (outgoing) outgoing.style.opacity = '0';
       activeCanvas = targetCanvas;
-      var prevActive = active;
       active = { canvas: targetCanvas, ctx: targetCtx, instance: instance };
       if (prevActive) {
-        setTimeout(function () { prevActive.instance = null; }, 1600); // drop reference after fade so it stops being ticked
+        setTimeout(function () { prevActive.instance = null; incoming = null; }, 1600);
       }
       return active;
     }

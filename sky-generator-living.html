@@ -855,6 +855,8 @@
    LOAD ORDER: this file must load AFTER skies.js.
      <script src="skies.js"><\/script>
      <script src="sky-living.js"><\/script>
+     <script src="landscape.js"><\/script>
+     <script src="interactive.js"><\/script>
 
    WHAT'S IMPLEMENTED
      1. Dynamic Moon System        (phase per sky, drift, glow halo, rise)
@@ -1627,17 +1629,133 @@
     if (count === 100) unlockEgg('A hundred stars, one wish repeated a hundred times.');
   }
 
-  /* ===================== AMBIENT AUDIO (independent of music.js) ===================== */
-  // Deliberately separate from Jukebox in music.js — its own <audio>
-  // elements and its own volume, so nothing about the existing player
-  // (its AudioContext, gainNode, crossfade timers, or UI) is touched.
-  // NOTE: no audio files are bundled here — fill in real URLs in
-  // AMBIENCE_SOURCES before this does anything audible.
-  var AMBIENCE_SOURCES = {
-    wind: '', rain: '', ocean: '', forest: '', nightInsects: '',
-    thunder: '', templeBells: '', fireCrackling: ''
+  /* ===================== AMBIENT AUDIO (procedural, no external files) ===================== */
+  // Generates all ambience sounds at runtime using the Web Audio API.
+  var ambienceCtx = null;
+  function getAC() {
+    if (!ambienceCtx) {
+      var C = window.AudioContext || window.webkitAudioContext;
+      if (C) ambienceCtx = new C();
+    }
+    return ambienceCtx;
+  }
+
+  function makeNoiseBuffer(ctx, dur) {
+    var len = Math.floor(ctx.sampleRate * dur);
+    var buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    var d = buf.getChannelData(0);
+    for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    return buf;
+  }
+
+  var AMBIENCE_GENS = {
+    wind: function (ctx) {
+      var buf = makeNoiseBuffer(ctx, 3);
+      var src = ctx.createBufferSource();
+      src.buffer = buf; src.loop = true;
+      var lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass'; lp.frequency.value = 500; lp.Q.value = 0.5;
+      src.connect(lp);
+      return { node: lp, start: function (g) { lp.connect(g); src.start(); }, stop: function () { try { src.stop(); } catch (e) {} } };
+    },
+    rain: function (ctx) {
+      var buf = makeNoiseBuffer(ctx, 3);
+      var src = ctx.createBufferSource();
+      src.buffer = buf; src.loop = true;
+      var bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass'; bp.frequency.value = 3500; bp.Q.value = 0.4;
+      src.connect(bp);
+      return { node: bp, start: function (g) { bp.connect(g); src.start(); }, stop: function () { try { src.stop(); } catch (e) {} } };
+    },
+    ocean: function (ctx) {
+      var buf = makeNoiseBuffer(ctx, 5);
+      var src = ctx.createBufferSource();
+      src.buffer = buf; src.loop = true;
+      var bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass'; bp.frequency.value = 400; bp.Q.value = 0.7;
+      var lfo = ctx.createOscillator();
+      lfo.frequency.value = 0.06;
+      var lfoG = ctx.createGain();
+      lfoG.gain.value = 300;
+      lfo.connect(lfoG); lfoG.connect(bp.frequency);
+      src.connect(bp);
+      lfo.start();
+      return { node: bp, start: function (g) { bp.connect(g); src.start(); }, stop: function () { try { src.stop(); lfo.stop(); } catch (e) {} } };
+    },
+    forest: function (ctx) {
+      var buf = makeNoiseBuffer(ctx, 3);
+      var src = ctx.createBufferSource();
+      src.buffer = buf; src.loop = true;
+      var lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass'; lp.frequency.value = 1200; lp.Q.value = 0.4;
+      src.connect(lp);
+      return { node: lp, start: function (g) { lp.connect(g); src.start(); }, stop: function () { try { src.stop(); } catch (e) {} } };
+    },
+    nightInsects: function (ctx) {
+      var mix = ctx.createGain();
+      mix.gain.value = 0.3;
+      var oscs = [];
+      for (var i = 0; i < 4; i++) {
+        var o = ctx.createOscillator();
+        o.type = 'sine'; o.frequency.value = 3000 + i * 700 + Math.random() * 400;
+        var a = ctx.createGain(); a.gain.value = 0;
+        var l = ctx.createOscillator(); l.frequency.value = 3 + Math.random() * 4;
+        var lg = ctx.createGain(); lg.gain.value = 0.15;
+        l.connect(lg); lg.connect(a.gain);
+        o.connect(a); a.connect(mix);
+        o.start(); l.start();
+        oscs.push(o, l);
+      }
+      return { node: mix, start: function (g) { mix.connect(g); }, stop: function () { oscs.forEach(function (o) { try { o.stop(); } catch (e) {} }); } };
+    },
+    thunder: function (ctx) {
+      var buf = makeNoiseBuffer(ctx, 3);
+      var d = buf.getChannelData(0);
+      for (var i = 0; i < d.length; i++) d[i] *= Math.exp(-i / (ctx.sampleRate * 0.6));
+      var src = ctx.createBufferSource();
+      src.buffer = buf; src.loop = true;
+      var lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass'; lp.frequency.value = 100;
+      src.connect(lp);
+      return { node: lp, start: function (g) { lp.connect(g); src.start(); }, stop: function () { try { src.stop(); } catch (e) {} } };
+    },
+    templeBells: function (ctx) {
+      var mix = ctx.createGain();
+      mix.gain.value = 0.35;
+      var now = ctx.currentTime;
+      var oscs = [];
+      [220, 330, 440].forEach(function (freq, i) {
+        var o = ctx.createOscillator();
+        o.type = 'sine'; o.frequency.value = freq;
+        var a = ctx.createGain();
+        a.gain.setValueAtTime(0, now + i * 0.6);
+        a.gain.linearRampToValueAtTime(0.15, now + i * 0.6 + 0.04);
+        a.gain.exponentialRampToValueAtTime(0.001, now + i * 0.6 + 2.5);
+        o.connect(a); a.connect(mix);
+        o.start(now + i * 0.6); o.stop(now + i * 0.6 + 3);
+        oscs.push(o);
+      });
+      return { node: mix, start: function (g) { mix.connect(g); }, stop: function () { oscs.forEach(function (o) { try { o.stop(); } catch (e) {} }); } };
+    },
+    fireCrackling: function (ctx) {
+      var mix = ctx.createGain();
+      mix.gain.value = 0.4;
+      var interval = setInterval(function () {
+        var buf = makeNoiseBuffer(ctx, 0.08);
+        var d = buf.getChannelData(0);
+        for (var i = 0; i < d.length; i++) d[i] *= Math.exp(-i / (ctx.sampleRate * 0.012));
+        var src = ctx.createBufferSource();
+        src.buffer = buf;
+        var hp = ctx.createBiquadFilter();
+        hp.type = 'highpass'; hp.frequency.value = 2000;
+        src.connect(hp); hp.connect(mix);
+        src.start();
+      }, 250);
+      return { node: mix, start: function (g) { mix.connect(g); }, stop: function () { clearInterval(interval); } };
+    }
   };
-  var ambienceState = { current: null, audioEl: null, volume: 0.35 };
+
+  var ambienceState = { current: null, gain: null, gen: null, volume: 0.35 };
 
   function ambienceKeyForSky(sky) {
     var n = sky.name.toLowerCase();
@@ -1655,32 +1773,36 @@
   function setAmbienceForSky(sky) {
     var key = ambienceKeyForSky(sky);
     if (key === ambienceState.current) return;
-    var oldEl = ambienceState.audioEl;
-    if (oldEl) fadeAudio(oldEl, 0, 1200, function () { oldEl.pause(); });
+    var ctx = getAC();
+    if (!ctx) return;
+    if (ambienceState.gain) {
+      var oldGain = ambienceState.gain;
+      fadeGain(ambienceState.gain, 0, 1200, function () {
+        try { oldGain.disconnect(); } catch (e) {}
+        if (ambienceState.gen) ambienceState.gen.stop();
+      });
+    }
     ambienceState.current = key;
-    ambienceState.audioEl = null;
-    if (!key || !AMBIENCE_SOURCES[key]) return; // no source configured — silently no-op
-    var el = new Audio(AMBIENCE_SOURCES[key]);
-    el.loop = true;
-    el.volume = 0;
-    el.play().catch(function () {}); // autoplay may be blocked until a user gesture; that's fine, it'll retry on next interaction below
-    fadeAudio(el, ambienceState.volume, 1500);
-    ambienceState.audioEl = el;
+    ambienceState.gain = null;
+    ambienceState.gen = null;
+    if (!key || !AMBIENCE_GENS[key]) return;
+    var gen = AMBIENCE_GENS[key](ctx);
+    var g = ctx.createGain();
+    g.gain.value = 0;
+    gen.start(g);
+    ambienceState.gain = g;
+    ambienceState.gen = gen;
+    fadeGain(g, ambienceState.volume, 1500);
   }
-  function fadeAudio(el, target, ms, done) {
-    var start = el.volume, t0 = performance.now();
+  function fadeGain(gain, target, ms, done) {
+    var start = gain.gain.value, t0 = performance.now();
     function step(now) {
       var p = clamp((now - t0) / ms, 0, 1);
-      el.volume = lerp(start, target, p);
+      gain.gain.value = lerp(start, target, p);
       if (p < 1) requestAnimationFrame(step); else if (done) done();
     }
     requestAnimationFrame(step);
   }
-  // retry autoplay on first real user gesture (browser autoplay policies)
-  document.addEventListener('click', function retryOnce() {
-    if (ambienceState.audioEl && ambienceState.audioEl.paused) ambienceState.audioEl.play().catch(function () {});
-    document.removeEventListener('click', retryOnce);
-  });
 
   /* ===================== PARAGRAPH-REACTIVE HOOK ===================== */
   // This file can't discover your paragraph markup — call this from
@@ -1868,10 +1990,10 @@
     setMood: setMood,
     getJournal: loadJournal,
     CONSTELLATION_SHAPES: CONSTELLATION_SHAPES,
-    AMBIENCE_SOURCES: AMBIENCE_SOURCES, // fill these in with your real audio file URLs
+    AMBIENCE_SOURCES: (function () { var o = {}; for (var k in AMBIENCE_GENS) o[k] = '(procedural)'; return o; })(),
     setAmbienceVolume: function (v) {
       ambienceState.volume = clamp(v, 0, 1);
-      if (ambienceState.audioEl) ambienceState.audioEl.volume = ambienceState.volume;
+      if (ambienceState.gain) ambienceState.gain.gain.value = ambienceState.volume;
     }
   };
 
@@ -1925,5 +2047,6 @@
 })();
 </script>
 
+<script src="phase3-cinematic.js"></script>
 </body>
 </html>
