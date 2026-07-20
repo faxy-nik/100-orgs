@@ -336,6 +336,7 @@
     try { localStorage.setItem('ash-finale-played', 'true'); } catch (e) {}
 
     ensureCanvas();
+    startAnimLoop();
     createFinaleOverlay();
     buildFinaleSequence();
     runFinaleSequence();
@@ -519,6 +520,7 @@
   function executeNextFinaleStep() {
     if (finaleStepIndex >= finaleSteps.length) {
       isFinalePlaying = false;
+      stopAnimLoop();
       return;
     }
     var step = finaleSteps[finaleStepIndex];
@@ -824,12 +826,14 @@
     wrapSkiesApply();
     initThemeColor();
 
+    // Only run on pages with the sky system
+    if (!window.Skies) return;
+
     // Apply initial theme
-    var curIdx = window.Skies && window.Skies.getCurrent ? window.Skies.getCurrent() : -1;
+    var curIdx = window.Skies.getCurrent ? window.Skies.getCurrent() : -1;
     if (curIdx >= 0) onSkyChanged(curIdx);
 
     ensureCanvas();
-    startAnimLoop();
 
     // Check if finale was already played
     try {
@@ -841,9 +845,11 @@
     // Start progress monitoring for Grand Finale
     setTimeout(monitorProgress, 3000);
 
-    // Handle visibility changes
+    startAnimLoop();
+
+    // Handle visibility changes - only pause finale animation if running
     document.addEventListener('visibilitychange', function () {
-      if (document.hidden) stopAnimLoop(); else startAnimLoop();
+      if (document.hidden && animRunning) stopAnimLoop();
     });
   }
 
