@@ -853,9 +853,8 @@
     // Start progress monitoring for Grand Finale
     if (GRAND_FINALE_ENABLED) {
       setTimeout(monitorProgress, 3000);
+      startAnimLoop();
     }
-
-    startAnimLoop();
 
     // Handle visibility changes - only pause finale animation if running
     document.addEventListener('visibilitychange', function () {
