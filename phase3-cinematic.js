@@ -9,6 +9,9 @@
 (function () {
   'use strict';
 
+  // DEBUG: Set to false to completely disable the Grand Finale system
+  var GRAND_FINALE_ENABLED = false;
+
   var VERSION = '1.0.0';
 
   /* ===================== CONFIG ===================== */
@@ -282,6 +285,7 @@
   var finaleStarBrightness = 0;
   var finaleGlowIntensity = 0;
 
+  if (GRAND_FINALE_ENABLED) {
   function monitorProgress() {
     var total = 0, viewed = 0;
     var loaded = 0;
@@ -480,6 +484,8 @@
       setTimeout(done, 2000);
     });
   }
+
+  } // end GRAND_FINALE_ENABLED
 
   function smoothVolume(slider, from, to, duration, done) {
     var startT = performance.now();
@@ -791,6 +797,8 @@
     }
   }
 
+  } // end GRAND_FINALE_ENABLED
+
   /* ===================== SKY CHANGE HOOK ===================== */
   function onSkyChanged(index) {
     currentSkyIndex = index;
@@ -798,7 +806,7 @@
     ensureCanvas();
     updateThemeColor(currentSkyConfig);
     // Reset finale effects
-    if (!isFinalePlaying) {
+    if (GRAND_FINALE_ENABLED && !isFinalePlaying) {
       finaleStarBrightness = 0;
       finaleGlowIntensity = 0;
     }
@@ -816,8 +824,8 @@
   /* ===================== EXPOSE PUBLIC API ===================== */
   window.Phase3 = {
     version: VERSION,
-    triggerFinale: triggerFinale,
-    openMemoryReplay: openMemoryReplay,
+    triggerFinale: GRAND_FINALE_ENABLED ? triggerFinale : function () { console.log('[Phase3] Grand Finale disabled by debug flag'); },
+    openMemoryReplay: GRAND_FINALE_ENABLED ? openMemoryReplay : function () { console.log('[Phase3] Memory Replay disabled by debug flag'); },
     updateThemeColor: function () { updateThemeColor(currentSkyConfig); }
   };
 
@@ -843,7 +851,9 @@
     } catch (e) {}
 
     // Start progress monitoring for Grand Finale
-    setTimeout(monitorProgress, 3000);
+    if (GRAND_FINALE_ENABLED) {
+      setTimeout(monitorProgress, 3000);
+    }
 
     startAnimLoop();
 
