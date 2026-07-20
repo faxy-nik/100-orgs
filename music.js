@@ -389,6 +389,26 @@
     }
   };
 
+  Jukebox.prototype.cleanup = function () {
+    if (this.audio) {
+      this.audio.pause();
+      this.audio.src = '';
+      this.audio = null;
+    }
+    if (this.sourceNode) {
+      try { this.sourceNode.disconnect(); } catch(e) {}
+      this.sourceNode = null;
+    }
+    if (this.animationId) {
+      cancelAnimationFrame(this.animationId);
+      this.animationId = null;
+    }
+    if (this.noteTimer) {
+      clearInterval(this.noteTimer);
+      this.noteTimer = null;
+    }
+  };
+
   Jukebox.prototype.play = function (index) {
     var self = this;
 
@@ -928,7 +948,7 @@
     }
 
     function create() {
-      new Jukebox(songs);
+      window._ashJukebox = new Jukebox(songs);
     }
 
     if (document.readyState === 'loading') {
@@ -945,7 +965,12 @@
     }
   }
 
-  window.addEventListener('beforeunload', revokeAudioUrls);
+  window.addEventListener('beforeunload', function () {
+    revokeAudioUrls();
+    if (window._ashJukebox && window._ashJukebox.cleanup) {
+      window._ashJukebox.cleanup();
+    }
+  });
 
   init();
 })();

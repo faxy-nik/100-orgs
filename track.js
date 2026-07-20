@@ -1,10 +1,9 @@
 (function () {
   var DB = 'ash-jukebox-db';
-  var VER = 2;
 
   function openDB() {
     return new Promise(function (resolve, reject) {
-      var r = indexedDB.open(DB, VER);
+      var r = indexedDB.open(DB);
       r.onupgradeneeded = function (e) {
         var db = e.target.result;
         if (!db.objectStoreNames.contains('counters')) db.createObjectStore('counters', { keyPath: 'key' });
@@ -12,12 +11,13 @@
         if (!db.objectStoreNames.contains('config')) db.createObjectStore('config', { keyPath: 'key' });
       };
       r.onsuccess = function () { resolve(r.result); };
-      r.onerror = function () { reject(r.error); };
+      r.onerror = function () { resolve(null); };
     });
   }
 
   function getCounter(key) {
     return openDB().then(function (db) {
+      if (!db) return 0;
       return new Promise(function (resolve, reject) {
         var tx = db.transaction('counters', 'readonly');
         var store = tx.objectStore('counters');
@@ -26,13 +26,14 @@
           db.close();
           resolve(g.result ? g.result.count : 0);
         };
-        g.onerror = function () { db.close(); reject(0); };
+        g.onerror = function () { db.close(); resolve(0); };
       });
     });
   }
 
   function incrementCounter(key) {
     return openDB().then(function (db) {
+      if (!db) return 0;
       return new Promise(function (resolve, reject) {
         var tx = db.transaction('counters', 'readwrite');
         var store = tx.objectStore('counters');
@@ -42,19 +43,20 @@
           store.put({ key: key, count: count });
           tx.oncomplete = function () { db.close(); resolve(count); };
         };
-        g.onerror = function () { db.close(); reject(0); };
+        g.onerror = function () { db.close(); resolve(0); };
       });
     });
   }
 
   function getAllCounters() {
     return openDB().then(function (db) {
+      if (!db) return [];
       return new Promise(function (resolve, reject) {
         var tx = db.transaction('counters', 'readonly');
         var store = tx.objectStore('counters');
         var g = store.getAll();
         g.onsuccess = function () { db.close(); resolve(g.result || []); };
-        g.onerror = function () { db.close(); reject([]); };
+        g.onerror = function () { db.close(); resolve([]); };
       });
     });
   }
