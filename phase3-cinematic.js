@@ -42,6 +42,7 @@
 
   function ensureCanvas() {
     if (overlayCanvas) return;
+    if (!GRAND_FINALE_ENABLED) return;
     overlayCanvas = document.createElement('canvas');
     overlayCanvas.id = 'phase3Canvas';
     overlayCanvas.style.cssText = 'position:fixed;inset:0;z-index:2;pointer-events:none;background:transparent;';
