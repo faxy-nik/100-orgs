@@ -365,55 +365,6 @@
     });
   }
 
-  /* ===================== SNOW DRAWING ===================== */
-  function initSnowDrawing() {
-    var snowCanvas = document.createElement('canvas');
-    snowCanvas.id = 'snowDrawCanvas';
-    snowCanvas.style.cssText = 'position:fixed;inset:0;z-index:9996;pointer-events:none;';
-    document.body.appendChild(snowCanvas);
-    var sctx = snowCanvas.getContext('2d');
-
-    function resize() {
-      snowCanvas.width = window.innerWidth;
-      snowCanvas.height = window.innerHeight;
-    }
-    resize();
-    window.addEventListener('resize', resize);
-
-    document.addEventListener('mousemove', function (e) {
-      var sky = window.Skies && window.Skies.SKIES && window.Skies.SKIES[window.Skies.getCurrent ? window.Skies.getCurrent() : -1];
-      var hasSnow = false;
-      if (sky && sky.particles) {
-        for (var i = 0; i < sky.particles.length; i++) {
-          if (sky.particles[i].type === 'snow') { hasSnow = true; break; }
-        }
-      }
-      if (!hasSnow) { trails = []; sctx.clearRect(0, 0, snowCanvas.width, snowCanvas.height); return; }
-
-      // Draw a clear (erase) trail following cursor — simulates brushing snow away
-      sctx.globalCompositeOperation = 'destination-out';
-      sctx.beginPath();
-      sctx.arc(e.clientX, e.clientY, 25, 0, Math.PI * 2);
-      sctx.fill();
-
-      // Add sparkle trail
-      sctx.globalCompositeOperation = 'source-over';
-      if (Math.random() < 0.4) {
-        sctx.fillStyle = 'rgba(220,230,255,0.15)';
-        sctx.beginPath();
-        sctx.arc(e.clientX + (Math.random() - 0.5) * 30, e.clientY + (Math.random() - 0.5) * 30, 2 + Math.random() * 3, 0, Math.PI * 2);
-        sctx.fill();
-      }
-    });
-
-    // Fade out the drawing slowly
-    setInterval(function () {
-      sctx.globalCompositeOperation = 'source-over';
-      sctx.fillStyle = 'rgba(0,0,0,0.02)';
-      sctx.fillRect(0, 0, snowCanvas.width, snowCanvas.height);
-    }, 200);
-  }
-
   /* ===================== PAPER BOATS ===================== */
   function initPaperBoats() {
     var boatContainer = document.createElement('div');
@@ -1146,7 +1097,6 @@
     initButterflyCatching();
     enhanceBubbleMessages();
     initLeafTrails();
-    initSnowDrawing();
     initPaperBoats();
     enhanceLostBalloon();
     initDandelions();

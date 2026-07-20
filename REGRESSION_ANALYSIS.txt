@@ -1,0 +1,89 @@
+REGRESSION ANALYSIS REPORT
+=========================
+Project: 100 Prghs for Eeshah
+Baseline Commit: 47fa827 (last known good)
+Regression Commit: 88849a5 (chore: sync all project files)
+Analysis Date: 2026-07-21
+
+EXECUTIVE SUMMARY
+=================
+Commit 88849a5 extracted inline JavaScript from HTML files into external .js
+files, added a Phase 3 / Grand Finale / Cinematic system, and introduced
+several CSS overrides. The extraction was incomplete — some JS files were
+created but references were broken, and new code introduced a fullscreen
+canvas overlay that accumulated to solid black.
+
+REGRESSION-CAUSING CHANGES
+==========================
+
+1. FULLSCREEN BLACK OVERLAY (CRITICAL)
+   File: interactive.js (NEW - extracted from inline JS)
+   Function: initSnowDrawing()
+   Lines: 369-415
+   Issue: Created a <canvas> element fixed to viewport (z-index:9996),
+     filled with rgba(0,0,0,0.02) every 200ms via setInterval.
+     The setInterval ran UNCONDITIONALLY (no snow-sky check), causing
+     the canvas to accumulate to opaque black within ~50 seconds.
+   Impact: Complete page blackout — no content visible.
+   Note: This code did NOT exist at commit 47fa827. It was new code
+     added during the extraction.
+
+2. JUKEBOX OVERLAY KILLED (HIGH)
+   File: style.css, lines 86-94
+   Issue: Jukebox overlay (#jukeboxOverlay, #jukeboxOverlay.open) was
+     overridden with: opacity: 0 !important; pointer-events: none !important;
+     background: transparent !important; backdrop-filter: none !important;
+     transition: opacity 0.4s ease was removed.
+   Impact: Jukebox could never open — overlay permanently invisible and
+     non-interactive.
+   Note: At 47fa827, the jukebox overlay had proper styling with
+     opacity transition, blur backdrop, and open state.
+
+3. PHASE 3 EMERGENCY CSS (MEDIUM)
+   File: style.css, lines 962-966
+   Issue: Added: #finaleOverlay, #phase3Canvas { display: none !important; }
+   Impact: If Phase 3 elements existed, they were forcefully hidden.
+   Note: This was added as a band-aid because phase3-cinematic.js
+     (which creates these elements) has a syntax error.
+
+4. LOCK-CHECK BRACE MISMATCHES (MEDIUM)
+   Files: 100-organs.html, love.html, fantasies.html, gallery.html,
+     photo-gallery.html
+   Issue: The inline lock-check scripts were rewritten to add a
+     localStorage admin-lock check wrapped in try/catch, but two
+     closing braces were dropped in each file:
+     a) try{...}catch: missing one } to close the try block
+     b) .then callback: missing one } to close the function body
+   Impact: SyntaxError in browser console. The entire script block
+     was rejected by the parser, making lock-check non-functional
+     (neither admin-lock nor date-unlock worked).
+   Note: The original 47fa827 scripts had no admin-lock check and
+     parsed correctly.
+
+5. PHASE3-CINEMATIC.JS REFERENCES (LOW)
+   Files: 10 HTML files (100-organs, 404, admin, dream, gallery,
+     index, love, photo-gallery, sky-generator-living, stats)
+   Issue: Added <script src="phase3-cinematic.js"> to all HTML files.
+     The file itself has a syntax error ("Unexpected token 'function'",
+     brace depth -1) and GRAND_FINALE_ENABLED=false, so it never runs.
+   Impact: 404/parse error in console for every page load.
+
+WHAT WAS NOT REGRESSION (PRESERVED)
+====================================
+- content-common.js: Loader dismissal, cursor, petals, fireflies, TOC,
+  scroll effects, bookmarks, mood filtering, love letter generator
+  (all existed at 47fa827, extracted correctly)
+- landscape.js: Landscape system (existed at 47fa827)
+- living-world-global.js: Living World, UFOs, Dragons (existed at 47fa827)
+- matrix-rain.js: Matrix rain (existed at 47fa827)
+- global-easter-eggs.js: Easter eggs (existed at 47fa827)
+- All HTML content (100 organs, love, fantasies, etc.)
+- sky-living.js, sky-observatory.js: Improvements (not regression)
+- skies.js: 100 skies system (intact)
+- sky-gallery, sky-menu, jukebox (JS intact, only CSS was broken)
+
+CSS FORMATTING CHANGES (NON-FUNCTIONAL)
+========================================
+The diff between 47fa827 and HEAD in style.css includes significant
+whitespace/indentation reformatted changes (single-line to multi-line
+blocks). These are cosmetic and do not affect rendering.

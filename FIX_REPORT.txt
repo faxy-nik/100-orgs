@@ -1,0 +1,141 @@
+FIX REPORT
+==========
+Project: 100 Prghs for Eeshah
+Date: 2026-07-21
+Baseline: 47fa827 (last known good)
+Regression: 88849a5 (chore: sync all project files)
+
+FIXES APPLIED
+=============
+
+FIX 1: Remove initSnowDrawing() — FULLSCREEN BLACK OVERLAY
+----------------------------------------------------------
+Files: interactive.js
+What: Removed the initSnowDrawing() function (lines 369-415) and its
+  call (line 1100).
+Why: This function created a fullscreen <canvas> at z-index:9996 and
+  painted rgba(0,0,0,0.02) every 200ms via setInterval. The setInterval
+  ran unconditionally (no snow-sky check), causing the canvas to
+  accumulate to opaque black within ~50 seconds.
+Impact: Eliminates the fullscreen dark overlay that covered the entire page.
+Status: VERIFIED — no remaining references to initSnowDrawing or
+  snowDrawCanvas in interactive.js.
+
+FIX 2: Restore Jukebox Overlay CSS
+-----------------------------------
+Files: style.css, lines 85-99
+What: Replaced the kill-switch CSS:
+    #jukeboxOverlay, #jukeboxOverlay.open {
+      opacity: 0 !important; pointer-events: none !important;
+      background: transparent !important; backdrop-filter: none !important;
+    }
+  with the original 47fa827 styles:
+    #jukeboxOverlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px); z-index: 998; opacity: 0;
+      pointer-events: none; transition: opacity 0.4s ease;
+    }
+    #jukeboxOverlay.open {
+      opacity: 1; pointer-events: auto;
+    }
+Why: The kill-switch permanently prevented the jukebox from opening.
+Impact: Jukebox overlay now opens/closes correctly with blur transition.
+Status: VERIFIED — jukebox overlay matches 47fa827 styling.
+
+FIX 3: Remove Phase 3 Emergency CSS
+------------------------------------
+Files: style.css, lines 962-966 (removed)
+What: Removed: #finaleOverlay, #phase3Canvas { display: none !important; }
+Why: This was a band-aid for broken phase3-cinematic.js. Since we're
+  removing all phase3-cinematic.js references, this CSS is unnecessary.
+Impact: No more forced-hidden elements in CSS.
+Status: VERIFIED — no finaleOverlay or phase3Canvas references in style.css.
+
+FIX 4: Fix Lock-Check Brace Mismatch (5 files)
+-----------------------------------------------
+Files: 100-organs.html, love.html, fantasies.html, gallery.html,
+  photo-gallery.html
+What: Added 2 missing closing braces to each inline lock-check script:
+  a) } }catch → } } } catch (closes if(sc), if(ar), try block)
+  b) } } }).catch → } } } }).catch (closes if(nw), if(unlock),
+     if(key), then-function body)
+Why: The scripts had SyntaxError from missing braces. The parser
+  rejected the entire <script> block, making lock-check non-functional.
+Impact: Lock-check scripts now parse and execute correctly. Admin-lock
+  (localStorage) and date-unlock (Firebase) features work as intended.
+Status: VERIFIED — all 5 files parse OK via new Function() test.
+
+FIX 5: Remove phase3-cinematic.js References (10 files)
+-------------------------------------------------------
+Files: 100-organs.html, 404.html, admin.html, dream.html, gallery.html,
+  index.html, love.html, photo-gallery.html, sky-generator-living.html,
+  stats.html
+What: Removed <script src="phase3-cinematic.js"></script> from each file.
+Why: phase3-cinematic.js has a syntax error (brace depth -1) and
+  GRAND_FINALE_ENABLED=false. It never executes and produces a 404/parse
+  error on every page.
+Impact: No more console errors from missing/broken phase3-cinematic.js.
+  The file itself remains on disk but is no longer loaded by any page.
+Status: VERIFIED — no remaining references to phase3-cinematic in any
+  HTML file.
+
+VERIFICATION RESULTS
+====================
+All checks passed:
+  content-common.js ........... OK
+  fb-db.js ................... OK
+  global-easter-eggs.js ...... OK
+  interactive.js ............. OK
+  landscape.js ............... OK
+  living-world-global.js ..... OK
+  matrix-rain.js ............. OK
+  music.js ................... OK
+  skies.js ................... OK
+  sky-living.js .............. OK
+  sky-observatory.js ......... OK
+  sw.js ...................... OK
+  track.js ................... OK
+  100-organs.html lock-check . OK
+  love.html lock-check ....... OK
+  fantasies.html lock-check .. OK
+  gallery.html lock-check .... OK
+  photo-gallery.html lock-check OK
+
+PRESERVED FEATURES (confirmed intact)
+======================================
+[x] 100 skies — skies.js, sky-living.js, sky-observatory.js
+[x] Sky Gallery — gallery.html + content-common.js
+[x] Sky menu — interactive.js sky switching
+[x] Landscape system — landscape.js
+[x] Living World — living-world-global.js
+[x] Matrix rain — matrix-rain.js
+[x] UFOs — living-world-global.js
+[x] Dragons — living-world-global.js
+[x] Jukebox — style.css overlay restored, music.js intact
+[x] Wish system — interactive.js wish journal
+[x] Progress tracking — track.js
+[x] Admin panel — admin.html
+[x] Lock/unlock system — lock-check scripts fixed
+
+FILES MODIFIED (13 total)
+=========================
+  interactive.js .............. -50 lines (initSnowDrawing removed)
+  style.css ................... ~26 lines changed (overlay + phase3)
+  100-organs.html ............. lock-check + script tag removed
+  love.html ................... lock-check + script tag removed
+  fantasies.html .............. lock-check + script tag removed
+  gallery.html ................ lock-check + script tag removed
+  photo-gallery.html .......... lock-check + script tag removed
+  404.html .................... script tag removed
+  admin.html .................. script tag removed
+  dream.html .................. script tag removed
+  index.html .................. script tag removed
+  sky-generator-living.html ... script tag removed
+  stats.html .................. script tag removed
+
+WHAT WAS NOT REVERTED (intentionally)
+======================================
+- phase3-cinematic.js stays on disk (unreferenced, harmless)
+- CSS formatting changes (cosmetic, non-functional)
+- New HTML content added since 47fa827 (features, not regression)
+- sky-living.js, sky-observatory.js improvements (not regression)
