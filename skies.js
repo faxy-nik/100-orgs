@@ -488,12 +488,12 @@
       c.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;transition:opacity 1.5s ease;will-change:opacity;';
       return c;
     }
-    function ensureHost() {
+function ensureHost() {
       host = document.getElementById('skyOverlay');
       if (!host) {
         host = document.createElement('div');
         host.id = 'skyOverlay';
-        host.style.cssText = 'position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.35;';
+        host.style.cssText = 'position:fixed;inset:0;z-index:1;pointer-events:none;';
         document.body.insertBefore(host, document.body.firstChild);
       }
       if (!canvasA) {
