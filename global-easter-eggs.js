@@ -4,6 +4,7 @@
   var buf = '';
 
   document.addEventListener('keydown', function (e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
     buf += e.key.toLowerCase();
     if (buf.length > 20) buf = buf.slice(-20);
 
@@ -12,6 +13,14 @@
       buf = '';
       if (window.location.href.indexOf('dream.html') === -1) {
         window.location.href = 'dream.html';
+      }
+    }
+
+    // "sleep" → navigate to make her sleep
+    if (buf.indexOf('sleep') !== -1) {
+      buf = '';
+      if (window.location.href.indexOf('make-her-sleep.html') === -1) {
+        window.location.href = 'make-her-sleep.html';
       }
     }
 

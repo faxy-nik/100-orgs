@@ -1,6 +1,7 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="preload" href="girl-assets/atlas.png" as="image">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>lost — 100 prghs for eeshah</title>
@@ -67,8 +68,33 @@
     <p>some pages were never meant to be found. this is one of them.</p>
     <a href="index.html">&larr; go home</a>
   </div>
-<script src="living-world-global.js"></script>
-<script src="matrix-rain.js"></script>
-<script src="global-easter-eggs.js"></script>
+  <script src="GirlConfig.js"></script>
+  <script src="GirlStorage.js"></script>
+  <script src="GirlMemory.js"></script>
+  <script src="GirlEvents.js"></script>
+  <script src="GirlAnimationController.js"></script>
+  <script src="GirlRenderer.js"></script>
+  <script src="GirlStateMachine.js"></script>
+  <script src="GirlNavigation.js"></script>
+  <script src="GirlInteractions.js"></script>
+  <script src="GirlCompanion.js"></script>
+  <script src="girl-particles.js"></script>
+  <script src="BoyConfig.js"></script>
+  <script src="BoyCompanion.js"></script>
+  <script src="firefly-jar.js"></script>
+  <script src="interactive.js"></script>
+  <script>
+if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  BoyCompanion.init({ container: document.body }).catch(function(e) { console.warn("Boy companion:", e); });
+}
+</script>
+  <script>if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){(window.whenLoaderDone ? window.whenLoaderDone() : Promise.resolve()).then(function(){GirlCompanion.init({container:document.body}).catch(function(e){console.warn('Girl companion:',e);})})}</script>
+  <script defer src="matrix-rain.js"></script>
+<script defer src="global-easter-eggs.js"></script>
+
+  <script src="secret-letters.js"></script>
+  <script src="butterfly-collection.js"></script>
+  <script src="world-progress.js"></script>
+  <script src="random-constellations.js"></script>
 </body>
 </html>

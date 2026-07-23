@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -363,7 +363,11 @@
       Manage gallery images and videos. Add notes to each item.
     </p>
     <div class="song-list" id="galleryList"></div>
-    <button class="add-btn" id="galleryAddBtn">+ Add Gallery Item</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="add-btn" id="galleryAddBtn">+ Add Gallery Item</button>
+      <button class="add-btn" id="galleryUploadBtn" style="background:rgba(255,230,128,.08);border:1px solid rgba(255,230,128,.2);color:#ffe680;">\uD83D\uDCC1 Upload Gallery Images</button>
+    </div>
+    <input type="file" id="galleryUploadInput" accept="image/*" multiple style="display:none;">
   </div>
 
   <!-- Tab: Wishes -->
@@ -466,7 +470,7 @@
         unlockDate: '2026-07-21', autoUnlock: true },
       { key: 'fantasies',   label: 'Fantasies',   file: 'fantasies.html',   icon: '\uD83D\uDD25',
         unlockDate: '2026-07-25', autoUnlock: true },
-      { key: 'gallery',     label: 'Sky Observatory', file: 'gallery.html', icon: '\uD83D\uDD2D',
+      { key: 'gallery',     label: 'Sky Observatory', file: 'sky-observatory.html', icon: '\uD83D\uDD2D',
         unlockDate: '2026-07-28', autoUnlock: true },
       { key: 'photo-gallery', label: 'Photo Gallery', file: 'photo-gallery.html', icon: '\uD83D\uDDBC\uFE0F',
         unlockDate: '2026-07-28', autoUnlock: true }
@@ -1449,6 +1453,65 @@
     document.getElementById('addBtn').addEventListener('click', function () { openSongModal(-1); });
     document.getElementById('galleryAddBtn').addEventListener('click', function () { openGalleryModal(-1); });
 
+    // Gallery batch upload
+    document.getElementById('galleryUploadBtn').addEventListener('click', function () {
+      document.getElementById('galleryUploadInput').click();
+    });
+    document.getElementById('galleryUploadInput').addEventListener('change', function () {
+      var files = this.files;
+      if (!files.length) return;
+      var btn = document.getElementById('galleryUploadBtn');
+      var loaded = 0;
+      var total = files.length;
+      var added = 0;
+      var skipped = 0;
+
+      // build duplicate set from existing items
+      var existingNames = {};
+      for (var ei = 0; ei < galleryItems.length; ei++) {
+        var fname = (galleryItems[ei].label || '').toLowerCase();
+        if (fname) existingNames[fname] = true;
+      }
+
+      for (var fi = 0; fi < files.length; fi++) {
+        (function (file) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            var baseName = file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
+            var label = baseName;
+
+            // prevent duplicate
+            if (existingNames[label.toLowerCase()]) {
+              skipped++;
+            } else {
+              existingNames[label.toLowerCase()] = true;
+              galleryItems.push({
+                type: file.type.indexOf('video') !== -1 ? 'video' : 'image',
+                label: label,
+                note: '',
+                file: '',
+                fileData: e.target.result,
+                fileType: file.type
+              });
+              added++;
+            }
+
+            loaded++;
+            if (loaded === total) {
+              saveGallery().then(function () {
+                renderGallery();
+                btn.textContent = '\u2705 ' + added + ' added' + (skipped ? ', ' + skipped + ' skipped' : '') + ' (' + galleryItems.length + ' total)';
+                setTimeout(function () { btn.textContent = '\uD83D\uDCC1 Upload Gallery Images'; }, 3000);
+                toast(added + ' images added to gallery' + (skipped ? '. ' + skipped + ' duplicates skipped.' : '.'));
+              });
+            }
+          };
+          reader.readAsDataURL(file);
+        })(files[fi]);
+      }
+      this.value = '';
+    });
+
     // Reset
     document.getElementById('resetBtn').addEventListener('click', function () {
       if (!confirm('Reset all data to defaults? This will delete all uploaded songs and custom unlock dates.')) return;
@@ -1538,8 +1601,12 @@
       navigator.serviceWorker.register('/sw.js').catch(function () {});
     }
   </script>
-<script src="living-world-global.js"></script>
-<script src="matrix-rain.js"></script>
+  <script src="anime.min.js"></script>
+  <script src="motion-masterpiece.js"></script>
+  <script src="adaptive-text.js"></script>
+  <script src="matrix-rain.js"></script>
 <script src="global-easter-eggs.js"></script>
+<script src="global-interactions.js"></script>
+
 </body>
 </html>

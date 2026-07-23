@@ -1,6 +1,7 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="preload" href="girl-assets/atlas.png" as="image">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stats — 100 prghs for eeshah</title>
@@ -19,7 +20,7 @@
     h1, h2 { font-family: 'Fraunces', Georgia, serif; font-weight: 500; color: #ffe680; }
     a { color: #ffe680; text-decoration: none; }
     a:hover { text-decoration: underline; }
-    .wrap { max-width: 600px; margin: 0 auto; padding: 3rem 1.5rem 4rem; }
+    .wrap { max-width: 600px; margin: 0 auto; padding: 3rem 1.5rem 4rem; position:relative; z-index:60; }
     h1 { font-size: 1.6rem; margin-bottom: .25rem; }
     .sub { color: #6b5f52; font-size: .85rem; margin-bottom: 2rem; font-style: italic; }
     .stat-card {
@@ -40,6 +41,14 @@
     .back { display: inline-block; margin-top: 2rem; color: #6b5f52; font-size: .85rem; }
     .empty { text-align: center; color: #6b5f52; padding: 3rem 0; font-style: italic; }
     .heart-divider { text-align: center; color: #e85d3a; font-size: 1.2rem; margin: 2rem 0; opacity: .4; }
+    .reset-btn {
+      display: block; margin: 1.5rem auto 0; padding: .5rem 1.2rem;
+      background: rgba(232,93,58,.1); border: 1px solid rgba(232,93,58,.3);
+      color: #e85d3a; border-radius: 8px; cursor: pointer;
+      font-family: 'Fraunces', Georgia, serif; font-size: .8rem; font-style: italic;
+      transition: all .3s;
+    }
+    .reset-btn:hover { background: rgba(232,93,58,.2); border-color: #e85d3a; }
   </style>
 </head>
 <body>
@@ -52,6 +61,7 @@
     </div>
     <div class="heart-divider">&#x2661;</div>
     <a href="index.html" class="back">&#x2190; Back home</a>
+    <button class="reset-btn" onclick="if(confirm('Reset all visit & song stats?')){Track.resetAll().then(function(){location.reload();});}">Reset Stats</button>
   </div>
   <script src="track.js"></script>
   <script>
@@ -142,8 +152,13 @@
     })();
   </script>
   <script>if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js').catch(function(){}); }</script>
-<script src="living-world-global.js"></script>
-<script src="matrix-rain.js"></script>
-<script src="global-easter-eggs.js"></script>
+  <script defer src="matrix-rain.js"></script>
+<script defer src="global-easter-eggs.js"></script>
+
+  <script src="secret-letters.js"></script>
+  <script src="butterfly-collection.js"></script>
+  <script src="world-progress.js"></script>
+  <script src="random-constellations.js"></script>
+  <script src="global-interactions.js"></script>
 </body>
 </html>

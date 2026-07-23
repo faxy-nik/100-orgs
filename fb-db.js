@@ -103,7 +103,7 @@ var FB = (function () {
         var typeKey = prefix + 'Type';
         try {
           item[prefix + 'Blob'] = base64ToBlob(item[k], item[typeKey]);
-        } catch(e) { console.warn('Failed to decode blob:', e); }
+        } catch(e) { /* ponytail: blob decode failure non-fatal */ }
         delete item[k];
         if (item[typeKey]) delete item[typeKey];
       }

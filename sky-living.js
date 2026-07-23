@@ -232,6 +232,7 @@
 
   var moon = null;          // { phase, x, y, r, brightness, riseT, clickCount }
   var stars = [];           // interactive star field, independent of skies.js's own particle stars
+  var supernovas = [];      // active supernova explosions [{x,y,t,duration,particles:[]}]
   var shootingStars = [];   // active streaks
   var constellation = null; // { name, points:[{x,y}], lines:[[i,j]], message, revealed }
   var floaters = [];        // celestial objects (lanterns, birds, etc.)
@@ -389,16 +390,44 @@
       ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
 
-      // click ripple
+      // click supernova
       if (s.clickPulse > 0) {
+        var progress = 1 - s.clickPulse;
+        // core flash
         ctx.save();
-        ctx.globalAlpha = s.clickPulse * 0.6;
-        ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.arc(px, py, r + (1 - s.clickPulse) * 18, 0, Math.PI * 2);
-        ctx.stroke();
+        ctx.globalAlpha = s.clickPulse * 0.8;
+        ctx.fillStyle = '#fff8e0';
+        ctx.shadowColor = '#ffe680';
+        ctx.shadowBlur = 30 * s.clickPulse;
+        ctx.beginPath(); ctx.arc(px, py, r * (1 + progress * 2), 0, Math.PI * 2); ctx.fill();
         ctx.restore();
+        // expanding rings
+        for (var ring = 0; ring < 3; ring++) {
+          var ringProgress = clamp(progress - ring * 0.08, 0, 1);
+          var ringR = r + ringProgress * (25 + ring * 12);
+          var ringAlpha = s.clickPulse * (0.5 - ring * 0.15);
+          if (ringAlpha > 0) {
+            ctx.save();
+            ctx.globalAlpha = ringAlpha;
+            ctx.strokeStyle = ring === 0 ? '#ffe680' : (ring === 1 ? '#ffcc44' : '#fff');
+            ctx.lineWidth = 2 - ring * 0.5;
+            ctx.beginPath(); ctx.arc(px, py, ringR, 0, Math.PI * 2); ctx.stroke();
+            ctx.restore();
+          }
+        }
+        // particle burst (spawned once at click start)
+        if (!s._novaSpawned && s.clickPulse > 0.9) {
+          s._novaSpawned = true;
+          var sn = { x: px, y: py, t: 0, duration: 0.8, particles: [] };
+          for (var p = 0; p < 12; p++) {
+            var angle = (Math.PI * 2 / 12) * p + Math.random() * 0.3;
+            var speed = 40 + Math.random() * 60;
+            sn.particles.push({ angle: angle, speed: speed, r: 1 + Math.random() * 1.5, life: 1 });
+          }
+          supernovas.push(sn);
+        }
+      } else {
+        s._novaSpawned = false;
       }
 
       s._hit = { x: px, y: py, r: Math.max(8, r * 3) }; // generous hit radius, real star is tiny
@@ -578,32 +607,275 @@
     return pts;
   }
 
-  var CONSTELLATION_SHAPES = {
-    heart: function () { return heartPoints(9); },
-    infinity: function () { return infinityPoints(10); },
-    crescent: function () { return crescentPoints(8); },
-    butterfly: function () { return butterflyPoints(11); },
-    rose: function () { return rosePoints(10, 4); },
-    random: function () { return randomWalkPoints(rand(6, 9) | 0); }
-  };
-  // Optional: window.SkyLiving.CONSTELLATION_SHAPES.initials = function(){...}
-  // to add a custom point set (e.g. shaped like two initials) later.
+  // Generate 100+ constellation shapes using parametric curve families
+  var CONSTELLATION_SHAPES = {};
+  var CONSTELLATION_MESSAGES = {};
 
-  var CONSTELLATION_MESSAGES = {
-    heart: 'Even the stars couldn\u2019t help but draw your shape.',
-    infinity: 'This is how long I plan on loving you.',
-    crescent: 'A sliver of light, and it still outshines everything else up there.',
-    butterfly: 'Something in me still hasn\u2019t stopped fluttering since you.',
-    rose: 'I would have picked you a real one, but the stars insisted.',
-    random: 'I don\u2019t know what this constellation is either. I just know it made me think of you.'
-  };
+  function shapeGen(i) {
+    var n = 6 + (i % 6); // 6-11 points per shape
+    switch ((i * 7 + i * i * 3) % 12) {
+      case 0: return heartPoints(n);
+      case 1: return infinityPoints(n);
+      case 2: return crescentPoints(n);
+      case 3: return butterflyPoints(n + 2);
+      case 4: return rosePoints(n, 2 + (i % 9));
+      case 5: {
+        var pts = [];
+        for (var j = 0; j < n; j++) {
+          var t = (j / n) * Math.PI * 2;
+          var R = 0.35 + 0.15 * Math.sin(i * 2.7 + j * 1.3);
+          pts.push({ x: 0.5 + R * Math.cos(t + i * 0.5), y: 0.5 + R * 0.7 * Math.sin(t + i * 0.3) });
+        }
+        return pts;
+      }
+      case 6: {
+        var pts = [];
+        for (var j = 0; j < n; j++) {
+          var t = (j / n) * Math.PI * 2;
+          var r = 0.3 + 0.15 * Math.sin((i + 1) * t);
+          pts.push({ x: 0.5 + r * Math.cos(t), y: 0.5 + r * Math.sin(t) });
+        }
+        return pts;
+      }
+      case 7: {
+        var pts = [];
+        for (var j = 0; j < n; j++) {
+          var t = (j / n) * Math.PI * 2 * 3;
+          var R = 0.35 + 0.12 * Math.sin(i * 0.7 + t * 0.5);
+          pts.push({ x: 0.5 + R * Math.cos(t * 0.7), y: 0.5 + R * 0.6 * Math.sin(t * 0.5) });
+        }
+        return pts;
+      }
+      case 8: {
+        var pts = [];
+        for (var j = 0; j < n; j++) {
+          var t = (j / n) * Math.PI * 2;
+          var a = 0.3 + 0.1 * (i % 5);
+          var b = 0.2 + 0.1 * ((i * 3) % 5);
+          pts.push({ x: 0.5 + a * Math.cos(t), y: 0.5 + b * Math.sin(t) });
+        }
+        return pts;
+      }
+      case 9: {
+        var pts = [];
+        for (var j = 0; j < n; j++) {
+          var t = (j / n) * Math.PI * 2 * (2 + (i % 4));
+          var R = 0.2 + 0.25 * (0.5 + 0.5 * Math.sin(i * 1.1 + t * 0.3));
+          pts.push({ x: 0.5 + R * Math.cos(t), y: 0.5 + R * 0.7 * Math.sin(t) });
+        }
+        return pts;
+      }
+      case 10: {
+        var pts = [{ x: 0.3 + (i % 10) * 0.02, y: 0.4 + (i * 3 % 10) * 0.02 }];
+        for (var j = 1; j < n; j++) {
+          var p = pts[j - 1];
+          pts.push({
+            x: p.x + rand(-0.15, 0.15),
+            y: p.y + rand(-0.15, 0.15)
+          });
+        }
+        return pts;
+      }
+      case 11: {
+        var pts = [];
+        for (var j = 0; j < n; j++) {
+          var t = (j / n) * Math.PI;
+          var sp = 0.4 + 0.15 * Math.sin(i * 3.1 + t * 2);
+          pts.push({
+            x: 0.5 + sp * Math.cos(t * (1 + (i % 3)) + i * 0.7),
+            y: 0.5 + sp * 0.5 * Math.sin(t * (2 + (i % 2)) + i * 0.4)
+          });
+        }
+        return pts;
+      }
+    }
+  }
+
+  var msgPool = [
+    'The stars aligned to draw something only you would understand.',
+    'Every point in this shape points back to you.',
+    'A constellation born from a wish I made on you.',
+    'Not a single star in this pattern is out of place — like you in my life.',
+    'Somewhere in this shape is a story only we know.',
+    'Even the sky rearranges itself to remind me of you.',
+    'This constellation appears only when I think of you — so it appears constantly.',
+    'The universe drew this one just for you.',
+    'Like this shape, my love loops back to you every time.',
+    'I traced this pattern across the sky hoping you would see it.',
+    'Stars learned a new shape the day you smiled at me.',
+    'This one has no name yet. Name it after us.',
+    'A curve only your eyes could follow, only my heart could draw.',
+    'The sky gives form to the shape of missing you.',
+    'Every star in this pattern carries a syllable of your name.',
+    'A love letter written in points of light.',
+    'The shape of forever, best seen from where you stand.',
+    'I asked the night to draw something beautiful. It drew you.',
+    'This constellation is proof that even chaos can make something perfect.',
+    'Not a map, but a memory of how you make me feel.',
+    'The stars conspired to capture the outline of my heartbeat.',
+    'Some shapes can only be seen when you are not looking directly at them — like us.',
+    'Each point a moment, each line a promise.',
+    'A pattern too perfect to be random — like the day I met you.',
+    'The universe has a favourite shape, and this is it.',
+    'This is what hope looks like when you give it enough light.',
+    'A constellation reserved for the ones who still believe.',
+    'The night sky has a signature, and it looks a lot like you.',
+    'A spiral I would gladly get lost in.',
+    'This shape only appears when the wind carries your scent.',
+    'Stars drawing stars — the sky is meta about its feelings.',
+    'The outline of a dream I keep having.',
+    'Connect enough points of light and you get a picture of home.',
+    'Some constellations are formed by gravity. This one formed by love.',
+    'This pattern is older than the stars themselves.',
+    'If you look long enough, you can see the shape of my heart.',
+    'A celestial doodle, drawn while thinking of you.',
+    'The sky loves you in shapes words cannot hold.',
+    'My thoughts of you take form among the stars.',
+    'Everything beautiful eventually takes the shape of you.',
+    'The universe doodled this during a daydream about you.',
+    'Follow these points and you will find your way back to me.',
+    'This constellation mirrors the pattern of your laugh.',
+    'A shape that only makes sense in the context of us.',
+    'The night decided to get artistic, and chose you as its muse.',
+    'Burning points of light arranged exactly like my devotion.',
+    'This one cannot be seen from anywhere else but here.',
+    'Patterns emerge when you stare at something long enough — like love.',
+    'Every star in this cluster has your name on it.',
+    'A constellation shaped like the space between two heartbeats.',
+    'The stars learned calligraphy just to write about you.',
+    'An arrangement of light that spells out everything I cannot say.',
+    'The sky is full of circles that always return to you.',
+    'This is the shape of permanence in a universe of change.',
+    'I have memorised this pattern the way I have memorised your face.',
+    'A sky-map to the place where I feel most alive.',
+    'Even the stars want to be part of our story.',
+    'This constellation was here long before us, waiting for us to notice.',
+    'My favourite shape is the one you trace on my palm.',
+    'The sky has favourites. You are one of them.',
+    'A pattern woven from the thread of every memory I have of you.',
+    'The celestial equivalent of a love bite.',
+    'This shape only appears in the quiet hours, when I miss you most.',
+    'Stars arranged exactly the way my thoughts arrange themselves around you.',
+    'A complex pattern that simplifies to one thing: you.',
+    'The sky wrote a poem in points of light. It is about you.',
+    'This constellation bends light the way you bend my reality.',
+    'I would recognise this shape anywhere, the way I would recognise your voice.',
+    'The universe grew bored and drew your profile in stars.',
+    'A wandering line that always leads back to centre — like me to you.',
+    'This shape is what happens when the sky falls in love.',
+    'The pattern of your soul reflected in the night above.',
+    'No two stars in this shape are the same, yet they belong together — like us.',
+    'A constellation only visible to those who look with their heart.',
+    'The most beautiful patterns are the ones that feel familiar.',
+    'I would navigate by these stars even if they led nowhere.',
+    'This is the shape of everything I feel but cannot fit into words.',
+    'A secret signal between the sky and my heart.',
+    'The universe hears your name and draws this in response.',
+    'A celestial fingerprint — yours and yours alone.',
+    'Every point is a star that witnessed me fall for you.',
+    'The geometry of us, projected onto the night sky.',
+    'This pattern shifts every time you smile.',
+    'Chaos rearranged itself into meaning the moment I met you.',
+    'A constellation drawn from the ache of missing you.',
+    'The answer to a question the sky has been asking for millennia.',
+    'An arrangement of light that proves the universe has a favourite.',
+    'The stars conspire to draw the outline of my devotion.',
+    'Some shapes cannot be unseen — like this one, like you.',
+    'The sky is a canvas, and love is its favourite pigment.',
+    'This constellation has no beginning or end — like my love for you.',
+    'A spiral of thoughts that always tighten around you.',
+    'The pattern of your presence in my universe.',
+    'Connected dots that tell the story of how I fell.',
+    'This is the shape of the sound your name makes in the dark.',
+    'The sky drew this while dreaming of you.',
+    'Stars arranged in the shape of a promise I intend to keep.',
+    'I would believe in fate if it meant this pattern was made for us.',
+    'The geometry of love is not straight lines — it is this.',
+    'A breathtaking pattern, much like the way you exist.',
+    'This constellation is the sky trying to say what I cannot.',
+    'The universe wants you to know you are its masterpiece.'
+  ];
+
+  var CONSTELLATION_DISPLAY_NAMES = {};
+  var CONSTELLATION_RARITY = {};
+  var CONST_COL_KEY = 'ash-sky-const-collection';
+  function loadConstCol() { try { return JSON.parse(localStorage.getItem(CONST_COL_KEY)) || {}; } catch(e){ return {}; } }
+  function saveConstCol(d) { try { localStorage.setItem(CONST_COL_KEY, JSON.stringify(d)); } catch(e){} }
+  function markConstSeen(nameKey) { var d = loadConstCol(); if (!d[nameKey]) { d[nameKey] = Date.now(); saveConstCol(d); } }
+
+  var CONST_NAMES_100 = [
+    'Starlight Serenade','Celestial Gate','Moonlit Path','Solar Crown','Cosmic Veil',
+    'Ethereal Key','Crystal Heart','Shadow Wing','Golden Tide','Silver Bloom',
+    'Velvet Night','Amber Dream','Crimson Dawn','Ivory Tower','Azure Sea',
+    'Scarlet Thread','Jade Garden','Opal Light','Coral Reef','Twilight Song',
+    'Midnight Dance','Ember Glow','Frost Flower','Mystic Mirror','Pearl Light',
+    'Ruby Ember','Sapphire Stream','Topaz Flame','Onyx Shroud','Quartz Spire',
+    'Iris Dream','Lunar Haze','Stellar Cross','Nova Burst','Solstice Fire',
+    'Equinox Tide','Astral Plane','Nebula Cloud','Galaxy Spiral','Comet Trail',
+    'Phoenix Rise','Dragon Tail','Butterfly Wing','Feather Grace','Ocean Depth',
+    'Mountain Peak','River Bend','Forest Glade','Desert Dune','Island Shore',
+    'Crystal Cave','Ancient Tree','Silent Storm','Gentle Rain','Summer Breeze',
+    'Autumn Leaf','Winter Snow','Spring Blossom','Harvest Moon','Falling Star',
+    'Lucky Clover','Wishing Well','Dream Weaver','Time Keeper','Space Walker',
+    'Light Weaver','Dark Slumber','True North','East Wind','South Cross',
+    'West Gate','North Star','Inner Light','Outer Rim','Upper Realm',
+    'Lower Deep','Hidden Path','Secret Door','Open Sky','Lotus Eye',
+    'Golden Knot','Silken Thread','Iron Will','Steel Heart','Burning Bright',
+    'Fading Echo','Rising Sun','Setting Moon','Waning Crescent','Waxing Moon',
+    'New Dawn','Final Star','Endless Sky','Open Book','Blank Page',
+    'Spoken Word','Silent Prayer','Loud Thunder','Quiet Whisper','Soft Light',
+    'Starlight Dance','Moonbeam Path','Twilight Veil','Crystal Stream','Golden Dream'
+  ];
+
+  var RARITIES = ['common','common','common','uncommon','uncommon','rare','rare','very-rare','legendary','mythic'];
+  function pickRarity(idx) { return RARITIES[idx % RARITIES.length]; }
+
+  for (var si = 0; si < 100; si++) {
+    (function (idx) {
+      var name = 'constellation_' + idx;
+      var genFunc = function () {
+        var seed = 12.9898 * idx + 78.233;
+        seed = (seed * 43758.5453) % 1;
+        var savedRandom = Math.random;
+        Math.random = function () { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+        var pts = shapeGen(idx);
+        Math.random = savedRandom;
+        return pts;
+      };
+      CONSTELLATION_SHAPES[name] = genFunc;
+      CONSTELLATION_MESSAGES[name] = msgPool[idx % msgPool.length];
+      CONSTELLATION_DISPLAY_NAMES[name] = CONST_NAMES_100[idx];
+      CONSTELLATION_RARITY[name] = pickRarity(idx);
+    })(si);
+  }
+  // Override a few named ones for the original set
+  CONSTELLATION_SHAPES.heart = function () { return heartPoints(9); };
+  CONSTELLATION_MESSAGES.heart = 'Even the stars couldn\u2019t help but draw your shape.';
+  CONSTELLATION_DISPLAY_NAMES.heart = 'The Heart';
+  CONSTELLATION_RARITY.heart = 'legendary';
+  CONSTELLATION_SHAPES.infinity = function () { return infinityPoints(10); };
+  CONSTELLATION_MESSAGES.infinity = 'This is how long I plan on loving you.';
+  CONSTELLATION_DISPLAY_NAMES.infinity = 'Infinity';
+  CONSTELLATION_RARITY.infinity = 'mythic';
+  CONSTELLATION_SHAPES.crescent = function () { return crescentPoints(8); };
+  CONSTELLATION_MESSAGES.crescent = 'A sliver of light, and it still outshines everything else up there.';
+  CONSTELLATION_DISPLAY_NAMES.crescent = 'The Crescent';
+  CONSTELLATION_RARITY.crescent = 'rare';
+  CONSTELLATION_SHAPES.butterfly = function () { return butterflyPoints(11); };
+  CONSTELLATION_MESSAGES.butterfly = 'Something in me still hasn\u2019t stopped fluttering since you.';
+  CONSTELLATION_DISPLAY_NAMES.butterfly = 'The Butterfly';
+  CONSTELLATION_RARITY.butterfly = 'uncommon';
+  CONSTELLATION_SHAPES.rose = function () { return rosePoints(10, 4); };
+  CONSTELLATION_MESSAGES.rose = 'I would have picked you a real one, but the stars insisted.';
+  CONSTELLATION_DISPLAY_NAMES.rose = 'The Rose';
+  CONSTELLATION_RARITY.rose = 'rare';
 
   function generateConstellation(sky) {
-    if (!skyIsNight(sky)) return null;
     var keys = Object.keys(CONSTELLATION_SHAPES);
     var name = pick(keys);
+    markConstSeen(name);
     var raw = CONSTELLATION_SHAPES[name]();
-    var boxSize = rand(0.16, 0.28); // fraction of viewport the shape occupies
+    var boxSize = rand(0.16, 0.28);
     var originX = rand(0.08, 0.62);
     var originY = rand(0.06, 0.55);
     var points = raw.map(function (p) {
@@ -611,7 +883,15 @@
     });
     var lines = [];
     for (var i = 0; i < points.length - 1; i++) lines.push([i, i + 1]);
-    return { name: name, points: points, lines: lines, message: CONSTELLATION_MESSAGES[name], revealed: false };
+    var dn = CONSTELLATION_DISPLAY_NAMES[name] || name;
+    var msg = CONSTELLATION_MESSAGES[name];
+    var rar = CONSTELLATION_RARITY[name] || 'common';
+    var pts = raw.map(function(p){ return [Math.round(p.x*100)/100, Math.round(p.y*100)/100]; });
+    try { localStorage.setItem('ash-sky-current-constellation', JSON.stringify({ displayName: dn, rarity: rar, message: msg, pts: pts })); } catch(e){}
+    if (typeof window.__updateSkyConstellation === 'function') {
+      window.__updateSkyConstellation({ displayName: dn, rarity: rar, message: msg, pts: pts });
+    }
+    return { name: name, displayName: dn, points: points, lines: lines, message: msg, rarity: rar, revealed: false };
   }
 
   function drawConstellation(t) {
@@ -619,8 +899,10 @@
     var pts = constellation.points.map(function (p) { return { x: p.x * W, y: p.y * H }; });
 
     ctx.save();
-    ctx.strokeStyle = 'rgba(255,230,180,0.28)';
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(255,230,180,0.6)';
+    ctx.lineWidth = 1.5;
+    ctx.shadowColor = 'rgba(255,230,128,0.3)';
+    ctx.shadowBlur = 4;
     ctx.beginPath();
     constellation.lines.forEach(function (l) {
       ctx.moveTo(pts[l[0]].x, pts[l[0]].y);
@@ -631,20 +913,30 @@
 
     constellation.points.forEach(function (p, i) {
       var px = pts[i].x, py = pts[i].y;
-      var tw = 0.6 + 0.4 * Math.sin(t * 1.2 + p.twinklePhase);
+      var tw = 0.7 + 0.3 * Math.sin(t * 1.2 + p.twinklePhase);
       ctx.save();
       ctx.globalAlpha = tw;
-      ctx.fillStyle = '#fff6d8';
+      ctx.fillStyle = '#fffbe6';
       ctx.shadowColor = '#ffe680';
-      ctx.shadowBlur = 6;
-      ctx.beginPath(); ctx.arc(px, py, 2.1, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 10;
+      ctx.beginPath(); ctx.arc(px, py, 3, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
     });
+
+    // constellation name label below the shape
+    var xs = pts.map(function (p) { return p.x; }), ys = pts.map(function (p) { return p.y; });
+    var cx = xs.reduce(function(a,b){return a+b;})/xs.length, cy = Math.max.apply(null, ys) + 30;
+    ctx.save();
+    ctx.fillStyle = 'rgba(255,230,180,0.5)';
+    ctx.font = '11px Fraunces, Georgia, serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(constellation.displayName, cx, cy);
+    ctx.restore();
 
     // single hit region: bounding box of the shape, generous, so any
     // point near the constellation reveals it — precise per-star
     // hit-testing would be frustrating on a shape this small.
-    var xs = pts.map(function (p) { return p.x; }), ys = pts.map(function (p) { return p.y; });
+    xs = pts.map(function (p) { return p.x; }); ys = pts.map(function (p) { return p.y; });
     constellation._hit = {
       x1: Math.min.apply(null, xs) - 14, y1: Math.min.apply(null, ys) - 14,
       x2: Math.max.apply(null, xs) + 14, y2: Math.max.apply(null, ys) + 14
@@ -1604,6 +1896,33 @@
 
   /* ===================== MAIN LOOP ===================== */
   var running = false, lastT = 0;
+  /* ===================== SUPERNOVA PARTICLES ===================== */
+  function drawSupernovas(dt) {
+    for (var i = supernovas.length - 1; i >= 0; i--) {
+      var sn = supernovas[i];
+      sn.t += dt;
+      if (sn.t > sn.duration) { supernovas.splice(i, 1); continue; }
+      var fade = 1 - sn.t / sn.duration;
+      ctx.save();
+      for (var j = 0; j < sn.particles.length; j++) {
+        var p = sn.particles[j];
+        var dx = Math.cos(p.angle) * p.speed * sn.t;
+        var dy = Math.sin(p.angle) * p.speed * sn.t;
+        var alpha = fade * p.life;
+        if (alpha > 0) {
+          ctx.globalAlpha = alpha;
+          ctx.fillStyle = '#ffe680';
+          ctx.shadowColor = '#ffcc44';
+          ctx.shadowBlur = 6;
+          ctx.beginPath();
+          ctx.arc(sn.x + dx, sn.y + dy, p.r * fade, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      ctx.restore();
+    }
+  }
+
   function frame(now) {
     if (!running) return;
     var dt = Math.min((now - lastT) / 1000, 0.05);
@@ -1627,6 +1946,7 @@
 
     drawMoon(dt, t);
     drawStars(dt, t);
+    drawSupernovas(dt);
     drawShootingStars(dt);
     if (constellation) drawConstellation(t);
     if (landscapeVisible && window.SkyLiving && window.SkyLiving.Landscape) window.SkyLiving.Landscape.draw(t);
@@ -1680,6 +2000,96 @@
     return 'day';
   }
 
+  var _labelRetries = 0;
+  function updateConstellationLabel() {
+    var name = constellation ? constellation.displayName : '';
+    var label = document.getElementById('constellationNameLabel');
+    if (!label) {
+      var container = document.getElementById('skyBtnContainer');
+      if (!container) { if (_labelRetries++ < 20) setTimeout(updateConstellationLabel, 500); return; }
+      label = document.createElement('div');
+      label.id = 'constellationNameLabel';
+      label.style.cssText = 'font-size:10px;color:rgba(255,230,180,0.5);font-family:Fraunces,Georgia,serif;margin-top:6px;font-style:italic;cursor:pointer;';
+      label.title = 'Open constellation journal';
+      label.addEventListener('click', openConstellationJournal);
+      container.parentNode.insertBefore(label, container.nextSibling);
+    }
+    label.textContent = name ? '\uD83C\uDF0C ' + name : '';
+  }
+
+  var RARITY_COLORS = { common:'#a0a080', uncommon:'#80a060', rare:'#6080c0', 'very-rare':'#c060a0', legendary:'#d4a020', mythic:'#ffe680' };
+
+  function refreshJournal() {
+    var overlay = document.getElementById('skyConstJournal');
+    if (!overlay) return;
+    var panel = overlay.querySelector('div');
+    if (!panel) return;
+    var col = loadConstCol();
+    var allKeys = Object.keys(CONSTELLATION_DISPLAY_NAMES);
+    var seen = 0;
+    allKeys.forEach(function(k){ if (col[k]) seen++; });
+    var html = '<div style="font-size:18px;font-weight:bold;color:#ffe680;margin-bottom:6px;">\uD83C\uDF0C Sky Constellations</div>'+
+      '<div style="font-size:11px;color:#a09080;margin-bottom:12px;">Seen '+seen+' / '+allKeys.length+'</div>';
+    if (constellation) {
+      var r = constellation.rarity || 'common';
+      html += '<div style="background:rgba(255,230,100,0.06);border:1px solid rgba(255,230,100,0.15);border-radius:8px;padding:8px 12px;margin-bottom:12px;text-align:center;">'+
+        '<div style="font-size:13px;font-weight:bold;">\u2728 '+constellation.displayName+'</div>'+
+        '<div style="font-size:10px;color:'+(RARITY_COLORS[r]||'#a0a080')+';text-transform:uppercase;">'+r+'</div>'+
+        '<div style="font-size:9px;color:#a09080;margin-top:2px;">'+constellation.message+'</div></div>';
+    }
+    allKeys.sort();
+    allKeys.forEach(function(k){
+      var found = !!col[k];
+      var dn = CONSTELLATION_DISPLAY_NAMES[k];
+      var r = CONSTELLATION_RARITY[k] || 'common';
+      html += '<div style="display:flex;align-items:center;padding:4px 6px;margin-bottom:1px;border-radius:4px;'+(found?'':'opacity:0.25')+'">'+
+        '<span style="margin-right:6px;font-size:10px;">'+(found?'\u2B50':'\u2726')+'</span>'+
+        '<div style="flex:1;font-size:11px;'+(found?'':'color:#504030')+'">'+(found?dn:'???')+'</div>'+
+        '<span style="font-size:8px;color:'+(RARITY_COLORS[r]||'#a0a080')+';">'+(found?r:'')+'</span></div>';
+    });
+    html += '<div style="text-align:center;margin-top:10px;"><button onclick="document.getElementById(\'skyConstJournal\').remove()" style="background:rgba(255,230,100,0.15);border:1px solid rgba(255,230,100,0.3);color:#ffe680;padding:5px 16px;border-radius:20px;cursor:pointer;font-size:11px;">Close</button></div>';
+    panel.innerHTML = html;
+  }
+
+  function openConstellationJournal() {
+    var existing = document.getElementById('skyConstJournal');
+    if (existing) { existing.remove(); return; }
+    var col = loadConstCol();
+    var overlay = document.createElement('div');
+    overlay.id = 'skyConstJournal';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:999999;background:rgba(10,8,6,0.85);backdrop-filter:blur(10px);display:flex;justify-content:center;align-items:center;';
+    var panel = document.createElement('div');
+    panel.style.cssText = 'background:rgba(20,16,12,0.95);border:1px solid rgba(255,230,100,0.2);border-radius:16px;padding:20px;max-width:480px;width:90%;max-height:80vh;overflow-y:auto;position:relative;color:#ffebd2;';
+    var allKeys = Object.keys(CONSTELLATION_DISPLAY_NAMES);
+    var seen = 0;
+    allKeys.forEach(function(k){ if (col[k]) seen++; });
+    var html = '<div style="font-size:18px;font-weight:bold;color:#ffe680;margin-bottom:6px;">\uD83C\uDF0C Sky Constellations</div>'+
+      '<div style="font-size:11px;color:#a09080;margin-bottom:12px;">Seen '+seen+' / '+allKeys.length+'</div>';
+    if (constellation) {
+      var r = constellation.rarity || 'common';
+      html += '<div style="background:rgba(255,230,100,0.06);border:1px solid rgba(255,230,100,0.15);border-radius:8px;padding:8px 12px;margin-bottom:12px;text-align:center;">'+
+        '<div style="font-size:13px;font-weight:bold;">\u2728 '+constellation.displayName+'</div>'+
+        '<div style="font-size:10px;color:'+(RARITY_COLORS[r]||'#a0a080')+';text-transform:uppercase;">'+r+'</div>'+
+        '<div style="font-size:9px;color:#a09080;margin-top:2px;">'+constellation.message+'</div></div>';
+    }
+    allKeys.sort();
+    allKeys.forEach(function(k){
+      var found = !!col[k];
+      var dn = CONSTELLATION_DISPLAY_NAMES[k];
+      var r = CONSTELLATION_RARITY[k] || 'common';
+      html += '<div style="display:flex;align-items:center;padding:4px 6px;margin-bottom:1px;border-radius:4px;'+(found?'':'opacity:0.25')+'">'+
+        '<span style="margin-right:6px;font-size:10px;">'+(found?'\u2B50':'\u2726')+'</span>'+
+        '<div style="flex:1;font-size:11px;'+(found?'':'color:#504030')+'">'+(found?dn:'???')+'</div>'+
+        '<span style="font-size:8px;color:'+(RARITY_COLORS[r]||'#a0a080')+';">'+(found?r:'')+'</span></div>';
+    });
+    html += '<div style="text-align:center;margin-top:10px;"><button onclick="document.getElementById(\'skyConstJournal\').remove()" style="background:rgba(255,230,100,0.15);border:1px solid rgba(255,230,100,0.3);color:#ffe680;padding:5px 16px;border-radius:20px;cursor:pointer;font-size:11px;">Close</button></div>';
+    panel.innerHTML = html;
+    overlay.appendChild(panel);
+    panel.addEventListener('click', function(e){ e.stopPropagation(); });
+    overlay.addEventListener('click', function(){ overlay.remove(); });
+    document.body.appendChild(overlay);
+  }
+
   /* ===================== SKY CHANGE HOOK ===================== */
   function onSkyChanged(index) {
     var sky = window.Skies.SKIES[index];
@@ -1691,6 +2101,8 @@
     moon = pickMoonPhase(sky);
     buildStars(sky);
     constellation = generateConstellation(sky);
+    updateConstellationLabel();
+    refreshJournal();
     spawnFloaters(sky);
     shootingStars = [];
     evolution = { age: 0, fogAlpha: 0, extraStars: 0 };
@@ -1707,8 +2119,6 @@
     updateBirdTime(sky);
     buildNests(sky);
     initBirds();
-    initOwls();
-
     recordVisit(sky.name);
     maybeTriggerRareEvent(sky);
     setAmbienceForSky(sky);
@@ -1724,10 +2134,21 @@
     onSkyChanged(index);
   };
 
+  // ponytail: randomSky() closes over local applySky, bypassing the wrapper.
+  // Wrapping Skies.random forces it through the hooked apply.
+  if (typeof window.Skies.random === 'function') {
+    window.Skies.random = function () {
+      var idx = Math.floor(Math.random() * window.Skies.SKIES.length);
+      window.Skies.apply(idx);
+    };
+  }
+
   /* ===================== PUBLIC API ===================== */
   window.SkyLiving = {
     setMood: setMood,
     getJournal: loadJournal,
+    getCurrentConstellation: function () { return constellation ? { name: constellation.displayName, message: constellation.message, rarity: constellation.rarity } : null; },
+    openConstellationJournal: openConstellationJournal,
     CONSTELLATION_SHAPES: CONSTELLATION_SHAPES,
     AMBIENCE_SOURCES: (function () { var o = {}; for (var k in AMBIENCE_GENS) o[k] = '(procedural)'; return o; })(),
     EMOTION_ENGINE: EMOTION_ENGINE,
@@ -1749,10 +2170,13 @@
   };
 
   /* ===================== INIT ===================== */
-  var savedIndex = window.Skies.getCurrent ? window.Skies.getCurrent() : -1;
-  if (savedIndex >= 0 && window.Skies.SKIES[savedIndex]) {
-    onSkyChanged(savedIndex);
-  } else if (landscapeVisible) {
-    ensureCanvas();
+  var isObsPage = window.location.pathname.indexOf('sky-observatory') !== -1;
+  if (isObsPage) {
+    var savedIndex = window.Skies.getCurrent ? window.Skies.getCurrent() : -1;
+    if (savedIndex >= 0 && window.Skies.SKIES[savedIndex]) {
+      onSkyChanged(savedIndex);
+    } else if (landscapeVisible) {
+      ensureCanvas();
+    }
   }
 })();

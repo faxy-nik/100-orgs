@@ -18,7 +18,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
   <script src="fb-db.js"></script>
   <script>
-(function(){var k='photo-gallery';document.body.style.display='none';try{var ar=localStorage.getItem('ash-section-access');if(ar){var ac=JSON.parse(ar);var sc=ac[k];if(sc&&sc.adminLocked){document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#181214;color:#ffebd2;font-family:Georgia,serif;padding:2rem;text-align:center"><div><h1 style="font-family:Fraunces,Georgia,serif;color:#ffe680">🔒 Locked</h1><p style="color:#6b5f52;margin-top:1rem">This section is currently locked by the admin.</p><a href="index.html" style="display:inline-block;margin-top:1.5rem;padding:.6rem 1.5rem;border:1px solid #ffe680;color:#ffe680;border-radius:8px;text-decoration:none;font-family:Fraunces,Georgia,serif">← Back home</a></div></div>';return;} } } catch(e){}var ck=function(){FB.get('config','sections').then(function(d){document.body.style.display='';var c=d&&d.data;if(c)for(var i=0;i<c.length;i++)if(c[i].key===k){var u=c[i];if(u.unlockDate&&u.autoUnlock!==false){var p=u.unlockDate.split('-'),un=new Date(+p[0],+p[1]-1,+p[2]),nw=new Date();nw.setHours(0,0,0,0);if(nw<un){document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#181214;color:#ffebd2;font-family:Georgia,serif;padding:2rem;text-align:center"><div><h1 style="font-family:Fraunces,Georgia,serif;color:#ffe680">🔒 Locked</h1><p style="color:#6b5f52;margin-top:1rem">This section unlocks on '+u.unlockDate+'.</p><a href="index.html" style="display:inline-block;margin-top:1.5rem;padding:.6rem 1.5rem;border:1px solid #ffe680;color:#ffe680;border-radius:8px;text-decoration:none;font-family:Fraunces,Georgia,serif">← Back home</a></div></div>'}}}}).catch(function(){document.body.style.display='';});};if(typeof FB!=='undefined'&&FB.init){FB.init();ck();}else{var iv=setInterval(function(){if(typeof FB!=='undefined'&&FB.init){clearInterval(iv);FB.init();ck();}},10);}})();
+(function(){var k='photo-gallery';if(document.body)document.body.style.display='none';try{var ar=localStorage.getItem('ash-section-access');if(ar){var ac=JSON.parse(ar);var sc=ac[k];if(sc&&sc.adminLocked){document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#181214;color:#ffebd2;font-family:Georgia,serif;padding:2rem;text-align:center"><div><h1 style="font-family:Fraunces,Georgia,serif;color:#ffe680">🔒 Locked</h1><p style="color:#6b5f52;margin-top:1rem">This section is currently locked by the admin.</p><a href="index.html" style="display:inline-block;margin-top:1.5rem;padding:.6rem 1.5rem;border:1px solid #ffe680;color:#ffe680;border-radius:8px;text-decoration:none;font-family:Fraunces,Georgia,serif">← Back home</a></div></div>';return;} } } catch(e){}var ck=function(){FB.get('config','sections').then(function(d){document.body.style.display='';var c=d&&d.data;if(c)for(var i=0;i<c.length;i++)if(c[i].key===k){var u=c[i];if(u.unlockDate&&u.autoUnlock!==false){var p=u.unlockDate.split('-'),un=new Date(+p[0],+p[1]-1,+p[2]),nw=new Date();nw.setHours(0,0,0,0);if(nw<un){document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#181214;color:#ffebd2;font-family:Georgia,serif;padding:2rem;text-align:center"><div><h1 style="font-family:Fraunces,Georgia,serif;color:#ffe680">🔒 Locked</h1><p style="color:#6b5f52;margin-top:1rem">This section unlocks on '+u.unlockDate+'.</p><a href="index.html" style="display:inline-block;margin-top:1.5rem;padding:.6rem 1.5rem;border:1px solid #ffe680;color:#ffe680;border-radius:8px;text-decoration:none;font-family:Fraunces,Georgia,serif">← Back home</a></div></div>'}}}}).catch(function(){document.body.style.display='';});};if(typeof FB!=='undefined'&&FB.init){FB.init();ck();}else{var iv=setInterval(function(){if(typeof FB!=='undefined'&&FB.init){clearInterval(iv);FB.init();ck();}},10);}})();
   </script>
   <style>
     :root {
@@ -301,7 +301,7 @@
       <div style="display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center;margin-bottom:1rem;">
         <a href="index.html" style="background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;text-decoration:none;transition:all .25s;" onmouseover="this.style.borderColor='#ffe680';this.style.color='#ffe680'" onmouseout="this.style.borderColor='rgba(255,210,150,.15)';this.style.color='#6b5f52'">&#x2190; Home</a>
         <a href="admin.html" style="background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;text-decoration:none;transition:all .25s;" onmouseover="this.style.borderColor='#ffe680';this.style.color='#ffe680'" onmouseout="this.style.borderColor='rgba(255,210,150,.15)';this.style.color='#6b5f52'">&#x2699; Admin</a>
-        <a href="gallery.html" style="background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;text-decoration:none;transition:all .25s;" onmouseover="this.style.borderColor='#ffe680';this.style.color='#ffe680'" onmouseout="this.style.borderColor='rgba(255,210,150,.15)';this.style.color='#6b5f52'">&#x1F52D; Sky Observatory</a>
+        <a href="sky-observatory.html" style="background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;text-decoration:none;transition:all .25s;" onmouseover="this.style.borderColor='#ffe680';this.style.color='#ffe680'" onmouseout="this.style.borderColor='rgba(255,210,150,.15)';this.style.color='#6b5f52'">&#x1F52D; Sky Observatory</a>
       </div>
       <p style="color:var(--ash);font-size:0.85rem;margin:0;">for eeshah &mdash; always</p>
     </div>
@@ -315,7 +315,6 @@
     <div class="lightbox-note" id="lbNote"></div>
   </div>
 
-  <script src="track.js"></script>
   <script src="skies.js"></script>
   <script src="sky-living.js"></script>
   <script src="landscape.js"></script>
@@ -339,7 +338,7 @@
       s.textContent = '@keyframes hFloat{0%{opacity:1;transform:translateY(0) scale(1) rotate(0deg)}100%{opacity:0;transform:translateY(-90px) scale(0.2) rotate(20deg)}}';
       document.head.appendChild(s);
       var b = document.createElement('div');
-      b.style.cssText = 'text-align:center;padding:2rem 1rem;';
+      b.style.cssText = 'text-align:center;padding:2rem 1rem;position:relative;z-index:3;';
       var l = document.createElement('a');
       l.href = 'stats.html';
       l.textContent = '\uD83D\uDCCA Stats';
@@ -382,7 +381,42 @@
         { type: 'video', file: 'ash/ash6.mp4', label: 'Video 6', note: 'some memories are better than dreams — this is one of them' },
         { type: 'video', file: 'ash/ash7.mp4', label: 'Video 7', note: 'the camera loves you, but not as much as i do' },
         { type: 'video', file: 'ash/ash8.mp4', label: 'Video 8', note: 'you exist the way autumn feels — warm, fleeting, and unforgettable' },
-        { type: 'video', file: 'ash/ash9.mp4', label: 'Video 9', note: 'you, unguarded and real — and it is the most beautiful thing i have ever seen' }
+        { type: 'video', file: 'ash/ash9.mp4', label: 'Video 9', note: 'you, unguarded and real — and it is the most beautiful thing i have ever seen' },
+        { type: 'image', file: 'ash/duck.jpeg', label: 'Duck', note: 'just a duck — but looking at it, i think of you, because everything somehow leads back to you' },
+        { type: 'image', file: 'ash/mr turtle.jpeg', label: 'Mr. Turtle', note: 'mr. turtle has seen things, but he has never seen anyone as beautiful as you' },
+        { type: 'image', file: 'ash/the book she gave to me.jpeg', label: 'The Book', note: 'she gave me a book — but really, she gave me a piece of her soul wrapped in paper and ink' },
+        { type: 'image', file: 'ash/some random chat ss.jpeg', label: 'Random Chat', note: 'a screenshot of us — proof that even our words look beautiful when they sit next to each other' },
+        { type: 'image', file: 'ash/my saved sticker in her chat.jpeg', label: 'Saved Sticker', note: 'i saved this sticker because it reminded me of you — or maybe because i just wanted to keep a piece of our chat with me' },
+        { type: 'image', file: 'ash/my bacha with her bachas(younger cznz).jpeg', label: 'My Bacha & Her Bachas', note: 'you, surrounded by the little ones — and in that moment, you looked like the most natural kind of magic' },
+        { type: 'image', file: 'ash/she in sunlight looking damn awsm.jpeg', label: 'Sunlit', note: 'the sun kissed you that day, and i have been jealous of sunlight ever since' },
+        { type: 'image', file: 'ash/her younger pic , lookin way too skiny.jpeg', label: 'Younger Her', note: 'a younger version of you — and even then, before i existed in your world, you were already breathtaking' },
+        { type: 'image', file: 'ash/her in a winter outfit , with fluffy cap.jpeg', label: 'Winter Outfit', note: 'winter clothes, fluffy cap, and you — suddenly i understand why people look forward to the cold' },
+        { type: 'image', file: 'ash/her selfi in  red black dress cute hot.jpeg', label: 'Red & Black', note: 'red and black, cute and hot — you managed to be both at once, because of course you did' },
+        { type: 'image', file: 'ash/her random pic at a event sitting on a chair , lovely.jpeg', label: 'At an Event', note: 'just sitting on a chair at some event — but you made even that look like a scene from a film' },
+        { type: 'image', file: 'ash/her pic , in rain, a bit wet, looking damn hot.jpeg', label: 'In the Rain', note: 'rain on your skin, and you still look hotter than the sun — i think the weather is jealous of you' },
+        { type: 'image', file: 'ash/her selfie in blue dress , aswm.jpeg', label: 'Blue Dress', note: 'blue was never my favorite color — until i saw you in it, and suddenly it became the only color that matters' },
+        { type: 'image', file: 'ash/her selfi in black dress cute.jpeg', label: 'Black Dress', note: 'black dress, simple, elegant — and you in it, the kind of beautiful that stops time for a second' },
+        { type: 'image', file: 'ash/her selfie in grey hoodi , eyes closed , all the cutensess on her cheeks and glasses.jpeg', label: 'Grey Hoodie', note: 'eyes closed, cheeks full of cuteness, glasses on — this is the you i want to wake up to every single morning' },
+        { type: 'image', file: 'ash/her selfie in pink dress, cute.jpeg', label: 'Pink Dress', note: 'pink was always your color — but honestly, every color is your color when you are the one wearing it' },
+        { type: 'image', file: 'ash/our funny video call ss.jpeg', label: 'Video Call 1', note: 'us, being silly on a video call — these are the moments i wish i could bottle up and keep forever' },
+        { type: 'image', file: 'ash/our funny video call ss 2.jpeg', label: 'Video Call 2', note: 'another screenshot of us laughing — proof that happiness is not a place, it is a person, and that person is you' },
+        { type: 'image', file: 'ash/our funny video call ss 3.jpeg', label: 'Video Call 3', note: 'three screenshots of us, three pockets full of joy — this is what love looks like when no one is watching' },
+        { type: 'video', file: 'ash/her night video cute one.mp4', label: 'Night Cute', note: 'a quiet night, you being cute — and the whole universe paused to watch' },
+        { type: 'video', file: 'ash/her mirror pic in black dress with flowers on it.mp4', label: 'Mirror Black Dress', note: 'mirror pic in a black dress with flowers — you looking at yourself, and me wishing i was the mirror' },
+        { type: 'video', file: 'ash/her eyes.mp4', label: 'Her Eyes', note: 'her eyes. just her eyes. the kind of eyes that could make a poet out of anyone' },
+        { type: 'video', file: 'ash/her a bit younger video , looking damn cute, front.mp4', label: 'Younger Cute', note: 'a younger you, looking damn cute on camera — as if there was ever a version of you that was not adorable' },
+        { type: 'video', file: 'ash/her old video in black filter.mp4', label: 'Old Black Filter', note: 'an old video with a black filter — moody, mysterious, and still somehow the most beautiful thing i have ever seen' },
+        { type: 'video', file: 'ash/her skiiny front video.mp4', label: 'Skiiny Front', note: 'you, front and center — and i could not look away even if i tried (and i did not try)' },
+        { type: 'video', file: 'ash/her selfie video , peach dress.mp4', label: 'Peach Dress', note: 'peach dress, soft lighting, you — this is what i imagine heaven looks like' },
+        { type: 'video', file: 'ash/her toungue out video.mp4', label: 'Tongue Out', note: 'tongue out, being silly — and somehow you made that the most attractive thing in the world' },
+        { type: 'video', file: 'ash/her video inlight pink dress and pink scarf in uni , looking cute (front).mp4', label: 'Pink Uni Look', note: 'pink dress, pink scarf, university backdrop — you looked so cute i forgot what i was supposed to be looking at' },
+        { type: 'video', file: 'ash/video regarding my eyes.mp4', label: 'Regarding My Eyes', note: 'a video about my eyes — but all i could see was yours, and how they hold the whole universe when you look at me' },
+        { type: 'video', file: 'ash/she studying on her bed selfie.mp4', label: 'Studying on Bed', note: 'studying on your bed, focused and soft — you make even homework look beautiful' },
+        { type: 'video', file: 'ash/mirror pic video.mp4', label: 'Mirror Pic', note: 'mirror pic video — you, capturing yourself, and accidentally capturing my whole heart in the process' },
+        { type: 'video', file: 'ash/love video of uss.mp4', label: 'Love Video of Us', note: 'a love video of us — this is the evidence i would show the jury if they asked me what love looks like' },
+        { type: 'video', file: 'ash/her younger self video front camera.mp4', label: 'Younger Self', note: 'your younger self, on front camera — and i wish i could go back in time to tell her how loved she will be' },
+        { type: 'video', file: 'ash/my random vido.mp4', label: 'Random Video', note: 'a random video of mine — but knowing you watched it makes it the most important video i have ever made' },
+        { type: 'video', file: 'ash/eye roll video in blue dress nad dark blue scarf , looking fierce9front).mp4', label: 'Eye Roll Fierce', note: 'eye roll in blue with a dark scarf, looking absolutely fierce — and i am completely, helplessly intimidated (in love)' }
       ];
 
       var MEDIA = [];
@@ -396,27 +430,37 @@
       var currentIndex = -1;
 
       function loadMedia() {
-        return FB.get('config', 'gallery').then(function (data) {
-          if (data && data.items && data.items.length) {
-            MEDIA = data.items;
+        try {
+          FB.get('config', 'gallery').then(function (data) {
+            var existing = (data && data.items && data.items.length) ? data.items : [];
+            var fileSet = {};
+            for (var ei = 0; ei < existing.length; ei++) fileSet[existing[ei].file] = true;
             var noteMap = {};
             for (var di = 0; di < DEFAULT_MEDIA.length; di++) noteMap[DEFAULT_MEDIA[di].file] = DEFAULT_MEDIA[di].note;
             var changed = false;
-            for (var mi = 0; mi < MEDIA.length; mi++) {
-              if (!MEDIA[mi].note && noteMap[MEDIA[mi].file]) {
-                MEDIA[mi].note = noteMap[MEDIA[mi].file];
+            for (var si = 0; si < existing.length; si++) {
+              if (!existing[si].note && noteMap[existing[si].file]) {
+                existing[si].note = noteMap[existing[si].file];
                 changed = true;
               }
             }
+            for (var di = 0; di < DEFAULT_MEDIA.length; di++) {
+              if (!fileSet[DEFAULT_MEDIA[di].file]) {
+                existing.push(DEFAULT_MEDIA[di]);
+                changed = true;
+              }
+            }
+            MEDIA = existing;
             if (changed) { FB.put('config', { id: 'gallery', items: MEDIA }); }
-          } else {
+            render();
+          }).catch(function () {
             MEDIA = DEFAULT_MEDIA.slice();
-          }
-          render();
-        }).catch(function () {
+            render();
+          });
+        } catch (e) {
           MEDIA = DEFAULT_MEDIA.slice();
           render();
-        });
+        }
       }
 
       function getUrl(m) {
@@ -452,12 +496,21 @@
 
         grid.querySelectorAll('img').forEach(function (img) {
           if (img.complete) { img.classList.add('loaded'); }
-          else { img.addEventListener('load', function () { this.classList.add('loaded'); }); }
+          else {
+            img.addEventListener('load', function () { this.classList.add('loaded'); });
+            img.addEventListener('error', function () { this.classList.add('loaded'); });
+          }
         });
         grid.querySelectorAll('video').forEach(function (v) {
           if (v.readyState >= 2) { v.classList.add('loaded'); }
-          else { v.addEventListener('loadeddata', function () { this.classList.add('loaded'); }); }
+          else {
+            v.addEventListener('loadeddata', function () { this.classList.add('loaded'); });
+            v.addEventListener('error', function () { this.classList.add('loaded'); });
+          }
         });
+        setTimeout(function () {
+          grid.querySelectorAll('img:not(.loaded), video:not(.loaded)').forEach(function (el) { el.classList.add('loaded'); });
+        }, 3000);
 
         grid.querySelectorAll('.gallery-item').forEach(function (item) {
           item.addEventListener('click', function () {
@@ -539,6 +592,58 @@
       }
 
       loadMedia();
+
+      // ponytail: upload images to parallax pool
+      // stored in localStorage, content-common.js randomly assigns ~10 sections
+      var uploadBtn = document.createElement('button');
+      uploadBtn.textContent = '\uD83D\uDCC1 Use in 100 Organs';
+      uploadBtn.title = 'Upload an image to randomly appear in the 100 Organs parallax';
+      uploadBtn.style.cssText = 'background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;transition:all .25s;display:inline-block;margin:0 .4rem;';
+      var btnContainer = document.querySelector('div[style*="text-align:center"]') || document.body;
+      btnContainer.appendChild(uploadBtn);
+
+      var fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/*';
+      fileInput.multiple = true;
+      fileInput.style.display = 'none';
+      document.body.appendChild(fileInput);
+
+      uploadBtn.addEventListener('click', function () { fileInput.click(); });
+      uploadBtn.addEventListener('mouseenter', function () { this.style.borderColor = 'rgba(255,230,128,.5)'; this.style.color = '#ffe680'; });
+      uploadBtn.addEventListener('mouseleave', function () { this.style.borderColor = 'rgba(255,210,150,.2)'; this.style.color = '#c8b89e'; });
+
+      fileInput.addEventListener('change', function () {
+        var files = this.files;
+        if (!files.length) return;
+        var existing = [];
+        try { existing = JSON.parse(localStorage.getItem('ash-user-parallax') || '[]'); } catch (e) {}
+        var loaded = 0;
+        var total = files.length;
+        for (var fi = 0; fi < files.length; fi++) {
+          (function (file) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+              var dataUrl = e.target.result;
+              existing.push(dataUrl);
+              MEDIA.push({ type: 'image', fileData: dataUrl, fileType: file.type, label: 'User Upload', note: '' });
+              loaded++;
+              if (loaded === total) {
+                try {
+                  localStorage.setItem('ash-user-parallax', JSON.stringify(existing));
+                  render();
+                  uploadBtn.textContent = '\u2705 ' + total + ' added (' + existing.length + ' total)';
+                  setTimeout(function () { uploadBtn.textContent = '\uD83D\uDCC1 Use in 100 Organs'; }, 3000);
+                } catch (err) {
+                  uploadBtn.textContent = '\u26A0\uFE0F Storage full — remove some';
+                  setTimeout(function () { uploadBtn.textContent = '\uD83D\uDCC1 Use in 100 Organs'; }, 3000);
+                }
+              }
+            };
+            reader.readAsDataURL(file);
+          })(files[fi]);
+        }
+      });
     })();
   </script>
   <script defer src="music.js"></script>
@@ -547,5 +652,8 @@
       navigator.serviceWorker.register('/sw.js').catch(function () {});
     }
   </script>
+  <script src="butterfly-collection.js"></script>
+  <script src="world-progress.js"></script>
+  <script src="global-interactions.js"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 /* ===================================================================
    SKY OBSERVATORY — browse, discover, and collect skies
    Requires: skies.js (window.Skies)
-   Loads on: gallery.html only
+   Loads on: sky-observatory.html only
    =================================================================== */
 (function () {
   'use strict';
@@ -756,23 +756,25 @@
 
   /* ---------- 6. Konami Code ---------- */
   var konamiBuf = [];
-  var KONAMI = [38,38,40,40,37,39,37,39,66,65];
+  var KONAMI = ['arrowup','arrowup','arrowdown','arrowdown','arrowleft','arrowright','arrowleft','arrowright','b','a'];
   var devMode = false;
   function initKonami() {
     document.addEventListener('keydown', function(e) {
-      konamiBuf.push(e.keyCode);
+      konamiBuf.push(e.key.toLowerCase());
       if (konamiBuf.length > 10) konamiBuf.shift();
       if (konamiBuf.length === 10 && konamiBuf.every(function(v,i){return v===KONAMI[i];})) {
         konamiBuf = [];
         toggleDevMode();
       }
     });
+    console.log('Konami handler ready');
   }
   function toggleDevMode() {
     devMode = !devMode;
     if (devMode) {
       toast('\uD83D\uDD25 Developer Sky Mode ACTIVATED', 'rgba(0,200,255,0.9)', 5000);
       document.body.style.boxShadow = 'inset 0 0 100px rgba(0,255,200,0.15)';
+      document.body.style.border = '3px solid rgba(0,255,200,0.3)';
       // Apply a neon sky
       if (window.Skies && window.Skies.SKIES) {
         var neon = {gradient:[[0,"#000033"],[0.3,"#0a0a4a"],[0.6,"#151565"],[1,"#0a0a3a"]],stars:{count:200,maxY:100,minR:0.5,maxR:2.5},aurora:{colors:["rgba(0,255,200,.35)","rgba(255,0,200,.3)","rgba(0,200,255,.25)"],speed:0.08,band:100,thickness:80},name:'Developer Sky',message:'\u2728 You found the neon dimension \u2728'};
@@ -782,39 +784,8 @@
     } else {
       toast('Dev mode deactivated', 'rgba(200,0,0,0.8)', 3000);
       document.body.style.boxShadow = 'none';
+      document.body.style.border = 'none';
     }
-  }
-
-  /* ---------- 7. Lucky Star ---------- */
-  function initLuckyStar() {
-    // One random star per session
-    if (config.luckyStar && config.luckyStar.found) return;
-    var star = document.createElement('div');
-    star.textContent = '\u2B50';
-    star.style.cssText = 'position:fixed;z-index:9997;font-size:'+(14+Math.random()*10)+'px;cursor:pointer;pointer-events:auto;animation:luckyFloat 4s ease-in-out infinite;opacity:0.7;transition:all 0.3s;';
-    star.style.left = (10+Math.random()*80)+'vw';
-    star.style.top = (10+Math.random()*70)+'vh';
-    star.title = 'A lucky star \u2728';
-    star.addEventListener('click', function() {
-      var msgs = ['\u2728 You found the lucky star!','\u2B50 The star whispers: you are loved','\uD83C\uDF1F Make a wish \u2728','\u2728 This star chose you today','\u2B50 \u201cYou are someone\'s favourite thought\u201d'];
-      toast(msgs[Math.floor(Math.random()*msgs.length)], 'rgba(255,230,128,0.9)', 5000);
-      star.style.transform = 'scale(2)';
-      star.style.opacity = '0';
-      setTimeout(function() { star.remove(); }, 1000);
-      config.luckyStar.found = true;
-      save();
-    });
-    document.body.appendChild(star);
-
-    // Sparkle trail on hover
-    star.addEventListener('mouseenter', function() {
-      star.style.opacity = '1';
-      star.style.transform = 'scale(1.3)';
-    });
-    star.addEventListener('mouseleave', function() {
-      star.style.opacity = '0.7';
-      star.style.transform = 'scale(1)';
-    });
   }
 
   /* ---------- 8. Double Rainbow ---------- */
@@ -848,40 +819,6 @@
     if (double) toast('\uD83C\uDF08 DOUBLE RAINBOW! \uD83C\uDF08', 'rgba(255,200,100,0.9)', 6000);
   }
 
-  /* ---------- 9. Coffee Break ---------- */
-  var coffeeTimer = null;
-  function initCoffeeBreak() {
-    var startTime = Date.now();
-    coffeeTimer = setTimeout(function() {
-      showCoffee();
-    }, 20*60*1000); // 20 minutes
-
-    document.addEventListener('click', function() {
-      if (coffeeTimer) { clearTimeout(coffeeTimer); }
-      // Reset: show coffee 20min from last interaction
-      var elapsed = Date.now() - startTime;
-      var remaining = Math.max(0, 20*60*1000 - elapsed);
-      coffeeTimer = setTimeout(function() { showCoffee(); }, remaining);
-    });
-  }
-
-  function showCoffee() {
-    var cup = document.createElement('div');
-    cup.innerHTML = '<div style="text-align:center;">' +
-      '<div style="font-size:3rem;animation:coffeeBounce 1.5s ease-in-out infinite;">\u2615</div>' +
-      '<p style="font-family:var(--font-display);color:var(--parchment);margin:0.5rem 0 0;font-size:0.9rem;">Time for a coffee break?</p>' +
-      '<p style="font-size:0.75rem;color:var(--ash);margin:0.3rem 0 0;">You have been exploring for a while \u2728</p>' +
-    '</div>';
-    cup.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:99999;background:var(--ink-soft);border:1px solid var(--gold);border-radius:16px;padding:2rem;box-shadow:0 8px 40px rgba(0,0,0,.7);animation:fadeIn 0.5s ease;';
-    cup.addEventListener('click', function() { cup.remove(); });
-    document.body.appendChild(cup);
-    setTimeout(function() {
-      cup.style.opacity = '0';
-      cup.style.transition = 'opacity 0.5s';
-      setTimeout(function() { cup.remove(); }, 600);
-    }, 8000);
-  }
-
   /* ---------- 10. Progress Memories ---------- */
   function initProgress() {
     var el = document.createElement('div');
@@ -900,7 +837,7 @@
       var total = 0, viewed = 0;
       var loaded = 0;
       pages.forEach(function(p) {
-        var vk = 'ash-viewed-' + p.file.replace(/[^a-z0-9]/gi,'_');
+        var vk = 'ash-viewed-' + ('/' + p.file).replace(/[^a-z0-9]/gi,'_');
         var lk = vk + '_count';
         try {
           var v = JSON.parse(localStorage.getItem(vk) || '[]');
@@ -942,31 +879,6 @@
      ===================================================== */
 
   /* ---------- 11. Feather Collector ---------- */
-  function initFeatherCollector() {
-    setInterval(function() {
-      if (Math.random() > 0.008) return;
-      var f = document.createElement('div');
-      f.textContent = '\uD83E\uDEB6';
-      var startX = 5 + Math.random() * 80;
-      f.style.cssText = 'position:fixed;top:-20px;left:'+startX+'vw;font-size:'+(12+Math.random()*10)+'px;z-index:9996;pointer-events:auto;cursor:pointer;opacity:0.7;transition:all 4s linear;';
-      document.body.appendChild(f);
-      requestAnimationFrame(function() {
-        f.style.top = (window.innerHeight + 20) + 'px';
-        f.style.left = (startX + (Math.random()-0.5)*15) + 'vw';
-      });
-      f.addEventListener('click', function() {
-        config.feathers.count = (config.feathers.count || 0) + 1;
-        save();
-        var rewards = {3:'\uD83E\uDEB6 3 feathers \u2014 the breeze notices you',7:'\uD83E\uDEB6 7 feathers \u2014 you are becoming lighter',15:'\uD83E\uDEB6 15 feathers \u2014 almost floating',30:'\uD83E\uDEB6 30 feathers \u2014 you could fly'};
-        var msg = null;
-        for (var rk in rewards) { if (config.feathers.count == rk) msg = rewards[rk]; }
-        toast(msg || '\uD83E\uDEB6 +1 feather ('+config.feathers.count+')', 'rgba(200,180,150,0.8)', 2000);
-        f.remove();
-      });
-      setTimeout(function() { if (f.parentNode) f.remove(); }, 5000);
-    }, 12000);
-  }
-
   /* ---------- 12. Daily Sky ---------- */
   function initDailySky() {
     var SKIES = window.Skies && window.Skies.SKIES;
@@ -1005,42 +917,59 @@
 
   /* ---------- 14. Firefly Jar ---------- */
   function initFireflyJar() {
+    var JAR_SVG = '<svg width="28" height="32" viewBox="0 0 28 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="0" width="16" height="4" rx="1" fill="#b8860b"/><rect x="4" y="4" width="20" height="2" rx="1" fill="#daa520"/><path d="M4 6C4 6 2 10 2 18C2 24 6 28 14 28C22 28 26 24 26 18C26 10 24 6 24 6H4Z" fill="rgba(255,230,100,0.15)" stroke="#daa520" stroke-width="1.5"/><ellipse cx="14" cy="20" rx="3" ry="4" fill="rgba(255,230,100,0.6)"><animate attributeName="opacity" values="0.4;0.8;0.4" dur="2s" repeatCount="indefinite"/></ellipse></svg>';
+    var FIREFLY_SVG = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="8" cy="10" rx="2" ry="3" fill="#2a1a00"/><ellipse cx="8" cy="10" rx="1.5" ry="2.5" fill="#3d2b00"/><circle cx="8" cy="12" r="2.5" fill="%GLOW%"><animate attributeName="r" values="2;3;2" dur="1.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.7;1;0.7" dur="1.5s" repeatCount="indefinite"/></circle><ellipse cx="5.5" cy="7" rx="2.5" ry="1.5" fill="rgba(200,220,255,0.35)" transform="rotate(-20 5.5 7)"/><ellipse cx="10.5" cy="7" rx="2.5" ry="1.5" fill="rgba(200,220,255,0.35)" transform="rotate(20 10.5 7)"/><circle cx="7" cy="8.5" r="0.5" fill="#111"/><circle cx="9" cy="8.5" r="0.5" fill="#111"/></svg>';
+
+    function makeFireflySVG() {
+      var hue = 40 + Math.random() * 20;
+      return FIREFLY_SVG.replace('%GLOW%', 'hsl('+hue+',100%,60%)');
+    }
+
     var jar = document.createElement('div');
     jar.id = 'obsFireflyJar';
-    jar.title = 'Firefly Jar \u2728';
-    jar.style.cssText = 'position:fixed;bottom:12rem;left:1rem;z-index:100;font-size:1.5rem;cursor:pointer;transition:all 0.5s;';
-    jar.textContent = '\uD83C\uDFF6\uFE0F';
+    jar.title = 'Firefly Jar';
+    jar.style.cssText = 'position:fixed;bottom:15rem;left:1rem;z-index:99999;cursor:pointer;transition:all 0.5s;';
+    jar.innerHTML = JAR_SVG;
     document.body.appendChild(jar);
     jar.addEventListener('click', function() {
       var count = config.fireflies.caught || 0;
-      toast('\uD83C\uDFF6\uFE0F Firefly Jar: '+count+' fireflies'+(count>=10?' \u2728 the jar glows!':''), 'rgba(255,230,100,0.8)', 3000);
+      toast('Firefly Jar: '+count+' fireflies'+(count>=10?' the jar glows!':''), 'rgba(255,230,100,0.8)', 3000);
     });
     function updateJar() {
       var count = config.fireflies.caught || 0;
       var bright = Math.min(1, count / 15);
-      jar.style.textShadow = '0 0 '+(5+bright*25)+'px rgba(255,230,100,'+(0.2+bright*0.6)+')';
-      jar.style.filter = 'brightness('+(0.7+bright*0.5)+')';
+      jar.style.filter = 'drop-shadow(0 0 '+(3+bright*12)+'px rgba(255,230,100,'+(0.2+bright*0.6)+')) brightness('+(0.8+bright*0.4)+')';
     }
     setInterval(function() {
-      if (Math.random() > 0.004) return;
+      if (Math.random() > 0.30) return;
+      var startX = 5 + Math.random() * 90;
+      var startY = 10 + Math.random() * 60;
       var ff = document.createElement('div');
-      ff.textContent = '\u2728';
-      ff.style.cssText = 'position:fixed;z-index:9995;font-size:'+(10+Math.random()*8)+'px;pointer-events:auto;cursor:pointer;opacity:0.8;transition:all 3s ease-in-out;';
-      ff.style.left = (5+Math.random()*90)+'vw';
-      ff.style.top = (10+Math.random()*60)+'vh';
+      ff.innerHTML = makeFireflySVG();
+      ff.style.cssText = 'position:fixed;z-index:9995;pointer-events:auto;cursor:pointer;opacity:0.85;transition:opacity 0.8s ease;will-change:transform;filter:drop-shadow(0 0 4px rgba(255,230,100,0.6));';
+      ff.style.left = startX + 'vw';
+      ff.style.top = startY + 'vh';
       document.body.appendChild(ff);
+      var rect = ff.getBoundingClientRect();
+      ff.style.left = rect.left + 'px';
+      ff.style.top = rect.top + 'px';
+      ff.style.transition = 'left 3s ease-in-out, top 3s ease-in-out, opacity 0.8s ease';
       var drift = setInterval(function() {
         if (!ff.parentNode) { clearInterval(drift); return; }
-        ff.style.top = (parseFloat(ff.style.top) + (Math.random()-0.5)*20) + 'px';
-        ff.style.left = (parseFloat(ff.style.left) + (Math.random()-0.5)*20) + 'px';
-      }, 800);
+        var curLeft = parseFloat(ff.style.left) || 0;
+        var curTop = parseFloat(ff.style.top) || 0;
+        var newLeft = Math.max(20, Math.min(window.innerWidth - 40, curLeft + (Math.random() - 0.5) * 120));
+        var newTop = Math.max(20, Math.min(window.innerHeight - 40, curTop + (Math.random() - 0.5) * 80));
+        ff.style.left = newLeft + 'px';
+        ff.style.top = newTop + 'px';
+      }, 2500);
       ff.addEventListener('click', function() {
         clearInterval(drift);
         config.fireflies.caught = (config.fireflies.caught || 0) + 1;
         save();
         updateJar();
-        toast('\u2728 Caught! ('+config.fireflies.caught+')', 'rgba(255,230,100,0.7)', 1200);
-        ff.style.transform = 'scale(2)';
+        toast('Caught! ('+config.fireflies.caught+')', 'rgba(255,230,100,0.7)', 1200);
+        ff.style.transform = 'scale(2.5)';
         ff.style.opacity = '0';
         setTimeout(function() { if (ff.parentNode) ff.remove(); }, 400);
       });
@@ -1049,9 +978,10 @@
         clearInterval(drift);
         ff.style.opacity = '0';
         setTimeout(function() { if (ff.parentNode) ff.remove(); }, 1000);
-      }, 8000);
-    }, 10000);
+      }, 12000);
+    }, 3000);
     updateJar();
+    window._obsFireflyJar = { updateJar: updateJar, getConfig: function() { return config; } };
   }
 
   /* ---------- 15. Fortune Scroll ---------- */
@@ -1119,40 +1049,6 @@
   }
 
   /* ---------- 17. Lost Balloon ---------- */
-  function initLostBalloon() {
-    var balloonMsgs = [
-      'I wonder who is looking at this sky too...',
-      'If you find this, know that someone loves you.',
-      'The higher we go, the smaller our problems seem.',
-      'I wish I could stay up here forever.',
-      'Hello, stranger. I hope your day is beautiful.',
-      'This balloon has travelled further than I ever have.',
-      'Let go of what holds you down.',
-      'Somewhere, someone is waiting for a sign. This is it.'
-    ];
-    setInterval(function() {
-      if (Math.random() > 0.003) return;
-      var balloon = document.createElement('div');
-      balloon.textContent = '\uD83C\uDF88';
-      balloon.style.cssText = 'position:fixed;bottom:-40px;left:'+(10+Math.random()*60)+'vw;font-size:2rem;z-index:9995;pointer-events:auto;cursor:pointer;transition:all 12s linear;opacity:0.8;';
-      document.body.appendChild(balloon);
-      requestAnimationFrame(function() {
-        balloon.style.bottom = (window.innerHeight + 60) + 'px';
-        balloon.style.left = (parseFloat(balloon.style.left) + (Math.random()-0.5)*100) + 'px';
-      });
-      balloon.addEventListener('click', function() {
-        var msg = balloonMsgs[Math.floor(Math.random()*balloonMsgs.length)];
-        toast('\uD83C\uDF88 '+msg, 'rgba(200,180,220,0.85)', 5000);
-        balloon.style.transform = 'scale(0.3)';
-        balloon.style.opacity = '0';
-        setTimeout(function() { if (balloon.parentNode) balloon.remove(); }, 800);
-      });
-      setTimeout(function() {
-        if (balloon.parentNode) { balloon.style.opacity = '0'; setTimeout(function() { if (balloon.parentNode) balloon.remove(); }, 1500); }
-      }, 14000);
-    }, 18000);
-  }
-
   /* ---------- 18. Make A Wish ---------- */
   function initMakeAWish() {
     var wishTimeout = null;
@@ -1468,93 +1364,8 @@
     }, 20000);
   }
 
-  /* ---------- 25. Silent Owl ---------- */
-  function initSilentOwl() {
-    setInterval(function() {
-      var sky = getCurrentSkyObj();
-      if (!sky) return;
-      var cat = getCategory(sky);
-      var isNight = cat === 'Night' || cat === 'Cosmic' || cat === 'Aurora';
-      if (!isNight) return;
-      if (Math.random() > 0.004) return;
-      var owl = document.createElement('div');
-      owl.textContent = '\uD83E\uDD89';
-      owl.style.cssText = 'position:fixed;top:-50px;left:'+(10+Math.random()*60)+'vw;font-size:2rem;z-index:9996;pointer-events:auto;cursor:pointer;transition:all 3s ease-in;opacity:0;';
-      document.body.appendChild(owl);
-      requestAnimationFrame(function() { owl.style.top = (15+Math.random()*30)+'vh'; owl.style.opacity = '0.8'; });
-      owl.addEventListener('click', function() {
-        toast('\uD83E\uDD89 The owl looks at you knowingly...', 'rgba(150,150,200,0.8)', 3000);
-        owl.style.transition = 'all 1s ease-out';
-        owl.style.top = '-80px';
-        owl.style.opacity = '0';
-        setTimeout(function() { if (owl.parentNode) owl.remove(); }, 1500);
-      });
-      setTimeout(function() {
-        if (owl.parentNode) {
-          owl.style.transition = 'all 1.5s ease-out';
-          owl.style.top = '-80px';
-          owl.style.opacity = '0';
-          setTimeout(function() { if (owl.parentNode) owl.remove(); }, 2000);
-        }
-      }, 6000);
-    }, 15000);
-  }
-
+  /* ---------- 25. (removed - Silent Owl) ---------- */
   /* ---------- 26. Puzzle Fragments ---------- */
-  function initPuzzleFragments() {
-    var fragments = [
-      { id: 1, msg: 'Fragment of Dawn \u2014 the first light remembers' },
-      { id: 2, msg: 'Fragment of Dusk \u2014 the last sigh of day' },
-      { id: 3, msg: 'Fragment of Storm \u2014 chaos has a pattern' },
-      { id: 4, msg: 'Fragment of Stars \u2014 each one a witness' },
-      { id: 5, msg: 'Fragment of Rain \u2014 tears that nourish' },
-      { id: 6, msg: 'Fragment of Aurora \u2014 the sky is alive' },
-      { id: 7, msg: 'Fragment of Silence \u2014 the loudest truth' },
-      { id: 8, msg: 'Fragment of Light \u2014 found at last' }
-    ];
-    // After sky apply, small chance to find a fragment
-    _afterApply.push(function(idx) {
-      if (!config.fragments) config.fragments = [];
-      if (config.fragments.length >= fragments.length) return;
-      if (Math.random() > 0.08) return;
-      var SKIES = window.Skies && window.Skies.SKIES;
-      if (!SKIES || !SKIES[idx]) return;
-      var sky = SKIES[idx];
-      var cat = getCategory(sky);
-      // Pick a fragment matching the sky type
-      var candidates = [];
-      for (var fi=0;fi<fragments.length;fi++) {
-        var already = false;
-        for (var cfi=0;cfi<config.fragments.length;cfi++) { if (config.fragments[cfi].id === fragments[fi].id) { already = true; break; } }
-        if (!already) candidates.push(fragments[fi]);
-      }
-      if (!candidates.length) return;
-      var f = candidates[Math.floor(Math.random()*candidates.length)];
-      config.fragments.push(f);
-      save();
-      toast('\uD83E\uDDE9 ' + f.msg + ' (' + config.fragments.length + '/' + fragments.length + ')', 'rgba(200,180,255,0.85)', 5000);
-      if (config.fragments.length === fragments.length) {
-        setTimeout(function() {
-          toast('\uD83C\uDF1F ALL FRAGMENTS COLLECTED! The sky reveals its secret...', 'rgba(255,230,128,0.95)', 6000);
-          // Apply a special reward sky
-          var rewardSky = {
-            gradient: [[0,'#1a0033'],[0.3,'#2d1b4e'],[0.6,'#4a2c6e'],[1,'#1a0033']],
-            stars: { count: 300, maxY: 100, minR: 0.5, maxR: 3 },
-            aurora: { colors: ['rgba(200,150,255,.4)','rgba(255,200,255,.3)','rgba(150,100,255,.25)','rgba(255,150,200,.2)'], speed: 0.05, band: 120, thickness: 100 },
-            lights: [{ x: 0.5, y: 0.3, r: 0.15, core: '#ffd700', glow: 'rgba(255,215,0,0.3)' }],
-            particles: [{ type: 'stars', count: 50, maxY: 100, minR: 1, maxR: 2.5 }],
-            name: 'The Hidden Sky \u2728',
-            message: 'You found every piece. This sky is yours.'
-          };
-          if (window.Skies) {
-            window.Skies.SKIES.push(rewardSky);
-            window.Skies.apply(window.Skies.SKIES.length-1);
-          }
-        }, 1000);
-      }
-    });
-  }
-
   /* ---------- 27. Growing Vine ---------- */
   var vineEl = null;
   function initGrowingVine() {
@@ -1734,17 +1545,13 @@
     initLandscapeToggle();
     initHiddenRadio();
     initKonami();
-    initLuckyStar();
     initDoubleRainbow();
-    initCoffeeBreak();
     initProgress();
 
-    initFeatherCollector();
     initDailySky();
     initFireflyJar();
     initFortuneScroll();
     initEarthView();
-    initLostBalloon();
     initMakeAWish();
     initFloatingHearts();
     initScreenshotMode();
@@ -1752,8 +1559,6 @@
     initConstellationNames();
     initMusicSync();
     initFloatingLetters();
-    initSilentOwl();
-    initPuzzleFragments();
     initGrowingVine();
     initBubbleMessages();
     initSeasonalGrading();

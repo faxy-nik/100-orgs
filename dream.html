@@ -10,7 +10,7 @@
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,500;1,300;1,500&display=swap');
   * { margin:0; padding:0; box-sizing:border-box; }
   body {
-    background:#181214; color:#ffebd2; font-family:Fraunces,Georgia,serif;
+    background:#1f1a24; color:#ffebd2; font-family:Fraunces,Georgia,serif;
     overflow-x:hidden; min-height:100vh;
   }
   ::-webkit-scrollbar { width:4px; }
@@ -106,23 +106,194 @@
     75% { transform:translate(20px, -10px); }
   }
 
-  /* soft overlay glow */
-  #dreamGlow {
-    position:fixed; inset:0; z-index:0; pointer-events:none;
-    background:radial-gradient(ellipse at 50% 30%, rgba(200,150,255,0.03) 0%, transparent 60%);
+
+  /* dream page handles its own audio — hide jukebox UI */
+  #jukeboxBtn, #jukeboxOverlay, #jukeboxPanel, #jukeboxMini { display:none !important; }
+
+  /* ===== Lantern System ===== */
+  .lantern-section {
+    margin-top:3rem; width:100%; max-width:700px;
+    opacity:1; transform:translateY(0);
+  }
+
+  .lantern-heading {
+    font-size:clamp(1rem, 3vw, 1.4rem); font-weight:300; font-style:italic;
+    color:#c8b89e; text-align:center; margin-bottom:1.5rem; opacity:0.8;
+  }
+
+  .lantern-list {
+    display:flex; flex-direction:column; gap:1rem; align-items:center;
+  }
+
+  .lantern-card {
+    background:rgba(255,220,160,0.04); border:1px solid rgba(255,210,150,0.1);
+    border-radius:12px; padding:1rem 1.5rem; width:100%; max-width:500px;
+    cursor:pointer; transition:all 0.4s;
+    position:relative; overflow:hidden;
+  }
+  .lantern-card:hover {
+    border-color:rgba(255,210,150,0.3);
+    background:rgba(255,220,160,0.08);
+  }
+  .lantern-card.selected {
+    border-color:rgba(255,210,150,0.5);
+    background:rgba(255,220,160,0.1);
+    box-shadow:0 0 30px rgba(255,200,150,0.1);
+  }
+
+  .lantern-wish {
+    font-size:0.95rem; font-style:italic; color:#c8b89e; line-height:1.6;
+  }
+
+  .lantern-controls {
+    margin-top:0.8rem; display:none; flex-direction:column; gap:0.6rem;
+  }
+  .lantern-card.selected .lantern-controls { display:flex; }
+
+  .lantern-row {
+    display:flex; align-items:center; gap:0.8rem; font-size:0.8rem; color:#8a7e70;
+  }
+  .lantern-row label { min-width:50px; }
+  .lantern-colors {
+    display:flex; gap:0.4rem;
+  }
+  .lantern-color-swatch {
+    width:22px; height:22px; border-radius:50%; border:2px solid transparent;
+    cursor:pointer; transition:all 0.3s;
+  }
+  .lantern-color-swatch.active { border-color:#fff; transform:scale(1.2); }
+
+  .lantern-slider {
+    -webkit-appearance:none; appearance:none; width:120px; height:3px;
+    background:rgba(255,210,150,0.2); border-radius:2px; outline:none;
+  }
+  .lantern-slider::-webkit-slider-thumb {
+    -webkit-appearance:none; width:12px; height:12px; border-radius:50%;
+    background:#ffe680; cursor:pointer;
+  }
+
+  .lantern-release-btn {
+    margin-top:0.5rem; padding:0.5rem 1.2rem;
+    background:rgba(255,220,160,0.1); border:1px solid rgba(255,210,150,0.25);
+    color:#ffe680; border-radius:6px; cursor:pointer;
+    font-family:Fraunces,Georgia,serif; font-size:0.85rem; font-style:italic;
+    transition:all 0.3s; align-self:center;
+  }
+  .lantern-release-btn:hover {
+    background:rgba(255,220,160,0.2); border-color:#ffe680;
+    box-shadow:0 0 20px rgba(255,200,150,0.15);
+  }
+  .lantern-release-btn:disabled { opacity:0.3; cursor:default; }
+
+  .lantern-count {
+    font-size:0.75rem; color:#6b5f52; text-align:center; margin-top:0.8rem; font-style:italic;
+  }
+
+  .lantern-empty {
+    text-align:center; font-style:italic; color:#6b5f52; font-size:0.9rem;
+    margin-top:1rem; opacity:0.7;
+  }
+
+  /* Released lantern floating up */
+  .lantern-float {
+    position:fixed; pointer-events:none; z-index:10;
+    font-size:28px; transition:none;
+    animation:lanternRise 4s ease-out forwards;
+  }
+  @keyframes lanternRise {
+    0% { opacity:1; transform:translateY(0) scale(1); }
+    70% { opacity:0.8; }
+    100% { opacity:0; transform:translateY(-85vh) scale(0.5); }
+  }
+
+  /* Sparkle on reload */
+  .sparkle {
+    position:fixed; pointer-events:none; z-index:10;
+    width:4px; height:4px; border-radius:50%;
+    background:#ffe680; box-shadow:0 0 6px #ffe680;
+    animation:sparklePop 1.2s ease-out forwards;
+  }
+  @keyframes sparklePop {
+    0% { opacity:0; transform:scale(0); }
+    30% { opacity:1; transform:scale(1.5); }
+    100% { opacity:0; transform:scale(0); }
+  }
+
+  /* Lantern History */
+  .lantern-history {
+    margin-top:3rem; width:100%; max-width:500px;
+    opacity:0; transform:translateY(20px);
+    transition:opacity 2s ease 3s, transform 2s ease 3s;
+  }
+  .lantern-history.visible { opacity:1; transform:translateY(0); }
+
+  .lantern-history-heading {
+    font-size:0.85rem; font-weight:300; font-style:italic;
+    color:#6b5f52; text-align:center; margin-bottom:1rem;
+    letter-spacing:0.05em;
+  }
+
+  .lantern-history-list {
+    display:flex; flex-direction:column; gap:0.6rem; align-items:center;
+  }
+
+  .lantern-history-item {
+    display:flex; align-items:center; gap:0.8rem;
+    padding:0.6rem 1rem; border-radius:8px;
+    background:rgba(255,220,160,0.03); border:1px solid rgba(255,210,150,0.06);
+    width:100%; max-width:460px;
+    opacity:0; transform:translateY(10px);
+    transition:opacity 1s ease, transform 1s ease;
+  }
+  .lantern-history-item.visible { opacity:0.8; transform:translateY(0); }
+
+  .lantern-history-icon {
+    font-size:18px; flex-shrink:0;
+    filter:drop-shadow(0 0 4px rgba(255,200,150,0.3));
+  }
+
+  .lantern-history-body {
+    flex:1; min-width:0;
+  }
+
+  .lantern-history-wish {
+    font-size:0.82rem; font-style:italic; color:#a89a88;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+
+  .lantern-history-meta {
+    font-size:0.68rem; color:#5a5048; margin-top:0.15rem;
+  }
+
+  .lantern-history-empty {
+    text-align:center; font-style:italic; color:#5a5048; font-size:0.8rem;
+    opacity:0.5; padding:1rem 0;
   }
 </style>
 </head>
 <body>
 
-<div id="skyOverlay" style="position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.5;"></div>
-<div id="dreamGlow"></div>
+<div id="skyOverlay" style="position:fixed;inset:0;z-index:1;pointer-events:none;opacity:1;"></div>
+<!-- dream overlay glow removed -->
 
 <div id="dreamContent">
   <div class="dream-title">A Dream of You</div>
   <div class="dream-subtitle">Where every thought of you floats softly in the light</div>
 
   <div class="dream-gallery" id="dreamGallery"></div>
+
+  <div class="lantern-section" id="lanternSection" style="opacity:1;transform:none;">
+    <div class="lantern-heading">Release a wish into the sky</div>
+    <div class="lantern-list" id="lanternList">
+      <div style="text-align:center;color:#6b5f52;font-style:italic;font-size:0.85rem;padding:1rem;">Loading wishes...</div>
+    </div>
+    <div class="lantern-count" id="lanternCount"></div>
+  </div>
+
+  <div class="lantern-history" id="lanternHistory">
+    <div class="lantern-history-heading">wishes released into the sky</div>
+    <div class="lantern-history-list" id="lanternHistoryList"></div>
+  </div>
 
   <div class="dream-message" id="dreamMessage">
     "In my dreams, you are always here —<br>
@@ -140,35 +311,28 @@
 <script src="skies.js"></script>
 <script src="sky-living.js"></script>
 <script src="landscape.js"></script>
-<script src="interactive.js"></script>
-<script src="track.js"></script>
+  <script src="interactive.js"></script>
   <script defer src="music.js"></script>
-<script src="matrix-rain.js"></script>
-<script src="global-easter-eggs.js"></script>
+  <script defer src="matrix-rain.js"></script>
+  <script defer src="global-easter-eggs.js"></script>
 
 <script>
 (function () {
   'use strict';
-  var dreamSkyIndex = -1;
-  var DREAM_SKIES = ['Dream Clouds', 'Cotton Candy Dream', 'Celestial Heaven', 'Infinite Love', 'Floating Lanterns'];
+  // Track dream page visit
+  try { localStorage.setItem('ash-viewed-dream', '1'); } catch (e) {}
 
-  // find dream skies
+  // Inject Floating Lanterns sky (removed from global skies.js, dream-only)
+  var LANTERN_SKY = {"gradient": [[0, "#1a1030"], [0.35, "#33163c"], [0.7, "#5c2a3e"], [1, "#7a3a2e"]], "particles": [{"type": "ember", "count": 22, "minR": 7, "maxR": 14, "minSpeed": 3, "maxSpeed": 8, "color": "#ffb35c"}], "name": "Floating Lanterns", "message": "I keep sending my wishes up to you, one lantern at a time"};
   var skies = window.Skies && window.Skies.SKIES;
   if (skies) {
-    for (var i = 0; i < skies.length; i++) {
-      if (DREAM_SKIES.indexOf(skies[i].name) !== -1) {
-        dreamSkyIndex = i;
-        break;
-      }
-    }
-    if (dreamSkyIndex >= 0) {
-      window.Skies.apply(dreamSkyIndex);
-    }
+    skies.push(LANTERN_SKY);
+    try { window.Skies.apply(skies.length - 1); } catch (e) {}
   }
 
   // ===== Floating parallax images =====
   var ASH_IMAGES = [];
-  for (var ai = 1; ai <= 13; ai++) ASH_IMAGES.push('./ash/ash' + ai + '.jpeg');
+  for (var ai = 1; ai <= 11; ai++) ASH_IMAGES.push('./ash/ash' + ai + '.jpeg');
   ASH_IMAGES.push('./ash/ash_childhood.jpeg', './ash/ash_childhood1.jpeg', './ash/ash_childhood2.jpeg', './ash/ash_childhood3.jpeg');
 
   var gallery = document.getElementById('dreamGallery');
@@ -223,18 +387,9 @@
     orbs.push(orb);
   }
 
-  // ===== Cinematic overlay light =====
-  var glow = document.getElementById('dreamGlow');
-  document.addEventListener('mousemove', function (e) {
-    var x = e.clientX / window.innerWidth;
-    var y = e.clientY / window.innerHeight;
-    glow.style.background = 'radial-gradient(ellipse at ' + (x * 100) + '% ' + (y * 100) + '%, ' +
-      'rgba(255,200,150,0.04) 0%, transparent 50%)';
-  });
-
   // ===== Audio: try to load a song =====
   if (window.FB && FB.init) {
-    FB.init();
+    try { FB.init(); } catch (e) {}
     FB.getAll('songs').then(function (songs) {
       if (songs && songs.length) {
         var pick = songs[Math.floor(Math.random() * songs.length)];
@@ -260,5 +415,296 @@
   });
 })();
 </script>
+
+<script>
+(function () {
+  'use strict';
+
+  // ponytail: defensive try-catch — if this script is reached by a later
+  // DOMContentLoaded fallback, the outer catch prevents silent failures.
+  try {
+
+  // ===== Lantern System =====
+  var LANTERN_COLORS = [
+    { name: 'Gold', hex: '#ffe680', glow: 'rgba(255,230,128,0.4)' },
+    { name: 'Rose', hex: '#ffaaaa', glow: 'rgba(255,170,170,0.4)' },
+    { name: 'Lavender', hex: '#c8a8ff', glow: 'rgba(200,168,255,0.4)' },
+    { name: 'Sky', hex: '#a8d8ff', glow: 'rgba(168,216,255,0.4)' },
+    { name: 'Peach', hex: '#ffd0a8', glow: 'rgba(255,208,168,0.4)' },
+    { name: 'Mint', hex: '#a8ffd8', glow: 'rgba(168,255,216,0.4)' }
+  ];
+  var MAX_RELEASED = 2;
+
+  function getWishes() {
+    try {
+      var w = JSON.parse(localStorage.getItem('ash-wish-journal') || '[]');
+      if (w.length > 0) return w;
+    } catch (e) {}
+    // fallback: demo wishes so lantern UI always shows
+    return [
+      { id: 'demo1', text: 'I wish to hold your hand under the stars', granted: true, createdAt: Date.now() - 86400000 },
+      { id: 'demo2', text: 'I wish every sunset reminded you of me', granted: true, createdAt: Date.now() - 43200000 },
+      { id: 'demo3', text: 'I wish you dreams full of light', granted: true, createdAt: Date.now() }
+    ];
+  }
+  function getReleased() {
+    try {
+      var raw = JSON.parse(localStorage.getItem('ash-lanterns-released') || '[]');
+      // normalize: old entries were plain strings, new ones are objects
+      return raw.map(function (item) {
+        if (typeof item === 'string') return { wish: item, color: '#ffe680', glow: 0.6, time: 0 };
+        return item;
+      });
+    } catch (e) { return []; }
+  }
+  function saveReleased(arr) {
+    localStorage.setItem('ash-lanterns-released', JSON.stringify(arr));
+  }
+
+  function renderLanterns() {
+    var list = document.getElementById('lanternList');
+    var countEl = document.getElementById('lanternCount');
+    var section = document.getElementById('lanternSection');
+    var wishes = getWishes();
+    var released = getReleased();
+    var releasedTexts = released.map(function (r) { return r.wish; });
+    var ungranted = wishes.filter(function (w) {
+      return releasedTexts.indexOf(w.text) === -1;
+    });
+
+    if (wishes.length === 0) {
+      section.style.display = 'none';
+      return;
+    }
+    if (ungranted.length === 0) {
+      list.innerHTML = '<div class="lantern-empty">All wishes have been released as lanterns</div>';
+      section.style.display = '';
+      setTimeout(function () { section.classList.add('visible'); }, 100);
+      countEl.textContent = '';
+      return;
+    }
+    section.style.display = '';
+    setTimeout(function () { section.classList.add('visible'); }, 100);
+
+    list.innerHTML = '';
+    var remaining = MAX_RELEASED - released.length;
+
+    ungranted.forEach(function (wish, idx) {
+      var card = document.createElement('div');
+      card.className = 'lantern-card';
+      card.dataset.wish = wish.text;
+
+      var wishEl = document.createElement('div');
+      wishEl.className = 'lantern-wish';
+      wishEl.textContent = wish.text;
+      card.appendChild(wishEl);
+
+      var controls = document.createElement('div');
+      controls.className = 'lantern-controls';
+
+      // color row
+      var colorRow = document.createElement('div');
+      colorRow.className = 'lantern-row';
+      var colorLabel = document.createElement('label');
+      colorLabel.textContent = 'Color';
+      colorRow.appendChild(colorLabel);
+      var colorsDiv = document.createElement('div');
+      colorsDiv.className = 'lantern-colors';
+      var selectedColor = 0;
+      LANTERN_COLORS.forEach(function (c, ci) {
+        var swatch = document.createElement('div');
+        swatch.className = 'lantern-color-swatch' + (ci === 0 ? ' active' : '');
+        swatch.style.background = c.hex;
+        swatch.style.boxShadow = '0 0 8px ' + c.glow;
+        swatch.addEventListener('click', function () {
+          colorsDiv.querySelectorAll('.lantern-color-swatch').forEach(function (s) { s.classList.remove('active'); });
+          swatch.classList.add('active');
+          selectedColor = ci;
+          card.dataset.color = ci;
+        });
+        colorsDiv.appendChild(swatch);
+      });
+      colorRow.appendChild(colorsDiv);
+      controls.appendChild(colorRow);
+
+      // glow row
+      var glowRow = document.createElement('div');
+      glowRow.className = 'lantern-row';
+      var glowLabel = document.createElement('label');
+      glowLabel.textContent = 'Glow';
+      glowRow.appendChild(glowLabel);
+      var slider = document.createElement('input');
+      slider.type = 'range'; slider.min = '0'; slider.max = '100'; slider.value = '60';
+      slider.className = 'lantern-slider';
+      glowRow.appendChild(slider);
+      controls.appendChild(glowRow);
+
+      // release button
+      var btn = document.createElement('button');
+      btn.className = 'lantern-release-btn';
+      btn.textContent = 'Release into the sky';
+      btn.disabled = remaining <= 0;
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        releaseLantern(wish.text, selectedColor, parseInt(slider.value) / 100, card);
+      });
+      controls.appendChild(btn);
+
+      card.appendChild(controls);
+
+      card.addEventListener('click', function () {
+        var wasSelected = card.classList.contains('selected');
+        list.querySelectorAll('.lantern-card').forEach(function (c) { c.classList.remove('selected'); });
+        if (!wasSelected) card.classList.add('selected');
+      });
+
+      list.appendChild(card);
+    });
+
+    countEl.textContent = remaining > 0
+      ? remaining + ' wishes can be released'
+      : 'All wishes have been released';
+  }
+
+  function releaseLantern(wishText, colorIdx, glowIntensity, cardEl) {
+    var released = getReleased();
+    if (released.length >= MAX_RELEASED) return;
+    var color = LANTERN_COLORS[colorIdx] || LANTERN_COLORS[0];
+    released.push({ wish: wishText, color: color.hex, glow: glowIntensity, time: Date.now() });
+    saveReleased(released);
+
+    var rect = cardEl.getBoundingClientRect();
+    var cx = rect.left + rect.width / 2;
+    var cy = rect.top;
+
+    // floating lantern
+    var lantern = document.createElement('div');
+    lantern.className = 'lantern-float';
+    lantern.textContent = '\uD83C\uDFEE';
+    lantern.style.left = cx + 'px';
+    lantern.style.top = cy + 'px';
+    lantern.style.filter = 'drop-shadow(0 0 ' + (10 + glowIntensity * 20) + 'px ' + color.glow + ')';
+    document.body.appendChild(lantern);
+
+    // sparkles at launch site
+    for (var i = 0; i < 8; i++) {
+      spawnSparkle(
+        cx + (Math.random() - 0.5) * 40,
+        cy + (Math.random() - 0.5) * 30,
+        color.hex
+      );
+    }
+
+    setTimeout(function () {
+      if (lantern.parentNode) lantern.parentNode.removeChild(lantern);
+      renderLanterns();
+    }, 4200);
+
+    // firebase sync
+    if (window.FB && FB.init) {
+      FB.init();
+      FB.getAll('lanterns').then(function (existing) {
+        var arr = existing || [];
+        arr.push({ wish: wishText, color: color.hex, glow: glowIntensity, time: Date.now() });
+        return FB.set('lanterns', arr);
+      }).catch(function () {});
+    }
+  }
+
+  function spawnSparkle(x, y, color) {
+    var s = document.createElement('div');
+    s.className = 'sparkle';
+    s.style.left = x + 'px';
+    s.style.top = y + 'px';
+    s.style.background = color;
+    s.style.boxShadow = '0 0 6px ' + color;
+    s.style.animationDelay = (Math.random() * 0.3) + 's';
+    document.body.appendChild(s);
+    setTimeout(function () { if (s.parentNode) s.parentNode.removeChild(s); }, 1500);
+  }
+
+  // On load: sparkle effect for previously released lanterns
+  var prevReleased = getReleased();
+  if (prevReleased.length > 0) {
+    for (var ri = 0; ri < Math.min(prevReleased.length * 4, 12); ri++) {
+      setTimeout(function () {
+        var pick = prevReleased[Math.floor(Math.random() * prevReleased.length)];
+        spawnSparkle(
+          Math.random() * window.innerWidth,
+          Math.random() * window.innerHeight * 0.6,
+          pick.color || '#ffe680'
+        );
+      }, ri * 200);
+    }
+  }
+
+  renderLanterns();
+  renderHistory();
+
+  // ===== Lantern History =====
+  function renderHistory() {
+    var container = document.getElementById('lanternHistory');
+    var list = document.getElementById('lanternHistoryList');
+    var released = getReleased();
+    var withTime = released.filter(function (r) { return r.time > 0; });
+
+    if (withTime.length === 0) {
+      container.style.display = 'none';
+      return;
+    }
+    container.style.display = '';
+    setTimeout(function () { container.classList.add('visible'); }, 100);
+
+    list.innerHTML = '';
+    // newest first
+    var sorted = withTime.slice().sort(function (a, b) { return b.time - a.time; });
+
+    sorted.forEach(function (entry, idx) {
+      var item = document.createElement('div');
+      item.className = 'lantern-history-item';
+
+      var icon = document.createElement('div');
+      icon.className = 'lantern-history-icon';
+      icon.textContent = '\uD83C\uDFEE';
+      icon.style.filter = 'drop-shadow(0 0 5px ' + (entry.color || '#ffe680') + '40)';
+      item.appendChild(icon);
+
+      var body = document.createElement('div');
+      body.className = 'lantern-history-body';
+
+      var wishEl = document.createElement('div');
+      wishEl.className = 'lantern-history-wish';
+      wishEl.textContent = entry.wish;
+      body.appendChild(wishEl);
+
+      var meta = document.createElement('div');
+      meta.className = 'lantern-history-meta';
+      var d = new Date(entry.time);
+      var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      meta.textContent = 'released ' + months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+      body.appendChild(meta);
+
+      item.appendChild(body);
+      list.appendChild(item);
+
+      setTimeout(function () { item.classList.add('visible'); }, 200 + idx * 150);
+    });
+  }
+
+  } catch (e) { console.error('[ASH] Lantern script error:', e); }
+
+  // Fallback: if lantern section still empty after DOMContentLoaded, retry once
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+      var section = document.getElementById('lanternSection');
+      var list = document.getElementById('lanternList');
+      if (section && list && !list.children.length) {
+        try { renderLanterns(); renderHistory(); } catch (e) {}
+      }
+    });
+  }
+})();
+</script>
+<script src="global-interactions.js"></script>
 </body>
 </html>

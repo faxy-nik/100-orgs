@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -468,7 +468,7 @@
         '100-organs':  { year: 2026, month: 6, day: 20, file: '100-organs.html' },
         'love':        { year: 2026, month: 6, day: 21, file: 'love.html' },
         'fantasies':   { year: 2026, month: 6, day: 25, file: 'fantasies.html' },
-        'gallery':     { year: 2026, month: 6, day: 28, file: 'gallery.html' },
+        'gallery':     { year: 2026, month: 6, day: 28, file: 'sky-observatory.html' },
         'photo-gallery': { year: 2026, month: 6, day: 28, file: 'photo-gallery.html' }
       };
 
@@ -565,7 +565,7 @@
               }
             }
           }
-          if (changed) { render(); updateProgress(); }
+          if (changed) { render(); updateProgress(); updateMilestone(); }
         }).catch(function(){});
       }
       loadFirebaseDates();
@@ -1000,33 +1000,40 @@
       }
       setInterval(updateProgress, 5000);
 
-      // Milestone
-      (function() {
+      // Milestone — runs on load AND after Firebase updates unlock dates
+      function updateMilestone() {
         var daysEl = document.getElementById('milestoneDays');
         var unlockEl = document.getElementById('milestoneUnlockDays');
         var countEl = document.getElementById('milestoneSectionCount');
         if (!daysEl) return;
 
-        var earliest = Infinity;
+        // Days since first visit (real first-entry tracking)
+        var FIRST_KEY = 'ash-first-visit';
+        var firstVisit;
+        try { firstVisit = localStorage.getItem(FIRST_KEY); } catch (e) {}
+        if (!firstVisit) {
+          firstVisit = Date.now();
+          try { localStorage.setItem(FIRST_KEY, firstVisit); } catch (e) {}
+        } else {
+          firstVisit = parseInt(firstVisit, 10);
+        }
         var now = Date.now();
+        var daysSince = Math.max(0, Math.floor((now - firstVisit) / 86400000));
+        daysEl.textContent = daysSince || '0';
+
+        // Days until next unlock
+        var nextUnlock = Infinity;
         var unlocked = 0;
         SECTIONS.forEach(function(s) {
-          var t = new Date(s.unlock.year, s.unlock.month - 1, s.unlock.day).getTime();
-          if (t < earliest) earliest = t;
+          var t = new Date(s.unlock.year, s.unlock.month, s.unlock.day).getTime();
           if (t <= now) unlocked++;
+          else if (t < nextUnlock) nextUnlock = t;
         });
-        var daysSince = earliest !== Infinity ? Math.floor((now - earliest) / 86400000) : 0;
-        daysEl.textContent = daysSince || '--';
-
-        var nextUnlock = Infinity;
-        SECTIONS.forEach(function(s) {
-          var t = new Date(s.unlock.year, s.unlock.month - 1, s.unlock.day).getTime();
-          if (t > now && t < nextUnlock) nextUnlock = t;
-        });
-        var daysUntil = nextUnlock !== Infinity ? Math.floor((nextUnlock - now) / 86400000) : '--';
+        var daysUntil = nextUnlock !== Infinity ? Math.max(0, Math.floor((nextUnlock - now) / 86400000)) : 'All unlocked';
         unlockEl.textContent = daysUntil;
         countEl.textContent = unlocked;
-      })();
+      }
+      updateMilestone();
 
       // Song request
       (function() {
@@ -1065,9 +1072,11 @@
       navigator.serviceWorker.register('/sw.js').catch(function () {});
     }
   </script>
-<script src="living-world-global.js"></script>
-<script src="matrix-rain.js"></script>
-<script src="global-easter-eggs.js"></script>
+  <script src="anime.min.js"></script>
+  <script src="motion-masterpiece.js"></script>
+  <script defer src="matrix-rain.js"></script>
+<script defer src="global-easter-eggs.js"></script>
+<script src="global-interactions.js"></script>
 </body>
 
 </html>

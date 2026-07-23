@@ -37,6 +37,8 @@
     wishes.unshift(wish);
     saveJournal(wishes);
     syncWishToFirebase(wish);
+    var wjBtn = document.getElementById('wishJournalBtn');
+    if (wjBtn) wjBtn.style.display = '';
     return wish;
   }
 
@@ -147,20 +149,16 @@
     badge.id = 'ffJarBadge';
     badge.style.cssText = 'position:absolute;top:-6px;right:-6px;background:#ffe680;color:#181214;border-radius:50%;width:18px;height:18px;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:bold;transition:transform 0.3s ease;';
     badge.textContent = '0';
-    jar.style.position = 'relative';
     jar.appendChild(badge);
 
     function updateBadge() {
-      var cfg = getObsConfig();
+      var cfg = window._obsFireflyJar ? window._obsFireflyJar.getConfig() : null;
+      if (!cfg) {
+        try { cfg = JSON.parse(localStorage.getItem('ash-obs')) || {}; } catch (e) { cfg = {}; }
+      }
       var count = (cfg && cfg.fireflies && cfg.fireflies.caught) || 0;
       badge.textContent = count > 99 ? '99+' : count;
       badge.style.transform = count > 0 ? 'scale(1)' : 'scale(0)';
-      var bright = Math.min(1, count / 15);
-      jar.style.textShadow = '0 0 ' + (5 + bright * 30) + 'px rgba(255,230,100,' + (0.2 + bright * 0.7) + ')';
-    }
-
-    function getObsConfig() {
-      try { return JSON.parse(localStorage.getItem('ash-obs')) || {}; } catch (e) { return {}; }
     }
 
     updateBadge();
@@ -249,7 +247,6 @@
     container.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9997;';
     document.body.appendChild(container);
 
-    var butterflyCount = 0;
     var butterflyMsgs = [
       'You make my heart feel light.',
       'Butterflies — every single time.',
@@ -296,7 +293,6 @@
 
       bf.addEventListener('click', function () {
         clearInterval(flutter);
-        butterflyCount++;
         var msg = butterflyMsgs[Math.floor(Math.random() * butterflyMsgs.length)];
         // Sparkle burst
         for (var si = 0; si < 6; si++) {
@@ -554,12 +550,20 @@
 
   /* ===================== WISH JOURNAL UI ===================== */
   function initWishJournal() {
+    var path = location.pathname;
+    if (/gallery|observatory/i.test(path)) return;
     var btn = document.createElement('button');
     btn.id = 'wishJournalBtn';
     btn.innerHTML = '\u2728 <span style="font-size:0.7rem;display:block;">Journal</span>';
     btn.title = 'Wish Journal';
-    btn.style.cssText = 'position:fixed;bottom:12rem;right:1rem;z-index:100;background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);border-radius:12px;padding:6px 10px;cursor:pointer;transition:all 0.3s;color:var(--gold);font-size:1.2rem;line-height:1;text-align:center;';
+    btn.style.cssText = 'position:fixed;bottom:291px;right:25px;z-index:100;background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);border-radius:12px;padding:6px 10px;cursor:pointer;transition:all 0.3s;color:var(--gold);font-size:1.2rem;line-height:1;text-align:center;display:none;';
     document.body.appendChild(btn);
+
+    function showWishBtnIfNeeded() {
+      var w = getJournal();
+      if (w.length > 0) btn.style.display = '';
+    }
+    showWishBtnIfNeeded();
 
     btn.addEventListener('mouseenter', function () { this.style.background = 'rgba(255,230,128,.15)'; this.style.borderColor = 'rgba(255,230,128,.35)'; });
     btn.addEventListener('mouseleave', function () { this.style.background = 'rgba(255,220,160,.08)'; this.style.borderColor = 'rgba(255,210,150,.15)'; });
@@ -568,7 +572,7 @@
     // Panel
     var panel = document.createElement('div');
     panel.id = 'wishJournalPanel';
-    panel.style.cssText = 'position:fixed;right:1rem;bottom:calc(12rem + 50px);width:340px;max-height:60vh;overflow-y:auto;z-index:9999;background:rgba(24,18,20,0.95);backdrop-filter:blur(16px);border:1px solid rgba(255,210,150,.15);border-radius:16px;padding:1rem;display:none;box-shadow:0 8px 40px rgba(0,0,0,.6);';
+    panel.style.cssText = 'position:fixed;left:1rem;bottom:calc(12rem + 50px);width:340px;max-height:60vh;overflow-y:auto;z-index:9999;background:rgba(24,18,20,0.95);backdrop-filter:blur(16px);border:1px solid rgba(255,210,150,.15);border-radius:16px;padding:1rem;display:none;box-shadow:0 8px 40px rgba(0,0,0,.6);';
     document.body.appendChild(panel);
 
     function renderJournal() {
@@ -696,7 +700,6 @@
     // Wish selector
     var wishOptions = '<option value="">Select a wish...</option>';
     for (var i = 0; i < wishes.length; i++) {
-      if (wishes[i].released) continue;
       var txt = wishes[i].text.length > 40 ? wishes[i].text.substring(0, 40) + '...' : wishes[i].text;
       wishOptions += '<option value="' + wishes[i].id + '">' + escHtml(txt) + '</option>';
     }
@@ -987,14 +990,10 @@
 
       releaseLantern(wishId, colour, glow, size, trail);
 
-      // Disable and remove from select
-      var opt = select.querySelector('option[value="' + wishId + '"]');
-      if (opt) opt.disabled = true;
-      if (opt) opt.textContent += ' \u2705';
-      select.value = '';
-      panel.querySelector('#releaseLanternBtn').disabled = true;
+      var released = 0;
+      try { released = parseInt(localStorage.getItem('ash-lanterns-released') || '0', 10) + 1; localStorage.setItem('ash-lanterns-released', released); } catch (e) {}
 
-      toast('\uD83C\uDFEE Lantern released! Your wish is in the sky.', 'rgba(255,200,100,0.85)', 3000);
+      toast('\uD83C\uDFEE Lantern released! (' + released + ' total)', 'rgba(255,200,100,0.85)', 3000);
     });
 
     document.body.appendChild(overlay);
@@ -1092,17 +1091,17 @@
 
   /* ===================== INIT ===================== */
   function init() {
-    enhanceStarCatching();
-    enhanceFireflyJar();
-    initButterflyCatching();
-    enhanceBubbleMessages();
-    initLeafTrails();
-    initPaperBoats();
-    enhanceLostBalloon();
-    initDandelions();
-    initRainRipples();
-    initWishJournal();
-    initLanternWorld();
+    try { enhanceStarCatching(); } catch (e) {}
+    try { enhanceFireflyJar(); } catch (e) {}
+    try { initButterflyCatching(); } catch (e) {}
+    try { enhanceBubbleMessages(); } catch (e) {}
+    try { initLeafTrails(); } catch (e) {}
+    try { initPaperBoats(); } catch (e) {}
+    try { enhanceLostBalloon(); } catch (e) {}
+    try { initDandelions(); } catch (e) {}
+    try { initRainRipples(); } catch (e) {}
+    try { initWishJournal(); } catch (e) {}
+    try { initLanternWorld(); } catch (e) {}
 
     // Sync existing wishes from old system
     setTimeout(function () {
@@ -1136,8 +1135,6 @@
         }
       } catch (e) {}
     }, 1000);
-
-    console.log('[Interactive] Phase 2 enhancements loaded');
   }
 
   // Expose public API

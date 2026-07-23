@@ -61,10 +61,24 @@
     });
   }
 
+  function resetAll() {
+    return openDB().then(function (db) {
+      if (!db) return;
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction('counters', 'readwrite');
+        var store = tx.objectStore('counters');
+        var g = store.clear();
+        g.onsuccess = function () { db.close(); resolve(); };
+        g.onerror = function () { db.close(); resolve(); };
+      });
+    });
+  }
+
   window.Track = {
     increment: incrementCounter,
     get: getCounter,
-    getAll: getAllCounters
+    getAll: getAllCounters,
+    resetAll: resetAll
   };
 
   var page = window.location.pathname.split('/').pop() || 'index.html';

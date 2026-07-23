@@ -15,15 +15,15 @@
 
   function openDB() { return Promise.resolve(true); }
 
-  function dbGetAll(storeName) { return FB.getAll(storeName); }
+  function dbGetAll(storeName) { return (typeof FB !== 'undefined' && FB.getAll) ? FB.getAll(storeName) : Promise.resolve([]); }
 
-  function dbGet(storeName, key) { return FB.get(storeName, key); }
+  function dbGet(storeName, key) { return (typeof FB !== 'undefined' && FB.get) ? FB.get(storeName, key) : Promise.resolve(null); }
 
-  function dbPut(storeName, data) { return FB.put(storeName, data); }
+  function dbPut(storeName, data) { return (typeof FB !== 'undefined' && FB.put) ? FB.put(storeName, data) : Promise.resolve(null); }
 
-  function dbDelete(storeName, key) { return FB.delete(storeName, key); }
+  function dbDelete(storeName, key) { return (typeof FB !== 'undefined' && FB.delete) ? FB.delete(storeName, key) : Promise.resolve(null); }
 
-  function dbClear(storeName) { return FB.clear(storeName); }
+  function dbClear(storeName) { return (typeof FB !== 'undefined' && FB.clear) ? FB.clear(storeName) : Promise.resolve(null); }
 
   function revokeAudioUrls() {
     for (var i = 0; i < audioUrls.length; i++) {
@@ -338,6 +338,11 @@
     var self = this;
     if (this.audio) {
       this.audio.pause();
+      this.audio.src = '';
+    }
+    if (this.sourceNode) {
+      try { this.sourceNode.disconnect(); } catch (e) {}
+      this.sourceNode = null;
     }
 
     var s = this.songs && this.songs[this.currentIndex];

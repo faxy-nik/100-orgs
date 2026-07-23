@@ -7,7 +7,7 @@
   'use strict';
 
   var SL = window.SkyLiving;
-  if (!SL) { console.warn('[Landscape] SkyLiving not found.'); return; }
+  if (!SL) return;
 
   // Shared rendering context — set by init()
   var ctx, W, H, rand, pick, getMeta;

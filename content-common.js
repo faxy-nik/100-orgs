@@ -49,6 +49,7 @@ console.error = function () {
     observer.observe(target);
     activeObservers.push({ observer: observer, target: target });
   };
+  window.safeObserve = safeObserve;
 
   var clearAll = function () {
     activeIntervals.forEach(clearInterval);
@@ -199,32 +200,23 @@ console.error = function () {
         // Close TOC when clicking a link
         links.forEach(function (a) {
           a.addEventListener('click', function () {
-            if (isMobileView) {
-              toc.classList.remove('mobile-open');
-              tocToggle.classList.remove('active');
-            }
+            toc.classList.remove('mobile-open');
+            tocToggle.classList.remove('active');
           });
         });
 
-        // Show toggle button on mobile
-        if (isMobileView) {
-          tocToggle.classList.add('show');
-        }
+        tocToggle.classList.add('show');
       }
 
-      // Desktop: show TOC after scroll
       var tocCurrent = safeEl('.toc-current');
 
       // Handle resize
+      var resizeTimer;
       safeAddEventListener(window, 'resize', function () {
-        isMobileView = window.innerWidth <= 800;
-        if (tocToggle) {
-          tocToggle.classList.toggle('show', isMobileView);
-        }
-        if (!isMobileView) {
-          toc.classList.remove('mobile-open');
-          tocToggle.classList.remove('active');
-        }
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function () {
+          isMobileView = window.innerWidth <= 800;
+        }, 150);
       });
     } catch (e) { logError('TOC', e); }
   })();
@@ -268,13 +260,10 @@ console.error = function () {
           toTopBtn.classList.toggle('is-visible', scrollTop > 480);
         }
 
-        // TOC show/hide + active link (throttled to every 300ms)
+        // TOC active link (throttled to every 300ms)
         var now = Date.now();
         if (tocEl && now - lastTocUpdate > 300) {
           lastTocUpdate = now;
-          if (!isMobileView) {
-            tocEl.classList.toggle('show', scrollTop > 700);
-          }
           var best = null, bestDist = Infinity;
           tocLinks.forEach(function (a) {
             var el = document.getElementById(a.getAttribute('href').slice(1));
@@ -304,6 +293,14 @@ console.error = function () {
         }
       }, { passive: true });
       onScroll();
+      // ponytail: body starts display:none for lock-check, scrollHeight=0 at init.
+      // Re-run onScroll once body becomes visible so progress bar picks up correct height.
+      var bodyCheck = safeSetInterval(function () {
+        if (document.body.style.display !== 'none') {
+          clearInterval(bodyCheck);
+          onScroll();
+        }
+      }, 200);
     } catch (e) { logError('CONSOLIDATED_SCROLL', e); }
   })();
 
@@ -319,6 +316,27 @@ console.error = function () {
         });
       }, { threshold: rm ? 0 : 0.15 });
       cards.forEach(function (c) { safeObserve(observer, c); });
+      // ponytail: body starts display:none (admin lock check). Elements have zero
+      // dimensions while hidden so observer never fires isIntersecting. Once body
+      // becomes visible we re-observe AND force-reveal anything still hidden.
+      function forceReveal() {
+        cards.forEach(function (c) {
+          if (!c.classList.contains('show')) {
+            try { observer.unobserve(c); observer.observe(c); } catch (e) {}
+          }
+        });
+      }
+      // Poll until body is visible, then re-observe
+      var bodyPoll = safeSetInterval(function () {
+        if (document.body.style.display !== 'none') {
+          clearInterval(bodyPoll);
+          safeSetTimeout(forceReveal, 100);
+        }
+      }, 200);
+      // Hard fallback: after 2s, force-reveal everything regardless
+      safeSetTimeout(function () {
+        cards.forEach(function (c) { c.classList.add('show'); });
+      }, 2000);
     } catch (e) { logError('REVEAL_ANIMATION', e); }
   })();
 
@@ -1066,18 +1084,94 @@ console.error = function () {
           { kw: 'mole', image: './parallax/parallax_mole.png' },
           { kw: 'beauty', image: './parallax/parallax_mole.png' },
           { kw: 'cleavage', image: './parallax/parallax_mole.png' },
-          { kw: 'breast', image: './parallax/parallax_mole.png' }
+          { kw: 'breast', image: './parallax/parallax_mole.png' },
+          { kw: 'tear', image: './parallax/parallax_tear.png' },
+          { kw: 'cry', image: './parallax/parallax_tear.png' },
+          { kw: 'weep', image: './parallax/parallax_tear.png' },
+          { kw: 'neck', image: './parallax/parallax_neck.png' },
+          { kw: 'collarbone', image: './parallax/parallax_neck.png' },
+          { kw: 'chain', image: './parallax/parallax_neck.png' },
+          { kw: 'necklace', image: './parallax/parallax_neck.png' },
+          { kw: 'vinyl', image: './parallax/parallax_vinyl.png' },
+          { kw: 'record', image: './parallax/parallax_vinyl.png' },
+          { kw: 'turntable', image: './parallax/parallax_vinyl.png' },
+          { kw: 'music', image: './parallax/parallax_vinyl.png' },
+          { kw: 'lantern', image: './parallax/parallax_lanterns.png' },
+          { kw: 'wish', image: './parallax/parallax_lanterns.png' },
+          { kw: 'reading', image: './parallax/parallax_reading.png' },
+          { kw: 'book', image: './parallax/parallax_reading.png' },
+          { kw: 'firefly', image: './parallax/parallax_firefly.png' },
+          { kw: 'glow', image: './parallax/parallax_firefly.png' },
+          { kw: 'constellation', image: './parallax/parallax_constellation.png' },
+          { kw: 'wax seal', image: './parallax/parallax_waxseal.png' },
+          { kw: 'seal', image: './parallax/parallax_waxseal.png' },
+          { kw: 'letter', image: './parallax/parallax_letter.png' },
+          { kw: 'moon', image: './parallax/parallax_moon.png' },
+          { kw: 'crescent', image: './parallax/parallax_moon.png' },
+          { kw: 'fog', image: './parallax/parallax_fog.png' },
+          { kw: 'mist', image: './parallax/parallax_fog.png' },
+          { kw: 'ember', image: './parallax/parallax_ember.png' },
+          { kw: 'glowing', image: './parallax/parallax_ember.png' },
+          { kw: 'intertwine', image: './parallax/parallax_hands_intertwined.png' },
+          { kw: 'fingers', image: './parallax/parallax_hands_intertwined.png' },
+          { kw: 'forehead', image: './parallax/parallax_forehead.png' }
         ];
 
         var allTributes = document.querySelectorAll('.tribute');
         var attachment = window.ASH_CONFIG.attachment; if (isTouch) attachment = 'scroll';
 
+        // ponytail: seeded shuffle for intimate sections so images distribute
+        // evenly instead of all starting with parallax_bedroom.png
+        function seededShuffle(arr, seed) {
+          var a = arr.slice();
+          for (var i = a.length - 1; i > 0; i--) {
+            seed = (seed * 16807 + 0) % 2147483647;
+            var j = seed % (i + 1);
+            var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+          }
+          return a;
+        }
+        var intimatePool = seededShuffle(parallaxImages, 42);
+
+        // ponytail: user-uploaded images replace ~10 random sections
+        // stored in localStorage as JSON array of data-URL strings
+        var userImages = [];
+        try {
+          var raw = localStorage.getItem('ash-user-parallax');
+          if (raw) userImages = JSON.parse(raw);
+        } catch (e) {}
+        // pre-compute which sections get user images (deterministic, ~10 or 10%)
+        var userReplaceSet = {};
+        if (userImages.length) {
+          var totalTributes = allTributes.length;
+          var replaceCount = Math.min(userImages.length, Math.max(10, Math.floor(totalTributes * 0.1)));
+          var allIndices = [];
+          for (var ri = 0; ri < totalTributes; ri++) allIndices.push(ri);
+          var shuffledIndices = seededShuffle(allIndices, 7);
+          for (var si = 0; si < replaceCount; si++) userReplaceSet[shuffledIndices[si]] = true;
+        }
+
         // Pre-compute image data for each tribute
+        // Separate AI images from Ash originals
+        var aiImages = [];
+        var ashImages = [];
+        parallaxImages.forEach(function (p) {
+          if (p.indexOf('./ash/') === 0) ashImages.push(p);
+          else aiImages.push(p);
+        });
+
+        // ponytail: skip images for the most intimate/private sections
+        var skipImageKw = ['inner thigh', 'vagina', 'clitoris', 'vulva', 'labia', 'g-spot', 'ovaries', 'wetness', 'nipples', 'mammary', 'pleasure', 'arous'];
+
         var tributeData = [];
         var lastImg = '';
+        var aiIdx = 0;
+        var ashIdx = 0;
         allTributes.forEach(function (tribute, idx) {
-          var img = parallaxImages[idx % parallaxImages.length];
+          var img = aiImages[aiIdx % aiImages.length];
           var isIntimate = false;
+          var isSkipped = false;
+          var isLongSection = false;
 
           var lead = tribute.querySelector('.tribute-lead');
           if (lead) {
@@ -1086,14 +1180,29 @@ console.error = function () {
               var rawText = titleSpan.textContent.trim();
               var lowerText = rawText.toLowerCase();
 
-              // Intimate sections (48+) use bedroom
+              // Check if this section should have no image at all
+              for (var si = 0; si < skipImageKw.length; si++) {
+                if (lowerText.indexOf(skipImageKw[si]) !== -1) {
+                  isSkipped = true;
+                  break;
+                }
+              }
+
+              // Check body length — longer sections (>1500 chars) get Ash originals
+              var bodies = tribute.querySelectorAll('.tribute-body');
+              var bodyLen = 0;
+              bodies.forEach(function (b) { bodyLen += b.textContent.length; });
+              if (bodyLen > 1500) isLongSection = true;
+
               var numMatch = rawText.match(/(\d+)/);
-              if (numMatch && parseInt(numMatch[1], 10) >= 48) {
+              var isFantasiesPage = location.pathname.indexOf('fantasies') !== -1;
+              if ((numMatch && parseInt(numMatch[1], 10) >= 48) || isFantasiesPage) {
                 isIntimate = true;
                 tribute.classList.add('intimate-card');
-                img = './parallax/parallax_bedroom.png';
-              } else if (lowerText.indexOf('--') === -1) {
-                // Keyword mapping for top-level sections only
+              }
+
+              if (!isSkipped && lowerText.indexOf('--') === -1) {
+                // Keyword mapping for top-level sections
                 for (var mi = 0; mi < keywordMap.length; mi++) {
                   if (lowerText.indexOf(keywordMap[mi].kw) !== -1) {
                     img = keywordMap[mi].image;
@@ -1104,22 +1213,59 @@ console.error = function () {
             }
           }
 
-          if (img === lastImg) {
-            var poolIdx = parallaxImages.indexOf(img);
-            img = parallaxImages[(poolIdx + 1) % parallaxImages.length];
+          // Assign image based on section type
+          if (isSkipped) {
+            img = null;
+          } else if (isLongSection && ashImages.length) {
+            img = ashImages[ashIdx % ashImages.length];
+            ashIdx++;
+          } else {
+            img = aiImages[aiIdx % aiImages.length];
+            aiIdx++;
+          }
+
+          if (img && img === lastImg) {
+            var pool = img.indexOf('./ash/') === 0 ? ashImages : aiImages;
+            var poolIdx = pool.indexOf(img);
+            img = pool[(poolIdx + 1) % pool.length];
           }
           lastImg = img;
 
+          // ponytail: replace ~10 random sections with user-uploaded images
+          if (userImages.length && userReplaceSet[idx]) {
+            img = userImages[idx % userImages.length];
+          }
+
+          // Add class for AI image visibility
+          if (img && img.indexOf('./ash/') !== 0) {
+            tribute.classList.add('ai-parallax');
+          }
 
           tributeData.push({
             el: tribute,
             idx: idx,
-            bg: 'url(' + img + ')',
-            attachment: attachment
+            bg: img ? 'url(' + img + ')' : '',
+            attachment: attachment,
+            skipped: isSkipped
           });
         });
 
-        // Lazy-load parallax backgrounds via IntersectionObserver
+        // ponytail: apply all parallax backgrounds immediately (accordion groups
+        // with overflow:hidden break IntersectionObserver lazy-loading)
+        tributeData.forEach(function (d) {
+          if (!d.skipped && d.bg && window.innerWidth >= 768) {
+            d.el.style.backgroundImage = d.bg;
+            d.el.style.backgroundAttachment = d.attachment;
+            d.el.style.backgroundPosition = 'center';
+            d.el.style.backgroundRepeat = 'no-repeat';
+            d.el.style.backgroundSize = 'cover';
+          }
+          // Store data as attributes as well for accordion fallback
+          if (d.bg) d.el.setAttribute('data-parallax-bg', d.bg);
+          if (d.attachment) d.el.setAttribute('data-parallax-attachment', d.attachment);
+        });
+
+        // Observer still used for voice-controls UI + progress tracking
         var viewedKey = 'ash-viewed-' + location.pathname.replace(/[^a-z0-9]/gi, '_');
         try { localStorage.setItem(viewedKey + '_count', tributeData.length); } catch (e) { }
         if ('IntersectionObserver' in window) {
@@ -1128,15 +1274,6 @@ console.error = function () {
               if (entry.isIntersecting) {
                 var data = entry.target._parallaxData;
                 if (data) {
-                  if (window.innerWidth >= 768) {
-                    data.el.style.backgroundImage = data.bg;
-                    data.el.style.backgroundAttachment = data.attachment;
-                  } else {
-                    data.el.style.background = '';
-                  }
-                  data.el.style.backgroundPosition = 'center';
-                  data.el.style.backgroundRepeat = 'no-repeat';
-                  data.el.style.backgroundSize = 'cover';
                   // Mark section as viewed for progress tracking
                   try {
                     var v = JSON.parse(localStorage.getItem(viewedKey) || '[]');
@@ -1235,11 +1372,15 @@ console.error = function () {
                         clearTimeout(warnTimeout); clearTimeout(hardTimeout);
                         var blob = new Blob(chunks, { type: 'audio/webm' });
                         var review = { type: 'audio', file: window.ASH_CONFIG.reviewFile, section: getSectionHeading(that), sectionIdx: data.idx || 0, audioBlob: blob, text: ti.value.trim(), date: new Date().toISOString() };
-                        FB.put('reviews', review).then(function () {
-                          toast('\u2714\uFE0F Voice review saved', 'rgba(40,180,40,0.9)', 2500);
-                        }).catch(function () {
-                          toast('Save failed', 'rgba(180,40,40,0.9)', 3000);
-                        });
+                        if (typeof FB !== 'undefined' && FB.put) {
+                          FB.put('reviews', review).then(function () {
+                            toast('\u2714\uFE0F Voice review saved', 'rgba(40,180,40,0.9)', 2500);
+                          }).catch(function () {
+                            toast('Save failed', 'rgba(180,40,40,0.9)', 3000);
+                          });
+                        } else {
+                          toast('Save failed — offline', 'rgba(180,40,40,0.9)', 3000);
+                        }
                         that.style.background = 'rgba(58,232,93,0.2)';
                         that.textContent = '\u2714\uFE0F';
                         setTimeout(function () {
@@ -1272,6 +1413,10 @@ console.error = function () {
           }, { rootMargin: '200px' });
           tributeData.forEach(function (d) {
             d.el._parallaxData = d;
+            // ponytail: store parallax data as attributes so accordion handler
+            // can apply backgrounds even after observer has unobserved the element
+            if (d.bg) d.el.setAttribute('data-parallax-bg', d.bg);
+            if (d.attachment) d.el.setAttribute('data-parallax-attachment', d.attachment);
             safeObserve(obs, d.el);
           });
         } else {
@@ -1406,6 +1551,9 @@ console.error = function () {
               }
               localStorage.setItem('ash-favorites', JSON.stringify(favs));
 
+              var favBtn = document.getElementById('favToggle');
+              if (favBtn) favBtn.style.display = favs.length > 0 ? '' : 'none';
+
               if (window._flowContainer && window._flowContainer.classList.contains('filtering-favs')) {
                 window._updateFavsView();
               }
@@ -1417,6 +1565,31 @@ console.error = function () {
       // Run IMMEDIATELY — no deferral, content-visibility is removed so all DOM is accessible
       initHeartButtons();
     } catch (e) { console.error('UX controller error:', e); }
+  })();
+
+  // Show favToggle if favorites exist
+  (function initFavToggleVisibility() {
+    var btn = document.getElementById('favToggle');
+    if (!btn) return;
+    try {
+      var favs = JSON.parse(localStorage.getItem('ash-favorites') || '[]');
+      if (favs.length > 0) btn.style.display = '';
+    } catch (e) {}
+  })();
+
+  // Show Turn Yourself On button if Fantasies section viewed
+  (function initEasterEggVisibility() {
+    var btn = document.getElementById('easterEggBtn');
+    if (!btn) return;
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (k && k.indexOf('ash-viewed-') === 0 && k.indexOf('fantasies') !== -1) {
+          btn.style.display = '';
+          return;
+        }
+      }
+    } catch (e) {}
   })();
 
   // Mood filtering
@@ -1461,7 +1634,7 @@ console.error = function () {
   (function () {
     var btn = document.createElement('button');
     btn.textContent = 'Write me a letter';
-    btn.style.cssText = 'position:fixed;bottom:85px;left:25px;z-index:100;background:rgba(232,93,58,0.15);border:1px solid rgba(232,93,58,0.35);color:var(--parchment);padding:10px 18px;border-radius:24px;cursor:pointer;font-family:var(--font-display);font-size:0.85rem;transition:all 0.3s;backdrop-filter:blur(6px);';
+    btn.style.cssText = 'position:fixed;bottom:403px;right:25px;z-index:100;background:rgba(232,93,58,0.15);border:1px solid rgba(232,93,58,0.35);color:var(--parchment);padding:10px 18px;border-radius:24px;cursor:pointer;font-family:var(--font-display);font-size:0.85rem;transition:all 0.3s;backdrop-filter:blur(6px);';
     btn.addEventListener('mouseenter', function () { this.style.background = 'rgba(232,93,58,0.3)'; });
     btn.addEventListener('mouseleave', function () { this.style.background = 'rgba(232,93,58,0.15)'; });
     btn.addEventListener('click', function () {
@@ -1497,7 +1670,7 @@ console.error = function () {
   (function () {
     var btn = document.createElement('button');
     btn.textContent = '\uD83D\uDCF7 Wallpaper';
-    btn.style.cssText = 'position:fixed;bottom:145px;left:25px;z-index:100;background:rgba(100,200,255,0.1);border:1px solid rgba(100,200,255,0.2);color:var(--parchment);padding:10px 18px;border-radius:24px;cursor:pointer;font-family:var(--font-display);font-size:0.85rem;transition:all 0.3s;backdrop-filter:blur(6px);';
+    btn.style.cssText = 'position:fixed;bottom:459px;right:25px;z-index:100;background:rgba(100,200,255,0.1);border:1px solid rgba(100,200,255,0.2);color:var(--parchment);padding:10px 18px;border-radius:24px;cursor:pointer;font-family:var(--font-display);font-size:0.85rem;transition:all 0.3s;backdrop-filter:blur(6px);';
     btn.addEventListener('mouseenter', function () { this.style.background = 'rgba(100,200,255,0.2)'; });
     btn.addEventListener('mouseleave', function () { this.style.background = 'rgba(100,200,255,0.1)'; });
     btn.addEventListener('click', function () {
@@ -1605,5 +1778,57 @@ console.error = function () {
       });
     } catch (e) { logError('ACCESSIBILITY', e); }
   })();
+
+  /*======= LOADER-WAIT HELPER =======*/
+  // Resolves when .loader is gone (or after maxWait ms). Pages with loaders
+  // use this to delay companion init until the loading screen finishes.
+  window.whenLoaderDone = function (maxWait) {
+    maxWait = maxWait || 14000;
+    return new Promise(function (resolve) {
+      var loader = document.querySelector('.loader');
+      if (!loader) { resolve(); return; }
+      var done = false;
+      var finish = function () { if (!done) { done = true; resolve(); } };
+      // watch for loader removal
+      var obs = new MutationObserver(function (mutations) {
+        for (var i = 0; i < mutations.length; i++) {
+          for (var j = 0; j < mutations[i].removedNodes.length; j++) {
+            if (mutations[i].removedNodes[j] === loader) { obs.disconnect(); finish(); return; }
+          }
+        }
+      });
+      obs.observe(loader.parentNode || document.body, { childList: true });
+      // also watch opacity/visibility reaching hidden
+      var check = setInterval(function () {
+        var s = getComputedStyle(loader);
+        if (s.opacity === '0' || s.visibility === 'hidden' || s.display === 'none') {
+          clearInterval(check); obs.disconnect(); finish();
+        }
+      }, 200);
+      // safety timeout
+      setTimeout(function () { clearInterval(check); obs.disconnect(); finish(); }, maxWait);
+    });
+  };
+
+  // Periodic visibility checks for dynamic reveals
+  setInterval(function () {
+    try {
+      var fBtn = document.getElementById('favToggle');
+      if (fBtn && fBtn.style.display === 'none') {
+        var f = JSON.parse(localStorage.getItem('ash-favorites') || '[]');
+        if (f.length > 0) fBtn.style.display = '';
+      }
+      var eBtn = document.getElementById('easterEggBtn');
+      if (eBtn && eBtn.style.display === 'none') {
+        for (var i = 0; i < localStorage.length; i++) {
+          var k = localStorage.key(i);
+          if (k && k.indexOf('ash-viewed-') === 0 && k.indexOf('fantasies') !== -1) {
+            eBtn.style.display = '';
+            break;
+          }
+        }
+      }
+    } catch (e) {}
+  }, 3000);
 
 })();

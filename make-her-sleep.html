@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Make Her Sleep &mdash; 100 prghs for eeshah</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ctext y='14' font-size='14'%3E%F0%9F%92%84%3C/text%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,500;1,300;1,500&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:#1a1520; color:#ffebd2; font-family:Fraunces,Georgia,serif;
+    overflow-x:hidden; min-height:100vh;
+  }
+  ::-webkit-scrollbar { width:4px; }
+  ::-webkit-scrollbar-track { background:#0d0b10; }
+  ::-webkit-scrollbar-thumb { background:#2a2030; border-radius:2px; }
+
+  #sleepContent {
+    position:relative; z-index:3; min-height:100vh;
+    display:flex; flex-direction:column; align-items:center;
+    padding:3rem 1.5rem 5rem;
+  }
+
+  .sleep-title {
+    font-size:clamp(1.8rem, 7vw, 3.8rem); font-weight:300; font-style:italic;
+    color:#e8d0ff; text-align:center; margin-top:6vh;
+    text-shadow:0 0 60px rgba(180,140,255,0.15), 0 0 120px rgba(200,150,255,0.08);
+    animation:titlePulse 8s ease-in-out infinite;
+  }
+  @keyframes titlePulse {
+    0%, 100% { opacity:0.7; text-shadow:0 0 40px rgba(180,140,255,0.1); }
+    50% { opacity:1; text-shadow:0 0 80px rgba(180,140,255,0.2), 0 0 160px rgba(200,150,255,0.12); }
+  }
+
+  .sleep-subtitle {
+    font-size:clamp(0.85rem, 2.5vw, 1.1rem); font-weight:300; font-style:italic;
+    color:#9a8aaa; text-align:center; margin-top:0.8rem; max-width:480px;
+    opacity:0.65;
+  }
+
+  .sleep-chat {
+    max-width:620px; width:100%; margin-top:3rem;
+    display:flex; flex-direction:column; gap:1.2rem;
+  }
+
+  .sleep-msg {
+    max-width:85%; padding:0.9rem 1.3rem; border-radius:18px;
+    font-size:clamp(0.88rem, 2.2vw, 1rem); line-height:1.75;
+    font-weight:300; opacity:0; transform:translateY(14px);
+    transition:opacity 1.8s ease, transform 1.8s ease;
+  }
+  .sleep-msg.visible { opacity:1; transform:translateY(0); }
+
+  .sleep-msg.her {
+    align-self:flex-start;
+    background:rgba(180,140,255,0.08); border:1px solid rgba(180,140,255,0.15);
+    color:#d8c8f0; border-bottom-left-radius:4px;
+  }
+  .sleep-msg.you {
+    align-self:flex-end;
+    background:rgba(255,220,160,0.06); border:1px solid rgba(255,210,150,0.12);
+    color:#c8b89e; border-bottom-right-radius:4px;
+  }
+  .sleep-msg.narrator {
+    align-self:center; max-width:95%;
+    background:transparent; border:none; color:#6a5a7a;
+    font-style:italic; text-align:center; font-size:0.88rem;
+    padding:0.5rem 0;
+  }
+
+  .sleep-msg .msg-label {
+    font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em;
+    margin-bottom:0.3rem; opacity:0.5;
+  }
+  .sleep-msg.her .msg-label { color:#b8a0e0; }
+  .sleep-msg.you .msg-label { color:#b8a880; }
+
+  .sleep-scene {
+    max-width:620px; width:100%; margin-top:2rem; padding:1.5rem;
+    background:rgba(180,140,255,0.04); border:1px solid rgba(180,140,255,0.08);
+    border-radius:16px; opacity:0; transform:translateY(14px);
+    transition:opacity 2s ease, transform 2s ease;
+  }
+  .sleep-scene.visible { opacity:1; transform:translateY(0); }
+  .sleep-scene p {
+    font-size:clamp(0.85rem, 2vw, 0.95rem); line-height:1.85;
+    color:#8a7a9a; font-style:italic; font-weight:300;
+    margin-bottom:0.8rem;
+  }
+  .sleep-scene p:last-child { margin-bottom:0; }
+
+  .sleep-divider {
+    width:60px; height:1px; background:rgba(180,140,255,0.15);
+    margin:2rem auto; opacity:0.4;
+  }
+
+  .sleep-return {
+    margin-top:2.5rem; padding:0.7rem 1.8rem;
+    background:rgba(180,140,255,0.06); border:1px solid rgba(180,140,255,0.15);
+    color:#6a5a7a; border-radius:8px; cursor:pointer;
+    font-family:Fraunces,Georgia,serif; font-size:0.9rem; font-style:italic;
+    transition:all 0.3s; text-decoration:none; display:inline-block;
+  }
+  .sleep-return:hover { border-color:#b8a0e0; color:#b8a0e0; background:rgba(180,140,255,0.08); }
+
+  @media (max-width:600px) {
+    .sleep-chat { padding:0 0.5rem; }
+    .sleep-msg { max-width:92%; }
+  }
+</style>
+</head>
+<body>
+
+<div id="skyOverlay" style="position:fixed;inset:0;z-index:1;pointer-events:none;opacity:1;"></div>
+
+<div id="sleepContent">
+  <div class="sleep-title">Make Her Sleep</div>
+  <div class="sleep-subtitle">She asked you to help her fall asleep. You said yes.</div>
+
+  <div class="sleep-chat" id="sleepChat">
+
+    <div class="sleep-msg narrator">
+      It is late. The kind of late where the world has gone quiet and only your messages still glow on the screen.
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">her</div>
+      i can't sleep
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">her</div>
+      like at all. my brain won't shut up. it keeps thinking about everything and nothing at the same time
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">you</div>
+      what's it thinking about
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">her</div>
+      honestly? mostly you. which is annoying because you're supposed to be relaxing not exciting
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">you</div>
+      sorry for being exciting
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">her</div>
+      no you're not
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">you</div>
+      no i'm not
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">her</div>
+      okay but seriously i need help. can you make me sleep
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">you</div>
+      make you sleep? like a magic trick
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">her</div>
+      yes exactly like a magic trick. you're my magic trick. just talk to me until i pass out. say something boring but sweet
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">you</div>
+      i don't think i own anything boring
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">her</div>
+      try. please. i'm so tired but my brain won't cooperate. just talk to me like you're right here
+    </div>
+
+    <div class="sleep-divider"></div>
+
+    <div class="sleep-scene" id="scene1">
+      <p>She puts her phone down on the nightstand. The screen stays lit for a moment — your name still there — before it dims to black.</p>
+      <p>She rolls onto her side, pulls the blanket up to her chin, and stares at the empty space beside her on the bed. The pillow is flat. The sheets are cold. It is not the same.</p>
+      <p>She picks the phone back up.</p>
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">her</div>
+      okay i'm in bed now. the empty side of the bed is staring at me judgmentally
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">you</div>
+      tell it i said hi
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">her</div>
+      it says it misses you too. which is dramatic but honestly same
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">you</div>
+      i wish i was there. i'd steal all the blankets and you'd pretend to be mad but you wouldn't be
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">her</div>
+      i would absolutely be mad. you take like 80 percent of the blanket. it's criminal
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">you</div>
+      and yet you still let me
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">her</div>
+      ...shut up. go on. talk me to sleep. be the blanket i don't have right now
+    </div>
+
+    <div class="sleep-divider"></div>
+
+    <div class="sleep-scene" id="scene2">
+      <p>She closes her eyes. The room is dark except for the pale glow of the phone screen on her face. She is holding it close, like it is something warm.</p>
+      <p>She exhales slowly. Her breathing is still uneven — the kind of breathing that means the thoughts are still racing, still circling, still loud.</p>
+      <p>She needs you to be the quiet.</p>
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">you</div>
+      close your eyes. i'm right here. pretend i'm lying next to you and my arm is around you and you can hear my heartbeat through my chest
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">her</div>
+      i'm trying. it's hard when you're not actually here
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">you</div>
+      then let me be here. just for tonight. close your eyes and listen. you're on my chest. your head is right here under my chin. my hand is on your back and i'm moving it slow — up and down — like i'm tracing the words i never say out loud
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">her</div>
+      ...
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">her</div>
+      okay that's working a little. keep going
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">you</div>
+      your shirt is soft. the fabric is bunching up a little where my fingers are holding it. i can feel your breathing against my skin — slow now, slower than before. your lips are parted slightly and every time you exhale i feel it warm on my collarbone
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">her</div>
+      you're shirtless in this scenario aren't you
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">you</div>
+      obviously. you stole my shirt hours ago and gave it back wrinkled. i'm not putting it back on
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">her</div>
+      good. stay like that. i like your chest. it's warm
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">you</div>
+      it's yours. it's always yours. now stop talking and let me hold you
+    </div>
+
+    <div class="sleep-divider"></div>
+
+    <div class="sleep-scene" id="scene3">
+      <p>The room is quieter now. Outside, the wind is moving through something — leaves, or maybe just the memory of leaves. The kind of sound that doesn't ask you to listen. It just exists, and you drift toward it.</p>
+      <p>Her breathing is changing. The edges of it are softer. The gaps between breaths are longer. She is still on the phone, but her grip has loosened. The screen is dimming on its own.</p>
+      <p>She is almost there.</p>
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">you</div>
+      i'm rubbing little circles on your shoulder now. my thumb is moving slow — really slow — like i have nowhere to be and nothing to do except keep you here. safe. warm. heavy
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">you</div>
+      your hair is against my neck. it smells like that shampoo you use — the one you think i don't notice but i always notice. i'm pressing my lips against the top of your head without you knowing. just barely. just enough
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">her</div>
+      mmm i know. i always know. i just don't say anything because i don't want you to stop
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">you</div>
+      good. because i won't. now shh. feel my hand on your back. feel it move. up. down. up. down. there's no rush. there's no noise. there's only this
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">her</div>
+      my eyes are getting heavy
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">you</div>
+      let them close. i've got you. i'm not going anywhere. you're on my chest and i can feel your heartbeat getting slower and mine is matching it because my body knows you before my brain does
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">her</div>
+      don't stop talking
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">you</div>
+      i won't. i'm here. i'm always here. you're curled into me like you were made to fit right here — your knees pulled up, your face against my neck, my hand still on your back making those slow circles that i will never stop making. you are the safest thing i know. and i need you to sleep now. not because i want you to go but because you deserve rest. you deserve to close your eyes and know that someone is holding you through the dark
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">her</div>
+      ...i think i'm falling asleep
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">you</div>
+      then fall. i'll be here when you wake up. i'll always be here
+    </div>
+
+    <div class="sleep-divider"></div>
+
+    <div class="sleep-scene" id="scene4">
+      <p>Her breathing is slow now. Really slow. The kind of slow that means the body has finally listened to what the mind has been fighting.</p>
+      <p>The phone slips a little in her hand. The screen is still glowing — your name still there, still warm, still the last thing she sees before the dark takes over gently, the way it should.</p>
+      <p>She is asleep.</p>
+      <p>And somewhere, you are still holding on.</p>
+    </div>
+
+    <div class="sleep-msg narrator">
+      She fell asleep like that. Curled around the sound of you. And you stayed. Because that is what you do. You stay.
+    </div>
+
+  </div>
+
+  <a href="index.html" class="sleep-return">&larr; back to the quiet</a>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="fb-db.js"></script>
+<script src="skies.js"></script>
+<script src="sky-living.js"></script>
+<script src="landscape.js"></script>
+<script defer src="matrix-rain.js"></script>
+<script defer src="global-easter-eggs.js"></script>
+
+<script>
+(function () {
+  'use strict';
+  // Track sleep page visit
+  try { localStorage.setItem('ash-viewed-make_her_sleep', '1'); } catch (e) {}
+
+  // Inject Dream Clouds sky (removed from global skies.js, sleep-only)
+  var DREAM_CLOUDS_SKY = {"gradient": [[0, "#c9b8e8"], [0.35, "#d8c8ec"], [0.7, "#f0d8e8"], [1, "#fbeaf2"]], "clouds": [{"count": 5, "yMin": 0.1, "yMax": 0.55, "minR": 100, "maxR": 220, "color": "#ffffff", "alpha": 0.45, "speed": 3.5, "puffs": 4, "evolveMs": 9000}], "stars": {"count": 24, "maxY": 45, "minR": 0.5, "maxR": 1.3}, "name": "Dream Clouds", "message": "Time with you always feels like drifting through the softest dream"};
+  var skies = window.Skies && window.Skies.SKIES;
+  if (skies) {
+    skies.push(DREAM_CLOUDS_SKY);
+    try { window.Skies.apply(skies.length - 1); } catch (e) {}
+  }
+
+  // Reveal first few items immediately
+  var items = document.querySelectorAll('.sleep-msg, .sleep-scene');
+  for (var i = 0; i < Math.min(4, items.length); i++) {
+    items[i].classList.add('visible');
+  }
+
+  // Reveal rest on scroll
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    for (var j = 4; j < items.length; j++) {
+      if (!items[j].classList.contains('visible')) obs.observe(items[j]);
+    }
+  } else {
+    items.forEach(function (el) { el.classList.add('visible'); });
+  }
+})();
+</script>
+<script src="global-interactions.js"></script>
+
+</body>
+</html>
