@@ -147,6 +147,10 @@
 
   /* ---------- Init ---------- */
   function init() {
+    if (/stats\.html$/i.test(window.location.pathname)) {
+      // Still expose API on stats page for collection viewing, but don't spawn anything
+      return;
+    }
     checkNewLetters();
     spawnHints();
     // periodic check

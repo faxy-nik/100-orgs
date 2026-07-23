@@ -261,6 +261,7 @@
 
   /* ---------- Init ---------- */
   function init() {
+    if (/stats\.html$/i.test(window.location.pathname)) return;
     load();
     spawnButterflies();
     setInterval(spawnButterflies, 20000);

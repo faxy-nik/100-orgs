@@ -436,6 +436,12 @@
       Control access to each section. Locked sections show a gate on the landing page. The Fantasies section uses a 5-question quiz.
     </p>
     <div class="section-dates" id="accessList"></div>
+    <hr style="border-color:rgba(255,210,150,.08);margin:2rem 0;">
+    <div style="text-align:center;">
+      <div style="font-size:12px;color:#6b5f52;margin-bottom:8px;">Danger Zone</div>
+      <button id="coldRestartBtn" style="background:rgba(232,93,58,0.15);border:1px solid rgba(232,93,58,0.3);color:#e85d3a;padding:10px 24px;border-radius:8px;cursor:pointer;font-size:13px;">&#x26A0; Cold Restart — Reset All Data</button>
+      <div style="font-size:11px;color:#6b5f52;margin-top:6px;">Clears all localStorage ash-* keys. Reloads the page. Cannot be undone.</div>
+    </div>
   </div>
 </div>
 
@@ -1590,6 +1596,19 @@
       document.getElementById('currentPassDisplay').textContent = PASSKEY;
       document.getElementById('newPassInput').value = '';
       toast('Password changed');
+    });
+
+    document.getElementById('coldRestartBtn').addEventListener('click', function () {
+      if (!confirm('Are you sure? This will delete ALL local data (progress, wishes, letters, etc.). This cannot be undone.')) return;
+      if (!confirm('Really? Everything will be reset to zero.')) return;
+      var remove = [];
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (k && k.indexOf('ash-') === 0) remove.push(k);
+      }
+      remove.forEach(function(k) { localStorage.removeItem(k); });
+      toast('All data cleared. Reloading...', 'rgba(232,93,58,0.8)', 3000);
+      setTimeout(function() { location.reload(); }, 2000);
     });
   }
 

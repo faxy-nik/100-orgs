@@ -324,7 +324,7 @@
   /* ---------- Init ---------- */
   function init() {
     var path = window.location.pathname;
-    if (/404\.html$/.test(path)) return;
+    if (/404\.html$|stats\.html$/i.test(path)) return;
 
     initBalloons();
     initFeathers();
