@@ -435,7 +435,7 @@
     { name: 'Peach', hex: '#ffd0a8', glow: 'rgba(255,208,168,0.4)' },
     { name: 'Mint', hex: '#a8ffd8', glow: 'rgba(168,255,216,0.4)' }
   ];
-  var MAX_RELEASED = 2;
+  var MAX_RELEASED = Infinity;
 
   function getWishes() {
     try {
@@ -489,17 +489,37 @@
     setTimeout(function () { section.classList.add('visible'); }, 100);
 
     list.innerHTML = '';
-    var remaining = MAX_RELEASED - released.length;
 
     ungranted.forEach(function (wish, idx) {
       var card = document.createElement('div');
       card.className = 'lantern-card';
       card.dataset.wish = wish.text;
 
+      var topRow = document.createElement('div');
+      topRow.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:8px;';
+
       var wishEl = document.createElement('div');
       wishEl.className = 'lantern-wish';
       wishEl.textContent = wish.text;
-      card.appendChild(wishEl);
+      topRow.appendChild(wishEl);
+
+      var delBtn = document.createElement('button');
+      delBtn.textContent = '\u2716';
+      delBtn.title = 'Delete wish';
+      delBtn.style.cssText = 'background:none;border:none;color:#6b5f52;cursor:pointer;font-size:0.85rem;padding:2px 6px;border-radius:4px;transition:all 0.2s;flex-shrink:0;';
+      delBtn.addEventListener('mouseenter', function () { this.style.color = '#e85d3a'; this.style.background = 'rgba(232,93,58,0.1)'; });
+      delBtn.addEventListener('mouseleave', function () { this.style.color = '#6b5f52'; this.style.background = 'none'; });
+      delBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (!confirm('Delete this wish?')) return;
+        var wishes = getWishes();
+        for (var i = 0; i < wishes.length; i++) { if (wishes[i].text === wish.text) { wishes.splice(i, 1); break; } }
+        localStorage.setItem('ash-wish-journal', JSON.stringify(wishes));
+        renderLanterns();
+      });
+      topRow.appendChild(delBtn);
+
+      card.appendChild(topRow);
 
       var controls = document.createElement('div');
       controls.className = 'lantern-controls';
@@ -545,7 +565,6 @@
       var btn = document.createElement('button');
       btn.className = 'lantern-release-btn';
       btn.textContent = 'Release into the sky';
-      btn.disabled = remaining <= 0;
       btn.addEventListener('click', function (e) {
         e.stopPropagation();
         releaseLantern(wish.text, selectedColor, parseInt(slider.value) / 100, card);
@@ -563,14 +582,11 @@
       list.appendChild(card);
     });
 
-    countEl.textContent = remaining > 0
-      ? remaining + ' wishes can be released'
-      : 'All wishes have been released';
+    countEl.textContent = released.length + ' lantern' + (released.length !== 1 ? 's' : '') + ' released into the sky';
   }
 
   function releaseLantern(wishText, colorIdx, glowIntensity, cardEl) {
     var released = getReleased();
-    if (released.length >= MAX_RELEASED) return;
     var color = LANTERN_COLORS[colorIdx] || LANTERN_COLORS[0];
     released.push({ wish: wishText, color: color.hex, glow: glowIntensity, time: Date.now() });
     saveReleased(released);
