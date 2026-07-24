@@ -735,7 +735,16 @@
          ================================================================ */
       var SECTION_ACCESS_KEY = 'ash-section-access';
 
-      function defaultQuiz() {
+      function defaultQuiz(section) {
+        if (section === 'photo-gallery') {
+          return [
+            { question: 'Who is every picture in this gallery about?', answer: 'Ash' },
+            { question: 'Why did I make this gallery?', answer: 'To preserve our memories' },
+            { question: 'Who is this website dedicated to?', answer: 'Ash' },
+            { question: 'What was I trying to build instead of just another website?', answer: 'A home' },
+            { question: 'Who was always in my mind while making this project?', answer: 'Ash' }
+          ];
+        }
         return [
           { question: 'What pet name does she call you?', answer: 'babe' },
           { question: 'What is her favorite color?', answer: 'purple' },
@@ -746,13 +755,12 @@
       }
 
       function defaultAccess() {
-        var q = defaultQuiz();
         return {
-          '100-organs': { adminLocked: false, questions: JSON.parse(JSON.stringify(q)) },
-          'love': { adminLocked: false, questions: JSON.parse(JSON.stringify(q)) },
-          'fantasies': { adminLocked: true, questions: JSON.parse(JSON.stringify(q)) },
-          'sky-observatory': { adminLocked: false, questions: JSON.parse(JSON.stringify(q)) },
-          'photo-gallery': { adminLocked: false, questions: JSON.parse(JSON.stringify(q)) }
+          '100-organs': { adminLocked: false, questions: defaultQuiz('100-organs') },
+          'love': { adminLocked: false, questions: defaultQuiz('love') },
+          'fantasies': { adminLocked: true, questions: defaultQuiz('fantasies') },
+          'sky-observatory': { adminLocked: false, questions: defaultQuiz('sky-observatory') },
+          'photo-gallery': { adminLocked: false, questions: defaultQuiz('photo-gallery') }
         };
       }
 
@@ -778,7 +786,7 @@
       function showQuiz(sectionId, sectionFile) {
         var cfg = getAccessConfig();
         var sc = cfg[sectionId] || {};
-        var questions = sc.questions || defaultQuiz();
+        var questions = sc.questions || defaultQuiz(sectionId);
         pendingSection = { id: sectionId, file: sectionFile };
         var html = '';
         for (var qi = 0; qi < questions.length; qi++) {
@@ -817,7 +825,7 @@
         if (!pendingSection) return;
         var cfg = getAccessConfig();
         var sc = cfg[pendingSection.id] || {};
-        var questions = sc.questions || defaultQuiz();
+        var questions = sc.questions || defaultQuiz(pendingSection.id);
         var allCorrect = true;
         for (var qi = 0; qi < questions.length; qi++) {
           var input = document.getElementById('quizInput' + qi);

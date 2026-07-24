@@ -1382,7 +1382,16 @@
   /* ---- Access Control ---- */
   var SECTION_ACCESS_KEY = 'ash-section-access';
 
-  function defaultQuiz() {
+  function defaultQuiz(section) {
+    if (section === 'photo-gallery') {
+      return [
+        { question: 'Who is every picture in this gallery about?', answer: 'Ash' },
+        { question: 'Why did I make this gallery?', answer: 'To preserve our memories' },
+        { question: 'Who is this website dedicated to?', answer: 'Ash' },
+        { question: 'What was I trying to build instead of just another website?', answer: 'A home' },
+        { question: 'Who was always in my mind while making this project?', answer: 'Ash' }
+      ];
+    }
     return [
       { question: 'What pet name does she call you?', answer: 'babe' },
       { question: 'What is her favorite color?', answer: 'purple' },
@@ -1393,13 +1402,12 @@
   }
 
   function defaultAccess() {
-    var q = defaultQuiz();
     return {
-      '100-organs': { adminLocked: false, questions: JSON.parse(JSON.stringify(q)) },
-      'love': { adminLocked: false, questions: JSON.parse(JSON.stringify(q)) },
-      'fantasies': { adminLocked: true, questions: JSON.parse(JSON.stringify(q)) },
-      'sky-observatory': { adminLocked: false, questions: JSON.parse(JSON.stringify(q)) },
-      'photo-gallery': { adminLocked: false, questions: JSON.parse(JSON.stringify(q)) }
+      '100-organs': { adminLocked: false, questions: defaultQuiz('100-organs') },
+      'love': { adminLocked: false, questions: defaultQuiz('love') },
+      'fantasies': { adminLocked: true, questions: defaultQuiz('fantasies') },
+      'sky-observatory': { adminLocked: false, questions: defaultQuiz('sky-observatory') },
+      'photo-gallery': { adminLocked: false, questions: defaultQuiz('photo-gallery') }
     };
   }
 
@@ -1426,8 +1434,8 @@
     var html = '';
     for (var i = 0; i < sections.length; i++) {
       var s = sections[i];
-      var ac = accessCfg[s.key] || { adminLocked: false, questions: defaultQuiz() };
-      if (!ac.questions) ac.questions = defaultQuiz();
+      var ac = accessCfg[s.key] || { adminLocked: false, questions: defaultQuiz(s.key) };
+      if (!ac.questions) ac.questions = defaultQuiz(s.key);
       var locked = !!ac.adminLocked;
       html += '<div class="access-card" data-section="' + s.key + '">' +
         '<div class="access-header">' +
@@ -1449,7 +1457,7 @@
     list.querySelectorAll('.toggle').forEach(function (el) {
       el.addEventListener('click', function () {
         var key = this.dataset.section;
-        var ac2 = accessCfg[key] || { adminLocked: false, questions: defaultQuiz() };
+        var ac2 = accessCfg[key] || { adminLocked: false, questions: defaultQuiz(key) };
         ac2.adminLocked = !ac2.adminLocked;
         accessCfg[key] = ac2;
         saveAccessConfig(accessCfg);
@@ -1468,8 +1476,8 @@
         var secKey = this.closest('.access-card').dataset.section;
         var idx = parseInt(this.dataset.idx);
         var field = this.dataset.field;
-        var ac3 = accessCfg[secKey] || { adminLocked: false, questions: defaultQuiz() };
-        if (!ac3.questions) ac3.questions = defaultQuiz();
+        var ac3 = accessCfg[secKey] || { adminLocked: false, questions: defaultQuiz(secKey) };
+        if (!ac3.questions) ac3.questions = defaultQuiz(secKey);
         ac3.questions[idx][field] = this.value;
         ac3.quizPassed = false;
         accessCfg[secKey] = ac3;
