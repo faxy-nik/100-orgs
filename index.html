@@ -794,7 +794,17 @@
       function getAccessConfig() {
         var raw = localStorage.getItem(SECTION_ACCESS_KEY);
         if (raw) {
-          try { return JSON.parse(raw); } catch(e) {}
+          try {
+            var parsed = JSON.parse(raw);
+            var def = defaultAccess();
+            var changed = false;
+            for (var key in def) {
+              if (!parsed[key]) { parsed[key] = JSON.parse(JSON.stringify(def[key])); changed = true; }
+              else if (!parsed[key].questions) { parsed[key].questions = JSON.parse(JSON.stringify(def[key].questions)); changed = true; }
+            }
+            if (changed) localStorage.setItem(SECTION_ACCESS_KEY, JSON.stringify(parsed));
+            return parsed;
+          } catch(e) {}
         }
         var def = defaultAccess();
         localStorage.setItem(SECTION_ACCESS_KEY, JSON.stringify(def));
