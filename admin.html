@@ -1330,7 +1330,7 @@
         var f = items[fi];
         var flagOn = flags[f.id] !== false;
         var ready = conditionMet(f.auto);
-        var toggleOn = flagOn === false ? false : ready;
+        var toggleOn = flags[f.id] === undefined ? ready : flagOn;
         html +=
           '<div class="feature-card' + (toggleOn ? '' : ' disabled') + (ready ? ' ready' : '') + '" data-feature="' + f.id + '">' +
             '<div class="f-label">' +

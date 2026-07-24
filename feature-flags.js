@@ -53,12 +53,6 @@
     var raw;
     try { raw = JSON.parse(localStorage.getItem(KEY)); } catch(e) {}
     if (!raw || typeof raw !== 'object') raw = {};
-    var changed = false;
-    for (var i = 0; i < ALL_FEATURES.length; i++) {
-      var id = ALL_FEATURES[i].id;
-      if (raw[id] === undefined) { raw[id] = true; changed = true; }
-    }
-    if (changed) { try { localStorage.setItem(KEY, JSON.stringify(raw)); } catch(e) {} }
     return raw;
   }
 

@@ -1285,7 +1285,7 @@ console.error = function () {
                   } catch (e) { }
                   delete data.el._parallaxData;
                 }
-                if (window.FeatureFlags && !window.FeatureFlags.get('voice-recording')) continue;
+                if (window.FeatureFlags && !window.FeatureFlags.get('voice-recording')) { obs.unobserve(entry.target); return; }
                 if (!entry.target.querySelector('.voice-controls')) {
                   var wrapper = document.createElement('div');
                   wrapper.className = 'voice-controls';
