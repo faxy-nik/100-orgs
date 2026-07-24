@@ -6,6 +6,7 @@
  */
 (function () {
   'use strict';
+  if (window.FeatureFlags && !window.FeatureFlags.get('tree-of-memories')) return;
 
   var TREE_KEY = 'ash-tree-of-memories';
   var treeData;

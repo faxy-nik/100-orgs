@@ -4,6 +4,7 @@
  */
 (function () {
   'use strict';
+  if (window.FeatureFlags && !window.FeatureFlags.get('secret-letters')) return;
 
   var KEY = 'ash-secret-letters';
   var found;

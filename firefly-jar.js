@@ -4,6 +4,7 @@
  */
 (function () {
   'use strict';
+  if (window.FeatureFlags && !window.FeatureFlags.get('firefly-jar')) return;
 
   var KEY = 'ash-firefly-jar';
   var OBS_KEY = 'ash-obs';

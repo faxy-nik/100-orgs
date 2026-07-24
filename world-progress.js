@@ -4,6 +4,7 @@
  */
 (function () {
   'use strict';
+  if (window.FeatureFlags && !window.FeatureFlags.get('world-progress')) return;
 
   function getObs(prop) {
     try{ var o=JSON.parse(localStorage.getItem('ash-obs')); return o?o[prop]:null; }catch(e){return null;}

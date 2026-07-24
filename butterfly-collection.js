@@ -5,6 +5,7 @@
  */
 (function () {
   'use strict';
+  if (window.FeatureFlags && !window.FeatureFlags.get('butterflies')) return;
 
   var KEY = 'ash-butterflies';
   var data;
@@ -260,6 +261,7 @@
   /* ---------- Init ---------- */
   function init() {
     if (/stats\.html$/i.test(window.location.pathname)) return;
+    if (document.body && (document.body.style.display === 'none' || document.body.innerHTML.indexOf('Locked') !== -1)) return;
     load();
     spawnButterflies();
     setInterval(spawnButterflies, 30000);

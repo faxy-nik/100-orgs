@@ -1,5 +1,6 @@
 (function () {
   'use strict';
+  if (window.FeatureFlags && !window.FeatureFlags.get('companion-dragon')) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   if (window.DragonCompanion) return;
 

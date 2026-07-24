@@ -147,6 +147,12 @@
       this._act(decision);
     }
 
+    this._blinkTimer = (this._blinkTimer || 0) + dt;
+    if (this._blinkTimer > 2500 + Math.random() * 2000) {
+      this._blinkTimer = 0;
+      this.renderer.blink();
+    }
+
     this.navigation.update(dt);
     this.anim.update(dt);
 
@@ -213,6 +219,7 @@
   // ---- Public API ----
 
   GirlCompanion.init = function (options) {
+    if (window.FeatureFlags && !window.FeatureFlags.get('companion-girl')) return Promise.resolve(null);
     if (instance) return Promise.resolve(instance);
     instance = new Instance();
     return instance.init(options);

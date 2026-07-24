@@ -12,9 +12,12 @@
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
   <script src="fb-db.js"></script>
+  <script src="feature-flags.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
+      cursor: url('cursor images/imresizer-meme-pop-cat-pack.jpg'), auto;
+
       background: #181214; color: #ffebd2;
       font-family: 'Lora', Georgia, serif; font-size: 15px; line-height: 1.6;
       min-height: 100vh;
@@ -231,6 +234,8 @@
       transition: all .25s;
     }
     .toggle.active::after { left: 20px; background: #6fcf97; }
+    .date-label { font-family:'Fraunces',Georgia,serif; font-size:.85rem; color:#ffebd2; }
+    .date-meta { font-size:.75rem; color:#6b5f52; margin-top:1px; }
     .quiz-section {
       margin-top: .75rem; padding-top: .75rem;
       border-top: 1px solid rgba(255,210,150,.08); display: none;
@@ -245,6 +250,39 @@
     }
     .quiz-section .q-field input:focus { border-color: #ffe680; }
     .quiz-section .quiz-note { font-size: .72rem; color: #6b5f52; font-style: italic; margin-bottom: .5rem; }
+
+    .feature-group { margin-bottom: 1.5rem; }
+    .feature-group-title { font-family:'Fraunces',Georgia,serif; font-size:.85rem; color:#ffe680; margin-bottom:.5rem; padding-bottom:.25rem; border-bottom:1px solid rgba(255,230,128,.1); }
+    .feature-card {
+      background:rgba(255,220,160,.03); border:1px solid rgba(255,210,150,.08);
+      border-radius:8px; padding:.6rem .8rem; margin-bottom:.35rem;
+      display:flex; align-items:center; gap:.6rem;
+      transition:all .25s;
+      border-left:3px solid #e85d3a;
+    }
+    .feature-card.ready { border-left-color:#6fcf97; }
+    .feature-card.disabled { opacity:.65; background:rgba(232,93,58,.04); border-color:rgba(232,93,58,.12); }
+    .feature-card .f-label { flex:1; min-width:0; }
+    .feature-card .f-label .f-name { font-size:.8rem; color:#ffebd2; font-weight:500; }
+    .feature-card.disabled .f-label .f-name { color:#6b5f52; text-decoration:line-through; }
+    .feature-card .f-label .f-name::after { content:' (' attr(data-state) ')'; font-size:.6rem; font-weight:400; margin-left:4px; }
+    .feature-card:not(.disabled) .f-label .f-name::after { color:#6fcf97; }
+    .feature-card.disabled .f-label .f-name::after { color:#e85d3a; }
+    .feature-card .f-label .f-desc { font-size:.65rem; color:#6b5f52; margin-top:1px; }
+    .feature-card .f-label .f-auto { font-size:.62rem; color:#b8a898; font-style:italic; margin-top:2px; padding:2px 6px; background:rgba(255,220,160,.06); border-radius:4px; display:inline-block; }
+    .feature-card .f-status { display:none; }
+    .ftoggle {
+      width:34px; height:19px; flex-shrink:0;
+      background:rgba(255,220,160,.08); border-radius:10px; cursor:pointer;
+      transition:background .25s; border:1px solid rgba(255,210,150,.1); position:relative;
+    }
+    .ftoggle.on { background:rgba(111,207,151,.3); border-color:#6fcf97; }
+    .ftoggle::after {
+      content:''; position:absolute; top:1.5px; left:1.5px;
+      width:13px; height:13px; border-radius:50%; background:#6b5f52;
+      transition:all .25s;
+    }
+    .ftoggle.on::after { left:17.5px; background:#6fcf97; }
 
     @media (max-width: 600px) {
       #app { padding: 1rem; }
@@ -310,7 +348,7 @@
   <!-- Tab: Secret -->
   <div class="tab-content" id="tabSecret">
     <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
-      This song appears when <strong>all four sections</strong> are unlocked. A little reward for making it through everything.
+      This song appears when <strong>all five sections</strong> are unlocked. A little reward for making it through everything.
     </p>
     <div id="secretForm">
       <div class="field" style="margin-bottom:.85rem;">
@@ -416,17 +454,17 @@
   <!-- Tab: Settings -->
   <div class="tab-content" id="tabSettings">
     <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
-      Admin settings.
+      Enable or disable any feature. Disabling hides the feature without stopping its background logic. Toggle on to instantly restore.
     </p>
-    <div class="section-dates" id="settingsList">
-      <div class="date-item">
-        <div style="flex:1;">
-          <div class="date-label">Admin Password</div>
-          <div class="date-meta">Current password: <span id="currentPassDisplay">****</span></div>
-        </div>
-        <input type="password" id="newPassInput" placeholder="New password" style="background:#1a1520;border:1px solid #332a3a;color:#c8b9a6;padding:0.4rem 0.7rem;border-radius:6px;font-size:0.85rem;width:140px;">
-        <button id="changePassBtn" class="icon-btn" style="background:rgba(255,230,128,0.1);border:1px solid rgba(255,230,128,0.2);color:#ffe680;padding:0.4rem 0.8rem;border-radius:6px;cursor:pointer;font-size:0.8rem;">Change</button>
+    <div class="section-dates" id="settingsList"></div>
+    <hr style="border-color:rgba(255,210,150,.08);margin:1.5rem 0;">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <div style="flex:1;min-width:120px;">
+        <div class="date-label">Admin Password</div>
+        <div class="date-meta">Current: <span id="currentPassDisplay">****</span></div>
       </div>
+      <input type="password" id="newPassInput" placeholder="New password" style="background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;padding:0.4rem 0.7rem;border-radius:6px;font-size:0.85rem;width:140px;font-family:inherit;">
+      <button id="changePassBtn" style="background:rgba(255,230,128,0.1);border:1px solid rgba(255,230,128,0.2);color:#ffe680;padding:0.4rem 0.8rem;border-radius:6px;cursor:pointer;font-size:0.8rem;">Change</button>
     </div>
   </div>
 
@@ -454,7 +492,9 @@
 
 <script>
 (function () {
-  var PASSKEY = localStorage.getItem('ash-admin-passkey') || 'eshah';
+  var _pk = localStorage.getItem('ash-admin-passkey');
+  var PASSKEY = _pk ? atob(_pk) : 'eshah';
+  if (!_pk) localStorage.setItem('ash-admin-passkey', btoa('eshah'));
   var songs = [];
   var sections = [];
   var galleryItems = [];
@@ -1236,6 +1276,88 @@
   }
 
   /* ---- Helpers ---- */
+  /* ---- Settings (Feature Flags) ---- */
+  function conditionMet(auto) {
+    if (!auto) return true;
+    if (auto.indexOf('after first favorite') !== -1) {
+      try { var f = JSON.parse(localStorage.getItem('ash-favorites') || '[]'); return f.length > 0; } catch(e) { return false; }
+    }
+    if (auto.indexOf('after first firefly') !== -1) {
+      try { return parseInt(localStorage.getItem('ash-firefly-count') || '0') > 0; } catch(e) { return false; }
+    }
+    if (auto.indexOf('after first wish') !== -1) {
+      try { var w = JSON.parse(localStorage.getItem('ash-wish-journal') || '[]'); return w.length > 0; } catch(e) { return false; }
+    }
+    if (auto.indexOf('after Fantasies visited') !== -1) {
+      try { for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && k.indexOf('ash-viewed-') === 0 && k.indexOf('fantasies') !== -1) return true; } } catch(e) {}
+      return false;
+    }
+    if (auto.indexOf('after all 5 sections read') !== -1) {
+      var need = ['100-organs','love','fantasies','sky-observatory','photo-gallery'];
+      try {
+        for (var si = 0; si < need.length; si++) { var found = false;
+          for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && k.indexOf('ash-viewed-') === 0 && k.indexOf(need[si]) !== -1) { found = true; break; } }
+          if (!found) return false;
+        }
+        return true;
+      } catch(e) { return false; }
+    }
+    if (auto.indexOf('after dream + sleep') !== -1) {
+      try { return !!localStorage.getItem('ash-viewed-dream') && !!localStorage.getItem('ash-viewed-make_her_sleep'); } catch(e) { return false; }
+    }
+    return true;
+  }
+
+  function renderSettings() {
+    var list = document.getElementById('settingsList');
+    var features = window.FeatureFlags ? window.FeatureFlags.list() : [];
+    var flags = window.FeatureFlags ? window.FeatureFlags.getAll() : {};
+    var cats = {};
+    for (var i = 0; i < features.length; i++) {
+      var f = features[i];
+      if (!cats[f.cat]) cats[f.cat] = [];
+      cats[f.cat].push(f);
+    }
+    var html = '';
+    var catOrder = ['Sections','Interactive','Features','Visual','Content'];
+    for (var ci = 0; ci < catOrder.length; ci++) {
+      var cat = catOrder[ci];
+      var items = cats[cat];
+      if (!items || !items.length) continue;
+      html += '<div class="feature-group">' +
+        '<div class="feature-group-title">' + cat + '</div>';
+      for (var fi = 0; fi < items.length; fi++) {
+        var f = items[fi];
+        var flagOn = flags[f.id] !== false;
+        var ready = conditionMet(f.auto);
+        var toggleOn = flagOn === false ? false : ready;
+        html +=
+          '<div class="feature-card' + (toggleOn ? '' : ' disabled') + (ready ? ' ready' : '') + '" data-feature="' + f.id + '">' +
+            '<div class="f-label">' +
+              '<div class="f-name" data-state="' + (toggleOn ? 'ON' : 'OFF') + '">' + esc(f.label) + '</div>' +
+              '<div class="f-desc">' + esc(f.desc) + '</div>' +
+              (f.auto ? '<div class="f-auto">\u25B8 ' + esc(f.auto) + '</div>' : '') +
+            '</div>' +
+            '<div class="ftoggle' + (toggleOn ? ' on' : '') + '" data-feature="' + f.id + '"></div>' +
+          '</div>';
+      }
+      html += '</div>';
+    }
+    list.innerHTML = html;
+    list.querySelectorAll('.ftoggle').forEach(function (el) {
+      el.addEventListener('click', function () {
+        var id = this.dataset.feature;
+        var card = this.closest('.feature-card');
+        var wasOn = card.classList.contains('disabled') ? false : true;
+        window.FeatureFlags.set(id, !wasOn);
+        card.classList.toggle('disabled', wasOn);
+        card.querySelector('.f-name').dataset.state = wasOn ? 'OFF' : 'ON';
+        this.classList.toggle('on', !wasOn);
+        toast((wasOn ? 'Disabled: ' : 'Enabled: ') + window.FeatureFlags.getLabel(id));
+      });
+    });
+  }
+
   function esc(str) {
     if (typeof str !== 'string') return '';
     var d = document.createElement('div');
@@ -1580,7 +1702,7 @@
         if (this.dataset.tab === 'wishes') { loadWishes(); }
         if (this.dataset.tab === 'requests') renderRequests();
         if (this.dataset.tab === 'reviews') renderReviews();
-        if (this.dataset.tab === 'settings') { document.getElementById('currentPassDisplay').textContent = PASSKEY; document.getElementById('newPassInput').value = ''; }
+        if (this.dataset.tab === 'settings') { renderSettings(); document.getElementById('currentPassDisplay').textContent = PASSKEY; document.getElementById('newPassInput').value = ''; }
         if (this.dataset.tab === 'access') renderAccess();
       });
     });
@@ -1631,7 +1753,7 @@
       if (!newPass) { toast('Enter a new password'); return; }
       if (newPass.length < 3) { toast('Password must be at least 3 characters'); return; }
       PASSKEY = newPass;
-      localStorage.setItem('ash-admin-passkey', PASSKEY);
+      localStorage.setItem('ash-admin-passkey', btoa(PASSKEY));
       document.getElementById('currentPassDisplay').textContent = PASSKEY;
       document.getElementById('newPassInput').value = '';
       toast('Password changed');
@@ -1664,7 +1786,9 @@
   <script src="adaptive-text.js"></script>
   <script src="matrix-rain.js"></script>
 <script src="global-easter-eggs.js"></script>
-<script src="global-interactions.js"></script>
 
+
+
+<script>document.addEventListener('mousedown',function(){document.body.style.cursor="url('cursor images/imresizer-meme-pop-cat-pack click.jpg'), auto"});document.addEventListener('mouseup',function(){document.body.style.cursor="url('cursor images/imresizer-meme-pop-cat-pack.jpg'), auto"});</script>
 </body>
 </html>

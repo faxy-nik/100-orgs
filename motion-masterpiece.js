@@ -17,6 +17,7 @@
  */
 (function () {
   'use strict';
+  if (window.FeatureFlags && !window.FeatureFlags.get('motion-masterpiece')) return;
 
   var hasAnime = typeof anime === 'function' || (typeof anime === 'object' && anime !== null);
   var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

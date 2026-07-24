@@ -419,6 +419,7 @@ console.error = function () {
 
   /*======= FLOATING QUOTES =======*/
   (function () {
+    if (window.FeatureFlags && !window.FeatureFlags.get('floating-quotes')) return;
     try {
       if (rm) return;
       var quotes = [
@@ -639,6 +640,7 @@ console.error = function () {
 
   /*======= HEART RAIN =======*/
   (function () {
+    if (window.FeatureFlags && !window.FeatureFlags.get('floating-hearts')) return;
     try {
       if (rm) return;
       safeSetInterval(function () {
@@ -686,6 +688,7 @@ console.error = function () {
 
   /*======= EASTER EGG (TURN YOURSELF ON) =======*/
   (function () {
+    if (window.FeatureFlags && !window.FeatureFlags.get('easter-egg-btn')) return;
     try {
       var btn = document.getElementById('easterEggBtn');
       var modal = document.getElementById('easterEggModal');
@@ -1057,6 +1060,7 @@ console.error = function () {
       // --- Parallax backgrounds for ALL sections ---
       // 20 original PNGs + 2 ash photos in pool; keyword map uses old PNGs
       (function applyParallaxToAll() {
+        if (window.FeatureFlags && !window.FeatureFlags.get('parallax')) return;
         var parallaxImages = window.ASH_CONFIG.parallaxImages;
 
         var keywordMap = window.ASH_CONFIG.keywordMap || [
@@ -1267,7 +1271,7 @@ console.error = function () {
 
         // Observer still used for voice-controls UI + progress tracking
         var viewedKey = 'ash-viewed-' + location.pathname.replace(/[^a-z0-9]/gi, '_');
-        try { localStorage.setItem(viewedKey + '_count', tributeData.length); } catch (e) { }
+        if (tributeData.length > 0) { try { localStorage.setItem(viewedKey + '_count', tributeData.length); } catch (e) {} }
         if ('IntersectionObserver' in window) {
           var obs = new IntersectionObserver(function (entries) {
             entries.forEach(function (entry) {
@@ -1281,6 +1285,7 @@ console.error = function () {
                   } catch (e) { }
                   delete data.el._parallaxData;
                 }
+                if (window.FeatureFlags && !window.FeatureFlags.get('voice-recording')) continue;
                 if (!entry.target.querySelector('.voice-controls')) {
                   var wrapper = document.createElement('div');
                   wrapper.className = 'voice-controls';
@@ -1434,6 +1439,7 @@ console.error = function () {
       // --- Bookmarks / Favorites system ---
       // Register favToggle handler IMMEDIATELY (not deferred) so it works as soon as button appears
       (function initFavToggle() {
+        if (window.FeatureFlags && !window.FeatureFlags.get('favorites')) return;
         var flowContainer = document.querySelector('.flow');
         var favToggle = document.getElementById('favToggle');
 
@@ -1479,6 +1485,7 @@ console.error = function () {
       // --- Inject heart buttons into every section ---
       // Deferred so content-visibility:auto subtrees are rendered
       function initHeartButtons() {
+        if (window.FeatureFlags && !window.FeatureFlags.get('favorites')) return;
         var tributes = document.querySelectorAll('.tribute');
         var favorites = [];
         try { favorites = JSON.parse(localStorage.getItem('ash-favorites') || '[]'); } catch (e) { favorites = []; }
@@ -1569,6 +1576,7 @@ console.error = function () {
 
   // Show favToggle if favorites exist
   (function initFavToggleVisibility() {
+    if (window.FeatureFlags && !window.FeatureFlags.get('favorites')) return;
     var btn = document.getElementById('favToggle');
     if (!btn) return;
     try {
@@ -1579,6 +1587,7 @@ console.error = function () {
 
   // Show Turn Yourself On button if Fantasies section viewed
   (function initEasterEggVisibility() {
+    if (window.FeatureFlags && !window.FeatureFlags.get('easter-egg-btn')) return;
     var btn = document.getElementById('easterEggBtn');
     if (!btn) return;
     try {
@@ -1632,6 +1641,7 @@ console.error = function () {
 
   // Love Letter Generator
   (function () {
+    if (window.FeatureFlags && !window.FeatureFlags.get('love-letter-gen')) return;
     var btn = document.createElement('button');
     btn.textContent = 'Write me a letter';
     btn.style.cssText = 'position:fixed;bottom:403px;right:25px;z-index:100;background:rgba(232,93,58,0.15);border:1px solid rgba(232,93,58,0.35);color:var(--parchment);padding:10px 18px;border-radius:24px;cursor:pointer;font-family:var(--font-display);font-size:0.85rem;transition:all 0.3s;backdrop-filter:blur(6px);';
@@ -1818,13 +1828,15 @@ console.error = function () {
         var f = JSON.parse(localStorage.getItem('ash-favorites') || '[]');
         if (f.length > 0) fBtn.style.display = '';
       }
-      var eBtn = document.getElementById('easterEggBtn');
-      if (eBtn && eBtn.style.display === 'none') {
-        for (var i = 0; i < localStorage.length; i++) {
-          var k = localStorage.key(i);
-          if (k && k.indexOf('ash-viewed-') === 0 && k.indexOf('fantasies') !== -1) {
-            eBtn.style.display = '';
-            break;
+      if (!window.FeatureFlags || window.FeatureFlags.get('easter-egg-btn')) {
+        var eBtn = document.getElementById('easterEggBtn');
+        if (eBtn && eBtn.style.display === 'none') {
+          for (var i = 0; i < localStorage.length; i++) {
+            var k = localStorage.key(i);
+            if (k && k.indexOf('ash-viewed-') === 0 && k.indexOf('fantasies') !== -1) {
+              eBtn.style.display = '';
+              break;
+            }
           }
         }
       }

@@ -325,14 +325,14 @@
   function init() {
     var path = window.location.pathname;
     if (/404\.html$|stats\.html$/i.test(path)) return;
+    if (document.body && (document.body.style.display === 'none' || document.body.innerHTML.indexOf('Locked') !== -1)) return;
 
-    initBalloons();
-    initFeathers();
-    initCoffee();
+    if (!window.FeatureFlags || window.FeatureFlags.get('balloons')) initBalloons();
+    if (!window.FeatureFlags || window.FeatureFlags.get('feathers')) initFeathers();
+    if (!window.FeatureFlags || window.FeatureFlags.get('coffee')) initCoffee();
     initSleepBreak();
-    initLuckyStar();
-    initGlobalFragments();
-    initPhotoFragments();
+    if (!window.FeatureFlags || window.FeatureFlags.get('lucky-star')) initLuckyStar();
+    if (!window.FeatureFlags || window.FeatureFlags.get('fragments')) { initGlobalFragments(); initPhotoFragments(); }
     initAchievements();
 
     setInterval(refreshAchievements, 3000);

@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documentation — 100 prghs for eeshah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg: #0a0d16;
+  --bg-alt: #0d1120;
+  --surface: rgba(21, 26, 43, 0.6);
+  --surface-solid: #151a2b;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.14);
+  --text: #e8ecf4;
+  --text-dim: #a8b0c3;
+  --text-mute: #6b7387;
+  --violet: #8b5cf6;
+  --cyan: #22d3ee;
+  --amber: #f5a623;
+  --rose: #e88aa6;
+  --grad-aurora: linear-gradient(120deg, var(--violet), var(--cyan));
+  --grad-dawn: linear-gradient(120deg, var(--amber), var(--rose));
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --sidebar-w: 264px;
+  --sidebar-w-collapsed: 76px;
+  --topbar-h: 68px;
+  --ease: cubic-bezier(.22,.9,.34,1);
+}
+*,*::before,*::after{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:var(--font-body); -webkit-font-smoothing:antialiased; min-height:100vh;
+}
+h1,h2,h3{ font-family:var(--font-display); font-weight:600; margin:0 0 .4em; letter-spacing:-0.01em; }
+p{ margin:0 0 1em; color:var(--text-dim); line-height:1.6; }
+a{ color:inherit; text-decoration:none; }
+ul, ol{ margin:0 0 1em; padding-left:1.25em; }
+li{ color:var(--text-dim); margin-bottom:.25em; }
+code{
+  font-family:var(--font-mono); background:var(--surface); padding:.1em .4em;
+  border-radius:4px; font-size:.85em; color:var(--cyan);
+}
+pre{
+  background:var(--surface-solid); border:1px solid var(--border);
+  border-radius:var(--radius-sm); padding:.8em 1em; overflow-x:auto;
+  font-family:var(--font-mono); font-size:.8em; color:var(--text-dim); margin-bottom:1em;
+}
+table{ width:100%; border-collapse:collapse; margin-bottom:1em; font-size:.82em; }
+th, td{ padding:.5em .6em; text-align:left; border-bottom:1px solid var(--border); vertical-align:top; }
+th{ font-family:var(--font-display); color:var(--text-mute); font-weight:600; font-size:.7em; text-transform:uppercase; letter-spacing:.05em; white-space:nowrap; }
+td{ color:var(--text-dim); }
+td:first-child{ font-family:var(--font-mono); color:var(--text); white-space:nowrap; }
+tr:hover td{ background:rgba(255,255,255,.02); }
+::selection{ background:var(--violet); color:#fff; }
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important; }
+}
+
+#sky-canvas{ position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.55; }
+.app{ position:relative; z-index:1; display:flex; min-height:100vh; }
+
+.sidebar{
+  width:var(--sidebar-w); flex:none;
+  background:rgba(13,16,28,0.7); backdrop-filter:blur(20px);
+  border-right:1px solid var(--border); display:flex; flex-direction:column;
+  position:sticky; top:0; height:100vh; transition:width .25s var(--ease); z-index:40;
+  overflow:hidden;
+}
+.sidebar-head{
+  height:var(--topbar-h); flex:none;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 16px; border-bottom:1px solid var(--border);
+}
+.brand{ display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-weight:600; font-size:15px; white-space:nowrap; }
+.brand-mark{
+  width:30px;height:30px;border-radius:9px;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--grad-aurora); color:#0a0d16; font-size:16px;
+}
+.nav{ flex:1; overflow-y:auto; padding:16px 12px; }
+.nav-group + .nav-group{ margin-top:22px; }
+.nav-label{
+  font-size:11px; text-transform:uppercase; letter-spacing:.08em;
+  color:var(--text-mute); padding:0 10px; margin:0 0 8px;
+}
+.nav-item{
+  display:flex; align-items:center; gap:11px;
+  padding:9px 10px; border-radius:10px; font-size:13.5px; color:var(--text-dim);
+  white-space:nowrap; transition:background .15s, color .15s; margin-bottom:2px;
+}
+.nav-item:hover{ background:var(--surface); color:var(--text); }
+.nav-item.active{ background:linear-gradient(90deg, rgba(139,92,246,.18), rgba(34,211,238,.06)); color:#fff; box-shadow:inset 2px 0 0 var(--violet); }
+
+.main{ flex:1; min-width:0; }
+.topbar{
+  height:var(--topbar-h); position:sticky; top:0; z-index:30;
+  display:flex; align-items:center; gap:16px; padding:0 24px;
+  background:rgba(10,13,22,0.65); backdrop-filter:blur(16px); border-bottom:1px solid var(--border);
+}
+.crumbs{ font-family:var(--font-mono); font-size:12.5px; color:var(--text-mute); }
+.scroll-progress-wrap{ position:absolute; left:0; right:0; bottom:-1px; height:2px; background:transparent; }
+.scroll-progress{ height:100%; width:0%; background:var(--grad-aurora); transition:width .1s linear; }
+
+.content{ padding:32px 40px 90px; max-width:960px; width:100%; margin:0 auto; }
+.content h2{
+  font-size:1.15em; color:var(--text); margin-top:2em; margin-bottom:.6em;
+  padding-bottom:.3em; border-bottom:1px solid var(--border);
+}
+.content h3{ font-size:.95em; color:var(--text); margin-top:1.5em; margin-bottom:.4em; }
+.content .lead{ font-size:15.5px; max-width:680px; }
+.content .back-link{ display:inline-block; font-size:.8em; color:var(--text-mute); margin-bottom:1em; transition:color .15s; }
+.content .back-link:hover{ color:var(--violet); }
+
+.card{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md);
+  padding:18px 20px; backdrop-filter:blur(10px); margin-bottom:.5em;
+}
+.card h3{ font-size:.9em; margin-bottom:.3em; }
+.card p{ font-size:.8em; margin:0; }
+
+.back-to-top{
+  position:fixed; bottom:28px; right:28px; width:44px; height:44px; border-radius:50%;
+  background:var(--surface-solid); border:1px solid var(--border-strong); color:var(--text);
+  font-size:16px; cursor:pointer; opacity:0; pointer-events:none; transition:opacity .2s, transform .2s;
+  z-index:50; backdrop-filter:blur(10px);
+}
+.back-to-top.visible{ opacity:1; pointer-events:auto; }
+.back-to-top:hover{ transform:translateY(-2px); }
+
+@media (max-width: 860px){
+  .sidebar{ position:fixed; left:0; top:0; height:100vh; transform:translateX(-100%); box-shadow:20px 0 60px rgba(0,0,0,.4); }
+  .app.mobile-nav-open .sidebar{ transform:translateX(0); }
+  .content{ padding:22px 16px 90px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="sky-canvas"></canvas>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-head">
+      <div class="brand">
+        <span class="brand-mark">&#x25D0;</span>
+        <span class="brand-text">100 prghs for eeshah</span>
+      </div>
+    </div>
+    <nav class="nav" id="nav"></nav>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <span class="crumbs" id="crumbs">Documentation</span>
+      <div class="scroll-progress-wrap"><div class="scroll-progress" id="scrollProgress"></div></div>
+    </header>
+
+    <div class="content" id="content">
+      <a href="index.html" class="back-link">&larr; Back to home</a>
+      <h1>Documentation</h1>
+      <p class="lead">Everything about 100 prghs for eeshah — pages, scripts, features, companions, easter eggs, and usage.</p>
+      <div id="docBody"></div>
+    </div>
+  </main>
+</div>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">&uarr;</button>
+
+<script>
+var CONTENT = [
+  { id:'overview', cat:'Overview', label:'Overview', html:function(){
+    return '<h2 id="overview">Overview</h2>' +
+    '<p>A romantic web experience ("100 prghs for eeshah") featuring living companion characters (girl, boy, dragon), procedural skies, interactive tribute sections, and a rich set of easter eggs. Deployed via Netlify, uses Firebase Realtime DB for config/sync.</p>' +
+    '<p><strong>Project root:</strong> <code>D:\\fahad\\100\\100prghs for eeshah</code></p>' +
+    '<p><strong>Stack:</strong> Static HTML/CSS/JS &#x2014; no build step. Firebase Realtime DB for data. IndexedDB for analytics. Service worker for offline caching.</p>';
+  }},
+  { id:'pages', cat:'Pages', label:'All Pages', html:function(){
+    return '<h2 id="pages">Pages</h2><table><thead><tr><th>File</th><th>Purpose</th></tr></thead><tbody>' +
+    '<tr><td>index.html</td><td>Landing page &#x2014; sky preview, links to content</td></tr>' +
+    '<tr><td>100-organs.html</td><td>Main content &#x2014; 213 tribute sections, 8 accordion groups</td></tr>' +
+    '<tr><td>love.html</td><td>Love-themed page &#x2014; 130 tribute divs, 5 accordion groups</td></tr>' +
+    '<tr><td>fantasies.html</td><td>Fantasies &amp; comforts content</td></tr>' +
+    '<tr><td>sky-observatory.html</td><td>Sky gallery &#x2014; sky switching, wish jar, star map, moon, fireflies</td></tr>' +
+    '<tr><td>photo-gallery.html</td><td>Photo gallery (ash/ images) &#x2014; includes sky observatory features</td></tr>' +
+    '<tr><td>dream.html</td><td>Dream page &#x2014; images, lanterns, wishes</td></tr>' +
+    '<tr><td>make-her-sleep.html</td><td>Chat/storyline page &#x2014; sleep trigger</td></tr>' +
+    '<tr><td>admin.html</td><td>Admin panel &#x2014; wishes, songs, config, feature flags, access control</td></tr>' +
+    '<tr><td>stats.html</td><td>Usage statistics viewer</td></tr>' +
+    '<tr><td>documentation.html</td><td>This page &#x2014; full project documentation</td></tr>' +
+    '<tr><td>sky-generator.html</td><td>Procedural sky generator</td></tr>' +
+    '<tr><td>sky-generator-living.html</td><td>Living sky generator (with animations)</td></tr>' +
+    '<tr><td>demo-interactions.html</td><td>Interactive features demo &#x2014; 100% spawn rate, all features showcase</td></tr>' +
+    '<tr><td>cold-restart.html</td><td>Clears all <code>ash-*</code> localStorage keys</td></tr>' +
+    '<tr><td>404.html</td><td>Error page</td></tr>' +
+    '</tbody></table>';
+  }},
+  { id:'scripts', cat:'Scripts', label:'Core Scripts', html:function(){
+    return '<h2 id="scripts">Core Scripts</h2><table><thead><tr><th>File</th><th>Purpose</th></tr></thead><tbody>' +
+    '<tr><td>content-common.js</td><td>Main page logic &#x2014; TOC, reveal, scroll, parallax, favorites, mood, bookmarks, voice controls, love letter generator</td></tr>' +
+    '<tr><td>interactive.js</td><td>Wish system, journal, lantern world</td></tr>' +
+    '<tr><td>sky-living.js</td><td>Star field, moon, shooting stars, constellations, birds, dragons, weather, audio ambience</td></tr>' +
+    '<tr><td>skies.js</td><td>150+ sky definitions, rendering engine</td></tr>' +
+    '<tr><td>landscape.js</td><td>Living landscape overlays</td></tr>' +
+    '<tr><td>sky-observatory.js</td><td>Sky observatory UI &#x2014; filters, clock, firefly jar, fortune scroll, Konami code, easter eggs</td></tr>' +
+    '<tr><td>music.js</td><td>Jukebox &#x2014; playlist, crossfade, Web Audio API</td></tr>' +
+    '<tr><td>track.js</td><td>IndexedDB visit counters, analytics</td></tr>' +
+    '<tr><td>global-easter-eggs.js</td><td>Keyboard shortcuts (dream, sleep, matrix, lanterns)</td></tr>' +
+    '<tr><td>matrix-rain.js</td><td>Matrix rain / binary rain / heart rain</td></tr>' +
+    '<tr><td>anime.min.js</td><td>anime.js UMD bundle (118KB)</td></tr>' +
+    '<tr><td>motion-masterpiece.js</td><td>Cinematic visuals &#x2014; hero entrance, accordion stagger, end reveal, aurora</td></tr>' +
+    '<tr><td>fb-db.js</td><td>Firebase Realtime DB helper</td></tr>' +
+    '<tr><td>feature-flags.js</td><td>38 feature flags across 5 categories, localStorage-backed, toggleable from admin</td></tr>' +
+    '<tr><td>style.css</td><td>All styling + masterpiece enhancements</td></tr>' +
+    '<tr><td>sw.js</td><td>Service worker &#x2014; offline cache (<code>ash-v30</code>)</td></tr>' +
+    '<tr><td>tree-of-memories.js</td><td>Fractal tree, hidden until dream + sleep visited</td></tr>' +
+    '<tr><td>random-constellations.js</td><td>Mini canvas constellation viewer</td></tr>' +
+    '<tr><td>butterfly-collection.js</td><td>24 butterfly species collection</td></tr>' +
+    '<tr><td>firefly-jar.js</td><td>Firefly jar &#x2014; catch count + butterfly discovered/total</td></tr>' +
+    '<tr><td>world-progress.js</td><td>World progress dashboard. Hidden until all 5 sections read.</td></tr>' +
+    '<tr><td>global-interactions.js</td><td>Balloons, feathers, coffee, lucky star, puzzle fragments, achievements</td></tr>' +
+    '<tr><td>secret-letters.js</td><td>30 hidden letters unlocked by achievements</td></tr>' +
+    '</tbody></table>';
+  }},
+  { id:'feature-flags', cat:'Features', label:'Feature Flags', html:function(){
+    return '<h2 id="feature-flags">Feature Flags</h2>' +
+    '<p>38 features across 5 categories, toggled from the admin panel (<strong>Settings</strong> tab). Disabling hides the UI without stopping background logic. Toggle back on to restore. Persists in <code>localStorage</code>.</p>' +
+    '<table><thead><tr><th>Category</th><th>Features</th></tr></thead><tbody>' +
+    '<tr><td><strong>Sections</strong> (5)</td><td>100 Organs, Love, Fantasies, Sky Observatory, Photo Gallery</td></tr>' +
+    '<tr><td><strong>Interactive</strong> (5)</td><td>Balloons, Feathers, Coffee Break, Lucky Star, Puzzle Fragments</td></tr>' +
+    '<tr><td><strong>Features</strong> (9)</td><td>Firefly Jar, Globe, Favorites Button, Music Player, Wish Journal, Easter Egg Button, Reading Progress Bar, Song Request, Milestone Counter</td></tr>' +
+    '<tr><td><strong>Visual</strong> (10)</td><td>Girl Companion, Boy Companion, Dragon Companion, Butterflies, Secret Letters, Constellations, Matrix Rain, Motion Effects, Tree of Memories, Adaptive Text</td></tr>' +
+    '<tr><td><strong>Content</strong> (9)</td><td>Wish System, Parallax, Floating Hearts, Floating Quotes, Voice Recording, Love Letter Generator, Sky Auto-Apply, World Progress Dashboard, Global Easter Eggs</td></tr>' +
+    '</tbody></table>';
+  }},
+  { id:'companions', cat:'Companions', label:'Overview', html:function(){
+    return '<h2 id="companions">Companion Systems</h2>' +
+    '<p>Three independent companion systems run simultaneously on each page. All respect <code>prefers-reduced-motion</code>.</p>';
+  }},
+  { id:'girl-companion', cat:'Companions', label:'Girl Companion', html:function(){
+    return '<h3 id="girl-companion">Girl Companion (Sprite-Sheet Based)</h3>' +
+    '<p>10 JS modules + atlas assets. Sprite sheet from <code>ash_pixel.png</code>.</p>' +
+    '<table><thead><tr><th>File</th><th>Purpose</th></tr></thead><tbody>' +
+    '<tr><td>GirlConfig.js</td><td>Constants, speeds, thresholds</td></tr>' +
+    '<tr><td>GirlStorage.js</td><td>localStorage wrapper</td></tr>' +
+    '<tr><td>GirlMemory.js</td><td>Persistent memory (visits, sections, flowers, stars)</td></tr>' +
+    '<tr><td>GirlEvents.js</td><td>Pub/sub EventBus + DOM listeners</td></tr>' +
+    '<tr><td>GirlAnimationController.js</td><td>Frame playback + fallback to idle</td></tr>' +
+    '<tr><td>GirlRenderer.js</td><td>Canvas painter, DPR-aware</td></tr>' +
+    '<tr><td>GirlStateMachine.js</td><td>7 emotional variables, 27 behaviours + 11 hidden moments</td></tr>' +
+    '<tr><td>GirlNavigation.js</td><td>Safe-area wandering</td></tr>' +
+    '<tr><td>GirlInteractions.js</td><td>Cursor proximity, reading dwell, section changes</td></tr>' +
+    '<tr><td>GirlCompanion.js</td><td>Public API + main rAF loop</td></tr>' +
+    '<tr><td>girl-particles.js</td><td>Particle effects (hearts, stars, flowers, sparkles, notes, zzz)</td></tr>' +
+    '</tbody></table>' +
+    '<pre>GirlCompanion.init({ container: document.body })</pre>' +
+    '<p><strong>Z-index:</strong> 999999 &nbsp; <strong>Behaviours:</strong> 27 &nbsp; <strong>Hidden moments:</strong> 11' +
+    '<br><strong>Emotional vars:</strong> energy, comfort, curiosity, sleepiness, friendship, confidence, joy</p>';
+  }},
+  { id:'boy-companion', cat:'Companions', label:'Boy Companion', html:function(){
+    return '<h3 id="boy-companion">Boy Companion</h3>' +
+    '<p>Single self-contained file. Procedurally drawn &#x2014; no sprite sheet. Chibi proportions, detailed shading, 96px height.</p>' +
+    '<p><strong>File:</strong> <code>boy-companion.js</code> (~750 lines) &nbsp; <strong>Z-index:</strong> 44</p>' +
+    '<p>Auto-spawns 2&#x2013;5s after page load. 12 states, 27 behaviours + 6 hidden moments. localStorage memory.</p>';
+  }},
+  { id:'dragon-companion', cat:'Companions', label:'Dragon Companion', html:function(){
+    return '<h3 id="dragon-companion">Dragon Companion</h3>' +
+    '<p>Single self-contained file. Procedurally drawn. No image loading.</p>' +
+    '<p><strong>File:</strong> <code>dragon-companion.js</code> (~653 lines) &nbsp; <strong>Z-index:</strong> 45</p>' +
+    '<p>Spawn chance: 0.7% per 3.5s check. Sessions: 28&#x2013;95s. Max 14 fire particles.</p>';
+  }},
+  { id:'hidden-letters', cat:'Easter Eggs', label:'Hidden Letters (30)', html:function(){
+    var letters = [
+      ['l1','The First Step','Always available'],
+      ['l2','Moonlight Whisper','Click the moon 3 times'],
+      ['l3','Lantern Prayer','Release 3 lanterns'],
+      ['l4','Star Seeker','Visit 5 different skies'],
+      ['l5','Wings of Change','Collect 3 feathers'],
+      ['l6','Dreamer\'s Promise','Visit a dream page'],
+      ['l7','Garden of Stars','Visit 10 skies'],
+      ['l8','The Invisible Thread','Make 5 wishes'],
+      ['l9','Feather Light','Collect 8 feathers'],
+      ['l10','Firefly Dance','Catch 10 fireflies'],
+      ['l11','The Hidden Path','Collect 3 fragments'],
+      ['l12','Echo of Yesterday','5 total visits'],
+      ['l13','Songs Unspoken','Play music 5+ times'],
+      ['l14','Reading Between Lines','View 20 items'],
+      ['l15','The Dragon\'s Gift','Find the dragon'],
+      ['l16','Constellation of Us','15 recent observatory visits'],
+      ['l17','The Quiet Hour','Click coffee once'],
+      ['l18','Gratitude','View 50 items'],
+      ['l19','Butterfly Effect','Favorite 5 things'],
+      ['l20','The Lighthouse','10 total visits'],
+      ['l21','Fragments of Us','Collect 8 fragments'],
+      ['l22','Stargazer','Visit 20 skies'],
+      ['l23','Roots and Wings','Tree \u2265 50'],
+      ['l24','The Gift','Catch 25 fireflies'],
+      ['l25','Wanderer','Release 5 balloon notes'],
+      ['l26','Eternal Spring','Make 15 wishes'],
+      ['l27','The Song of the Sky','Find the lucky star'],
+      ['l28','Home','20 total visits'],
+      ['l29','The Last Firefly','Catch 50 fireflies'],
+      ['l30','To Eeshah','View 100 items + 30 visits']
+    ];
+    var h = '<h2 id="hidden-letters">Hidden Letters (30)</h2>' +
+      '<p>Locked letters show &#x1F512; <code>???</code> (not clickable). Unlocked by meeting conditions. Auto-checked every 20s via <code>secret-letters.js</code>.</p>' +
+      '<table><thead><tr><th>#</th><th>Title</th><th>Unlock Condition</th></tr></thead><tbody>';
+    for(var i=0;i<letters.length;i++) h += '<tr><td>'+letters[i][0]+'</td><td>'+letters[i][1]+'</td><td>'+letters[i][2]+'</td></tr>';
+    h += '</tbody></table>'; return h;
+  }},
+  { id:'observatory-secrets', cat:'Easter Eggs', label:'Observatory Secrets', html:function(){
+    return '<h2 id="observatory-secrets">Hidden Observatory Features</h2>' +
+    '<p>Subtle easter eggs in <code>sky-observatory.js</code> that activate during sky-gazing:</p>' +
+    '<table><thead><tr><th>Feature</th><th>Trigger</th><th>Effect</th></tr></thead><tbody>' +
+    '<tr><td><strong>Konami Code</strong></td><td>Type &#x2191;&#x2191;&#x2193;&#x2193;&#x2190;&#x2192;&#x2190;&#x2192;BA</td><td>Developer Sky Mode &#x2014; neon gradient, 200 stars, aurora colors</td></tr>' +
+    '<tr><td><strong>Earth View</strong></td><td>12% chance after sky change</td><td>Globe emoji floats at bottom-right for ~12s</td></tr>' +
+    '<tr><td><strong>Bubble Messages</strong></td><td>~0.3% chance every 2s</td><td>Floating bubble rises; on click shows uplifting message</td></tr>' +
+    '<tr><td><strong>Invisible Ink</strong></td><td>Mouse still for 8+ seconds</td><td>Faint golden quote fades in (opacity 0.15)</td></tr>' +
+    '</tbody></table>';
+  }},
+  { id:'global-eggs', cat:'Easter Eggs', label:'Global Easter Eggs', html:function(){
+    return '<h2 id="global-eggs">Global Easter Eggs</h2>' +
+    '<p>Keyboard shortcuts in <code>global-easter-eggs.js</code>, available on all pages:</p>' +
+    '<table><thead><tr><th>Key</th><th>Action</th></tr></thead><tbody>' +
+    '<tr><td><code>d</code></td><td>Navigate to dream page</td></tr>' +
+    '<tr><td><code>s</code></td><td>Navigate to make-her-sleep page</td></tr>' +
+    '<tr><td><code>m</code></td><td>Toggle matrix rain</td></tr>' +
+    '<tr><td><code>l</code></td><td>Release lanterns</td></tr>' +
+    '</tbody></table>';
+  }},
+  { id:'visibility', cat:'Recent Changes', label:'Visibility Gating', html:function(){
+    return '<h2 id="visibility">Visibility Gating (v4)</h2>' +
+    '<p>Features that start hidden and reveal progressively:</p>' +
+    '<table><thead><tr><th>Feature</th><th>Unlock Condition</th></tr></thead><tbody>' +
+    '<tr><td>Firefly Jar</td><td>First firefly or butterfly caught</td></tr>' +
+    '<tr><td>Favorites Toggle</td><td>First item favorited</td></tr>' +
+    '<tr><td>Easter Egg Button</td><td>Fantasies page visited</td></tr>' +
+    '<tr><td>World Progress Globe</td><td>All 5 sections read</td></tr>' +
+    '<tr><td>Wish Journal Button</td><td>First wish submitted</td></tr>' +
+    '<tr><td>Tree of Memories</td><td>Dream + sleep pages visited</td></tr>' +
+    '</tbody></table>';
+  }},
+  { id:'technical', cat:'Technical', label:'Anime.js', html:function(){
+    return '<h2 id="anime">Anime.js Integration</h2>' +
+    '<p><strong>File:</strong> <code>anime.min.js</code> (118KB). Powers particles in <code>girl-particles.js</code> and cinematic effects in <code>motion-masterpiece.js</code>.</p>' +
+    '<p>6 particle types on shared canvas (z-index 999998): hearts, stars, flowers, sparkles, notes, zzz.</p>';
+  }},
+  { id:'motion', cat:'Technical', label:'Motion Masterpiece', html:function(){
+    return '<h3 id="motion">Motion Masterpiece</h3>' +
+    '<p><code>motion-masterpiece.js</code> features: hero entrance stagger, accordion cascade, end section reveal, progress glow pulse, ambient aurora (3 layers), spark morph. Respects <code>prefers-reduced-motion</code>.</p>';
+  }},
+  { id:'service-worker', cat:'Technical', label:'Service Worker', html:function(){
+    return '<h3 id="service-worker">Service Worker</h3>' +
+    '<p><code>sw.js</code> &#x2014; cache <code>ash-v30</code>. 45+ cached assets. Cache-first, network fallback strategy.</p>';
+  }},
+  { id:'data', cat:'Technical', label:'Data & Sync', html:function(){
+    return '<h3 id="data">Data & Sync</h3>' +
+    '<table><thead><tr><th>System</th><th>Usage</th></tr></thead><tbody>' +
+    '<tr><td>Firebase Realtime DB</td><td>Wishes, songs, config, admin sync</td></tr>' +
+    '<tr><td>IndexedDB</td><td>Visit counters, analytics (<code>track.js</code>)</td></tr>' +
+    '<tr><td>localStorage</td><td>Companion memory, feature flags, page state</td></tr>' +
+    '</tbody></table>';
+  }},
+  { id:'conventions', cat:'Technical', label:'Conventions', html:function(){
+    return '<h3 id="conventions">Key Conventions</h3>' +
+    '<ul><li>Body starts <code>display:none</code> &#x2014; admin lock guard</li>' +
+    '<li>Companion z-indexes: Girl = 999999, Particles = 999998, Dragon = 45, Boy = 44</li>' +
+    '<li>All companions respect <code>prefers-reduced-motion</code></li>' +
+    '<li>No external CDNs &#x2014; all assets served locally via service worker</li></ul>';
+  }},
+  { id:'build', cat:'Technical', label:'Build & Deploy', html:function(){
+    return '<h3 id="build">Build & Deploy</h3>' +
+    '<p>No build step. Static files on Netlify. To test locally:</p>' +
+    '<pre>cd "D:\\fahad\\100\\100prghs for eeshah"\npython3 -m http.server 8000</pre>';
+  }},
+  { id:'limitations', cat:'Technical', label:'Known Limitations', html:function(){
+    return '<h3 id="limitations">Known Limitations</h3>' +
+    '<ol><li>Girl walk/run: one direction only (mirrored for left/right)</li>' +
+    '<li>Girl wave: reuses happy pose &#x2014; no dedicated wave frame</li>' +
+    '<li>Girl blink: alternates two idle frames</li>' +
+    '<li>Canvas opacity: cannot animate CSSStyleDeclaration with anime.js</li></ol>';
+  }}
+];
+
+/* Build nav */
+(function(){
+  var nav = document.getElementById('nav');
+  var cats = {};
+  for(var i=0;i<CONTENT.length;i++){
+    var c = CONTENT[i].cat;
+    if(!cats[c]) cats[c]=[];
+    cats[c].push(CONTENT[i]);
+  }
+  var h = '';
+  var catKeys = Object.keys(cats);
+  for(var ci=0;ci<catKeys.length;ci++){
+    h += '<div class="nav-group"><div class="nav-label">'+catKeys[ci]+'</div>';
+    var items = cats[catKeys[ci]];
+    for(var ii=0;ii<items.length;ii++){
+      h += '<a class="nav-item" href="#'+items[ii].id+'">'+items[ii].label+'</a>';
+    }
+    h += '</div>';
+  }
+  nav.innerHTML = h;
+})();
+
+/* Build content */
+(function(){
+  var body = document.getElementById('docBody');
+  var h = '';
+  for(var i=0;i<CONTENT.length;i++){
+    h += '<div class="doc-section" id="sec-'+CONTENT[i].id+'">' + CONTENT[i].html() + '</div>';
+  }
+  body.innerHTML = h;
+})();
+
+/* Scroll highlight + progress */
+(function(){
+  var sections = document.querySelectorAll('.doc-section');
+  var navItems = document.querySelectorAll('.nav-item');
+  var scrollProg = document.getElementById('scrollProgress');
+  var backBtn = document.getElementById('backToTop');
+  function onScroll(){
+    var scrollY = window.scrollY + 120;
+    var activeId = null;
+    for(var i=0;i<sections.length;i++){
+      if(sections[i].offsetTop <= scrollY) activeId = sections[i].id.replace('sec-','');
+    }
+    navItems.forEach(function(n){
+      n.classList.toggle('active', n.getAttribute('href') === '#' + activeId);
+    });
+    var h = document.documentElement;
+    var pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight || 1) * 100;
+    scrollProg.style.width = pct+'%';
+    backBtn.classList.toggle('visible', h.scrollTop > 400);
+  }
+  window.addEventListener('scroll', onScroll);
+  onScroll();
+  backBtn.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+})();
+
+/* Sky canvas */
+(function(){
+  var canvas = document.getElementById('sky-canvas');
+  var ctx = canvas.getContext('2d');
+  var w, h, stars = [];
+  function resize(){
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+    stars = Array.from({length: Math.floor(w*h/9000)}, function(){
+      return {x:Math.random()*w, y:Math.random()*h*0.6, r:Math.random()*1.3+0.2, phase:Math.random()*Math.PI*2, speed:0.5+Math.random()};
+    });
+  }
+  window.addEventListener('resize', resize);
+  resize();
+  var t=0;
+  function frame(){
+    t += 0.008;
+    ctx.clearRect(0,0,w,h);
+    var grad = ctx.createLinearGradient(0,0,0,h);
+    var hue = 250 + Math.sin(t*0.15)*20;
+    grad.addColorStop(0, 'hsla('+hue+', 60%, 12%, 0.9)');
+    grad.addColorStop(1, 'hsla('+(hue+40)+', 50%, 6%, 0)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0,0,w,h*0.7);
+    ctx.fillStyle = '#eaeefc';
+    stars.forEach(function(s){
+      var tw = 0.5 + 0.5*Math.sin(t*s.speed + s.phase);
+      ctx.globalAlpha = 0.15 + tw*0.5;
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

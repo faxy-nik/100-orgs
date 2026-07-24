@@ -153,6 +153,7 @@
   // ---- Public API (minimal) ----
 
   BoyCompanion.init = function (options) {
+    if (window.FeatureFlags && !window.FeatureFlags.get('companion-boy')) return Promise.resolve(null);
     if (instance) return Promise.resolve(instance);
     instance = new Instance();
     return instance.init(options);

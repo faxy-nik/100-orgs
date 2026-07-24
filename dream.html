@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -10,6 +10,8 @@
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,500;1,300;1,500&display=swap');
   * { margin:0; padding:0; box-sizing:border-box; }
   body {
+      cursor: url('cursor images/imresizer-meme-pop-cat-pack.jpg'), auto;
+
     background:#1f1a24; color:#ffebd2; font-family:Fraunces,Georgia,serif;
     overflow-x:hidden; min-height:100vh;
   }
@@ -107,7 +109,7 @@
   }
 
 
-  /* dream page handles its own audio — hide jukebox UI */
+  /* dream page handles its own audio � hide jukebox UI */
   #jukeboxBtn, #jukeboxOverlay, #jukeboxPanel, #jukeboxMini { display:none !important; }
 
   /* ===== Lantern System ===== */
@@ -296,7 +298,7 @@
   </div>
 
   <div class="dream-message" id="dreamMessage">
-    "In my dreams, you are always here —<br>
+    "In my dreams, you are always here �<br>
     your warmth beside me, your laughter in the air,<br>
     and the world is soft and golden,<br>
     just like the way I see you."
@@ -420,7 +422,7 @@
 (function () {
   'use strict';
 
-  // ponytail: defensive try-catch — if this script is reached by a later
+  // ponytail: defensive try-catch � if this script is reached by a later
   // DOMContentLoaded fallback, the outer catch prevents silent failures.
   try {
 
@@ -706,5 +708,6 @@
 })();
 </script>
 <script src="global-interactions.js"></script>
+<script>document.addEventListener('mousedown',function(){document.body.style.cursor="url('cursor images/imresizer-meme-pop-cat-pack click.jpg'), auto"});document.addEventListener('mouseup',function(){document.body.style.cursor="url('cursor images/imresizer-meme-pop-cat-pack.jpg'), auto"});</script>
 </body>
 </html>

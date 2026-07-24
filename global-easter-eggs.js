@@ -1,5 +1,6 @@
 (function () {
   'use strict';
+  if (window.FeatureFlags && !window.FeatureFlags.get('easter-eggs')) return;
 
   var buf = '';
 

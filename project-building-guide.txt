@@ -1,0 +1,364 @@
+HOW TO BUILD A LARGE-SCALE WEB PROJECT — A PRACTICAL GUIDE
+===========================================================
+
+This guide walks through how to build a complex web project from scratch:
+planning, prompting, structuring code, handling errors, and staying sane
+throughout. Written based on real-world experience building a multi-page
+interactive website with ~50+ JS files, Firebase backend, custom AI art,
+and dozens of interlocking features.
+
+1. PLANNING — BEFORE YOU WRITE A SINGLE LINE
+---------------------------------------------
+
+1.1 Define the core experience in one sentence
+    "A personal, interactive website where someone can explore content,
+    unlock sections over time, and discover hidden easter eggs."
+    If you can't say it in one sentence, you don't know what you're building.
+
+1.2 Map the user journey
+    What does a first-time visitor see? What do they do next?
+    What keeps them coming back? Draw this on paper or a whiteboard.
+    Don't open a code editor yet.
+
+1.3 List every feature, then cut half
+    Write everything you want. Then delete 50%. The features that survive
+    are the ones you actually need for launch. Everything else is v2.
+
+1.4 Choose your stack based on what you actually need — not what's trendy
+    - Static HTML/CSS/JS for the majority of the site (fast, simple, no build step)
+    - A backend only where absolutely necessary (user auth, data sync)
+    - Firebase/Firestore when you need real-time sync without managing servers
+    - localStorage for client-only data (preferences, progress, flags)
+    No frameworks unless you outgrow vanilla. Most projects never do.
+
+1.5 Design the data model before the UI
+    What data lives in Firebase? What lives in localStorage?
+    What's the shape of each object? What keys/indexes do you need?
+    Sketch this out. Changing data models after launch is painful.
+
+2. PROJECT STRUCTURE
+--------------------
+
+2.1 Flat is better than nested (up to a point)
+    For a solo dev project, a flat directory with clear naming works better
+    than deep nesting. You can refactor into folders later.
+
+    Good naming patterns:
+    - feature-name.js          (one feature, one file)
+    - content-common.js        (shared logic across content pages)
+    - page-specific-name.html  (self-contained HTML pages)
+
+2.2 Single-purpose files over monoliths
+    Each JS file should do ONE thing. If a file has "and" in its mental
+    description ("this handles parallax AND reading progress AND bookmarks"),
+    it's doing too much. Content-common.js is a counter-example of what
+    happens when you push it too far — extract earlier.
+
+2.3 Feature flags from day one
+    Put every optional feature behind a flag from the start:
+    { id: 'feature-name', enabled: true }
+    Store in localStorage. Build a simple admin panel to toggle them.
+    This lets you:
+    - Disable buggy features without deploy
+    - A/B test new additions
+    - Let users control their experience
+    - Gradually roll out features
+
+3. PROMPTING — WORKING WITH AI CODE ASSISTANTS
+-----------------------------------------------
+
+3.1 Be specific about what you want
+    Bad: "Fix the progress bar"
+    Good: "The reading progress bar in index.html shows 0/0.
+           The localStorage key lookups don't match the format written by
+           content-common.js. content-common.js uses location.pathname
+           which includes the directory name. The progress bar should sum
+           all ash-viewed-* keys."
+
+    The more context you give, the better the output.
+
+3.2 Always provide file paths and line numbers
+    "Look at site/page.html line 42-56" is infinitely more useful than
+    "the page has a bug."
+
+3.3 Show error messages
+    Copy-paste the exact console error. Don't paraphrase.
+    "Uncaught TypeError: Cannot read properties of undefined (reading 'x')"
+    is much more useful than "it's not working."
+
+3.4 Use code examples
+    Show the actual code, not a description of it.
+    Bad: "the forEach loop isn't working"
+    Good: "pages.forEach(function(p) { var vk = ...; }) - vk is undefined
+           because p.file doesn't exist in the object"
+
+3.5 One task at a time
+    Don't ask for three unrelated fixes in one message.
+    Each change introduces new potential bugs.
+    Fix one thing, test it, move on.
+
+3.6 Verify before accepting
+    AI can be confidently wrong. Always check:
+    - Does the code actually run without errors?
+    - Does it produce the correct output?
+    - Does it handle edge cases (empty state, error state, loading state)?
+
+4. DEVELOPMENT WORKFLOW
+-----------------------
+
+4.1 Start with the skeleton
+    Get the HTML structure and navigation working FIRST.
+    No styling, no interactions. Just clickable pages.
+    Then add CSS (design). Then add JS (behavior).
+
+4.2 One feature at a time — fully working
+    Don't build three features to 60% completion.
+    Build one feature to 100%, test it, move to the next.
+    "Done" means: it works, it handles errors, it doesn't break anything else.
+
+4.3 The lock/fire pattern
+    For time-gated content:
+    - Build the content page fully first (unlocked)
+    - Add the locking mechanism after
+    - Test both states (locked and unlocked)
+    - Test edge cases (admin lock, date lock, both)
+
+4.4 Feature flags enable gradual rollout
+    Build behind a flag that defaults to OFF.
+    Enable it only after testing.
+    This lets you commit unfinished work without breaking production.
+
+5. COMMON ERRORS AND HOW TO RESOLVE THEM
+-----------------------------------------
+
+5.1 Key mismatches (localStorage / data model)
+    Symptom: Feature reads from key X, but data is stored under key Y.
+    Root cause: Two different code paths constructing keys differently.
+    Fix: Centralize key construction in one function.
+    Prevention: Define key patterns as constants, not inline strings.
+
+    Example:
+    // BAD - keys constructed in two places
+    // content-page.js:
+    var k = 'viewed-' + location.pathname.replace(/[^a-z0-9]/gi, '_');
+    // index.js:
+    var k = 'viewed-' + pageFile.replace(/[^a-z0-9]/gi, '_');
+
+    // GOOD - one helper function
+    function viewedKey(str) {
+      return 'ash-viewed-' + str.replace(/[^a-z0-9]/gi, '_');
+    }
+
+5.2 Race conditions with async data
+    Symptom: Page loads, but data hasn't arrived from server yet.
+    Code runs on the assumption data exists, but it doesn't.
+    Fix: Always check if data exists before using it. Use loading states.
+    Prevention: Assume every async call can fail or be slow.
+
+5.3 Body not ready / DOM not loaded
+    Symptom: Script tries to access DOM elements before they exist.
+    Fix: Wrap code in DOMContentLoaded listener or place scripts at
+    the bottom of <body>.
+    Prevention: Understand script loading order.
+
+5.4 Admin lock overwriting content data
+    Symptom: Admin-locked page loads, inline script replaces body.innerHTML
+    with lock screen. Content scripts that run later find no content.
+    Fix: Skip data writes when body is locked, or don't replace innerHTML
+    (use a modal/overlay approach instead).
+    Prevention: When you need to "lock" a page, use a CSS overlay rather
+    than replacing the entire body content.
+
+5.5 The wrong kind of "clean URL"
+    Symptom: Dev site works locally but breaks on production.
+    Root cause: Netlify, Vercel, etc. may strip .html extensions or serve
+    from subdirectories, changing location.pathname.
+    Fix: Use relative paths consistently. For localStorage keys, iterate
+    all matching keys rather than constructing keys from path patterns.
+
+5.6 The setInterval trap
+    Symptom: setInterval runs a function that depends on data that was
+    valid when the interval started, but is now stale.
+    Fix: Read fresh data inside the interval callback, not outside.
+    Prevention: Assume every interval callback is a fresh execution context.
+
+5.7 Service worker cache poisoning
+    Symptom: You deploy a fix, but users still see the old version.
+    Root cause: Service worker caches old files and doesn't fetch new ones.
+    Fix: Increment the cache version in sw.js. Add a skip-waiting message.
+    Prevention: Always bump cache version with every deploy that changes JS/CSS.
+
+6. BEST PRACTICES THAT PREVENT PROBLEMS
+-----------------------------------------
+
+6.1 One source of truth
+    Every piece of data should live in exactly one place.
+    If you need it elsewhere, reference it — don't duplicate it.
+    This applies to:
+    - Configuration (don't hardcode the same value in 5 files)
+    - Data (don't store the same data in localStorage and a variable)
+    - UI state (don't derive the same value from two different sources)
+
+6.2 Defensive coding
+    Every time you read from external storage (localStorage, Firebase):
+      try { /* read */ } catch(e) { /* use default */ }
+    Every time you access a nested property:
+      var val = obj && obj.prop && obj.prop.deep;
+    Every time you query the DOM:
+      var el = document.getElementById('x');
+      if (!el) return;
+
+    This seems paranoid until it saves your ass at 2am.
+
+6.3 Logging
+    Use console.log/error/warn strategically:
+    - Log the shape of data at key points during development
+    - Log errors (not just silently catch them)
+    - Log state transitions (locked -> unlocked, enabled -> disabled)
+    Remove or tone down logs before deploying (but keep error logging).
+
+6.4 Separate concerns
+    - HTML = structure
+    - CSS = appearance
+    - JS = behavior
+    Don't put inline styles in JS (use CSS classes).
+    Don't put JS event handlers in HTML (use addEventListener).
+    Don't put CSS in HTML (use stylesheets).
+
+6.5 Naming conventions
+    - Files: kebab-case (content-common.js, feature-flags.js)
+    - Functions: camelCase (updateProgress, loadFeatureFlags)
+    - Classes: PascalCase (FeatureFlags)
+    - CSS classes: kebab-case (.progress-fill, .reading-bar)
+    - localStorage keys: prefixed namespaced (ash-viewed-*, ash-feature-flags)
+    - Constants: UPPER_SNAKE_CASE (KEY, ALL_FEATURES)
+
+    The goal is: you know what something is just by looking at its name.
+
+6.6 Comment why, not what
+    // BAD: incrementing counter by 1
+    i += 1;
+
+    // GOOD: skip this section when admin-locked to prevent count corruption
+    if (tributeData.length === 0) continue;
+
+    The code already says WHAT. Comments should say WHY — the intent,
+    the edge case, the thing that isn't obvious from reading the code.
+
+7. TESTING — THE MINIMUM YOU SHOULD DO
+---------------------------------------
+
+7.1 Test every state
+    - Empty state (no data yet)
+    - Normal state (data exists)
+    - Error state (something went wrong)
+    - Edge state (boundary conditions, 0 items, 1 item, max items)
+
+7.2 Test every user path
+    - First visit (no localStorage data)
+    - Returning visitor (some data)
+    - Admin (special controls)
+    - Locked-out user (should see lock screen, not broken page)
+
+7.3 Test across browsers
+    Chrome, Firefox, Safari at minimum.
+    Mobile Safari and Chrome Android.
+    Each has quirks (Safari's localStorage limits, Firefox's CSS rendering,
+    Chrome's autofill behavior).
+
+7.4 Test on actual devices
+    Browser DevTools device mode is a simulation, not a real device.
+    Test on a real phone. The difference matters (scroll behavior, touch
+    events, keyboard, memory constraints).
+
+8. WHEN THINGS GO WRONG — DEBUGGING
+-------------------------------------
+
+8.1 Read the error message
+    The console tells you exactly what's wrong and where.
+    Don't ignore it. Don't guess. Read it carefully.
+
+8.2 Reproduce the bug
+    Can you make it happen every time? What are the exact steps?
+    If you can't reproduce it, you can't fix it.
+
+8.3 Isolate the problem
+    Comment out half the code. Does the bug still happen?
+    Keep narrowing until you find the exact line.
+    This is called binary search debugging and it's the most reliable method.
+
+8.4 Check your assumptions
+    "The key should be X" — is it? console.log it.
+    "This function should return Y" — does it? console.log it.
+    "The data should exist" — does it? console.log it.
+    Most bugs are caused by wrong assumptions. Verify everything.
+
+8.5 The most common sources of bugs (in order)
+    1. Null/undefined reference (accessing property on non-existent object)
+    2. Wrong key/identifier (typo, wrong format, wrong case)
+    3. Race condition (async code runs in unexpected order)
+    4. State mutation (data changed when you thought it was immutable)
+    5. Wrong comparison (== vs ===, truthy/falsy confusion)
+
+9. SCALING — WHAT HAPPENS WHEN THE PROJECT GROWS
+--------------------------------------------------
+
+9.1 When to refactor
+    - When the same pattern appears in 3+ places (extract it)
+    - When a file exceeds 500 lines (split it)
+    - When you're scared to change code (it needs tests)
+    - When onboarding takes more than an hour (document it)
+
+9.2 What NOT to refactor
+    - Working code that nobody touches
+    - One-off features that won't be extended
+    - Code that will be deleted in the next sprint
+
+9.3 The 80/20 rule
+    80% of the complexity comes from 20% of the features.
+    Identify that 20% early and spend your effort there.
+    The other 80% can stay simple.
+
+9.4 Saying no to features
+    Every feature has a cost: development time, testing, maintenance,
+    cognitive load for users, potential bugs.
+    "No" is a complete sentence. "Not right now" is even better.
+
+10. DEPLOYMENT
+--------------
+
+10.1 Static hosting (Netlify, Vercel, GitHub Pages)
+    Perfect for sites without a server backend.
+    Free tier handles most traffic.
+    Deploy from git: push to main = deploy to production.
+
+10.2 Environment parity
+    Development and production should be as similar as possible.
+    The worst bugs are the ones that only happen in production.
+    Use the same browser, same data, same URL structure.
+
+10.3 Deployment checklist
+    - Bump service worker cache version
+    - Test on production URL, not just localhost
+    - Clear localStorage and test as first-time visitor
+    - Test all locked/unlocked states
+    - Check console for errors
+    - Verify all pages load
+
+11. THE MINDSET
+---------------
+
+Building a large project is a marathon, not a sprint.
+You will write code that embarrasses you later. That's fine.
+You will delete more code than you keep. That's normal.
+You will find bugs in code you were "sure" was correct. That's learning.
+
+The difference between a finished project and an abandoned one is not
+talent or intelligence — it's persistence. Keep showing up. Keep fixing
+the next thing. Take breaks. The code will be there tomorrow.
+
+"When in doubt, delete it" is underrated advice. Most code can be removed
+without anyone noticing. Try deleting a feature and see if anyone complains.
+They probably won't. Ship less. Ship better.
+
+— fin —

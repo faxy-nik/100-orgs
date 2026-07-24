@@ -1100,8 +1100,8 @@
     try { enhanceLostBalloon(); } catch (e) {}
     try { initDandelions(); } catch (e) {}
     try { initRainRipples(); } catch (e) {}
-    try { initWishJournal(); } catch (e) {}
-    try { initLanternWorld(); } catch (e) {}
+    try { if (!window.FeatureFlags || window.FeatureFlags.get('wish-journal')) initWishJournal(); } catch (e) {}
+    try { if (!window.FeatureFlags || window.FeatureFlags.get('wish-system')) initLanternWorld(); } catch (e) {}
 
     // Sync existing wishes from old system
     setTimeout(function () {

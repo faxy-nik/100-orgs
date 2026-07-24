@@ -30,11 +30,30 @@
     this.ctx = this.canvas.getContext('2d');
     this.ctx.imageSmoothingEnabled = false;
 
+    this._blinking = false;
+
+    style.opacity = '0';
+    (function fadeIn(canvas) {
+      var op = 0;
+      (function tick() {
+        op += 0.04;
+        if (op >= 1) { canvas.style.opacity = '1'; return; }
+        canvas.style.opacity = String(op);
+        requestAnimationFrame(tick);
+      })();
+    })(this.canvas);
+
     this.container.appendChild(this.canvas);
 
     this._boundResize = this._resize.bind(this);
     window.addEventListener('resize', this._boundResize);
   }
+
+  GirlRenderer.prototype.blink = function () {
+    this._blinking = true;
+    var self = this;
+    setTimeout(function () { self._blinking = false; }, 120);
+  };
 
   GirlRenderer.prototype._resize = function () {
     this.dpr = window.devicePixelRatio || 1;
@@ -81,6 +100,15 @@
 
     this._lastDestW = destW;
     this._lastDestH = destH;
+
+    if (this._blinking) {
+      var eyeY = pos.y + destH * 0.33;
+      var eyeW = destW * 0.1;
+      var eyeH = destH * 0.022;
+      ctx.fillStyle = '#42352b';
+      ctx.fillRect(pos.x + destW * 0.3 - eyeW / 2, eyeY, eyeW, eyeH);
+      ctx.fillRect(pos.x + destW * 0.7 - eyeW / 2, eyeY, eyeW, eyeH);
+    }
   };
 
   GirlRenderer.prototype.lastSize = function () {

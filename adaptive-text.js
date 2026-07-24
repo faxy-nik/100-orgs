@@ -7,6 +7,7 @@
  */
 (function () {
   'use strict';
+  if (window.FeatureFlags && !window.FeatureFlags.get('adaptive-text')) return;
 
   var canvas = document.createElement('canvas');
   canvas.width = 1;

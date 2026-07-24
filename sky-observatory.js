@@ -1381,16 +1381,20 @@
   function updateVine() {
     if (!vineEl) return;
     var total = 0, viewed = 0;
-    var pages = ['100-organs','love','fantasies'];
-    pages.forEach(function(p) {
-      var vk = 'ash-viewed-' + p.replace(/-/g,'_') + '_html';
-      try {
-        var v = JSON.parse(localStorage.getItem(vk) || '[]');
-        viewed += v.length;
-        var count = parseInt(localStorage.getItem(vk+'_count') || '0');
-        total += count;
-      } catch(e) {}
-    });
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (k && k.indexOf('ash-viewed-') === 0 && k.indexOf('_count') === -1) {
+          var count = parseInt(localStorage.getItem(k+'_count') || '');
+          if (!count) continue;
+          try {
+            var v = JSON.parse(localStorage.getItem(k) || '[]');
+            viewed += v.length;
+            total += count;
+          } catch(e) {}
+        }
+      }
+    } catch(e) {}
     var pct = total > 0 ? Math.min(1, viewed/total) : 0;
     var maxH = 120;
     vineEl.style.height = Math.round(pct * maxH) + 'px';
@@ -1555,7 +1559,7 @@
     initFortuneScroll();
     initEarthView();
     initMakeAWish();
-    initFloatingHearts();
+    if (!window.FeatureFlags || window.FeatureFlags.get('floating-hearts')) initFloatingHearts();
     initScreenshotMode();
     initMoodRandomizer();
     initConstellationNames();

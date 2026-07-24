@@ -21,6 +21,7 @@
  */
 (function () {
   'use strict';
+  if (window.FeatureFlags && !window.FeatureFlags.get('matrix-rain')) return;
 
   /* =====================================================================
    * 1. STATE

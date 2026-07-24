@@ -1,5 +1,6 @@
 (function () {
   'use strict';
+  if (window.FeatureFlags && !window.FeatureFlags.get('music')) return;
 
   var PLACEHOLDER_COVERS = [
     'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 fill=%22%232a2018%22/%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2220%22 fill=%22%23ffe680%22 opacity=%22.15%22/%3E%3C/svg%3E',
