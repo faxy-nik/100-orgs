@@ -47,6 +47,7 @@
     { id:'sky-auto-apply', label:'Sky Auto-Apply', cat:'Content', desc:'Auto-applies sky on load', auto:'' },
     { id:'world-progress', label:'World Progress Dashboard', cat:'Content', desc:'Stats page dashboard', auto:'after all 5 sections read' },
     { id:'easter-eggs', label:'Global Easter Eggs', cat:'Content', desc:'Keyboard shortcut easter eggs', auto:'' },
+    { id:'hide-docs', label:'Hide Docs Link', cat:'Visual', desc:'Hide the documentation link from footer', auto:'', defaultOff: true },
   ];
 
   function load() {
@@ -60,7 +61,13 @@
 
   window.FeatureFlags = {
     getAll: function () { return JSON.parse(JSON.stringify(flags)); },
-    get: function (id) { return flags[id] !== false; },
+    get: function (id) {
+      if (flags[id] !== undefined) return flags[id];
+      for (var i = 0; i < ALL_FEATURES.length; i++) {
+        if (ALL_FEATURES[i].id === id && ALL_FEATURES[i].defaultOff) return false;
+      }
+      return true;
+    },
     set: function (id, val) {
       flags[id] = !!val;
       try { localStorage.setItem(KEY, JSON.stringify(flags)); } catch(e) {}
