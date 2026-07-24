@@ -441,7 +441,7 @@
   <div class="quiz-overlay" id="quizOverlay">
     <div class="quiz-box" id="quizBox">
       <h2 id="quizTitle">One small test</h2>
-      <p class="quiz-intro" id="quizIntro">Answer these questions to unlock the Fantasies section.</p>
+      <p class="quiz-intro" id="quizIntro">Answer these questions to unlock this section.</p>
       <div id="quizQuestions"></div>
       <div class="quiz-err" id="quizErr">Some answers are wrong. Try again.</div>
       <div class="quiz-actions">
@@ -734,15 +734,25 @@
          ACCESS CONTROL (Admin Locks + Quiz Gate)
          ================================================================ */
       var SECTION_ACCESS_KEY = 'ash-section-access';
-      var QUIZ_KEY = 'ash-quiz-questions';
+
+      function defaultQuiz() {
+        return [
+          { question: 'What pet name does she call you?', answer: 'babe' },
+          { question: 'What is her favorite color?', answer: 'purple' },
+          { question: 'What month did you first meet?', answer: 'june' },
+          { question: 'What is the admin passkey for this site?', answer: 'eshah' },
+          { question: 'What city does she live in?', answer: 'lahore' }
+        ];
+      }
 
       function defaultAccess() {
+        var q = defaultQuiz();
         return {
-          '100-organs': { adminLocked: false },
-          'love': { adminLocked: false },
-          'fantasies': { adminLocked: true },
-          'sky-observatory': { adminLocked: false },
-          'photo-gallery': { adminLocked: false }
+          '100-organs': { adminLocked: false, questions: JSON.parse(JSON.stringify(q)) },
+          'love': { adminLocked: false, questions: JSON.parse(JSON.stringify(q)) },
+          'fantasies': { adminLocked: true, questions: JSON.parse(JSON.stringify(q)) },
+          'sky-observatory': { adminLocked: false, questions: JSON.parse(JSON.stringify(q)) },
+          'photo-gallery': { adminLocked: false, questions: JSON.parse(JSON.stringify(q)) }
         };
       }
 
@@ -756,20 +766,6 @@
         return def;
       }
 
-      function getQuizQuestions() {
-        var raw = localStorage.getItem(QUIZ_KEY);
-        if (raw) {
-          try { return JSON.parse(raw); } catch(e) {}
-        }
-        return [
-          { question: 'What pet name does she call you?', answer: 'babe' },
-          { question: 'What is her favorite color?', answer: 'purple' },
-          { question: 'What month did you first meet?', answer: 'june' },
-          { question: 'What is the admin passkey for this site?', answer: 'eshah' },
-          { question: 'What city does she live in?', answer: 'lahore' }
-        ];
-      }
-
       function esc(str) {
         if (typeof str !== 'string') return '';
         var d = document.createElement('div');
@@ -780,8 +776,10 @@
       var pendingSection = null;
 
       function showQuiz(sectionId, sectionFile) {
+        var cfg = getAccessConfig();
+        var sc = cfg[sectionId] || {};
+        var questions = sc.questions || defaultQuiz();
         pendingSection = { id: sectionId, file: sectionFile };
-        var questions = getQuizQuestions();
         var html = '';
         for (var qi = 0; qi < questions.length; qi++) {
           html +=
@@ -795,12 +793,10 @@
         document.getElementById('quizOverlay').classList.add('open');
         document.getElementById('quizSubmit').onclick = checkQuiz;
         document.getElementById('quizCancel').onclick = closeQuiz;
-        // Submit on Enter key
         function onQuizKey(e) {
           if (e.key === 'Enter') checkQuiz();
         }
         document.addEventListener('keydown', onQuizKey);
-        // Clean up listener when quiz closes
         var origClose = closeQuiz;
         closeQuiz = function () {
           document.removeEventListener('keydown', onQuizKey);
@@ -818,7 +814,10 @@
       }
 
       function checkQuiz() {
-        var questions = getQuizQuestions();
+        if (!pendingSection) return;
+        var cfg = getAccessConfig();
+        var sc = cfg[pendingSection.id] || {};
+        var questions = sc.questions || defaultQuiz();
         var allCorrect = true;
         for (var qi = 0; qi < questions.length; qi++) {
           var input = document.getElementById('quizInput' + qi);
@@ -832,9 +831,8 @@
           }
         }
         if (allCorrect) {
-          var cfg = getAccessConfig();
-          if (!cfg.fantasies) cfg.fantasies = {};
-          cfg.fantasies.quizPassed = true;
+          if (!cfg[pendingSection.id]) cfg[pendingSection.id] = { adminLocked: true, questions: JSON.parse(JSON.stringify(questions)) };
+          cfg[pendingSection.id].quizPassed = true;
           localStorage.setItem(SECTION_ACCESS_KEY, JSON.stringify(cfg));
           document.getElementById('quizQuestions').innerHTML =
             '<div class="quiz-success"><div class="icon">&#x2728;</div><p>All answers correct. Welcome.</p></div>';
@@ -892,26 +890,17 @@
 
         // Check if still date-locked
         var diffMs = getDiff(section.unlock);
-        if (diffMs > 0) return; // Still date-locked, let default behavior happen
+        if (diffMs > 0) return;
 
         // Check access control
         var cfg = getAccessConfig();
         var sc = cfg[sectionId];
 
-        if (sc) {
-          if (sectionId === 'fantasies' && sc.adminLocked) {
-            if (sc.quizPassed) {
-              return; // Already passed quiz, navigate normally
-            }
-            e.preventDefault();
-            showQuiz(sectionId, section.unlock.file);
-            return;
-          }
-          if (sc.adminLocked) {
-            e.preventDefault();
-            showGate('&ldquo;' + section.title + '&rdquo; is currently locked by the admin.');
-            return;
-          }
+        if (sc && sc.adminLocked) {
+          e.preventDefault();
+          if (sc.quizPassed) return;
+          showQuiz(sectionId, section.unlock.file);
+          return;
         }
       });
 

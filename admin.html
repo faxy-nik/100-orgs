@@ -471,7 +471,7 @@
   <!-- Tab: Access -->
   <div class="tab-content" id="tabAccess">
     <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
-      Control access to each section. Locked sections show a gate on the landing page. The Fantasies section uses a 5-question quiz.
+      Control access to each section. Locked sections show a 5-question quiz on the landing page.
     </p>
     <div class="section-dates" id="accessList"></div>
     <hr style="border-color:rgba(255,210,150,.08);margin:2rem 0;">
@@ -1381,17 +1381,6 @@
 
   /* ---- Access Control ---- */
   var SECTION_ACCESS_KEY = 'ash-section-access';
-  var QUIZ_KEY = 'ash-quiz-questions';
-
-  function defaultAccess() {
-    return {
-      '100-organs': { adminLocked: false },
-      'love': { adminLocked: false },
-      'fantasies': { adminLocked: true },
-      'sky-observatory': { adminLocked: false },
-      'photo-gallery': { adminLocked: false }
-    };
-  }
 
   function defaultQuiz() {
     return [
@@ -1401,6 +1390,17 @@
       { question: 'What is the admin passkey for this site?', answer: 'eshah' },
       { question: 'What city does she live in?', answer: 'lahore' }
     ];
+  }
+
+  function defaultAccess() {
+    var q = defaultQuiz();
+    return {
+      '100-organs': { adminLocked: false, questions: JSON.parse(JSON.stringify(q)) },
+      'love': { adminLocked: false, questions: JSON.parse(JSON.stringify(q)) },
+      'fantasies': { adminLocked: true, questions: JSON.parse(JSON.stringify(q)) },
+      'sky-observatory': { adminLocked: false, questions: JSON.parse(JSON.stringify(q)) },
+      'photo-gallery': { adminLocked: false, questions: JSON.parse(JSON.stringify(q)) }
+    };
   }
 
   function getAccessConfig() {
@@ -1417,32 +1417,17 @@
     localStorage.setItem(SECTION_ACCESS_KEY, JSON.stringify(cfg));
   }
 
-  function getQuizQuestions() {
-    var raw = localStorage.getItem(QUIZ_KEY);
-    if (raw) {
-      try { return JSON.parse(raw); } catch(e) {}
-    }
-    var def = defaultQuiz();
-    localStorage.setItem(QUIZ_KEY, JSON.stringify(def));
-    return def;
-  }
-
-  function saveQuizQuestions(qs) {
-    localStorage.setItem(QUIZ_KEY, JSON.stringify(qs));
-  }
-
   var accessCfg = null;
-  var quizQuestions = null;
 
   function renderAccess() {
     var list = document.getElementById('accessList');
     if (!list) return;
     accessCfg = getAccessConfig();
-    quizQuestions = getQuizQuestions();
     var html = '';
     for (var i = 0; i < sections.length; i++) {
       var s = sections[i];
-      var ac = accessCfg[s.key] || { adminLocked: false };
+      var ac = accessCfg[s.key] || { adminLocked: false, questions: defaultQuiz() };
+      if (!ac.questions) ac.questions = defaultQuiz();
       var locked = !!ac.adminLocked;
       html += '<div class="access-card" data-section="' + s.key + '">' +
         '<div class="access-header">' +
@@ -1455,7 +1440,7 @@
             '<label>' + (locked ? 'Locked' : 'Open') + '</label>' +
           '</div>' +
         '</div>' +
-        (s.key === 'fantasies' ? buildQuizEditor(quizQuestions) : '') +
+        buildQuizEditor(s.key, ac.questions) +
       '</div>';
     }
     list.innerHTML = html;
@@ -1464,39 +1449,39 @@
     list.querySelectorAll('.toggle').forEach(function (el) {
       el.addEventListener('click', function () {
         var key = this.dataset.section;
-        var ac2 = accessCfg[key] || { adminLocked: false };
+        var ac2 = accessCfg[key] || { adminLocked: false, questions: defaultQuiz() };
         ac2.adminLocked = !ac2.adminLocked;
         accessCfg[key] = ac2;
         saveAccessConfig(accessCfg);
         this.classList.toggle('active');
         var label = this.nextElementSibling;
         label.textContent = ac2.adminLocked ? 'Locked' : 'Open';
-        // Show/hide quiz editor for fantasies
-        if (key === 'fantasies') {
-          var qs = this.closest('.access-card').querySelector('.quiz-section');
-          if (qs) qs.classList.toggle('open', ac2.adminLocked);
-        }
+        // Show/hide quiz editor
+        var qs = this.closest('.access-card').querySelector('.quiz-section');
+        if (qs) qs.classList.toggle('open', ac2.adminLocked);
       });
     });
 
     // Quiz field saves — resets quizPassed so she must retake
     list.querySelectorAll('.quiz-section input').forEach(function (el) {
       el.addEventListener('change', function () {
+        var secKey = this.closest('.access-card').dataset.section;
         var idx = parseInt(this.dataset.idx);
         var field = this.dataset.field;
-        quizQuestions[idx][field] = this.value;
-        saveQuizQuestions(quizQuestions);
-        // Reset quizPassed when questions change
-        if (accessCfg.fantasies) {
-          accessCfg.fantasies.quizPassed = false;
-          saveAccessConfig(accessCfg);
-        }
+        var ac3 = accessCfg[secKey] || { adminLocked: false, questions: defaultQuiz() };
+        if (!ac3.questions) ac3.questions = defaultQuiz();
+        ac3.questions[idx][field] = this.value;
+        ac3.quizPassed = false;
+        accessCfg[secKey] = ac3;
+        saveAccessConfig(accessCfg);
       });
     });
   }
 
-  function buildQuizEditor(qs) {
-    var html = '<div class="quiz-section' + (accessCfg && accessCfg.fantasies && accessCfg.fantasies.adminLocked ? ' open' : '') + '">';
+  function buildQuizEditor(secKey, qs) {
+    var ac = accessCfg && accessCfg[secKey];
+    var isOpen = ac && ac.adminLocked;
+    var html = '<div class="quiz-section' + (isOpen ? ' open' : '') + '">';
     html += '<div class="quiz-note">5 questions she must answer correctly to unlock this section. Edit below:</div>';
     for (var i = 0; i < qs.length; i++) {
       html +=
