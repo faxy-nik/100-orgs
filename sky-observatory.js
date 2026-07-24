@@ -860,6 +860,8 @@
       });
       function renderProgress() {
         var pct = total > 0 ? Math.min(100, Math.round(viewed/total*100)) : 0;
+        if (total === 0) { el.style.display = 'none'; return; }
+        el.style.display = '';
         el.innerHTML = '<div style="font-family:var(--font-display);color:var(--gold);margin-bottom:4px;">\uD83D\uDCD6 Progress</div>' +
           '<div style="color:var(--parchment-dim);">' + viewed + ' / ' + total + ' memories</div>' +
           '<div style="margin-top:4px;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;">' +

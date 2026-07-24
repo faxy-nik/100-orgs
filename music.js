@@ -44,6 +44,8 @@
             audioUrl = URL.createObjectURL(r.audioBlob);
             audioUrls.push(audioUrl);
           } catch(e) {}
+        } else if (r.isFileSong && r.fileName) {
+          audioUrl = 'songs/' + r.fileName;
         }
         songObjs.push({
           title: r.title || 'Untitled',
@@ -376,22 +378,18 @@
     });
 
     this.audio.addEventListener('ended', function () {
-      self.onTrackEnd();
+      if (self.repeat === true) {
+        self.audio.currentTime = 0;
+        self.audio.play();
+      } else {
+        self.next();
+      }
     });
 
     this.audio.addEventListener('error', function () {
-      if (self._fadingOut) return;
-      self.onTrackEnd();
+      self.isPlaying = false;
+      self.updateUI();
     });
-  };
-
-  Jukebox.prototype.onTrackEnd = function () {
-    if (this.repeat === true) {
-      this.audio.currentTime = 0;
-      this.audio.play();
-    } else {
-      this.next();
-    }
   };
 
   Jukebox.prototype.cleanup = function () {
@@ -425,21 +423,16 @@
     }
 
     if (index !== undefined && index !== this.currentIndex) {
-      this.crossfadeOut(function () {
-        self.currentIndex = index;
-        self.loadAndPlay();
-      });
+      this.currentIndex = index;
+      this.currentTime = 0;
+      this.loadAndPlay();
       return;
     }
 
-    if (index !== undefined) {
-      this.currentIndex = index;
-    }
+    if (index !== undefined) this.currentIndex = index;
 
     this.initAudio();
-    if (!this.audio) {
-      this.createAudio();
-    }
+    if (!this.audio) { this.createAudio(); }
 
     if (this.audio && this.audio.paused) {
       if (this.audioCtx && this.audioCtx.state === 'suspended') this.audioCtx.resume();
@@ -455,8 +448,6 @@
         self.isPlaying = false;
         self.updateUI();
       });
-    } else if (!this.audio) {
-      this.loadAndPlay();
     }
   };
 
@@ -469,6 +460,13 @@
 
   Jukebox.prototype.loadAndPlay = function () {
     var self = this;
+
+    if (this.audio) { this.audio.pause(); this.audio.src = ''; this.audio = null; }
+    if (this.sourceNode) { try { this.sourceNode.disconnect(); } catch(e) {} this.sourceNode = null; }
+    if (this.noteTimer) { clearInterval(this.noteTimer); this.noteTimer = null; }
+    if (this.animationId) { cancelAnimationFrame(this.animationId); this.animationId = null; }
+    if (this.eqEl) this.eqEl.classList.remove('active');
+
     this.isPlaying = true;
     this.createAudio();
     this.updateSongInfo();
@@ -477,10 +475,17 @@
     if (this.audioCtx && this.audioCtx.state === 'suspended') this.audioCtx.resume();
 
     if (this.currentTime > 0 && this.currentTime < (this.songs[this.currentIndex] ? this.songs[this.currentIndex].duration : 200)) {
-      this.audio.currentTime = this.currentTime;
+      if (this.audio && this.audio.readyState >= 1 && isFinite(this.audio.duration)) this.audio.currentTime = this.currentTime;
+    }
+
+    if (!this.audio || !this.audio.src || this.audio.src === location.href) {
+      this.isPlaying = false;
+      this.updateUI();
+      return;
     }
 
     this.audio.play().then(function () {
+      self.isPlaying = true;
       self.updateUI();
       self.saveState();
       if (self.vinylDisc) self.vinylDisc.classList.add('spinning');
@@ -512,108 +517,59 @@
 
   Jukebox.prototype.next = function () {
     var self = this;
-    this.crossfadeOut(function () {
-      if (self.shuffle) {
-        self.shuffleIndex = (self.shuffleIndex + 1) % self.shuffleOrder.length;
-        self.currentIndex = self.shuffleOrder[self.shuffleIndex];
-      } else if (self.repeat === 'all') {
-        self.currentIndex = (self.currentIndex + 1) % self.songs.length;
-      } else {
-        self.currentIndex = Math.min(self.currentIndex + 1, self.songs.length - 1);
-      }
-      self.currentTime = 0;
-      self.loadAndPlay();
-    });
+    if (self.shuffle) {
+      self.shuffleIndex = (self.shuffleIndex + 1) % self.shuffleOrder.length;
+      self.currentIndex = self.shuffleOrder[self.shuffleIndex];
+    } else if (self.repeat === 'all') {
+      self.currentIndex = (self.currentIndex + 1) % self.songs.length;
+    } else {
+      self.currentIndex = Math.min(self.currentIndex + 1, self.songs.length - 1);
+    }
+    self.currentTime = 0;
+    self.loadAndPlay();
   };
 
   Jukebox.prototype.prev = function () {
     var self = this;
 
     if (this.audio && this.audio.currentTime > 3) {
-      this.crossfadeOut(function () {
-        self.audio.currentTime = 0;
-        self.currentTime = 0;
-        self.crossfadeIn();
-        self.updateTimeDisplay();
-      });
+      if (this.audioCtx && this.gainNode) this.gainNode.gain.value = this.volume;
+      this.audio.currentTime = 0;
+      this.currentTime = 0;
+      this.updateTimeDisplay();
       return;
     }
 
-    this.crossfadeOut(function () {
-      if (self.shuffle) {
-        self.shuffleIndex = (self.shuffleIndex - 1 + self.shuffleOrder.length) % self.shuffleOrder.length;
-        self.currentIndex = self.shuffleOrder[self.shuffleIndex];
-      } else if (self.repeat === 'all') {
-        self.currentIndex = (self.currentIndex - 1 + self.songs.length) % self.songs.length;
-      } else {
-        self.currentIndex = Math.max(self.currentIndex - 1, 0);
-      }
-      self.currentTime = 0;
-      self.loadAndPlay();
-    });
-  };
-
-  Jukebox.prototype.crossfadeOut = function (callback) {
-    if (this._fadingOut) {
-      if (callback) callback();
-      return;
-    }
-    this._fadingOut = true;
-
-    if (!this.audio || !this.isPlaying) {
-      this._fadingOut = false;
-      if (callback) callback();
-      return;
-    }
-
-    var self = this;
-    var duration = 300;
-    var steps = 15;
-    var interval = duration / steps;
-    var volStep = 1 / steps;
-    var currentStep = 0;
-
-    if (this.sourceNode && this.gainNode) {
-      var startGain = this.gainNode.gain.value;
-      var fadeTimer = setInterval(function () {
-        currentStep++;
-        if (currentStep >= steps) {
-          clearInterval(fadeTimer);
-          self.pause();
-          self._fadingOut = false;
-          if (callback) callback();
-          if (self.gainNode) self.gainNode.gain.value = self.volume;
-        } else {
-          if (self.gainNode) self.gainNode.gain.value = Math.max(0, startGain * (1 - currentStep / steps));
-        }
-      }, interval);
+    if (self.shuffle) {
+      self.shuffleIndex = (self.shuffleIndex - 1 + self.shuffleOrder.length) % self.shuffleOrder.length;
+      self.currentIndex = self.shuffleOrder[self.shuffleIndex];
+    } else if (self.repeat === 'all') {
+      self.currentIndex = (self.currentIndex - 1 + self.songs.length) % self.songs.length;
     } else {
-      this._fadingOut = false;
-      this.pause();
-      if (callback) callback();
+      self.currentIndex = Math.max(self.currentIndex - 1, 0);
     }
+    self.currentTime = 0;
+    self.loadAndPlay();
   };
 
-  Jukebox.prototype.crossfadeIn = function () {
-    var self = this;
-    if (!this.sourceNode || !this.gainNode) return;
-
-    var duration = 400;
-    var steps = 20;
-    var interval = duration / steps;
-    var currentStep = 0;
-    var targetVol = this.volume;
-
-    this.gainNode.gain.value = 0;
-    var fadeTimer = setInterval(function () {
-      currentStep++;
-      if (currentStep >= steps) {
-        clearInterval(fadeTimer);
-        if (self.gainNode) self.gainNode.gain.value = targetVol;
-      } else {
-        if (self.gainNode) self.gainNode.gain.value = targetVol * (currentStep / steps);
-      }
-    }, interval);
+  Jukebox.prototype.cleanup = function () {
+    if (this.audio) {
+      this.audio.pause();
+      this.audio.src = '';
+      this.audio = null;
+    }
+    if (this.sourceNode) {
+      try { this.sourceNode.disconnect(); } catch(e) {}
+      this.sourceNode = null;
+    }
+    if (this.animationId) {
+      cancelAnimationFrame(this.animationId);
+      this.animationId = null;
+    }
+    if (this.noteTimer) {
+      clearInterval(this.noteTimer);
+      this.noteTimer = null;
+    }
   };
 
   Jukebox.prototype.toggleShuffle = function () {
@@ -901,7 +857,21 @@
   async function init() {
     var fileSongs = await loadFileSongs();
     var dbSongs = await loadSongsFromDB();
-    var songs = fileSongs.concat(dbSongs || []);
+
+    // Merge: file songs first, DB songs override only if they have a valid audio src
+    var songs = [];
+    var seen = {};
+    fileSongs.forEach(function(s) { seen[s.title] = true; songs.push(s); });
+    (dbSongs || []).forEach(function(s) {
+      if (seen[s.title]) {
+        if (!s.src) return;
+        for (var si = 0; si < songs.length; si++) {
+          if (songs[si].title === s.title) { songs[si] = s; break; }
+        }
+      } else {
+        songs.push(s);
+      }
+    });
 
     // Check if all sections unlocked — reveal secret song
     try {

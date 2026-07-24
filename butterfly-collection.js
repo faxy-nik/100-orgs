@@ -12,30 +12,30 @@
   function save() { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch(e){} }
 
   var SPECIES = [
-    { id:'b1', name:'Sunflare', desc:'Golden wings that catch the morning light.', color:'#ffe680', wingShape:'round', rarity:'common', active:'day', flower:'sunflower', flight:'flutter' },
-    { id:'b2', name:'Moonpetal', desc:'Pale silver like moonlight on petals.', color:'#c0c8e0', wingShape:'round', rarity:'common', active:'night', flower:'moonflower', flight:'glide' },
-    { id:'b3', name:'Rosewhisper', desc:'Soft pink, barely there, like a blush.', color:'#ff8eb4', wingShape:'round', rarity:'common', active:'day', flower:'rose', flight:'flutter' },
-    { id:'b4', name:'Skygazer', desc:'Blue as the summer sky at noon.', color:'#66bbff', wingShape:'wide', rarity:'common', active:'day', flower:'lavender', flight:'soar' },
-    { id:'b5', name:'Emberwing', desc:'Crimson and orange like dying embers.', color:'#e85d3a', wingShape:'angular', rarity:'uncommon', active:'dusk', flower:'poppy', flight:'dart' },
-    { id:'b6', name:'Frostvein', desc:'White with veins of frozen blue.', color:'#ddeeff', wingShape:'angular', rarity:'uncommon', active:'dawn', flower:'snowdrop', flight:'glide' },
-    { id:'b7', name:'Velvetnight', desc:'Deep purple, almost black, with stars.', color:'#6a3a8a', wingShape:'wide', rarity:'uncommon', active:'night', flower:'nightshade', flight:'glide' },
-    { id:'b8', name:'Goldleaf', desc:'Autumn captured in wing form.', color:'#d4a020', wingShape:'round', rarity:'uncommon', active:'day', flower:'marigold', flight:'flutter' },
-    { id:'b9', name:'Coralflame', desc:'Vibrant coral, hot and bright.', color:'#ff6f5e', wingShape:'angular', rarity:'uncommon', active:'day', flower:'hibiscus', flight:'dart' },
-    { id:'b10', name:'Mistdancer', desc:'Translucent grey that dances in fog.', color:'#a0a8b0', wingShape:'round', rarity:'uncommon', active:'dawn', flower:'lily', flight:'dance' },
-    { id:'b11', name:'Jewelwing', desc:'Emerald green, faceted like a gem.', color:'#40b060', wingShape:'angular', rarity:'rare', active:'day', flower:'jade', flight:'dart' },
-    { id:'b12', name:'Sapphiretide', desc:'Deep blue, flowing like ocean waves.', color:'#2a60c0', wingShape:'wide', rarity:'rare', active:'dusk', flower:'bluebell', flight:'soar' },
-    { id:'b13', name:'Amberdrift', desc:'Honey-colored, slow and gentle.', color:'#c09030', wingShape:'round', rarity:'rare', active:'day', flower:'honeysuckle', flight:'glide' },
-    { id:'b14', name:'Irisdream', desc:'Purple and violet, shifting in light.', color:'#8a5abe', wingShape:'wide', rarity:'rare', active:'dusk', flower:'iris', flight:'dance' },
-    { id:'b15', name:'Peachbloom', desc:'Soft peach, like the first spring blossom.', color:'#ffb080', wingShape:'round', rarity:'rare', active:'day', flower:'cherry', flight:'flutter' },
-    { id:'b16', name:'Stormbringer', desc:'Dark grey with lightning veins.', color:'#5a6080', wingShape:'angular', rarity:'rare', active:'rain', flower:'thistle', flight:'dart' },
-    { id:'b17', name:'Aurora', desc:'Green and pink like the northern lights.', color:'#60d080', wingShape:'wide', rarity:'very-rare', active:'night', flower:'aurora', flight:'dance' },
-    { id:'b18', name:'Sunsetwing', desc:'All the colors of dusk on one wing.', color:'#ff8844', wingShape:'wide', rarity:'very-rare', active:'dusk', flower:'sunset', flight:'soar' },
-    { id:'b19', name:'Stardust', desc:'Tiny points of light on translucent wings.', color:'#ffe8aa', wingShape:'round', rarity:'very-rare', active:'night', flower:'starflower', flight:'dance' },
-    { id:'b20', name:'Rainbow', desc:'Every color of the spectrum, rare and bright.', color:'#ff6b6b', wingShape:'wide', rarity:'very-rare', active:'day', flower:'rainbow', flight:'soar' },
-    { id:'b21', name:'Ghostwing', desc:'Nearly invisible, seen only in shadow.', color:'#e0e0e8', wingShape:'angular', rarity:'legendary', active:'night', flower:'ghost', flight:'glide' },
-    { id:'b22', name:'Phoenixflare', desc:'Red-gold, said to be born from ashes.', color:'#ff4400', wingShape:'angular', rarity:'legendary', active:'dawn', flower:'phoenix', flight:'dart' },
-    { id:'b23', name:'Voidglimmer', desc:'Black with stars inside, like the cosmos.', color:'#1a0a2a', wingShape:'wide', rarity:'legendary', active:'night', flower:'void', flight:'dance' },
-    { id:'b24', name:'Ethereal', desc:'Pure white with golden edges, celestial.', color:'#fff8ee', wingShape:'round', rarity:'mythic', active:'any', flower:'celestial', flight:'glide' }
+    { id:'b1', name:'Clouded Yellow', sci:'Colias crocea', desc:'Golden yellow wings that brighten open meadows. Feeds on clover and alfalfa. Widespread across Europe and Asia.', color:'#ffe680', wingShape:'round', rarity:'common', active:'day', flower:'sunflower', flight:'flutter' },
+    { id:'b2', name:'Green-veined White', sci:'Pieris napi', desc:'White wings with delicate green veins along the undersides. Favors damp meadows and woodland edges. Flies low over vegetation.', color:'#c0c8e0', wingShape:'round', rarity:'common', active:'night', flower:'moonflower', flight:'glide' },
+    { id:'b3', name:'Small Tortoiseshell', sci:'Aglais urticae', desc:'Warm orange and brown with a row of blue spots along the wing edge. One of the first butterflies to appear in spring. Loves nettle patches.', color:'#ff8eb4', wingShape:'round', rarity:'common', active:'day', flower:'rose', flight:'flutter' },
+    { id:'b4', name:'Common Blue', sci:'Polyommatus icarus', desc:'Brilliant blue wings in males, brown in females. Found in grasslands and meadows throughout summer. Often seen in large colonies.', color:'#66bbff', wingShape:'wide', rarity:'common', active:'day', flower:'lavender', flight:'soar' },
+    { id:'b5', name:'Red Admiral', sci:'Vanessa atalanta', desc:'Striking black wings with vivid red bands and white spots. A strong migrant that travels vast distances. Often seen in gardens feeding on rotting fruit.', color:'#e85d3a', wingShape:'angular', rarity:'uncommon', active:'dusk', flower:'poppy', flight:'dart' },
+    { id:'b6', name:'Large White', sci:'Pieris brassicae', desc:'Creamy white with black wingtips. One of the most widespread butterflies. Larvae feed on cabbage and other brassicas.', color:'#ddeeff', wingShape:'angular', rarity:'uncommon', active:'dawn', flower:'snowdrop', flight:'glide' },
+    { id:'b7', name:'Purple Emperor', sci:'Apatura iris', desc:'Deep purple with an iridescent sheen that shifts in sunlight. Spends most of its life high in oak tree canopies. Descends to feed on sap and carrion.', color:'#6a3a8a', wingShape:'wide', rarity:'uncommon', active:'night', flower:'nightshade', flight:'glide' },
+    { id:'b8', name:'Brimstone', sci:'Gonepteryx rhamni', desc:'Lemon-yellow wings that resemble a leaf when at rest. One of the longest-lived butterflies, overwintering as an adult. Emerges on warm winter days.', color:'#d4a020', wingShape:'round', rarity:'uncommon', active:'day', flower:'marigold', flight:'flutter' },
+    { id:'b9', name:'Small Copper', sci:'Lycaena phlaeas', desc:'Bright copper-orange with dark brown borders. A fast, darting flyer that frequently returns to the same perch. Territorial and often seen basking on bare ground.', color:'#ff6f5e', wingShape:'angular', rarity:'uncommon', active:'day', flower:'hibiscus', flight:'dart' },
+    { id:'b10', name:'Speckled Wood', sci:'Pararge aegeria', desc:'Brown wings with creamy-yellow spots that dapple like sunlight through leaves. Unusual among butterflies for preferring shaded woodland over open sunshine.', color:'#a0a8b0', wingShape:'round', rarity:'uncommon', active:'dawn', flower:'lily', flight:'dance' },
+    { id:'b11', name:'Green Hairstreak', sci:'Callophrys rubi', desc:'The only British butterfly with truly green wings — a vivid emerald on the undersides. Sits with wings closed, becoming nearly invisible against leaves.', color:'#40b060', wingShape:'angular', rarity:'rare', active:'day', flower:'jade', flight:'dart' },
+    { id:'b12', name:'Adonis Blue', sci:'Lysandra bellargus', desc:'Intense azure blue wings bordered with white. Found only on chalk and limestone grasslands. Males are among the most vibrantly colored of all European butterflies.', color:'#2a60c0', wingShape:'wide', rarity:'rare', active:'dusk', flower:'bluebell', flight:'soar' },
+    { id:'b13', name:'Meadow Brown', sci:'Maniola jurtina', desc:'Plain brown wings with a single eyespot. One of the most abundant butterflies across Europe. Flies lazily through grasslands even on overcast days.', color:'#c09030', wingShape:'round', rarity:'rare', active:'day', flower:'honeysuckle', flight:'glide' },
+    { id:'b14', name:'Purple Hairstreak', sci:'Favonius quercus', desc:'Purple-violet sheen across the upper wings. Lives almost entirely in oak trees, feeding on honeydew. Rarely descends to ground level.', color:'#8a5abe', wingShape:'wide', rarity:'rare', active:'dusk', flower:'iris', flight:'dance' },
+    { id:'b15', name:'Orange Tip', sci:'Anthocharis cardamines', desc:'White wings with brilliant orange tips in males. Females lack the orange but both have exquisite green-mottled undersides. Often seen along riverbanks and damp meadows.', color:'#ffb080', wingShape:'round', rarity:'rare', active:'day', flower:'cherry', flight:'flutter' },
+    { id:'b16', name:'Grayling', sci:'Hipparchia semele', desc:'Cryptic grey-brown wings that blend perfectly with dry earth and rock. Rests with wings closed to one side, tilting to minimize shadow. Found on coastal dunes and heathland.', color:'#5a6080', wingShape:'angular', rarity:'rare', active:'rain', flower:'thistle', flight:'dart' },
+    { id:'b17', name:'Silver-washed Fritillary', sci:'Argynnis paphia', desc:'Rich orange with dark veins and silver streaks across the underwings. Glides powerfully through sunlit woodland clearings. Feeds on bramble blossom.', color:'#60d080', wingShape:'wide', rarity:'very-rare', active:'night', flower:'aurora', flight:'dance' },
+    { id:'b18', name:'Painted Lady', sci:'Vanessa cardui', desc:'Orange, black, and white patterned wings. The most widespread butterfly in the world, found on every continent except Antarctica. Undertakes massive migrations.', color:'#ff8844', wingShape:'wide', rarity:'very-rare', active:'dusk', flower:'sunset', flight:'soar' },
+    { id:'b19', name:'Marbled White', sci:'Melanargia galathea', desc:'Striking chequered pattern of black and creamy white. Flies slowly and delicately over chalk grassland in midsummer. Often rests conspicuously on tall grass stems.', color:'#ffe8aa', wingShape:'round', rarity:'very-rare', active:'night', flower:'starflower', flight:'dance' },
+    { id:'b20', name:'Peacock', sci:'Aglais io', desc:'Magnificent eye-spots on deep maroon wings that flash open to startle predators. The pattern resembles the tail feathers of a peacock. Hibernates in dark sheds and hollow trees.', color:'#ff6b6b', wingShape:'wide', rarity:'very-rare', active:'day', flower:'rainbow', flight:'soar' },
+    { id:'b21', name:'White Admiral', sci:'Limenitis camilla', desc:'Velvety black-brown wings crossed with bold white bands. Glides gracefully through mature woodland. Feeds on bramble flowers and honeydew high in the canopy.', color:'#e0e0e8', wingShape:'angular', rarity:'legendary', active:'night', flower:'ghost', flight:'glide' },
+    { id:'b22', name:'Duke of Burgundy', sci:'Hamearis lucida', desc:'Rich orange and brown with intricate border patterns. One of Britain\'s most threatened butterflies. Requires warm, sheltered scrub with primroses and cowslips.', color:'#ff4400', wingShape:'angular', rarity:'legendary', active:'dawn', flower:'phoenix', flight:'dart' },
+    { id:'b23', name:'Camberwell Beauty', sci:'Nymphalis antiopa', desc:'Deep claret-black wings bordered with creamy yellow and blue spots. A rare migrant from Scandinavia. Named after Camberwell in London where it was first recorded in Britain.', color:'#1a0a2a', wingShape:'wide', rarity:'legendary', active:'night', flower:'void', flight:'dance' },
+    { id:'b24', name:'Swallowtail', sci:'Papilio machaon', desc:'Large, spectacular yellow and black wings with red and blue eyespots and distinctive tail-like extensions. Britain\'s largest native butterfly. Restricted to the Norfolk Broads wetlands.', color:'#fff8ee', wingShape:'round', rarity:'mythic', active:'any', flower:'celestial', flight:'glide' }
   ];
 
   var rarityColors = { common:'#a0a080', uncommon:'#80a060', rare:'#6080c0', 'very-rare':'#c060a0', legendary:'#d4a020', mythic:'#ffe680' };
@@ -44,7 +44,7 @@
   var activeButterflies = [];
   function spawnButterflies() {
     // determine how many based on rarity and conditions
-    var count = Math.floor(Math.random() * 3) + 1;
+    var count = Math.floor(Math.random() * 2) + 1;
     for (var i = 0; i < count; i++) {
       var species = pickSpecies();
       if (!species) continue;
@@ -114,42 +114,38 @@
   }
 
   function getFlightFunc(type, el) {
-    var x = parseFloat(el.style.left);
-    var y = parseFloat(el.style.top);
-    var vx = 0, vy = 0;
+    var phase = Math.random() * 1000;
+    var paused = false;
 
     return function(el, hRange, vRange) {
       var vw = window.innerWidth, vh = window.innerHeight;
       var cx = parseFloat(el.style.left) || vw/2;
       var cy = parseFloat(el.style.top) || vh/2;
+      var t = Date.now() / 1000;
+
+      if (!paused && Math.random() < 0.08) { paused = true; setTimeout(function(){ paused = false; }, 1500+Math.random()*2000); }
+      if (paused) return;
 
       if (type === 'soar') {
-        // smooth, wide circles
-        vx += (Math.random() - 0.5) * 2; vy += (Math.random() - 0.5) * 1.5;
-        vx *= 0.9; vy *= 0.9;
-        el.style.transition = 'left 2s ease-in-out, top 2s ease-in-out';
-        el.style.left = Math.max(10, Math.min(vw-30, cx + vx * 15)) + 'px';
-        el.style.top = Math.max(10, Math.min(vh-30, cy + vy * 10)) + 'px';
-      } else if (type === 'dance') {
-        // erratic, zigzag
-        el.style.transition = 'left 1s ease-in-out, top 1s ease-in-out';
-        el.style.left = Math.max(10, Math.min(vw-30, cx + (Math.random()-0.5)*80)) + 'px';
-        el.style.top = Math.max(10, Math.min(vh-30, cy + (Math.random()-0.5)*50)) + 'px';
-      } else if (type === 'dart') {
-        // fast, straight lines
-        el.style.transition = 'left 0.8s ease-in, top 0.8s ease-in';
-        el.style.left = Math.max(10, Math.min(vw-30, cx + (Math.random()-0.5)*120)) + 'px';
-        el.style.top = Math.max(10, Math.min(vh-30, cy + (Math.random()-0.5)*40)) + 'px';
-      } else if (type === 'glide') {
-        // slow, drifting
-        el.style.transition = 'left 3s ease-in-out, top 3s ease-in-out';
-        el.style.left = Math.max(10, Math.min(vw-30, cx + (Math.random()-0.5)*50)) + 'px';
-        el.style.top = Math.max(10, Math.min(vh-30, cy + (Math.random()-0.5)*30 + Math.sin(Date.now()/2000)*10)) + 'px';
-      } else {
-        // flutter (default) — gentle bobbing
         el.style.transition = 'left 2.5s ease-in-out, top 2.5s ease-in-out';
-        el.style.left = Math.max(10, Math.min(vw-30, cx + (Math.random()-0.5)*60)) + 'px';
-        el.style.top = Math.max(10, Math.min(vh-30, cy + (Math.random()-0.5)*40 + Math.sin(Date.now()/1000)*8)) + 'px';
+        el.style.left = Math.max(10, Math.min(vw-30, cx + Math.sin(t*0.5+phase)*40 + Math.cos(t*0.3+phase)*30)) + 'px';
+        el.style.top = Math.max(10, Math.min(vh-30, cy + Math.sin(t*0.4+phase)*25 + Math.cos(t*0.6+phase)*20)) + 'px';
+      } else if (type === 'dance') {
+        el.style.transition = 'left 1.2s ease-in-out, top 1.2s ease-in-out';
+        el.style.left = Math.max(10, Math.min(vw-30, cx + Math.sin(t*2+phase)*45 + Math.cos(t*1.5+phase)*35)) + 'px';
+        el.style.top = Math.max(10, Math.min(vh-30, cy + Math.sin(t*1.8+phase)*30 + Math.cos(t*2.2+phase)*25)) + 'px';
+      } else if (type === 'dart') {
+        el.style.transition = 'left 0.8s ease-in, top 0.8s ease-in';
+        el.style.left = Math.max(10, Math.min(vw-30, cx + Math.sin(t*3+phase)*60 + Math.cos(t*2+phase)*40)) + 'px';
+        el.style.top = Math.max(10, Math.min(vh-30, cy + Math.sin(t*2.5+phase)*20 + Math.cos(t*3.5+phase)*15)) + 'px';
+      } else if (type === 'glide') {
+        el.style.transition = 'left 4s ease-in-out, top 4s ease-in-out';
+        el.style.left = Math.max(10, Math.min(vw-30, cx + Math.sin(t*0.3+phase)*35 + Math.cos(t*0.2+phase)*25)) + 'px';
+        el.style.top = Math.max(10, Math.min(vh-30, cy + Math.sin(t*0.25+phase)*20 + Math.cos(t*0.35+phase)*15)) + 'px';
+      } else {
+        el.style.transition = 'left 3s ease-in-out, top 3s ease-in-out';
+        el.style.left = Math.max(10, Math.min(vw-30, cx + Math.sin(t*1.2+phase)*30 + Math.cos(t*0.8+phase)*25)) + 'px';
+        el.style.top = Math.max(10, Math.min(vh-30, cy + Math.sin(t*1+phase)*20 + Math.cos(t*1.4+phase)*15)) + 'px';
       }
     };
   }
@@ -218,7 +214,8 @@
     t.style.cssText = 'position:fixed;top:30%;left:50%;transform:translateX(-50%);z-index:999999;background:rgba(10,8,6,0.9);backdrop-filter:blur(8px);border:1px solid '+rarityColors[s.rarity]+';border-radius:12px;padding:16px 24px;color:#ffebd2;text-align:center;transition:opacity 0.5s;';
     t.innerHTML = '<div style="font-size:12px;color:'+rarityColors[s.rarity]+';text-transform:uppercase;margin-bottom:4px;">'+s.rarity+'</div>'+
       '<div style="font-size:18px;margin-bottom:4px;">\uD83E\uDD8B '+s.name+'</div>'+
-      '<div style="font-size:12px;color:#a09080;">'+s.desc+'</div>';
+      '<div style="font-size:10px;font-style:italic;color:#a09080;margin-bottom:4px;">'+s.sci+'</div>'+
+      '<div style="font-size:12px;color:#ffebd2;">'+s.desc+'</div>';
     document.body.appendChild(t);
     setTimeout(function(){ t.style.opacity='0'; setTimeout(function(){ t.remove(); }, 500); }, 3000);
   }
@@ -246,6 +243,7 @@
         '<div style="width:40px;height:30px;display:flex;align-items:center;justify-content:center;margin-right:12px;">'+
         '<span style="font-size:20px;">'+(found?'\uD83E\uDD8B':'?')+'</span></div>'+
         '<div style="flex:1;"><div style="font-weight:'+(found?'bold':'normal')+';'+(found?'':'color:#605040')+';">'+(found?s.name:'???')+'</div>'+
+        (found?'<div style="font-size:9px;font-style:italic;color:#807060;">'+s.sci+'</div>':'')+
         '<div style="font-size:10px;color:'+(found?'#a09080':'#504030')+';">'+(found?s.desc:'Undiscovered')+'</div></div>'+
         '<div style="text-align:right;"><div style="font-size:10px;color:'+rarityColors[s.rarity]+';">'+s.rarity+(d&&d.count>1?' (\u00D7'+d.count+')':'')+'</div>'+
         (found?'<div style="font-size:9px;color:#605040;">'+new Date(d.first).toLocaleDateString()+'</div>':'')+'</div></div>';
@@ -264,7 +262,7 @@
     if (/stats\.html$/i.test(window.location.pathname)) return;
     load();
     spawnButterflies();
-    setInterval(spawnButterflies, 20000);
+    setInterval(spawnButterflies, 30000);
     // periodic rotation
     setInterval(function(){
       activeButterflies.forEach(function(b){

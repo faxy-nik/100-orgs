@@ -483,17 +483,6 @@
     ];
   }
 
-  function defaultSongs() {
-    return [
-      { title: 'Until I Found You', artist: 'Stephen Sanchez', duration: 207, unlockDate: '', autoUnlock: true, hasFile: false },
-      { title: 'Perfect',           artist: 'Ed Sheeran',       duration: 263, unlockDate: '', autoUnlock: true, hasFile: false },
-      { title: 'Yellow',            artist: 'Coldplay',         duration: 266, unlockDate: '', autoUnlock: true, hasFile: false },
-      { title: 'Turning Page',      artist: 'Sleeping At Last', duration: 257, unlockDate: '', autoUnlock: true, hasFile: false },
-      { title: 'Photograph',        artist: 'Ed Sheeran',       duration: 259, unlockDate: '', autoUnlock: true, hasFile: false },
-      { title: 'I Wanna Be Yours',  artist: 'Arctic Monkeys',   duration: 184, unlockDate: '', autoUnlock: true, hasFile: false }
-    ];
-  }
-
   function defaultGallery() {
     return [
       { type: 'image', file: 'ash/ash.jpeg', label: 'Ash', note: 'the way light falls on you — i could spend forever just watching' },
@@ -919,21 +908,58 @@
   }
 
   /* ---- Load / Save ---- */
+  async function loadFileSongs() {
+    try {
+      var res = await fetch('songs/list.json');
+      if (!res.ok) return [];
+      var list = await res.json();
+      if (!list || !list.length) return [];
+      return list.map(function (item) {
+        return {
+          title: item.title || 'Untitled',
+          artist: item.artist || 'Unknown',
+          duration: item.duration || 180,
+          unlockDate: item.unlockDate || '',
+          autoUnlock: item.autoUnlock !== false,
+          hasFile: true,
+          isFileSong: true,
+          fileName: item.file
+        };
+      });
+    } catch(e) { return []; }
+  }
+
   async function loadAll() {
-    var songRecords = await dbGetAll('songs');
+    var dbSongs = await dbGetAll('songs');
+    var fileSongs = await loadFileSongs();
     var sectionConfig = await dbGet('config', 'sections');
 
-    songs = songRecords.length ? songRecords : [];
-    sections = sectionConfig ? sectionConfig.data : [];
-
-    if (!songs.length) {
-      var defaults = defaultSongs();
-      for (var i = 0; i < defaults.length; i++) {
-        var result = await dbPut('songs', defaults[i]);
-        if (result && result.key) defaults[i].id = result.key;
+    // Merge: file songs first, DB songs override by title
+    var merged = [];
+    var seen = {};
+    fileSongs.forEach(function(fs) {
+      seen[fs.title] = true;
+      merged.push(fs);
+    });
+    (dbSongs || []).forEach(function(ds) {
+      if (seen[ds.title]) {
+        for (var mi = 0; mi < merged.length; mi++) {
+          if (merged[mi].title === ds.title) {
+            merged[mi] = ds;
+            merged[mi].isFileSong = true;
+            if (!ds.hasFile && fileSongs.some(function(fs){ return fs.title === ds.title && fs.fileName; })) {
+              var orig = fileSongs.find(function(fs){ return fs.title === ds.title; });
+              merged[mi].fileName = orig.fileName;
+            }
+            break;
+          }
+        }
+      } else {
+        merged.push(ds);
       }
-      songs = defaults;
-    }
+    });
+    songs = merged;
+    sections = sectionConfig ? sectionConfig.data : [];
 
     if (!sections.length) {
       sections = defaultSections();
@@ -969,7 +995,20 @@
     await dbClear('songs');
     for (var i = 0; i < songs.length; i++) {
       var s = songs[i];
-      var result = await dbPut('songs', s);
+      var entry = {
+        title: s.title,
+        artist: s.artist,
+        duration: s.duration || 180,
+        unlockDate: s.unlockDate || '',
+        autoUnlock: s.autoUnlock !== false,
+        hasFile: !!s.hasFile
+      };
+      if (s.isFileSong) {
+        entry.isFileSong = true;
+        entry.fileName = s.fileName || '';
+      }
+      if (s.audioBlob) { entry.audioBlob = s.audioBlob; entry.audioType = s.audioType; entry.fileName = s.fileName; }
+      var result = await dbPut('songs', entry);
       if (result && result.key) s.id = result.key;
     }
   }

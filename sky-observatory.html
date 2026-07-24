@@ -167,25 +167,6 @@
     }
   </script>
 
-  <script src="GirlConfig.js"></script>
-  <script src="GirlStorage.js"></script>
-  <script src="GirlMemory.js"></script>
-  <script src="GirlEvents.js"></script>
-  <script src="GirlAnimationController.js"></script>
-  <script src="GirlRenderer.js"></script>
-  <script src="GirlStateMachine.js"></script>
-  <script src="GirlNavigation.js"></script>
-  <script src="GirlInteractions.js"></script>
-  <script src="GirlCompanion.js"></script>
-  <script src="girl-particles.js"></script>
-  <script src="BoyConfig.js"></script>
-  <script src="BoyCompanion.js"></script>
-  <script>
-if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-  BoyCompanion.init({ container: document.body }).catch(function(e) { console.warn("Boy companion:", e); });
-}
-</script>
-  <script>if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){(window.whenLoaderDone ? window.whenLoaderDone() : Promise.resolve()).then(function(){GirlCompanion.init({container:document.body}).catch(function(e){console.warn('Girl companion:',e);})})}</script>
   <script defer src="matrix-rain.js"></script>
 <script defer src="global-easter-eggs.js"></script>
 

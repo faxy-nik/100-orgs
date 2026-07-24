@@ -63,11 +63,11 @@
   /* ---------- 2. Feathers ---------- */
   function initFeathers() {
     setInterval(function () {
-      if (Math.random() > 0.15) return;
+      if (Math.random() > 0.25) return;
       var f = document.createElement('div');
       f.textContent = '\uD83E\uDEB6';
       var startX = 5 + Math.random() * 80;
-      f.style.cssText = 'position:fixed;top:-20px;left:'+startX+'vw;font-size:'+(12+Math.random()*10)+'px;z-index:999998;pointer-events:auto;cursor:pointer;opacity:0.9;transition:all 5s linear;';
+      f.style.cssText = 'position:fixed;top:-20px;left:'+startX+'vw;font-size:'+(12+Math.random()*10)+'px;z-index:999998;pointer-events:auto;cursor:pointer;opacity:0.9;transition:all 8s linear;';
       document.body.appendChild(f);
       requestAnimationFrame(function () {
         f.style.top = (window.innerHeight + 20) + 'px';
@@ -81,7 +81,7 @@
         toast(msg, 'rgba(200,180,150,0.8)', 2000);
         f.remove();
       });
-      setTimeout(function () { if (f.parentNode) f.remove(); }, 5000);
+      setTimeout(function () { if (f.parentNode) f.remove(); }, 8000);
     }, 8000);
   }
 
@@ -262,10 +262,10 @@
 
   /* ---------- 7. Achievements Section ---------- */
   var ACHIEVEMENTS = [
-    { id: 'all-fragments', label: 'Fragment Seeker', desc: 'Collect all ' + TOTAL_FRAGMENTS + ' fragments', icon: '\uD83E\uDDE9', check: function () { return getTotalCollected() >= TOTAL_FRAGMENTS; } },
-    { id: 'feather-master', label: 'Feather Light', desc: 'Catch 30 feathers', icon: '\uD83E\uDEB6', check: function () { return (config.feathers && config.feathers.count) >= 30; } },
-    { id: 'balloon-hunter', label: 'Balloon Hunter', desc: 'Pop 10 balloons', icon: '\uD83C\uDF88', check: function () { return (config.balloonNotes && config.balloonNotes.length) >= 10; } },
-    { id: 'lucky-star', label: 'Star Touched', desc: 'Find the lucky star', icon: '\u2B50', check: function () { return config.luckyStar && config.luckyStar.found; } }
+    { id: 'all-fragments', label: 'Fragment Seeker', desc: 'Collect all ' + TOTAL_FRAGMENTS + ' fragments', hint: 'Find every hidden fragment across all pages', icon: '\uD83E\uDDE9', check: function () { return getTotalCollected() >= TOTAL_FRAGMENTS; } },
+    { id: 'feather-master', label: 'Feather Light', desc: 'Catch 30 feathers', hint: 'Click on floating feathers as they drift by', icon: '\uD83E\uDEB6', check: function () { return (config.feathers && config.feathers.count) >= 30; } },
+    { id: 'balloon-hunter', label: 'Balloon Hunter', desc: 'Pop 10 balloons', hint: 'Pop balloons that float across the screen', icon: '\uD83C\uDF88', check: function () { return (config.balloonNotes && config.balloonNotes.length) >= 10; } },
+    { id: 'lucky-star', label: 'Star Touched', desc: 'Find the lucky star', hint: 'Keep exploring the sky observatory until a special star appears', icon: '\u2B50', check: function () { return config.luckyStar && config.luckyStar.found; } }
   ];
 
   function openAchievements() {
@@ -286,7 +286,7 @@
         '<div style="display:flex;align-items:center;">' +
         '<span style="font-size:20px;margin-right:10px;">' + (done ? a.icon : '\u274C') + '</span>' +
         '<div><div style="font-size:13px;font-weight:bold;' + (done ? 'color:#ffe680' : 'color:#706050') + '">' + (done ? a.label : '???') + '</div>' +
-        '<div style="font-size:10px;color:#a09080;">' + (done ? a.desc : 'Not yet discovered') + '</div></div></div></div>';
+        '<div style="font-size:10px;color:#a09080;">' + (done ? a.desc : (a.hint || 'Not yet discovered')) + '</div></div></div></div>';
     }
     html += '<div style="text-align:center;margin-top:12px;font-size:11px;color:#a09080;">Earned ' + earned + ' / ' + ACHIEVEMENTS.length + '</div>';
     html += '<div style="text-align:center;margin-top:10px;"><button onclick="document.getElementById(\'achievementPanel\').remove()" style="background:rgba(255,230,100,0.15);border:1px solid rgba(255,230,100,0.3);color:#ffe680;padding:5px 16px;border-radius:20px;cursor:pointer;font-size:11px;">Close</button></div>';
