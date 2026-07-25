@@ -2,6 +2,51 @@
 /* Requires: firebase-app-compat.js + firebase-database-compat.js */
 
 var FB = (function () {
+  var isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+
+  // --- in-memory store for local testing ---
+  var memStore = {};
+  var memSeq = 0;
+
+  function memGetAll(store) { return Promise.resolve(memStore[store] || []); }
+  function memGet(store, key) {
+    var items = memStore[store] || [];
+    for (var i = 0; i < items.length; i++) { if ((items[i].id || items[i].key) === key) return Promise.resolve(items[i]); }
+    return Promise.resolve(null);
+  }
+  function memPut(store, data) {
+    var key = data && (data.id || data.key);
+    if (!memStore[store]) memStore[store] = [];
+    var items = memStore[store];
+    if (key) {
+      for (var i = 0; i < items.length; i++) { if ((items[i].id || items[i].key) === key) { items[i] = data; return Promise.resolve({ key: key }); } }
+      items.push(data);
+      return Promise.resolve({ key: key });
+    }
+    data.id = 'local_' + (++memSeq);
+    items.push(data);
+    return Promise.resolve({ key: data.id });
+  }
+  function memDelete(store, key) {
+    if (!memStore[store]) return Promise.resolve();
+    memStore[store] = memStore[store].filter(function (x) { return (x.id || x.key) !== key; });
+    return Promise.resolve();
+  }
+  function memClear(store) { memStore[store] = []; return Promise.resolve(); }
+
+  if (isLocal) {
+    return {
+      init: function () {},
+      getAll: memGetAll,
+      get: memGet,
+      put: memPut,
+      delete: memDelete,
+      clear: memClear,
+      blobToBase64: function (blob) { return Promise.resolve(''); },
+      base64ToBlob: function () { return null; }
+    };
+  }
+
   // 🔥 FILL IN YOUR FIREBASE CONFIG HERE (Firebase Console → Project Settings → General → Your apps → Web)
   var firebaseConfig = {
     apiKey: 'AIzaSyD30nS8GMLHvj1EunF141FAPAU4w9uVdBI',

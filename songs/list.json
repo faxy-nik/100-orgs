@@ -30,9 +30,9 @@
         "type":  "video/mp4"
     },
     {
-        "artist":  "G-Eazy \u0026 Halsey",
-        "title":  "Him \u0026 I",
-        "file":  "G-Eazy \u0026 Halsey - Him \u0026 I (Official Video).mp4",
+        "artist":  "G-Eazy & Halsey",
+        "title":  "Him & I",
+        "file":  "G-Eazy & Halsey - Him & I (Official Video).mp4",
         "type":  "video/mp4"
     },
     {
@@ -58,5 +58,186 @@
         "title":  "Earned It",
         "file":  "The Weeknd - Earned It (Fifty Shades Of Grey).mp4",
         "type":  "video/mp4"
+    },
+    {
+        "artist":  "Niyaz Balti",
+        "title":  "Ham Tere Pyar Mein",
+        "file":  "ham tere pyar mein.mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "Dominic Fike",
+        "title":  "Baby Doll",
+        "file":  "Dominic Fike Baby Doll (Official Audio).mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "Dhruv",
+        "title":  "Double Take",
+        "file":  "Dhruv - double take (Official Video).mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "Aditya Roy Kapur, Shraddha Kapoor",
+        "title":  "Bhula Dena Mujhe",
+        "file":  "Bhula Dena Mujhe Video Song Aashiqui 2  Aditya Roy Kapur, Shraddha Kapoor.mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "Banjaare",
+        "title":  "Bairan",
+        "file":  "Bairan  Animated Love Story  Banjaare (Official Video).mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "Artemas",
+        "title":  "I Like the Way You Kiss Me",
+        "file":  "Artemas - i like the way you kiss me (official music video).mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "Mohd Rafi & Asha Bhosle",
+        "title":  "Abhi Na Jaao Chhod Kar",
+        "file":  "Abhi Na Jaao Chhod Kar  Dev Anand  Sadhana  Mohd Rafi  Asha Bhosle  Hum Dono (1961).mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "Asim Azhar",
+        "title":  "Aarzu",
+        "file":  "Aarzu (with Asim Azhar) Official Music Video  Asim Azhar, Noor, Khan, Madhurxo.mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "Lata Mangeshkar",
+        "title":  "Aaja Piya Tohe Pyar Doon",
+        "file":  "Aaja Piya Tohe Pyar Doon  Lata Mangeshkar  R.D. Burman  Majrooh Sultanpuri  Old Is Gold.mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "Abdul Hannan & Samar Jafri",
+        "title":  "Khasara",
+        "file":  "Khasara  Abdul Hannan & Samar Jafri (Official Audio).mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "James Arthur",
+        "title":  "Say You Won't Let Go",
+        "file":  "James Arthur - Say You Won't Let Go.mp4",
+        "type":  "video/mp4"
+    },
+    {
+        "artist":  "Abdul Hannan & Murtaza Qizilbash",
+        "title":  "Sila",
+        "file":  "Sila  Abdul Hannan & Murtaza Qizilbash (Official Audio).mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "Jahaan",
+        "title":  "Jahaan",
+        "file":  "Jahaan.mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "Niyaz Balti and Guftaar Band",
+        "title":  "Hum Bhool Gaye Har Baat, Magar Tera Pyar Nahi Bhoole",
+        "file":  "Hum Bhool Gaye Har Baat, Magar Tera Pyar Nahi Bhoole  Live Mehfil  Niyaz Balti and Guftaar Band.mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "Naseem Begum",
+        "title":  "Hum Bhool Gaye Har Baat Magar Tera Pyar Nahi Bhoolay",
+        "file":  "Hum bhool gaye har baat magar tera Pyar nahi bhoolay (Original) Naseem Begum.mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "Murtaza Qizilbash & Samar Jafri",
+        "title":  "Har Baar",
+        "file":  "Har Baar (Official Lyric Visualiser) - Murtaza Qizilbash  Samar Jafri.mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "Murtaza Qizilbash",
+        "title":  "Tum",
+        "file":  "Murtaza Qizilbash  Tum  Official Audio.mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "Murtaza Qizilbash",
+        "title":  "Hum",
+        "file":  "Murtaza Qizilbash  Hum  Official Audio.mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "Murtaza Qizilbash",
+        "title":  "Bhool",
+        "file":  "Murtaza Qizilbash  Bhool  Official Audio.mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "Amrinder Gill",
+        "title":  "Mil Ke Baithange",
+        "file":  "Mil Ke Baithange  Angrej  Amrinder Gill  Full Music Video.mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "Sheheryar Rehan x Zoha Waseem",
+        "title":  "Majboor",
+        "file":  "Majboor  Sheheryar Rehan x Zoha Waseem  Official Music Video 2025.mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "pupsies",
+        "title":  "Misery",
+        "file":  "pupsies - misery. (Lyrics).mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "Osho Jain",
+        "title":  "Tu Aisa Kaise Hai",
+        "file":  "Osho Jain  Tu Aisa Kaise Hai_  #OshoJain.mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "Noor Chahal",
+        "title":  "Ranjha",
+        "file":  "Ranjha (Official Lyrical Video) - Noor Chahal  IndieA Records  Rtist 91.mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "sammy rash",
+        "title":  "Let's Be Friends",
+        "file":  "sammy rash - let's be friends (Lyrics).mp4",
+        "type":  "video/mp4"
+    },
+    {
+        "artist":  "Cigarettes After Sex",
+        "title":  "Sunsetz",
+        "file":  "Sunsetz - Cigarettes After Sex.mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "The Marias",
+        "title":  "No One Noticed",
+        "file":  "The Marías - No One Noticed (Lyrics).mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "sombr",
+        "title":  "Back to Friends",
+        "file":  "sombr - back to friends (official audio).mp3",
+        "type":  "audio/mp3"
+    },
+    {
+        "artist":  "Sufjan Stevens",
+        "title":  "Mystery of Love",
+        "file":  "Sufjan Stevens - Mystery of Love (From Call Me By Your Name Soundtrack).mp4",
+        "type":  "video/mp4"
+    },
+    {
+        "artist":  "Raveena",
+        "title":  "White Keys",
+        "file":  "white keys.mp4",
+        "type":  "video/mp4"
     }
 ]
+
