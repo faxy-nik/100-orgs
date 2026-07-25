@@ -478,6 +478,16 @@
 
       FB.init();
 
+      /* ---- localhost: unlock all sections for testing ---- */
+      if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+        var keys = Object.keys(UNLOCK_DATES);
+        for (var ui = 0; ui < keys.length; ui++) {
+          UNLOCK_DATES[keys[ui]].year = 2000;
+          UNLOCK_DATES[keys[ui]].month = 1;
+          UNLOCK_DATES[keys[ui]].day = 1;
+        }
+      }
+
       var TEASERS = {
         '100-organs': '"the curve of her waist, the arch of her neck — catalogued in devotion..."',
         'love': '"your morning voice, raspy and warm — the sound of someone who hasn\'t yet put up their walls..."',
