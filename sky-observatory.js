@@ -247,6 +247,19 @@
     catBar.id = 'obsCats';
     catBar.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;';
     controls.appendChild(catBar);
+
+    var timeBtn = document.createElement('button');
+    timeBtn.id = 'obsTimeToggle';
+    timeBtn.title = 'Toggle time-based filtering';
+    timeBtn.style.cssText = 'padding:0.3rem 0.7rem;border-radius:6px;cursor:pointer;font-family:var(--font-body);font-size:0.75rem;transition:all 0.25s;background:var(--glass);border:1px solid var(--gold);color:var(--gold);';
+    timeBtn.addEventListener('click', function() {
+      timeFilterOn = !timeFilterOn;
+      renderTimeToggle();
+      renderGrid();
+    });
+    controls.appendChild(timeBtn);
+    renderTimeToggle();
+
     obs.appendChild(controls);
 
     // Category buttons
@@ -292,6 +305,35 @@
     renderGrid();
   }
 
+  /* ---------- time-based filter ---------- */
+  function getTimePeriod() {
+    var h = new Date().getHours();
+    if (h >= 5 && h < 7) return 'dawn';
+    if (h >= 7 && h < 17) return 'day';
+    if (h >= 17 && h < 19) return 'sunset';
+    return 'night';
+  }
+
+  function timeMatch(cat) {
+    var period = getTimePeriod();
+    if (cat === 'Dawn') return period === 'dawn';
+    if (cat === 'Sunset') return period === 'sunset';
+    if (cat === 'Night' || cat === 'Cosmic' || cat === 'Aurora' || cat === 'Cozy') return period === 'night';
+    if (cat === 'Day') return period === 'day';
+    return true; // weather/nature/misc shown any time
+  }
+
+  var timeFilterOn = true;
+
+  function renderTimeToggle() {
+    var el = document.getElementById('obsTimeToggle');
+    if (!el) return;
+    var period = getTimePeriod();
+    el.innerHTML = (timeFilterOn ? '\uD83D\uDD12 ' : '\uD83D\uDD13 ') + period;
+    el.style.borderColor = timeFilterOn ? 'var(--gold)' : 'var(--glassBorder)';
+    el.style.color = timeFilterOn ? 'var(--gold)' : 'var(--parchment-dim)';
+  }
+
   function renderRecent() {
     var strip = document.getElementById('obsRecent');
     if (!strip || !config.recent.length) { if (strip) strip.style.display = 'none'; return; }
@@ -333,6 +375,7 @@
       if (!sky || !sky.name) continue;
       var cat = getCategory(sky);
       if (activeCat !== 'All' && cat !== activeCat) continue;
+      if (timeFilterOn && !timeMatch(cat)) continue;
       if (q && sky.name.toLowerCase().indexOf(q) < 0) continue;
       filtered.push(sky);
       indices.push(i);
