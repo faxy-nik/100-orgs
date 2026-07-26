@@ -690,6 +690,50 @@ function ensureHost() {
   }
 
   /* ================= PUBLIC API ================= */
+  function getTimePeriod() {
+    var h = new Date().getHours();
+    if (h >= 5 && h < 7) return 'dawn';
+    if (h >= 7 && h < 17) return 'day';
+    if (h >= 17 && h < 19) return 'sunset';
+    return 'night';
+  }
+
+  function timeMatch(sky) {
+    if (!sky || !sky.name) return true;
+    var n = sky.name.toLowerCase();
+    var period = getTimePeriod();
+
+    // Dawn
+    if (n.indexOf('sunrise')>=0 || n.indexOf('dawn')>=0 || n.indexOf('morning')>=0 || n.indexOf('creamy')>=0 || n.indexOf('rosy dawn')>=0)
+      return period === 'dawn';
+
+    // Sunset
+    if (n.indexOf('sunset')>=0 || n.indexOf('dusk')>=0 || n.indexOf('twilight')>=0 || n.indexOf('golden hour')>=0 || n.indexOf('harvest')>=0 || n.indexOf('autumn sunset')>=0)
+      return period === 'sunset';
+
+    // Night
+    if (n.indexOf('night')>=0 || n.indexOf('midnight')>=0 || n.indexOf('eclipse')>=0 || n.indexOf('moon')>=0 || n.indexOf('starry')>=0 ||
+        (n.indexOf('star')>=0 && n.indexOf('starfall')<0) || n.indexOf('meteor')>=0 || n.indexOf('shooting')>=0 || n.indexOf('firefl')>=0 ||
+        n.indexOf('campfire')>=0 || n.indexOf('candle')>=0 || n.indexOf('lantern')>=0)
+      return period === 'night';
+    if (sky.stars && sky.stars.count > 0) return period === 'night';
+
+    // Day
+    if (sky.lights && sky.lights.length && sky.lights[0].y < 0.35) return period === 'day';
+
+    // Everything else (cosmic, weather, nature) — any time
+    return true;
+  }
+
+  function randomTimeAppropriate() {
+    var candidates = [];
+    for (var i = 0; i < SKIES.length; i++) {
+      if (SKIES[i] && SKIES[i].name && timeMatch(SKIES[i])) candidates.push(i);
+    }
+    if (!candidates.length) return Math.floor(Math.random() * SKIES.length);
+    return candidates[Math.floor(Math.random() * candidates.length)];
+  }
+
   function applySky(index) {
     var sky = SKIES[index];
     if (!sky) return;
@@ -700,7 +744,7 @@ function ensureHost() {
     showSkyMessage(sky);
     try { localStorage.setItem(SKY_KEY, index); } catch (e) {}
   }
-  function randomSky() { window.Skies.apply(Math.floor(Math.random() * SKIES.length)); }
+  function randomSky() { window.Skies.apply(randomTimeAppropriate()); }
   function getCurrentSkyIndex() {
     try { var v = localStorage.getItem(SKY_KEY); return v !== null ? parseInt(v, 10) : -1; } catch (e) { return -1; }
   }
@@ -721,7 +765,10 @@ function ensureHost() {
     apply: applySky,
     random: randomSky,
     getCurrent: getCurrentSkyIndex,
-    createButton: createSkyButton
+    createButton: createSkyButton,
+    getTimePeriod: getTimePeriod,
+    timeMatch: timeMatch,
+    randomTimeAppropriate: randomTimeAppropriate
   };
 
 })();

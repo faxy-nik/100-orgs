@@ -157,7 +157,7 @@
         if (!window.FeatureFlags || window.FeatureFlags.get('sky-auto-apply')) {
           var idx = Skies.getCurrent();
           if (idx >= 0 && Skies.SKIES[idx]) { Skies.apply(idx); }
-          else { Skies.apply(4); }
+          else { Skies.apply(Skies.randomTimeAppropriate()); }
         }
       }
     })();

@@ -307,20 +307,7 @@
 
   /* ---------- time-based filter ---------- */
   function getTimePeriod() {
-    var h = new Date().getHours();
-    if (h >= 5 && h < 7) return 'dawn';
-    if (h >= 7 && h < 17) return 'day';
-    if (h >= 17 && h < 19) return 'sunset';
-    return 'night';
-  }
-
-  function timeMatch(cat) {
-    var period = getTimePeriod();
-    if (cat === 'Dawn') return period === 'dawn';
-    if (cat === 'Sunset') return period === 'sunset';
-    if (cat === 'Night' || cat === 'Cosmic' || cat === 'Aurora' || cat === 'Cozy') return period === 'night';
-    if (cat === 'Day') return period === 'day';
-    return true; // weather/nature/misc shown any time
+    return window.Skies && window.Skies.getTimePeriod ? window.Skies.getTimePeriod() : (function(){var h=new Date().getHours();if(h>=5&&h<7)return'dawn';if(h>=7&&h<17)return'day';if(h>=17&&h<19)return'sunset';return'night';})();
   }
 
   var timeFilterOn = true;
@@ -375,7 +362,7 @@
       if (!sky || !sky.name) continue;
       var cat = getCategory(sky);
       if (activeCat !== 'All' && cat !== activeCat) continue;
-      if (timeFilterOn && !timeMatch(cat)) continue;
+      if (timeFilterOn && window.Skies && window.Skies.timeMatch && !window.Skies.timeMatch(sky)) continue;
       if (q && sky.name.toLowerCase().indexOf(q) < 0) continue;
       filtered.push(sky);
       indices.push(i);
