@@ -1513,12 +1513,10 @@ if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 
   function pollApprovals() {
     FB.get('sectionUnlock', PAGE).then(function (d) {
-      if (d && typeof d.unlocked === 'number') {
-        var local = getUnlockedIdx();
-        if (d.unlocked > local) {
-          setUnlockedIdx(d.unlocked);
-          applyLockState();
-        }
+      var fw = d && typeof d.unlocked === 'number' ? d.unlocked : 0;
+      if (fw !== getUnlockedIdx()) {
+        setUnlockedIdx(fw);
+        applyLockState();
       }
     }).catch(function () {});
   }
@@ -1578,9 +1576,7 @@ if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     if (typeof FB !== 'undefined' && FB.init) {
       FB.init();
       FB.get('sectionUnlock', PAGE).then(function (d) {
-        if (d && typeof d.unlocked === 'number') {
-          setUnlockedIdx(d.unlocked);
-        }
+        setUnlockedIdx(d && typeof d.unlocked === 'number' ? d.unlocked : 0);
         applyLockState();
         setInterval(pollApprovals, 5000);
       }).catch(function () {

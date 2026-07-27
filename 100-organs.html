@@ -6438,12 +6438,10 @@
   // Listen for approval from Firebase
   function pollApprovals() {
     FB.get('sectionUnlock', PAGE).then(function (d) {
-      if (d && typeof d.unlocked === 'number') {
-        var local = getUnlockedIdx();
-        if (d.unlocked > local) {
-          setUnlockedIdx(d.unlocked);
-          applyLockState();
-        }
+      var fw = d && typeof d.unlocked === 'number' ? d.unlocked : 0;
+      if (fw !== getUnlockedIdx()) {
+        setUnlockedIdx(fw);
+        applyLockState();
       }
     }).catch(function () {});
   }
@@ -6507,9 +6505,7 @@
       FB.init();
       // Try to get Firebase unlock state
       FB.get('sectionUnlock', PAGE).then(function (d) {
-        if (d && typeof d.unlocked === 'number') {
-          setUnlockedIdx(d.unlocked);
-        }
+        setUnlockedIdx(d && typeof d.unlocked === 'number' ? d.unlocked : 0);
         applyLockState();
         setInterval(pollApprovals, 5000);
       }).catch(function () {
