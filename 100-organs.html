@@ -6449,6 +6449,8 @@
   function applyLockState() {
     var groups = document.querySelectorAll('.accordion-group');
     var unlocked = getUnlockedIdx();
+    // ponytail: invalid unlock index (≥ groups) = stale test data, reset to 0
+    if (unlocked >= groups.length) { unlocked = 0; setUnlockedIdx(0); }
     var remaining = dailyRemaining(PAGE);
     groups.forEach(function (g, i) {
       var header = g.querySelector('.accordion-header');
@@ -6523,7 +6525,7 @@
   init();
 })();
 </script>
-<script src="activity-tracker.js"
+<script src="activity-tracker.js"></script>
 <script src="events.js"></script>
 <script src="puzzle-hunt.js"></script>
 <script src="letters.js"></script>
