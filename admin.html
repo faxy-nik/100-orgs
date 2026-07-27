@@ -284,7 +284,26 @@
     }
     .ftoggle.on::after { left:17.5px; background:#6fcf97; }
 
-    @media (max-width: 600px) {
+    .section-req-card { background:rgba(255,220,160,.04); border:1px solid rgba(255,210,150,.1); border-radius:8px; padding:1rem; margin-bottom:.75rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+    .section-req-card .info { flex:1; min-width:150px; }
+    .section-req-card .page { font-size:.85rem; color:#ffebd2; font-weight:600; }
+    .section-req-card .group { font-size:.8rem; color:#6b5f52; margin-top:2px; }
+    .section-req-card .actions { display:flex; gap:8px; }
+    .section-req-card .approve-btn { background:rgba(111,207,147,.1); border:1px solid rgba(111,207,147,.3); color:#6fcf93; padding:.35rem .75rem; border-radius:6px; cursor:pointer; font-size:.8rem; }
+    .section-req-card .reject-btn { background:rgba(232,93,58,.1); border:1px solid rgba(232,93,58,.3); color:#e85d3a; padding:.35rem .75rem; border-radius:6px; cursor:pointer; font-size:.8rem; }
+
+    .admin-layout { display:flex; gap:1.5rem; align-items:flex-start; }
+    .admin-sidebar { flex:0 0 180px; position:sticky; top:1rem; display:flex; flex-direction:column; gap:2px; }
+    .admin-sidebar .tab { display:block; width:100%; text-align:left; background:none; border:none; color:#6b5f52; padding:.45rem .7rem; border-radius:6px; cursor:pointer; font-family:'Fraunces',Georgia,serif; font-size:.8rem; transition:all .2s; }
+    .admin-sidebar .tab:hover { background:rgba(255,220,160,.06); color:#ffebd2; }
+    .admin-sidebar .tab.active { background:rgba(255,230,128,.1); color:#ffe680; }
+    .admin-content { flex:1; min-width:0; }
+
+    @media (max-width: 768px) {
+      .admin-layout { flex-direction:column; }
+      .admin-sidebar { flex:none; position:static; flex-direction:row; flex-wrap:wrap; gap:2px; }
+      .admin-sidebar .tab { width:auto; font-size:.7rem; padding:.35rem .5rem; }
+    }
       #app { padding: 1rem; }
       .modal { padding: 1.25rem; }
       .modal .field-row { flex-direction: column; gap: 0; }
@@ -316,17 +335,27 @@
     </div>
   </header>
 
-  <div class="tabs">
-    <button class="tab active" data-tab="sections">&#x1F4C5; Unlock Dates</button>
-    <button class="tab" data-tab="songs">&#x1F3B5; Songs</button>
-    <button class="tab" data-tab="secret">&#x2728; Secret</button>
-    <button class="tab" data-tab="gallery">&#x1F5BC;&#xFE0F; Gallery</button>
-    <button class="tab" data-tab="wishes">&#x2728; Wishes</button>
-    <button class="tab" data-tab="requests">&#x1F3B6; Requests</button>
-    <button class="tab" data-tab="reviews">&#x1F3A7; Reviews</button>
-    <button class="tab" data-tab="settings">&#x2699;&#xFE0F; Settings</button>
-    <button class="tab" data-tab="access">&#x1F510; Access</button>
-  </div>
+  <div class="admin-layout">
+    <div class="admin-sidebar">
+      <button class="tab active" data-tab="sections">&#x1F4C5; Dates</button>
+      <button class="tab" data-tab="songs">&#x1F3B5; Songs</button>
+      <button class="tab" data-tab="secret">&#x2728; Secret</button>
+      <button class="tab" data-tab="gallery">&#x1F5BC; Gallery</button>
+      <button class="tab" data-tab="wishes">&#x2728; Wishes</button>
+      <button class="tab" data-tab="requests">&#x1F3B6; Requests</button>
+      <button class="tab" data-tab="reviews">&#x1F3A7; Reviews</button>
+      <button class="tab" data-tab="activity">&#x1F4C8; Activity</button>
+      <button class="tab" data-tab="quiz">&#x1F4DD; Quiz</button>
+      <button class="tab" data-tab="events">&#x1F3C4; Events</button>
+      <button class="tab" data-tab="puzzles">&#x1F9E9; Puzzles</button>
+      <button class="tab" data-tab="letters" id="lettersTabBtn">&#x1F4DD; Letters</button>
+      <button class="tab" data-tab="dynamic">&#x2728; Dynamic</button>
+      <button class="tab" data-tab="timeline">&#x1F4C5; Timeline</button>
+      <button class="tab" data-tab="sectionRequests">&#x1F4CB; Sections</button>
+      <button class="tab" data-tab="settings">&#x2699; Settings</button>
+      <button class="tab" data-tab="access">&#x1F510; Access</button>
+    </div>
+    <div class="admin-content">
 
   <!-- Tab: Sections -->
   <div class="tab-content active" id="tabSections">
@@ -468,6 +497,58 @@
     </div>
   </div>
 
+  <!-- Tab: Section Requests -->
+  <div class="tab-content" id="tabSectionRequests">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Approve or reject section unlock requests from content pages.
+    </p>
+    <div id="sectionRequestsList"></div>
+  </div>
+
+  <!-- Tab: Events -->
+  <div class="tab-content" id="tabEvents">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Seasonal events apply sky/theme overrides on special dates.
+    </p>
+    <div id="eventsList"></div>
+    <button class="add-btn" id="addEventBtn">+ Add Event</button>
+  </div>
+
+  <!-- Tab: Puzzles -->
+  <div class="tab-content" id="tabPuzzles">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Treasure hunt puzzles with multi-step clues.
+    </p>
+    <div id="puzzlesList"></div>
+    <button class="add-btn" id="addPuzzleBtn">+ Add Puzzle</button>
+  </div>
+
+  <!-- Tab: Letter -->
+  <div class="tab-content" id="tabDynamic">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Write extra sections that appear on content pages — no HTML edits needed.
+    </p>
+    <div id="dynamicList"></div>
+    <button class="add-btn" id="addDynamicBtn">+ Add Entry</button>
+  </div>
+
+  <!-- Tab: Timeline -->
+  <div class="tab-content" id="tabTimeline">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Add entries to the shared memory timeline.
+    </p>
+    <div id="timelineList"></div>
+    <button class="add-btn" id="addTimelineBtn">+ Add Memory</button>
+  </div>
+
+  <!-- Tab: Letters -->
+  <div class="tab-content" id="tabLetters">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Letters written from the site.
+    </p>
+    <div id="lettersList"></div>
+  </div>
+
   <!-- Tab: Access -->
   <div class="tab-content" id="tabAccess">
     <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
@@ -481,7 +562,46 @@
       <div style="font-size:11px;color:#6b5f52;margin-top:6px;">Clears all localStorage ash-* keys. Reloads the page. Cannot be undone.</div>
     </div>
   </div>
-</div>
+  <!-- Tab: Activity -->
+  <div class="tab-content" id="tabActivity">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Auto-recorded user activity: page visits, section views, reviews, and image views.
+    </p>
+    <div style="margin-bottom:.5rem;">
+      <select id="activityFilter" style="padding:.35rem .5rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.8rem;outline:none;">
+        <option value="all">All</option>
+        <option value="page-visit">Page visits</option>
+        <option value="section-view">Section views</option>
+        <option value="review">Reviews</option>
+        <option value="image-view">Image views</option>
+      </select>
+      <button id="clearActivityBtn" style="margin-left:8px;padding:.35rem .6rem;border-radius:6px;background:rgba(232,93,58,.1);border:1px solid rgba(232,93,58,.3);color:#e85d3a;cursor:pointer;font-size:.75rem;">Clear all</button>
+    </div>
+    <div id="activityList"></div>
+  </div>
+
+  <!-- Tab: Quiz -->
+  <div class="tab-content" id="tabQuiz">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Manage quiz sets &mdash; CRUD, JSON import, and attempt history.
+    </p>
+    <div style="margin-bottom:.5rem;">
+      <button class="add-btn" id="addQuizBtn">+ Add Quiz</button>
+    </div>
+    <div id="quizList"></div>
+    <hr style="border-color:rgba(255,210,150,.08);margin:2rem 0;">
+    <h3 style="color:#ffe680;font-size:.9rem;margin:0 0 .5rem;">&#x1F4C2; Import JSON</h3>
+    <textarea id="quizJsonInput" rows="5" placeholder='Paste JSON array: [{ "id":"q1","title":"Quiz 1","questions":[...] }]' style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:monospace;font-size:.8rem;outline:none;resize:vertical;box-sizing:border-box;"></textarea>
+    <div style="display:flex;gap:8px;margin-top:6px;">
+      <button id="quizImportBtn" style="padding:.4rem .8rem;border-radius:6px;background:rgba(111,207,147,.1);border:1px solid rgba(111,207,147,.3);color:#6fcf93;cursor:pointer;font-size:.8rem;">Import</button>
+      <span id="quizImportStatus" style="font-size:.75rem;color:#6b5f52;align-self:center;"></span>
+    </div>
+    <hr style="border-color:rgba(255,210,150,.08);margin:2rem 0;">
+    <h3 style="color:#ffe680;font-size:.9rem;margin:0 0 .5rem;">&#x1F4CA; Attempt History</h3>
+    <div id="quizHistoryList"></div>
+  </div>
+  </div>
+  </div>
 
 <!-- Modal -->
 <div class="modal-overlay" id="modalOverlay">
@@ -654,7 +774,7 @@
       var w = filtered[i];
       var date = w.createdAt ? new Date(w.createdAt).toLocaleDateString() + ' ' + new Date(w.createdAt).toLocaleTimeString() : 'Unknown';
       var grantedDate = w.grantedAt ? '\u00B7 Granted: ' + new Date(w.grantedAt).toLocaleDateString() : '';
-      var releasedDate = w.releasedAt ? '\u00B7 Released: ' + new (w.releasedAt).toLocaleDateString() : '';
+      var releasedDate = w.releasedAt ? '\u00B7 Released: ' + new Date(w.releasedAt).toLocaleDateString() : '';
       var statusIcon = w.granted ? '\u2705' : (w.released ? '\uD83C\uDFEE' : '\u23F3');
       var favIcon = w.favourite ? '\u2B50 ' : '';
       var source = w.source || 'observatory';
@@ -680,17 +800,14 @@
       btn.addEventListener('click', function () {
         var id = this.dataset.wishId;
         if (confirm('Grant this wish?')) {
-          FB.get('wishes', id).then(function (result) {
-            if (result && result.data) {
-              var w = result.data;
-              w.id = result.key;
-              w.granted = true;
-              w.grantedAt = Date.now();
-              FB.put('wishes', w).then(function () {
-                loadWishes();
-                toast('Wish granted!');
-              });
-            }
+          FB.get('wishes', id).then(function (w) {
+            if (!w) return;
+            w.granted = true;
+            w.grantedAt = Date.now();
+            FB.put('wishes', w).then(function () {
+              loadWishes();
+              toast('Wish granted!');
+            });
           });
         }
       });
@@ -864,6 +981,621 @@
       });
     }).catch(function () {
       list.innerHTML = '<div class="empty-state"><div class="icon">&#x26A0;&#xFE0F;</div><p>Error loading reviews</p></div>';
+    });
+  }
+
+  function renderSectionRequests() {
+    var list = document.getElementById('sectionRequestsList');
+    if (!list) return;
+    FB.getAll('sectionRequests').then(function (requests) {
+      var pending = requests.filter(function (r) { return r.status === 'pending'; });
+      var approved = requests.filter(function (r) { return r.status === 'approved'; });
+      var rejected = requests.filter(function (r) { return r.status === 'rejected'; });
+      if (!requests.length) {
+        list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F4CB;</div><p>No section requests yet</p></div>';
+        return;
+      }
+      var html = '';
+
+      function card(r, showActions) {
+        var pageLabel = r.page === '100-organs' ? '100 Organs' : r.page === 'love' ? 'Love' : r.page;
+        var date = r.createdAt ? new Date(r.createdAt).toLocaleString() : '';
+        return '<div class="section-req-card">' +
+            '<div class="info">' +
+              '<div class="page">' + esc(pageLabel) + '</div>' +
+              '<div class="group">Section ' + (Number(r.groupIndex) + 1) + '</div>' +
+              (date ? '<div style="font-size:.7rem;color:#6b5f52;margin-top:2px;">' + esc(date) + '</div>' : '') +
+            '</div>' +
+            (showActions
+              ? '<div class="actions">' +
+                  '<button class="approve-btn" data-req-id="' + esc(r.id) + '">&#x2713; Approve</button>' +
+                  '<button class="reject-btn" data-req-id="' + esc(r.id) + '">&#x2717; Reject</button>' +
+                '</div>'
+              : '<div style="font-size:.8rem;color:#6b5f52;font-style:italic;">' + (r.status === 'approved' ? '&#x2713; Approved' : '&#x2717; Rejected') + '</div>') +
+          '</div>';
+      }
+
+      if (pending.length) {
+        html += '<h3 style="color:var(--accent);margin:0 0 8px 0;font-size:.9rem;">&#x23F3; Pending (' + pending.length + ')</h3>';
+        pending.forEach(function (r) { html += card(r, true); });
+      }
+      if (approved.length) {
+        html += '<h3 style="color:#6fcf93;margin:1rem 0 8px 0;font-size:.9rem;">&#x2713; Approved (' + approved.length + ')</h3>';
+        approved.forEach(function (r) { html += card(r, false); });
+      }
+      if (rejected.length) {
+        html += '<h3 style="color:#e85d3a;margin:1rem 0 8px 0;font-size:.9rem;">&#x2717; Rejected (' + rejected.length + ')</h3>';
+        rejected.forEach(function (r) { html += card(r, false); });
+      }
+
+      list.innerHTML = html;
+      list.querySelectorAll('.approve-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var reqId = this.dataset.reqId;
+          FB.get('sectionRequests', reqId).then(function (r) {
+            if (!r) return;
+            FB.put('sectionUnlock', { id: r.page, unlocked: r.groupIndex }).then(function () {
+              r.status = 'approved';
+              FB.put('sectionRequests', r).then(function () {
+                toast('Section approved!');
+                renderSectionRequests();
+              });
+            });
+          });
+        });
+      });
+      list.querySelectorAll('.reject-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var reqId = this.dataset.reqId;
+          FB.get('sectionRequests', reqId).then(function (r) {
+            if (!r) return;
+            r.status = 'rejected';
+            FB.put('sectionRequests', r).then(function () {
+              toast('Request rejected.');
+              renderSectionRequests();
+            });
+          });
+        });
+      });
+    }).catch(function () {
+      list.innerHTML = '<div class="empty-state"><div class="icon">&#x26A0;&#xFE0F;</div><p>Error loading requests</p></div>';
+    });
+  }
+
+  function renderEvents() {
+    var list = document.getElementById('eventsList');
+    if (!list) return;
+    FB.get('config', 'events').then(function (data) {
+      var events = data && data.list ? data.list : [];
+      if (!events.length) {
+        list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F3C4;&#x200D;&#x2640;&#xFE0F;</div><p>No events. Add one to trigger seasonal changes.</p></div>';
+        return;
+      }
+      var html = '';
+      for (var i = 0; i < events.length; i++) {
+        var e = events[i];
+        html +=
+          '<div class="song-card">' +
+            '<div class="info">' +
+              '<div class="stitle">' + esc(e.label || '') + '</div>' +
+              '<div class="smeta">' + (e.startDate || '') + (e.endDate ? ' \u2192 ' + e.endDate : '') + ' | ' + (e.type || 'annual') + (e.sky ? ' | Sky: ' + esc(e.sky) : '') + '</div>' +
+            '</div>' +
+            '<div class="actions">' +
+              '<button class="edit-btn" data-event-idx="' + i + '" style="background:rgba(255,230,128,.08);border:1px solid rgba(255,230,128,.2);color:#ffe680;padding:.3rem .6rem;border-radius:6px;cursor:pointer;font-size:.75rem;">Edit</button>' +
+              '<button class="del-btn" data-event-idx="' + i + '">Delete</button>' +
+            '</div>' +
+          '</div>';
+      }
+      list.innerHTML = html;
+      list.querySelectorAll('.edit-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var idx = parseInt(this.dataset.eventIdx, 10);
+          openEventModal(idx, events, data);
+        });
+      });
+      list.querySelectorAll('.del-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (!confirm('Delete this event?')) return;
+          var idx = parseInt(this.dataset.eventIdx, 10);
+          events.splice(idx, 1);
+          FB.put('config', { id: 'events', list: events }).then(function () { renderEvents(); toast('Event deleted.'); });
+        });
+      });
+    }).catch(function () { list.innerHTML = '<div class="empty-state"><div class="icon">&#x26A0;&#xFE0F;</div><p>Error loading events</p></div>'; });
+  }
+
+  function openEventModal(idx, events, data) {
+    var e = idx >= 0 ? events[idx] : {};
+    var isNew = idx < 0 || idx >= events.length;
+    document.getElementById('modalContent').innerHTML =
+      '<h2>' + (isNew ? 'Add Event' : 'Edit Event') + '</h2>' +
+      '<div class="field"><label>Label</label><input type="text" id="fEvLabel" value="' + esc(e.label || '') + '"></div>' +
+      '<div class="field-row">' +
+        '<div class="field"><label>Type</label><select id="fEvType" style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;">' +
+          '<option value="annual"' + (e.type === 'annual' ? ' selected' : '') + '>Annual (repeats)</option>' +
+          '<option value="one-time"' + (e.type === 'one-time' ? ' selected' : '') + '>One-time</option>' +
+        '</select></div>' +
+        '<div class="field"><label>Start (MM-DD)</label><input type="text" id="fEvStart" value="' + esc(e.startDate || '') + '" placeholder="07-20"></div>' +
+        '<div class="field"><label>End (MM-DD)</label><input type="text" id="fEvEnd" value="' + esc(e.endDate || '') + '" placeholder="07-27 (leave blank for 1 day)"></div>' +
+      '</div>' +
+      '<div class="field"><label>Sky tag</label><input type="text" id="fEvSky" value="' + esc(e.sky || '') + '" placeholder="e.g. Sunset Bliss, Starry Night"></div>' +
+      '<div class="field"><label>Accent color</label><input type="text" id="fEvColor" value="' + esc(e.accentColor || '') + '" placeholder="#ff6b6b"></div>' +
+      '<div class="field"><label>Icon (emoji)</label><input type="text" id="fEvIcon" value="' + esc(e.icon || '') + '" placeholder="&#x1F389;"></div>' +
+      '<div class="field"><label>Popup message</label><textarea id="fEvMsg" rows="2" placeholder="Happy anniversary!">' + esc(e.message || '') + '</textarea></div>' +
+      '<div class="field"><label>Custom CSS</label><textarea id="fEvCss" rows="2" placeholder="body { filter: sepia(0.3); }">' + esc(e.css || '') + '</textarea></div>' +
+      '<div class="modal-actions">' +
+        '<button class="btn-cancel" id="modalCancel">Cancel</button>' +
+        '<button class="btn-save" id="modalEvSave">' + (isNew ? 'Add' : 'Save') + '</button>' +
+      '</div>';
+    document.getElementById('modalOverlay').classList.add('open');
+    document.getElementById('modalCancel').addEventListener('click', closeModal);
+    document.getElementById('modalEvSave').addEventListener('click', function () {
+      var ev = {
+        label: document.getElementById('fEvLabel').value.trim(),
+        type: document.getElementById('fEvType').value,
+        startDate: document.getElementById('fEvStart').value.trim(),
+        endDate: document.getElementById('fEvEnd').value.trim() || '',
+        sky: document.getElementById('fEvSky').value.trim(),
+        accentColor: document.getElementById('fEvColor').value.trim(),
+        icon: document.getElementById('fEvIcon').value.trim(),
+        message: document.getElementById('fEvMsg').value.trim(),
+        css: document.getElementById('fEvCss').value.trim()
+      };
+      if (ev.type === 'one-time' && !ev.startDate.includes('-')) { ev.startDate = ev.startDate; }
+      if (ev.type === 'one-time') ev.year = new Date().getFullYear();
+      if (!ev.label || !ev.startDate) { toast('Label and start date required.'); return; }
+      events = data && data.list ? data.list : [];
+      if (isNew) events.push(ev);
+      else events[idx] = ev;
+      FB.put('config', { id: 'events', list: events }).then(function () { closeModal(); renderEvents(); toast('Event saved.'); });
+    });
+  }
+
+  /* ───── Quiz Admin ───── */
+  function renderQuiz() {
+    FB.get('config', 'quizzes').then(function (d) {
+      var list = d && Array.isArray(d) ? d : (d && d.list ? d.list : []);
+      var container = document.getElementById('quizList');
+      if (!container) return;
+      if (!list.length) { container.innerHTML = '<p style="color:#6b5f52;font-size:.85rem;">No quiz sets yet.</p>'; return; }
+      var html = '';
+      list.forEach(function (q, i) {
+        var qCount = q.questions ? q.questions.length : 0;
+        html += '<div class="req-item" data-idx="' + i + '">' +
+          '<div style="flex:1"><strong style="color:#ffebd2;">' + esc(q.title || 'Untitled') + '</strong>' +
+          ' <span style="color:#6b5f52;font-size:.75rem;">(' + qCount + ' questions)</span></div>' +
+          '<div style="display:flex;gap:6px;">' +
+          '<button class="edit-btn" data-idx="' + i + '">Edit</button>' +
+          '<button class="del-btn" data-idx="' + i + '">Delete</button></div></div>';
+      });
+      container.innerHTML = html;
+      container.querySelectorAll('.edit-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () { editQuiz(parseInt(this.dataset.idx)); });
+      });
+      container.querySelectorAll('.del-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (!confirm('Delete this quiz set?')) return;
+          var idx = parseInt(this.dataset.idx);
+          list.splice(idx, 1);
+          FB.put('config', { id: 'quizzes', list: list }).then(function () { renderQuiz(); toast('Quiz deleted.'); });
+        });
+      });
+    });
+    renderQuizHistory();
+  }
+
+  function editQuiz(idx) {
+    FB.get('config', 'quizzes').then(function (d) {
+      var list = d && Array.isArray(d) ? d : (d && d.list ? d.list : []);
+      var quiz = list[idx] || { id: '', title: '', questions: [] };
+      var html = '<h2 style="margin:0 0 1rem;color:#ffe680;font-size:1.1rem;">' + (idx >= 0 ? 'Edit Quiz' : 'Add Quiz') + '</h2>';
+      html += '<label style="display:block;color:#6b5f52;font-size:.8rem;margin-bottom:2px;">ID</label>' +
+        '<input id="qId" value="' + esc(quiz.id || '') + '" placeholder="e.g. quiz-1" style="width:100%;padding:.5rem .6rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;margin-bottom:.6rem;outline:none;box-sizing:border-box;">';
+      html += '<label style="display:block;color:#6b5f52;font-size:.8rem;margin-bottom:2px;">Page (optional, leave empty for all)</label>' +
+        '<input id="qPage" value="' + esc(quiz.page || '') + '" placeholder="e.g. 100-organs" style="width:100%;padding:.5rem .6rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;margin-bottom:.6rem;outline:none;box-sizing:border-box;">';
+      html += '<label style="display:block;color:#6b5f52;font-size:.8rem;margin-bottom:2px;">Title</label>' +
+        '<input id="qTitle" value="' + esc(quiz.title || '') + '" style="width:100%;padding:.5rem .6rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;margin-bottom:.6rem;outline:none;box-sizing:border-box;">';
+      html += '<label style="display:block;color:#6b5f52;font-size:.8rem;margin-bottom:2px;">Questions (JSON array)</label>' +
+        '<textarea id="qQuestions" rows="8" style="width:100%;padding:.5rem .6rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:monospace;font-size:.8rem;outline:none;resize:vertical;box-sizing:border-box;">' + esc(JSON.stringify(quiz.questions || [], null, 2)) + '</textarea>';
+      html += '<div style="display:flex;gap:6px;margin-top:1rem;">' +
+        '<button id="qSave" style="padding:.5rem 1rem;border-radius:6px;background:rgba(111,207,147,.1);border:1px solid rgba(111,207,147,.3);color:#6fcf93;cursor:pointer;">Save</button>' +
+        '<button onclick="closeModal()" style="padding:.5rem 1rem;border-radius:6px;background:rgba(232,93,58,.1);border:1px solid rgba(232,93,58,.3);color:#e85d3a;cursor:pointer;">Cancel</button></div>';
+      openModal(html);
+      document.getElementById('qSave').addEventListener('click', function () {
+        var newId = document.getElementById('qId').value.trim();
+        var page = document.getElementById('qPage').value.trim();
+        var title = document.getElementById('qTitle').value.trim();
+        var questionsStr = document.getElementById('qQuestions').value.trim();
+        var questions = [];
+        try { questions = JSON.parse(questionsStr); if (!Array.isArray(questions)) throw 'not array'; } catch (e) { toast('Questions must be a valid JSON array.'); return; }
+        if (!newId) { toast('ID is required.'); return; }
+        if (!title) { toast('Title is required.'); return; }
+        FB.get('config', 'quizzes').then(function (d2) {
+          var qList = d2 && Array.isArray(d2) ? d2 : (d2 && d2.list ? d2.list : []);
+          var updated = { id: newId, page: page, title: title, questions: questions };
+          if (idx >= 0 && idx < qList.length) qList[idx] = updated;
+          else qList.push(updated);
+          FB.put('config', { id: 'quizzes', list: qList }).then(function () { closeModal(); renderQuiz(); toast('Quiz saved.'); });
+        });
+      });
+    });
+  }
+
+  function renderQuizHistory() {
+    FB.get('quizHistory', 'all').then(function (d) {
+      var history = d && d.items ? d.items : [];
+      var container = document.getElementById('quizHistoryList');
+      if (!container) return;
+      if (!history.length) { container.innerHTML = '<p style="color:#6b5f52;font-size:.85rem;">No attempts yet.</p>'; return; }
+      var html = '';
+      for (var i = history.length - 1; i >= 0; i--) {
+        var h = history[i];
+        html += '<div style="padding:.4rem .6rem;margin-bottom:4px;border-radius:4px;background:rgba(255,220,160,.02);font-size:.8rem;">' +
+          '<span style="color:#ffebd2;">' + esc(h.quizId || '?') + '</span>' +
+          ' <span style="color:#6b5f52;">|</span> <span style="color:#6fcf93;">' + (h.score || 0) + '/' + (h.total || 0) + '</span>' +
+          ' <span style="color:' + (h.passed ? '#6fcf93' : '#e85d3a') + ';">' + (h.passed ? 'PASS' : 'FAIL') + '</span>' +
+          ' <span style="color:#6b5f52;font-size:.7rem;">' + (h.timestamp ? new Date(h.timestamp).toLocaleString() : '') + '</span></div>';
+      }
+      container.innerHTML = html;
+    }).catch(function () {});
+  }
+
+  function renderPuzzles() {
+    var list = document.getElementById('puzzlesList');
+    if (!list) return;
+    FB.get('config', 'puzzles').then(function (data) {
+      var puzzles = data && data.list ? data.list : [];
+      if (!puzzles.length) {
+        list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F9E9;</div><p>No puzzles. Create one to start a treasure hunt.</p></div>';
+        return;
+      }
+      var html = '';
+      for (var i = 0; i < puzzles.length; i++) {
+        var p = puzzles[i];
+        html +=
+          '<div class="song-card">' +
+            '<div class="info">' +
+              '<div class="stitle">' + esc(p.title || '') + '</div>' +
+              '<div class="smeta">' + (p.steps ? p.steps.length : 0) + ' steps</div>' +
+            '</div>' +
+            '<div class="actions">' +
+              '<button class="edit-btn" data-pz-idx="' + i + '" style="background:rgba(255,230,128,.08);border:1px solid rgba(255,230,128,.2);color:#ffe680;padding:.3rem .6rem;border-radius:6px;cursor:pointer;font-size:.75rem;">Edit</button>' +
+              '<button class="del-btn" data-pz-idx="' + i + '">Delete</button>' +
+            '</div>' +
+          '</div>';
+      }
+      list.innerHTML = html;
+      list.querySelectorAll('.edit-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () { openPuzzleModal(parseInt(this.dataset.pzIdx, 10), puzzles, data); });
+      });
+      list.querySelectorAll('.del-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (!confirm('Delete this puzzle?')) return;
+          var idx = parseInt(this.dataset.pzIdx, 10);
+          puzzles.splice(idx, 1);
+          FB.put('config', { id: 'puzzles', list: puzzles }).then(function () { renderPuzzles(); toast('Puzzle deleted.'); });
+        });
+      });
+    }).catch(function () { list.innerHTML = '<div class="empty-state"><div class="icon">&#x26A0;&#xFE0F;</div><p>Error loading puzzles</p></div>'; });
+  }
+
+  function openPuzzleModal(idx, puzzles, data) {
+    var p = idx >= 0 && idx < puzzles.length ? puzzles[idx] : { steps: [] };
+    var isNew = idx < 0 || idx >= puzzles.length;
+    var stepsHtml = '';
+    var steps = p.steps || [];
+    for (var si = 0; si < steps.length; si++) {
+      stepsHtml += '<div class="pz-step" style="background:rgba(255,220,160,.03);border:1px solid rgba(255,210,150,.08);border-radius:6px;padding:.5rem;margin-bottom:.5rem;">' +
+        '<div class="field"><label>Hint</label><input type="text" class="pz-hint" value="' + esc(steps[si].hint || '') + '"></div>' +
+        '<div class="field"><label>Answer</label><input type="text" class="pz-answer" value="' + esc(steps[si].answer || '') + '"></div>' +
+        '<div class="field-row">' +
+          '<div class="field" style="flex:1;"><label>Auto type</label><select class="pz-auto-type" style="width:100%;padding:.4rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.8rem;outline:none;">' +
+            '<option value="">None (answer required)</option>' +
+            '<option value="page-visit"' + (steps[si].auto && steps[si].auto.type === 'page-visit' ? ' selected' : '') + '>Auto: visit page</option>' +
+            '<option value="section-view"' + (steps[si].auto && steps[si].auto.type === 'section-view' ? ' selected' : '') + '>Auto: view section</option>' +
+          '</select></div>' +
+          '<div class="field" style="flex:1;"><label>Auto target</label><input type="text" class="pz-auto-target" value="' + esc((steps[si].auto && steps[si].auto.target) || (steps[si].auto && steps[si].auto.page) || (steps[si].auto && String(steps[si].auto.sectionIdx)) || '') + '"></div>' +
+        '</div>' +
+        '<div style="display:flex;gap:4px;margin-top:4px;">' +
+          '<button class="pz-step-del" style="padding:.2rem .5rem;border-radius:4px;background:rgba(232,93,58,.1);border:1px solid #e85d3a44;color:#e85d3a;cursor:pointer;font-size:.7rem;">Remove</button>' +
+        '</div>' +
+      '</div>';
+    }
+    document.getElementById('modalContent').innerHTML =
+      '<h2>' + (isNew ? 'Add Puzzle' : 'Edit Puzzle') + '</h2>' +
+      '<div class="field"><label>Title</label><input type="text" id="fPzTitle" value="' + esc(p.title || '') + '"></div>' +
+      '<div class="field"><label>ID (unique, no spaces)</label><input type="text" id="fPzId" value="' + esc(p.id || '') + '"></div>' +
+      '<h3 style="color:#ffebd2;font-size:.9rem;margin:1rem 0 .5rem;">Steps</h3>' +
+      '<div id="pzStepsContainer">' + stepsHtml + '</div>' +
+      '<button id="pzAddStepBtn" style="margin-bottom:1rem;padding:.35rem .7rem;border-radius:6px;background:rgba(255,230,128,.08);border:1px solid rgba(255,230,128,.2);color:#ffe680;cursor:pointer;font-size:.8rem;">+ Add Step</button>' +
+      '<div class="modal-actions">' +
+        '<button class="btn-cancel" id="modalCancel">Cancel</button>' +
+        '<button class="btn-save" id="modalPzSave">' + (isNew ? 'Add' : 'Save') + '</button>' +
+      '</div>';
+    document.getElementById('modalOverlay').classList.add('open');
+    document.getElementById('modalCancel').addEventListener('click', closeModal);
+    document.getElementById('pzAddStepBtn').addEventListener('click', function () {
+      var container = document.getElementById('pzStepsContainer');
+      var div = document.createElement('div');
+      div.className = 'pz-step';
+      div.style.cssText = 'background:rgba(255,220,160,.03);border:1px solid rgba(255,210,150,.08);border-radius:6px;padding:.5rem;margin-bottom:.5rem;';
+      div.innerHTML =
+        '<div class="field"><label>Hint</label><input type="text" class="pz-hint"></div>' +
+        '<div class="field"><label>Answer</label><input type="text" class="pz-answer"></div>' +
+        '<div class="field-row">' +
+          '<div class="field" style="flex:1;"><label>Auto type</label><select class="pz-auto-type" style="width:100%;padding:.4rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.8rem;outline:none;">' +
+            '<option value="">None (answer required)</option>' +
+            '<option value="page-visit">Auto: visit page</option>' +
+            '<option value="section-view">Auto: view section</option>' +
+          '</select></div>' +
+          '<div class="field" style="flex:1;"><label>Auto target</label><input type="text" class="pz-auto-target"></div>' +
+        '</div>' +
+        '<div style="display:flex;gap:4px;margin-top:4px;">' +
+          '<button class="pz-step-del" style="padding:.2rem .5rem;border-radius:4px;background:rgba(232,93,58,.1);border:1px solid #e85d3a44;color:#e85d3a;cursor:pointer;font-size:.7rem;">Remove</button>' +
+        '</div>';
+      container.appendChild(div);
+      div.querySelector('.pz-step-del').addEventListener('click', function () { div.remove(); });
+    });
+    document.getElementById('pzStepsContainer').querySelectorAll('.pz-step-del').forEach(function (btn) {
+      btn.addEventListener('click', function () { this.closest('.pz-step').remove(); });
+    });
+    document.getElementById('modalPzSave').addEventListener('click', function () {
+      var stepEls = document.getElementById('pzStepsContainer').querySelectorAll('.pz-step');
+      var stepsData = [];
+      stepEls.forEach(function (el) {
+        var autoType = el.querySelector('.pz-auto-type').value;
+        var autoTarget = el.querySelector('.pz-auto-target').value.trim();
+        var step = {
+          hint: el.querySelector('.pz-hint').value.trim(),
+          answer: el.querySelector('.pz-answer').value.trim()
+        };
+        if (autoType && autoTarget) {
+          if (autoType === 'page-visit') step.auto = { type: 'page-visit', page: autoTarget };
+          else if (autoType === 'section-view') step.auto = { type: 'section-view', sectionIdx: parseInt(autoTarget, 10) || 0 };
+        }
+        stepsData.push(step);
+      });
+      var puzzle = {
+        id: document.getElementById('fPzId').value.trim(),
+        title: document.getElementById('fPzTitle').value.trim(),
+        steps: stepsData
+      };
+      if (!puzzle.id || !puzzle.title) { toast('ID and title required.'); return; }
+      puzzles = data && data.list ? data.list : [];
+      if (isNew) puzzles.push(puzzle);
+      else puzzles[idx] = puzzle;
+      FB.put('config', { id: 'puzzles', list: puzzles }).then(function () { closeModal(); renderPuzzles(); toast('Puzzle saved.'); });
+    });
+  }
+
+  function renderLetters() {
+    var list = document.getElementById('lettersList');
+    if (!list) return;
+    FB.getAll('letters').then(function (letters) {
+      if (!letters.length) {
+        list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F4DD;</div><p>No letters yet.</p></div>';
+        return;
+      }
+      letters.sort(function (a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
+      var unread = letters.filter(function (l) { return !l.read; });
+      var html = '';
+      if (unread.length) html += '<div style="color:#ffe680;font-size:.8rem;margin-bottom:.5rem;">' + unread.length + ' unread</div>';
+      for (var i = 0; i < letters.length; i++) {
+        var l = letters[i];
+        var date = l.createdAt ? new Date(l.createdAt).toLocaleString() : '';
+        html +=
+          '<div class="song-card" style="' + (!l.read ? 'border-left:3px solid #ffe680;' : '') + '">' +
+            '<div class="info">' +
+              '<div class="stitle">' + esc(l.subject || '(no subject)') + (!l.read ? ' <span style="color:#ffe680;font-size:.7rem;">NEW</span>' : '') + '</div>' +
+              '<div class="smeta">' + date + '</div>' +
+              '<div style="font-size:.8rem;color:#d4c5b2;margin-top:4px;white-space:pre-wrap;">' + esc(l.body || '').slice(0, 200) + (l.body && l.body.length > 200 ? '...' : '') + '</div>' +
+            '</div>' +
+            '<div class="actions" style="flex-direction:column;gap:4px;">' +
+              (!l.read ? '<button class="approve-btn" data-letter-id="' + esc(l.id || l.key) + '" style="font-size:.7rem;padding:.25rem .5rem;">Mark read</button>' : '') +
+              '<button class="del-btn" data-letter-id="' + esc(l.id || l.key) + '" style="font-size:.7rem;padding:.25rem .5rem;">Delete</button>' +
+            '</div>' +
+          '</div>';
+      }
+      list.innerHTML = html;
+      list.querySelectorAll('.approve-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var id = this.dataset.letterId;
+          FB.get('letters', id).then(function (l) {
+            if (!l) return;
+            l.read = true;
+            FB.put('letters', l).then(function () { renderLetters(); });
+          });
+        });
+      });
+      list.querySelectorAll('.del-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (!confirm('Delete this letter?')) return;
+          FB.delete('letters', this.dataset.letterId).then(function () { renderLetters(); toast('Letter deleted.'); });
+        });
+      });
+    }).catch(function () { list.innerHTML = '<div class="empty-state"><div class="icon">&#x26A0;&#xFE0F;</div><p>Error loading letters</p></div>'; });
+  }
+
+  function renderDynamicContent() {
+    var list = document.getElementById('dynamicList');
+    if (!list) return;
+    FB.get('config', 'dynamicContent').then(function (data) {
+      var items = data && data.list ? data.list : [];
+      if (!items.length) {
+        list.innerHTML = '<div class="empty-state"><div class="icon">&#x2728;</div><p>No dynamic content. Add entries that appear on content pages.</p></div>';
+        return;
+      }
+      var html = '';
+      for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+        html +=
+          '<div class="song-card">' +
+            '<div class="info">' +
+              '<div class="stitle">' + esc(item.title || '') + ' <span style="color:#6b5f52;font-size:.7rem;">(' + esc(item.page || '') + ')</span></div>' +
+              '<div class="smeta">' + (item.body ? item.body.slice(0, 80) : '') + (item.body && item.body.length > 80 ? '...' : '') + '</div>' +
+            '</div>' +
+            '<div class="actions">' +
+              '<button class="edit-btn" data-dc-idx="' + i + '" style="background:rgba(255,230,128,.08);border:1px solid rgba(255,230,128,.2);color:#ffe680;padding:.3rem .6rem;border-radius:6px;cursor:pointer;font-size:.75rem;">Edit</button>' +
+              '<button class="del-btn" data-dc-idx="' + i + '">Delete</button>' +
+            '</div>' +
+          '</div>';
+      }
+      list.innerHTML = html;
+      list.querySelectorAll('.edit-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () { openDynamicModal(parseInt(this.dataset.dcIdx, 10), items, data); });
+      });
+      list.querySelectorAll('.del-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (!confirm('Delete this entry?')) return;
+          items.splice(parseInt(this.dataset.dcIdx, 10), 1);
+          FB.put('config', { id: 'dynamicContent', list: items }).then(function () { renderDynamicContent(); toast('Deleted.'); });
+        });
+      });
+    }).catch(function () { list.innerHTML = '<div class="empty-state"><div class="icon">&#x26A0;&#xFE0F;</div><p>Error loading content</p></div>'; });
+  }
+
+  function openDynamicModal(idx, items, data) {
+    var item = idx >= 0 && idx < items.length ? items[idx] : {};
+    var isNew = idx < 0 || idx >= items.length;
+    document.getElementById('modalContent').innerHTML =
+      '<h2>' + (isNew ? 'Add Entry' : 'Edit Entry') + '</h2>' +
+      '<div class="field"><label>Page</label>' +
+        '<select id="fDcPage" style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;">' +
+          '<option value="100-organs"' + (item.page === '100-organs' ? ' selected' : '') + '>100 Organs</option>' +
+          '<option value="love"' + (item.page === 'love' ? ' selected' : '') + '>Love</option>' +
+          '<option value="fantasies"' + (item.page === 'fantasies' ? ' selected' : '') + '>Fantasies</option>' +
+        '</select></div>' +
+      '<div class="field"><label>Title</label><input type="text" id="fDcTitle" value="' + esc(item.title || '') + '"></div>' +
+      '<div class="field"><label>Body</label><textarea id="fDcBody" rows="6" style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:\'Lora\',Georgia,serif;font-size:.85rem;outline:none;resize:vertical;">' + esc(item.body || '') + '</textarea></div>' +
+      '<div class="modal-actions">' +
+        '<button class="btn-cancel" id="modalCancel">Cancel</button>' +
+        '<button class="btn-save" id="modalDcSave">' + (isNew ? 'Add' : 'Save') + '</button>' +
+      '</div>';
+    document.getElementById('modalOverlay').classList.add('open');
+    document.getElementById('modalCancel').addEventListener('click', closeModal);
+    document.getElementById('modalDcSave').addEventListener('click', function () {
+      var entry = {
+        page: document.getElementById('fDcPage').value,
+        title: document.getElementById('fDcTitle').value.trim(),
+        body: document.getElementById('fDcBody').value.trim(),
+        visible: true,
+        order: Date.now()
+      };
+      if (!entry.body) { toast('Body required.'); return; }
+      items = data && data.list ? data.list : [];
+      if (isNew) items.push(entry);
+      else items[idx] = entry;
+      FB.put('config', { id: 'dynamicContent', list: items }).then(function () { closeModal(); renderDynamicContent(); toast('Saved.'); });
+    });
+  }
+
+  function renderTimeline() {
+    var list = document.getElementById('timelineList');
+    if (!list) return;
+    FB.get('config', 'timeline').then(function (data) {
+      var entries = data && data.list ? data.list : [];
+      if (!entries.length) {
+        list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F4C5;</div><p>No timeline entries. Add your first memory.</p></div>';
+        return;
+      }
+      var html = '';
+      for (var i = entries.length - 1; i >= 0; i--) {
+        var e = entries[i];
+        html +=
+          '<div class="song-card">' +
+            '<div class="info">' +
+              '<div class="stitle">' + esc(e.title || '') + '</div>' +
+              '<div class="smeta">' + (e.date || '') + (e.year ? ', ' + e.year : '') + '</div>' +
+              '<div style="font-size:.8rem;color:#d4c5b2;margin-top:2px;">' + (e.body ? esc(e.body).slice(0, 100) : '') + '</div>' +
+            '</div>' +
+            '<div class="actions">' +
+              '<button class="edit-btn" data-tl-idx="' + i + '" style="background:rgba(255,230,128,.08);border:1px solid rgba(255,230,128,.2);color:#ffe680;padding:.3rem .6rem;border-radius:6px;cursor:pointer;font-size:.75rem;">Edit</button>' +
+              '<button class="del-btn" data-tl-idx="' + i + '">Delete</button>' +
+            '</div>' +
+          '</div>';
+      }
+      list.innerHTML = html;
+      list.querySelectorAll('.edit-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () { openTimelineModal(parseInt(this.dataset.tlIdx, 10), entries, data); });
+      });
+      list.querySelectorAll('.del-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (!confirm('Delete this memory?')) return;
+          entries.splice(parseInt(this.dataset.tlIdx, 10), 1);
+          FB.put('config', { id: 'timeline', list: entries }).then(function () { renderTimeline(); toast('Deleted.'); });
+        });
+      });
+    }).catch(function () { list.innerHTML = '<div class="empty-state"><div class="icon">&#x26A0;&#xFE0F;</div><p>Error loading timeline</p></div>'; });
+  }
+
+  function openTimelineModal(idx, entries, data) {
+    var e = idx >= 0 && idx < entries.length ? entries[idx] : {};
+    var isNew = idx < 0 || idx >= entries.length;
+    document.getElementById('modalContent').innerHTML =
+      '<h2>' + (isNew ? 'Add Memory' : 'Edit Memory') + '</h2>' +
+      '<div class="field-row">' +
+        '<div class="field"><label>Date (MM-DD)</label><input type="text" id="fTlDate" value="' + esc(e.date || '') + '" placeholder="07-20"></div>' +
+        '<div class="field"><label>Year</label><input type="text" id="fTlYear" value="' + esc(e.year || '') + '" placeholder="2026"></div>' +
+      '</div>' +
+      '<div class="field"><label>Title</label><input type="text" id="fTlTitle" value="' + esc(e.title || '') + '"></div>' +
+      '<div class="field"><label>Description</label><textarea id="fTlBody" rows="3" style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:\'Lora\',Georgia,serif;font-size:.85rem;outline:none;resize:vertical;">' + esc(e.body || '') + '</textarea></div>' +
+      '<div class="field"><label>Image URL (optional)</label><input type="text" id="fTlImg" value="' + esc(e.img || '') + '" placeholder="https://..."></div>' +
+      '<div class="modal-actions">' +
+        '<button class="btn-cancel" id="modalCancel">Cancel</button>' +
+        '<button class="btn-save" id="modalTlSave">' + (isNew ? 'Add' : 'Save') + '</button>' +
+      '</div>';
+    document.getElementById('modalOverlay').classList.add('open');
+    document.getElementById('modalCancel').addEventListener('click', closeModal);
+    document.getElementById('modalTlSave').addEventListener('click', function () {
+      var entry = {
+        date: document.getElementById('fTlDate').value.trim(),
+        year: document.getElementById('fTlYear').value.trim(),
+        title: document.getElementById('fTlTitle').value.trim(),
+        body: document.getElementById('fTlBody').value.trim(),
+        img: document.getElementById('fTlImg').value.trim()
+      };
+      if (!entry.title) { toast('Title required.'); return; }
+      entries = data && data.list ? data.list : [];
+      if (isNew) entries.push(entry);
+      else entries[idx] = entry;
+      FB.put('config', { id: 'timeline', list: entries }).then(function () { closeModal(); renderTimeline(); toast('Memory saved.'); });
+    });
+  }
+
+  function loadActivity() {
+    var list = document.getElementById('activityList');
+    if (!list) return;
+    var filter = document.getElementById('activityFilter');
+    var filterVal = filter ? filter.value : 'all';
+    list.innerHTML = '<div class="empty-state"><div class="icon">&#x23F3;</div><p>Loading activity...</p></div>';
+    FB.getAll('activity').then(function (items) {
+      if (!items || !items.length) {
+        list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F4C8;</div><p>No activity recorded yet.</p></div>';
+        return;
+      }
+      items.sort(function (a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
+      if (filterVal !== 'all') items = items.filter(function (i) { return i.type === filterVal; });
+      if (!items.length) {
+        list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F4C8;</div><p>No matching activity.</p></div>';
+        return;
+      }
+      var html = '';
+      for (var i = 0; i < Math.min(items.length, 200); i++) {
+        var a = items[i];
+        var date = a.timestamp ? new Date(a.timestamp).toLocaleString() : '';
+        var label = a.type === 'page-visit' ? 'Visited ' + esc(a.page) : a.type === 'section-view' ? 'Read section ' + (a.sectionIdx + 1) + ' on ' + esc(a.page) : a.type === 'review' ? (a.reviewType || a.type) + ' review on ' + esc(a.page) + (a.sectionIdx !== undefined ? ' (#' + (a.sectionIdx + 1) + ')' : '') : a.type === 'image-view' ? 'Viewed image: ' + esc(a.file) : esc(a.type) + ' on ' + esc(a.page);
+        html +=
+          '<div class="song-card" style="padding:.4rem .7rem;">' +
+            '<div class="info" style="gap:2px;">' +
+              '<div class="smeta" style="font-size:.7rem;">' + date + '</div>' +
+              '<div style="font-size:.8rem;color:#d4c5b2;">' + label + '</div>' +
+            '</div>' +
+          '</div>';
+      }
+      list.innerHTML = html;
+      if (items.length > 200) list.innerHTML += '<div style="text-align:center;color:#6b5f52;font-size:.75rem;margin-top:8px;">Showing 200 of ' + items.length + ' entries</div>';
+    }).catch(function () {
+      list.innerHTML = '<div class="empty-state"><div class="icon">&#x26A0;&#xFE0F;</div><p>Error loading activity</p></div>';
     });
   }
 
@@ -1648,6 +2380,34 @@
     });
 
     document.getElementById('addBtn').addEventListener('click', function () { openSongModal(-1); });
+    document.getElementById('addEventBtn') && document.getElementById('addEventBtn').addEventListener('click', function () {
+      FB.get('config', 'events').then(function (data) { openEventModal(-1, [], data); });
+    });
+    document.getElementById('addPuzzleBtn') && document.getElementById('addPuzzleBtn').addEventListener('click', function () {
+      FB.get('config', 'puzzles').then(function (data) { openPuzzleModal(-1, [], data); });
+    });
+    document.getElementById('addDynamicBtn') && document.getElementById('addDynamicBtn').addEventListener('click', function () {
+      FB.get('config', 'dynamicContent').then(function (data) { openDynamicModal(-1, [], data); });
+    });
+    document.getElementById('addTimelineBtn') && document.getElementById('addTimelineBtn').addEventListener('click', function () {
+      FB.get('config', 'timeline').then(function (data) { openTimelineModal(-1, [], data); });
+    });
+    document.getElementById('addQuizBtn') && document.getElementById('addQuizBtn').addEventListener('click', function () { editQuiz(-1); });
+    document.getElementById('quizImportBtn') && document.getElementById('quizImportBtn').addEventListener('click', function () {
+      var val = document.getElementById('quizJsonInput').value.trim();
+      if (!val) { document.getElementById('quizImportStatus').textContent = 'Paste JSON first.'; return; }
+      var imported;
+      try { imported = JSON.parse(val); if (!Array.isArray(imported)) throw 'not array'; } catch (e) { document.getElementById('quizImportStatus').textContent = 'Invalid JSON.'; return; }
+      FB.get('config', 'quizzes').then(function (d) {
+        var existing = d && Array.isArray(d) ? d : (d && d.list ? d.list : []);
+        existing = existing.concat(imported);
+        FB.put('config', { id: 'quizzes', list: existing }).then(function () {
+          document.getElementById('quizJsonInput').value = '';
+          document.getElementById('quizImportStatus').textContent = imported.length + ' quiz(es) imported.';
+          renderQuiz();
+        });
+      });
+    });
     document.getElementById('galleryAddBtn').addEventListener('click', function () { openGalleryModal(-1); });
 
     // Gallery batch upload
@@ -1709,6 +2469,13 @@
       this.value = '';
     });
 
+    // Activity
+    document.getElementById('activityFilter') && document.getElementById('activityFilter').addEventListener('change', loadActivity);
+    document.getElementById('clearActivityBtn') && document.getElementById('clearActivityBtn').addEventListener('click', function () {
+      if (!confirm('Clear all recorded activity?')) return;
+      FB.clear('activity').then(function () { loadActivity(); toast('Activity cleared.'); });
+    });
+
     // Reset
     document.getElementById('resetBtn').addEventListener('click', function () {
       if (!confirm('Reset all data to defaults? This will delete all uploaded songs and custom unlock dates.')) return;
@@ -1734,6 +2501,14 @@
         if (this.dataset.tab === 'reviews') renderReviews();
         if (this.dataset.tab === 'settings') { renderSettings(); document.getElementById('currentPassDisplay').textContent = PASSKEY; document.getElementById('newPassInput').value = ''; }
         if (this.dataset.tab === 'access') renderAccess();
+        if (this.dataset.tab === 'sectionRequests') renderSectionRequests();
+        if (this.dataset.tab === 'events') renderEvents();
+        if (this.dataset.tab === 'quiz') renderQuiz();
+        if (this.dataset.tab === 'puzzles') renderPuzzles();
+        if (this.dataset.tab === 'letters') renderLetters();
+        if (this.dataset.tab === 'dynamic') renderDynamicContent();
+        if (this.dataset.tab === 'timeline') renderTimeline();
+        if (this.dataset.tab === 'activity') loadActivity();
       });
     });
 
@@ -1801,6 +2576,26 @@
       toast('All data cleared. Reloading...', 'rgba(232,93,58,0.8)', 3000);
       setTimeout(function() { location.reload(); }, 2000);
     });
+
+    // Unread letter badge
+    function checkUnreadLetters() {
+      var btn = document.getElementById('lettersTabBtn');
+      if (!btn) return;
+      FB.getAll('letters').then(function (letters) {
+        var unread = letters.filter(function (l) { return !l.read; }).length;
+        var existing = btn.querySelector('.badge');
+        if (existing) existing.remove();
+        if (unread > 0) {
+          var badge = document.createElement('span');
+          badge.className = 'badge';
+          badge.textContent = unread;
+          badge.style.cssText = 'margin-left:6px;background:#e85d3a;color:#fff;border-radius:10px;padding:1px 6px;font-size:.65rem;font-weight:600;';
+          btn.appendChild(badge);
+        }
+      }).catch(function () {});
+    }
+    checkUnreadLetters();
+    setInterval(checkUnreadLetters, 15000);
   }
 
   init();

@@ -33,7 +33,7 @@
 
 </head>
 
-<body>
+<body data-page="100-organs">
   <div class="loader">
 
     <h1>ASH</h1>
@@ -6402,7 +6402,134 @@
   <script src="world-progress.js"></script>
   <script src="random-constellations.js"></script>
   <script src="global-interactions.js"></script>
-  <script>document.addEventListener('mousedown', function () { document.body.style.cursor = 'url("cursor images/kuromi click.jpg"), auto' }); document.addEventListener('mouseup', function () { document.body.style.cursor = 'url("cursor images/kuromi idle.jpg"), auto' });</script>
-</body>
+<script>document.addEventListener('mousedown', function () { document.body.style.cursor = 'url("cursor images/kuromi click.jpg"), auto' }); document.addEventListener('mouseup', function () { document.body.style.cursor = 'url("cursor images/kuromi idle.jpg"), auto' });</script>
+<script src="quiz.js"></script>
+<script>
+(function () {
+  var PAGE = '100-organs';
+  var STORAGE_KEY = 'ash-unlocked-group-' + PAGE;
+
+  function dailyRemaining(page) {
+    var key = 'ash-daily-' + page;
+    var today = new Date().toDateString();
+    try {
+      var data = JSON.parse(localStorage.getItem(key));
+      if (!data || data.date !== today) { localStorage.setItem(key, JSON.stringify({ date: today, count: 0 })); return 2; }
+      return Math.max(0, 2 - data.count);
+    } catch (e) { return 2; }
+  }
+  function markDailyRequest(page) {
+    var key = 'ash-daily-' + page;
+    var today = new Date().toDateString();
+    try {
+      var data = JSON.parse(localStorage.getItem(key)) || { date: today, count: 0 };
+      if (data.date !== today) data = { date: today, count: 0 };
+      data.count++; localStorage.setItem(key, JSON.stringify(data));
+    } catch (e) {}
+  }
+
+  function getUnlockedIdx() {
+    try { var v = localStorage.getItem(STORAGE_KEY); return v !== null ? parseInt(v, 10) : 0; } catch (e) { return 0; }
+  }
+  function setUnlockedIdx(n) {
+    try { localStorage.setItem(STORAGE_KEY, n); } catch (e) {}
+  }
+
+  // Listen for approval from Firebase
+  function pollApprovals() {
+    FB.get('sectionUnlock', PAGE).then(function (d) {
+      if (d && typeof d.unlocked === 'number') {
+        var local = getUnlockedIdx();
+        if (d.unlocked > local) {
+          setUnlockedIdx(d.unlocked);
+          applyLockState();
+        }
+      }
+    }).catch(function () {});
+  }
+
+  function applyLockState() {
+    var groups = document.querySelectorAll('.accordion-group');
+    var unlocked = getUnlockedIdx();
+    var remaining = dailyRemaining(PAGE);
+    groups.forEach(function (g, i) {
+      var header = g.querySelector('.accordion-header');
+      var content = g.querySelector('.accordion-content');
+      if (i <= unlocked) {
+        g.style.display = '';
+        var oldBtn = g.querySelector('.section-request-btn');
+        if (oldBtn) oldBtn.remove();
+        if (i === unlocked && i < groups.length - 1) {
+          var btn = document.createElement('button');
+          btn.className = 'section-request-btn';
+          btn.textContent = remaining > 0 ? '\uD83D\uDD12 Request Next Section (' + remaining + '/2 today)' : '\u23F3 Daily limit reached (2/2)';
+          btn.style.cssText = 'display:block;margin:2rem auto;padding:.7rem 1.5rem;border-radius:8px;background:rgba(255,230,128,.1);border:1px solid #ffe680;color:#ffe680;font-family:Fraunces,Georgia,serif;font-size:.9rem;cursor:pointer;transition:all .25s;';
+          btn.onmouseover = function () { this.style.background = '#ffe680'; this.style.color = '#181214'; };
+          btn.onmouseout = function () { this.style.background = 'rgba(255,230,128,.1)'; this.style.color = '#ffe680'; };
+          if (remaining <= 0) { btn.disabled = true; btn.style.opacity = '0.4'; btn.style.cursor = 'default'; }
+          else btn.onclick = function () {
+            var reqKey = PAGE + '-' + (i + 1);
+            FB.get('sectionRequests', reqKey).then(function (existing) {
+              if (existing && existing.status === 'pending') {
+                alert('Request already sent. Waiting for approval.');
+                return;
+              }
+              FB.put('sectionRequests', {
+                id: reqKey,
+                page: PAGE,
+                groupIndex: i + 1,
+                status: 'pending',
+                createdAt: Date.now()
+              }).then(function () {
+                markDailyRequest(PAGE);
+                btn.textContent = '\u23F3 Request sent — waiting...';
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                btn.style.cursor = 'default';
+              }).catch(function () { alert('Failed to send request.'); });
+            }).catch(function () { alert('Failed to check.'); });
+          };
+          // Insert after the last tribute in the content, but before the </div>
+          var lastTribute = content.querySelector('.tribute:last-of-type');
+          if (lastTribute) lastTribute.after(btn);
+          else content.appendChild(btn);
+        }
+        if (window.addSectionQuizBtn) window.addSectionQuizBtn(content, PAGE, i);
+      } else {
+        g.style.display = 'none';
+      }
+    });
+  }
+
+  // Init: wait for FB then apply
+  function init() {
+    if (typeof FB !== 'undefined' && FB.init) {
+      FB.init();
+      // Try to get Firebase unlock state
+      FB.get('sectionUnlock', PAGE).then(function (d) {
+        if (d && typeof d.unlocked === 'number') {
+          setUnlockedIdx(d.unlocked);
+        }
+        applyLockState();
+        setInterval(pollApprovals, 5000);
+      }).catch(function () {
+        applyLockState();
+        setInterval(pollApprovals, 5000);
+      });
+    } else {
+      applyLockState();
+    }
+  }
+
+  // Make sure accordion still opens
+  var origOpen = document.querySelector('.accordion-group');
+  if (origOpen) origOpen.classList.add('open');
+  init();
+})();
+</script>
+<script src="activity-tracker.js"
+<script src="events.js"></script>
+<script src="puzzle-hunt.js"></script>
+<script src="letters.js"></script>
 
 </html>

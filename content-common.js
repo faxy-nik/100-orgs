@@ -76,6 +76,37 @@ console.error = function () {
     try {
       var loader = safeEl('.loader');
       if (!loader) return;
+
+      // Streak counter
+      (function () {
+        try {
+          var today = new Date();
+          var dateStr = today.toISOString().slice(0, 10);
+          var raw = localStorage.getItem('ash-streak');
+          var streak = raw ? JSON.parse(raw) : null;
+          if (!streak) {
+            streak = { count: 1, lastDate: dateStr };
+          } else if (streak.lastDate === dateStr) {
+            // same day, no change
+          } else {
+            var last = new Date(streak.lastDate + 'T00:00:00');
+            var diff = Math.round((today - last) / 86400000);
+            if (diff === 1) {
+              streak.count++;
+            } else {
+              streak.count = 1;
+            }
+            streak.lastDate = dateStr;
+          }
+          localStorage.setItem('ash-streak', JSON.stringify(streak));
+          var msg = document.createElement('p');
+          msg.textContent = 'Day ' + streak.count;
+          msg.style.cssText = 'color:rgba(240,200,80,.5);font-family:Fraunces,Georgia,serif;font-size:1.5rem;margin:-.25rem 0 .75rem;letter-spacing:4px;';
+          var title = loader.querySelector('h1');
+          if (title) title.after(msg);
+        } catch (e) { logError('STREAK', e); }
+      })();
+
       var fill = loader.querySelector('.fill') || (function () {
         var ring = document.createElement('div');
         ring.className = 'progress-ring';
@@ -1275,15 +1306,15 @@ console.error = function () {
         if ('IntersectionObserver' in window) {
           var obs = new IntersectionObserver(function (entries) {
             entries.forEach(function (entry) {
+              var data = entry.target._parallaxData;
+              if (!data) return;
               if (entry.isIntersecting) {
-                var data = entry.target._parallaxData;
                 if (data) {
-                  // Mark section as viewed for progress tracking
                   try {
                     var v = JSON.parse(localStorage.getItem(viewedKey) || '[]');
                     if (v.indexOf(data.idx) === -1) { v.push(data.idx); localStorage.setItem(viewedKey, JSON.stringify(v)); }
-                  } catch (e) { }
-                  delete data.el._parallaxData;
+                  } catch (e) {}
+                  delete entry.target._parallaxData;
                 }
                 if (window.FeatureFlags && !window.FeatureFlags.get('voice-recording')) { obs.unobserve(entry.target); return; }
                 if (!entry.target.querySelector('.voice-controls')) {
@@ -1331,6 +1362,7 @@ console.error = function () {
                     var review = { type: 'text', file: window.ASH_CONFIG.reviewFile, section: getSectionHeading(sb), sectionIdx: data.idx || 0, text: textVal, date: new Date().toISOString() };
                     FB.put('reviews', review).then(function () {
                       toast('\u2714\uFE0F Text review saved', 'rgba(40,180,40,0.9)', 2500);
+                      if (window.trackActivity) window.trackActivity('review', { type: 'text', sectionIdx: data.idx || 0, section: getSectionHeading(sb) });
                     }).catch(function () {
                       toast('Save failed', 'rgba(180,40,40,0.9)', 3000);
                     });
@@ -1380,6 +1412,7 @@ console.error = function () {
                         if (typeof FB !== 'undefined' && FB.put) {
                           FB.put('reviews', review).then(function () {
                             toast('\u2714\uFE0F Voice review saved', 'rgba(40,180,40,0.9)', 2500);
+                            if (window.trackActivity) window.trackActivity('review', { type: 'voice', sectionIdx: data.idx || 0, section: getSectionHeading(that) });
                           }).catch(function () {
                             toast('Save failed', 'rgba(180,40,40,0.9)', 3000);
                           });

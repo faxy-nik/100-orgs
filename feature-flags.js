@@ -48,6 +48,7 @@
     { id:'world-progress', label:'World Progress Dashboard', cat:'Content', desc:'Stats page dashboard', auto:'after all 5 sections read' },
     { id:'easter-eggs', label:'Global Easter Eggs', cat:'Content', desc:'Keyboard shortcut easter eggs', auto:'' },
     { id:'hide-docs', label:'Hide Docs Link', cat:'Visual', desc:'Hide the documentation link from footer', auto:'', defaultOff: true },
+    { id:'force-timeline', label:'Show Timeline', cat:'Content', desc:'Always show timeline link (bypass all-sections-read gate)', auto:'', defaultOff: true },
   ];
 
   function load() {

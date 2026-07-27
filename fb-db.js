@@ -4,35 +4,58 @@
 var FB = (function () {
   var isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
 
-  // --- in-memory store for local testing ---
-  var memStore = {};
-  var memSeq = 0;
+  // --- localStorage-backed store for local testing ---
+  var STORAGE_KEY = 'ash-fb-store';
 
-  function memGetAll(store) { return Promise.resolve(memStore[store] || []); }
+  function memLoad() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch (e) { return {}; }
+  }
+  function memSave(data) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+  }
+  function memId() {
+    try { var n = parseInt(localStorage.getItem('ash-fb-seq') || '0', 10); localStorage.setItem('ash-fb-seq', n + 1); return n; } catch (e) { return 0; }
+  }
+
+  function memGetAll(store) {
+    var all = memLoad();
+    return Promise.resolve(all[store] || []);
+  }
   function memGet(store, key) {
-    var items = memStore[store] || [];
+    var all = memLoad();
+    var items = all[store] || [];
     for (var i = 0; i < items.length; i++) { if ((items[i].id || items[i].key) === key) return Promise.resolve(items[i]); }
     return Promise.resolve(null);
   }
   function memPut(store, data) {
+    var all = memLoad();
+    if (!all[store]) all[store] = [];
+    var items = all[store];
     var key = data && (data.id || data.key);
-    if (!memStore[store]) memStore[store] = [];
-    var items = memStore[store];
     if (key) {
-      for (var i = 0; i < items.length; i++) { if ((items[i].id || items[i].key) === key) { items[i] = data; return Promise.resolve({ key: key }); } }
+      for (var i = 0; i < items.length; i++) { if ((items[i].id || items[i].key) === key) { items[i] = data; memSave(all); return Promise.resolve({ key: key }); } }
       items.push(data);
+      memSave(all);
       return Promise.resolve({ key: key });
     }
-    data.id = 'local_' + (++memSeq);
+    data.id = 'local_' + memId();
     items.push(data);
+    memSave(all);
     return Promise.resolve({ key: data.id });
   }
   function memDelete(store, key) {
-    if (!memStore[store]) return Promise.resolve();
-    memStore[store] = memStore[store].filter(function (x) { return (x.id || x.key) !== key; });
+    var all = memLoad();
+    if (!all[store]) return Promise.resolve();
+    all[store] = all[store].filter(function (x) { return (x.id || x.key) !== key; });
+    memSave(all);
     return Promise.resolve();
   }
-  function memClear(store) { memStore[store] = []; return Promise.resolve(); }
+  function memClear(store) {
+    var all = memLoad();
+    all[store] = [];
+    memSave(all);
+    return Promise.resolve();
+  }
 
   if (isLocal) {
     return {
