@@ -2,7 +2,7 @@
   var STORAGE_KEY = 'ash-puzzle-progress';
 
   function loadProgress() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch (e) { return {}; }
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch (e) { return {}; }
   }
   function saveProgress(p) {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(p)); } catch (e) {}
