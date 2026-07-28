@@ -596,24 +596,12 @@
       <button class="add-btn" id="addProjectEventBtn">+ Add Project Event</button>
     </div>
     <div class="feature-group">
-      <div class="feature-group-title">&#x1F4D6; The Story</div>
+      <div class="feature-group-title">&#x1F4D6; The Whole Storyline</div>
       <p style="color:#6b5f52;font-size:.75rem;margin-bottom:.5rem;font-style:italic;">
-        A single dynamic paragraph that explains this project — displayed on <code>story.html</code>. Stored in <code>project-texts</code>.
+        Multiple chapters that tell the full story — displayed on <code>story.html</code>. Stored in <code>project-texts</code>.
       </p>
-      <div style="background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);border-radius:12px;padding:1.25rem;margin-bottom:1rem;">
-        <div class="field">
-          <label>Paragraph Title</label>
-          <input type="text" id="storyTitle" placeholder="e.g. Why I Built This" style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;">
-        </div>
-        <div class="field">
-          <label>Paragraph Body</label>
-          <textarea id="storyBody" rows="6" placeholder="Write the story of this project — the love, the reason, the meaning..." style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:'Lora',Georgia,serif;font-size:.85rem;outline:none;resize:vertical;"></textarea>
-        </div>
-        <div style="display:flex;gap:.75rem;">
-          <button id="storySaveBtn" style="padding:.45rem 1.25rem;border-radius:6px;cursor:pointer;font-family:'Fraunces',Georgia,serif;font-size:.8rem;background:rgba(255,230,128,.1);border:1px solid #ffe680;color:#ffe680;">Save Story</button>
-          <span id="storyStatus" style="font-size:.75rem;color:#6b5f52;align-self:center;"></span>
-        </div>
-      </div>
+      <div id="storylineList"></div>
+      <button class="add-btn" id="addStorylineBtn">+ Add Chapter</button>
     </div>
   </div>
 
@@ -1454,8 +1442,7 @@
     FB.get('project-puzzles', 'list').then(function (data) {
       var puzzles = getProjectPuzzles(data);
       if (!puzzles.length) {
-        var debug = typeof data === 'object' && data !== null ? JSON.stringify(data).slice(0, 300) : String(data);
-        list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F9E9;</div><p>No project puzzles yet.</p><div style="font-size:.65rem;color:#6b5f52;word-break:break-all;margin-top:8px;">raw: ' + esc(debug) + '</div></div>';
+        list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F9E9;</div><p>No project puzzles yet.</p></div>';
         return;
       }
       var html = '';
@@ -1658,13 +1645,71 @@
     });
   }
 
-  /* ───── Story (project-texts) ───── */
-  function loadStory() {
-    FB.get('project-texts', 'story').then(function (data) {
-      if (!data) return;
-      document.getElementById('storyTitle').value = data.title || '';
-      document.getElementById('storyBody').value = data.body || '';
-    }).catch(function () {});
+  /* ───── Storyline (project-texts — multi-chapter) ───── */
+  function renderStoryline() {
+    var list = document.getElementById('storylineList');
+    if (!list) return;
+    FB.get('project-texts', 'list').then(function (data) {
+      var items = getProjectPuzzles(data);
+      if (!items.length) {
+        list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F4D6;</div><p>No chapters yet. Add the first one.</p></div>';
+        return;
+      }
+      var html = '';
+      for (var i = 0; i < items.length; i++) {
+        var s = items[i];
+        html +=
+          '<div class="song-card">' +
+            '<div class="info">' +
+              '<div class="stitle">' + esc(s.title || 'Chapter ' + (i + 1)) + '</div>' +
+              '<div class="smeta">' + (s.body ? (s.body.slice(0, 80) + (s.body.length > 80 ? '...' : '')) : '') + '</div>' +
+            '</div>' +
+            '<div class="actions">' +
+              '<button class="edit-btn" data-idx="' + i + '" style="background:rgba(255,230,128,.08);border:1px solid rgba(255,230,128,.2);color:#ffe680;padding:.3rem .6rem;border-radius:6px;cursor:pointer;font-size:.75rem;">Edit</button>' +
+              '<button class="del-btn" data-idx="' + i + '">Delete</button>' +
+            '</div>' +
+          '</div>';
+      }
+      list.innerHTML = html;
+      var pData = data;
+      list.querySelectorAll('.edit-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () { openStorylineModal(parseInt(this.dataset.idx, 10), items, pData); });
+      });
+      list.querySelectorAll('.del-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (!confirm('Delete this chapter?')) return;
+          var idx = parseInt(this.dataset.idx, 10);
+          items.splice(idx, 1);
+          FB.put('project-texts', { id: 'list', list: items }).then(function () { renderStoryline(); toast('Chapter deleted.'); });
+        });
+      });
+    }).catch(function () { list.innerHTML = '<div class="empty-state"><div class="icon">&#x26A0;&#xFE0F;</div><p>Error loading storyline</p></div>'; });
+  }
+
+  function openStorylineModal(idx, items, data) {
+    var s = idx >= 0 ? items[idx] : {};
+    var isNew = idx < 0 || idx >= items.length;
+    document.getElementById('modalContent').innerHTML =
+      '<h2>' + (isNew ? 'Add Chapter' : 'Edit Chapter') + '</h2>' +
+      '<div class="field"><label>Chapter Title</label><input type="text" id="fSlTitle" value="' + esc(s.title || '') + '" placeholder="e.g. Why I Built This"></div>' +
+      '<div class="field"><label>Body</label><textarea id="fSlBody" rows="8" placeholder="Write this chapter of the story..." style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:\'Lora\',Georgia,serif;font-size:.85rem;outline:none;resize:vertical;">' + esc(s.body || '') + '</textarea></div>' +
+      '<div class="modal-actions">' +
+        '<button class="btn-cancel" id="modalCancel">Cancel</button>' +
+        '<button class="btn-save" id="modalSlSave">' + (isNew ? 'Add' : 'Save') + '</button>' +
+      '</div>';
+    document.getElementById('modalOverlay').classList.add('open');
+    document.getElementById('modalCancel').addEventListener('click', closeModal);
+    document.getElementById('modalSlSave').addEventListener('click', function () {
+      var chapter = {
+        title: document.getElementById('fSlTitle').value.trim(),
+        body: document.getElementById('fSlBody').value.trim()
+      };
+      if (!chapter.body) { toast('Write something for this chapter.'); return; }
+      items = getProjectPuzzles(data);
+      if (isNew) items.push(chapter);
+      else items[idx] = chapter;
+      FB.put('project-texts', { id: 'list', list: items }).then(function () { closeModal(); renderStoryline(); toast('Chapter saved.'); });
+    });
   }
 
   function renderLetters() {
@@ -2775,15 +2820,8 @@
     document.getElementById('addProjectEventBtn') && document.getElementById('addProjectEventBtn').addEventListener('click', function () {
       FB.get('project-events', 'list').then(function (data) { openProjectEventModal(-1, [], data); }).catch(function () { openProjectEventModal(-1, [], null); });
     });
-    document.getElementById('storySaveBtn') && document.getElementById('storySaveBtn').addEventListener('click', function () {
-      var title = document.getElementById('storyTitle').value.trim();
-      var body = document.getElementById('storyBody').value.trim();
-      if (!body) { toast('Write something first.'); return; }
-      FB.put('project-texts', { id: 'story', title: title || 'Our Story', body: body }).then(function () {
-        document.getElementById('storyStatus').textContent = 'Saved!';
-        setTimeout(function () { document.getElementById('storyStatus').textContent = ''; }, 2000);
-        toast('Story saved.');
-      }).catch(function () { toast('Error saving.'); });
+    document.getElementById('addStorylineBtn') && document.getElementById('addStorylineBtn').addEventListener('click', function () {
+      FB.get('project-texts', 'list').then(function (data) { openStorylineModal(-1, [], data); }).catch(function () { openStorylineModal(-1, [], null); });
     });
     document.getElementById('galleryAddBtn').addEventListener('click', function () { openGalleryModal(-1); });
 
@@ -2887,7 +2925,7 @@
         if (this.dataset.tab === 'timeline') renderTimeline();
         if (this.dataset.tab === 'dreams') renderDreams();
         if (this.dataset.tab === 'activity') loadActivity();
-        if (this.dataset.tab === 'project') { renderProjectPuzzles(); renderProjectEvents(); loadStory(); }
+        if (this.dataset.tab === 'project') { renderProjectPuzzles(); renderProjectEvents(); renderStoryline(); }
       });
     });
 

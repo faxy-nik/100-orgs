@@ -16,29 +16,31 @@
     body {
       background: #0d0a12; color: #e8d8f0;
       font-family: 'Lora', Georgia, serif; line-height: 1.8;
-      min-height: 100vh; display: flex; align-items: center; justify-content: center;
-      padding: 2rem;
+      min-height: 100vh; padding: 3rem 1.5rem;
     }
-    .story-card {
-      max-width: 640px; width: 100%;
-      background: rgba(200,160,255,0.03); border: 1px solid rgba(200,160,255,0.08);
-      border-radius: 20px; padding: 3rem 2.5rem;
-      box-shadow: 0 0 60px rgba(200,160,255,0.04);
-    }
-    .story-title {
+    .story-container { max-width: 680px; margin: 0 auto; }
+    .story-main-title {
       font-family: 'Fraunces', Georgia, serif;
-      font-size: 1.6rem; font-weight: 400; font-style: italic;
-      color: #c8a8f0; text-align: center; margin-bottom: 1.5rem;
+      font-size: 2rem; font-weight: 400; font-style: italic;
+      color: #c8a8f0; text-align: center; margin-bottom: 0.5rem;
     }
-    .story-body {
-      font-size: 1rem; color: #d0c0e0;
+    .story-sub { text-align: center; color: #6a5a7a; font-size: .85rem; font-style: italic; margin-bottom: 3rem; }
+    .story-chapter {
+      background: rgba(200,160,255,0.02); border: 1px solid rgba(200,160,255,0.06);
+      border-radius: 16px; padding: 2rem 2rem; margin-bottom: 1.5rem;
+    }
+    .story-chapter-title {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 1.3rem; font-weight: 400; font-style: italic;
+      color: #b8a0d8; margin-bottom: 1rem;
+    }
+    .story-chapter-body {
+      font-size: 0.95rem; color: #d0c0e0;
       font-weight: 300; line-height: 2;
-      text-align: justify;
       white-space: pre-wrap;
     }
-    .story-body:empty::after {
-      content: 'The story is being written...';
-      color: #6a5a7a; font-style: italic;
+    .empty-story {
+      text-align: center; color: #6a5a7a; font-style: italic; padding: 4rem 0;
     }
     .back {
       display: block; text-align: center; margin-top: 2.5rem;
@@ -46,13 +48,14 @@
       font-style: italic; transition: color .3s;
     }
     .back:hover { color: #c8a8f0; }
-    .loader { text-align: center; color: #6a5a7a; font-style: italic; }
+    .loader { text-align: center; color: #6a5a7a; font-style: italic; padding: 4rem 0; }
   </style>
 </head>
 <body>
-  <div class="story-card">
-    <div class="story-title" id="storyTitle">Our Story</div>
-    <div class="story-body" id="storyBody"><div class="loader">Loading...</div></div>
+  <div class="story-container">
+    <div class="story-main-title">&#x1F4D6; Our Story</div>
+    <p class="story-sub">the whole storyline</p>
+    <div id="storyChapters"><div class="loader">Loading...</div></div>
     <a href="index.html" class="back">&larr; back to the beginning</a>
   </div>
   <script src="story-text.js"></script>
