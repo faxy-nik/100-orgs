@@ -116,7 +116,7 @@ var urlsToCache = [
   '/world-progress.js',
   '/random-constellations.js',
   '/manifest.json',
-  '/timeline.html',
+  '/activity.html',
   '/events.js',
   '/puzzle-hunt.js',
   '/letters.js',

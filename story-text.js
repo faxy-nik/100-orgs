@@ -30,7 +30,7 @@
       return;
     }
     var html = '<div class="tl-wrap">';
-    for (var i = items.length - 1; i >= 0; i--) {
+    for (var i = 0; i < items.length; i++) {
       var e = items[i];
       var date = formatTLDate(e);
       html += '<div class="tl-item">' +

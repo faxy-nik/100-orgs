@@ -28,7 +28,7 @@ A romantic web experience ("100 prghs for eeshah") featuring living companion ch
 | `make-her-sleep.html` | Chat/storyline page |
 | `admin.html` | Admin panel — 16 tabs: Dates, Songs, Secret, Gallery, Wishes, Requests, Reviews, Activity, Quiz, Events, Puzzles, Letters, Dynamic, Timeline, Sections, Settings, Access |
 | `stats.html` | Usage statistics viewer |
-| `timeline.html` | Memory timeline — auto-recorded activity + admin entries |
+| `activity.html` | Auto-recorded user activity feed — page visits, navigation, time spent |
 | `404.html` | Error page |
 | `cold-restart.html` | Clears all `ash-*` localStorage keys |
 | `sky-generator.html` | Procedural sky generator |
@@ -68,7 +68,7 @@ A romantic web experience ("100 prghs for eeshah") featuring living companion ch
 | Events | `config/events` | admin + events.js | `{id: 'events', list: [{label, type, startDate, endDate, sky, ...}]}` |
 | Puzzles | `config/puzzles` | admin + puzzle-hunt.js | `{id: 'puzzles', list: [{id, title, steps}]}` |
 | Dynamic content | `config/dynamicContent` | admin + dynamic-content.js | `{id: 'dynamicContent', list: [{page, title, body, visible, order}]}` |
-| Timeline | `config/timeline` | admin + timeline.html | `{id: 'timeline', list: [{date, year, title, body, img}]}` |
+| Timeline | `config/timeline` | admin + story.html | `{id: 'timeline', list: [{date, year, title, body, img}]}` |
 | Quizzes (admin) | `config/quizzes` | admin | `{id: 'quizzes', list: [{id, page, title, questions}]}` |
 | Quiz history | `quizHistory` | quiz.js + admin | `[{quizId, score, total, passed, timestamp}]` |
 | Section unlock | `sectionUnlock/{page}` | admin + page scripts | `{id: {page}, unlocked: {groupIndex}}` |
