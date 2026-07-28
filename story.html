@@ -37,25 +37,25 @@
       background: linear-gradient(90deg, transparent, rgba(200,160,255,0.15), transparent);
       margin: 2.5rem 0;
     }
-    .timeline { position: relative; padding-left: 2rem; }
-    .timeline::before {
+    .tl-wrap { position: relative; padding-left: 2rem; }
+    .tl-wrap::before {
       content: ''; position: absolute; left: 10px; top: 0; bottom: 0;
       width: 2px; background: linear-gradient(180deg, rgba(200,160,255,0.3), rgba(200,160,255,0.05));
     }
-    .timeline-item { position: relative; margin-bottom: 1.8rem; }
-    .timeline-dot {
+    .tl-item { position: relative; margin-bottom: 1.8rem; }
+    .tl-dot {
       position: absolute; left: -2rem; top: 6px;
       width: 14px; height: 14px; border-radius: 50%;
-      border: 2px solid #0d0a12; z-index: 1;
+      background: #c8a8f0; border: 2px solid #0d0a12; z-index: 1;
     }
-    .timeline-content {
+    .tl-card {
       background: rgba(200,160,255,0.02); border: 1px solid rgba(200,160,255,0.06);
       border-radius: 12px; padding: 1.2rem 1.4rem;
     }
-    .timeline-date { font-size: .75rem; font-weight: 500; letter-spacing: 0.5px; margin-bottom: 4px; }
-    .timeline-icon { font-size: 1.4rem; margin-right: 6px; vertical-align: middle; }
-    .timeline-label { font-family: 'Fraunces', Georgia, serif; font-size: 1rem; font-weight: 400; color: #d8c8e8; display: inline; vertical-align: middle; }
-    .timeline-message { font-size: .85rem; color: #b0a0c0; margin-top: 6px; line-height: 1.6; }
+    .tl-date { font-size: .75rem; color: #7a6a8a; font-weight: 500; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .tl-title { font-family: 'Fraunces', Georgia, serif; font-size: 1rem; font-weight: 400; color: #d8c8e8; }
+    .tl-body { font-size: .85rem; color: #b0a0c0; margin-top: 6px; line-height: 1.6; }
+    .tl-img { margin-top: 10px; max-width: 100%; border-radius: 8px; }
     .story-chapter {
       background: rgba(200,160,255,0.02); border: 1px solid rgba(200,160,255,0.06);
       border-radius: 16px; padding: 2rem 2rem; margin-bottom: 1.5rem;

@@ -19,40 +19,13 @@
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
   }
 
-  function isPastEvent(ev) {
-    var now = new Date();
-    var curYear = now.getFullYear();
-    var curMonth = now.getMonth() + 1;
-    var curDay = now.getDate();
-    if (ev.type === 'one-time' && ev.year) {
-      if (parseInt(ev.year, 10) > curYear) return false;
-      if (parseInt(ev.year, 10) < curYear) return true;
-    }
-    if (ev.startDate) {
-      var parts = ev.startDate.split('-');
-      var m = parseInt(parts[0], 10), d = parseInt(parts[1], 10);
-      if (m > curMonth || (m === curMonth && d > curDay)) return false;
-    }
-    return true;
-  }
-
-  function formatDate(ev) {
+  function formatTLDate(e) {
+    if (!e.date) return '';
     var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    if (ev.type === 'range' && ev.startDate && ev.endDate) {
-      var s = ev.startDate.split('-'), e = ev.endDate.split('-');
-      return months[parseInt(s[0],10)-1] + ' ' + parseInt(s[1],10) + ', ' + (ev.startYear||'?') + ' — ' + months[parseInt(e[0],10)-1] + ' ' + parseInt(e[1],10) + ', ' + (ev.endYear||'?');
-    }
-    if (ev.type === 'annual' && ev.startDate) {
-      var parts = ev.startDate.split('-');
-      return months[parseInt(parts[0],10)-1] + ' ' + parseInt(parts[1],10);
-    }
-    if (ev.startDate) {
-      var p = ev.startDate.split('-');
-      var lbl = months[parseInt(p[0],10)-1] + ' ' + parseInt(p[1],10);
-      if (ev.year) lbl += ', ' + ev.year;
-      return lbl;
-    }
-    return '';
+    var p = e.date.split('-');
+    var lbl = months[parseInt(p[0],10)-1] + ' ' + parseInt(p[1],10);
+    if (e.year) lbl += ', ' + e.year;
+    return lbl;
   }
 
   function typeLabel(q) {
@@ -66,23 +39,22 @@
     return q.type || '';
   }
 
-  function renderTimeline(events, container) {
-    if (!events.length) {
-      container.innerHTML = '<div class="empty-state">Timeline is empty. Add events in Admin → 💎 Project → Project Events.</div>';
+  function renderTimelineItems(items, container) {
+    if (!items.length) {
+      container.innerHTML = '<div class="empty-state">No memories yet. Add them in Admin → 📅 Timeline.</div>';
       return;
     }
-    var html = '<div class="timeline">';
-    for (var i = 0; i < events.length; i++) {
-      var ev = events[i];
-      var date = formatDate(ev);
-      var color = ev.accentColor || '#ffe680';
-      html += '<div class="timeline-item">' +
-        '<div class="timeline-dot" style="background:' + color + ';box-shadow:0 0 8px ' + color + '44;"></div>' +
-        '<div class="timeline-content">' +
-        (date ? '<div class="timeline-date" style="color:' + color + ';">' + esc(date) + '</div>' : '') +
-        (ev.icon ? '<span class="timeline-icon">' + ev.icon + '</span>' : '') +
-        '<div class="timeline-label">' + esc(ev.label || 'Event') + '</div>' +
-        (ev.message ? '<div class="timeline-message">' + esc(ev.message) + '</div>' : '') +
+    var html = '<div class="tl-wrap">';
+    for (var i = items.length - 1; i >= 0; i--) {
+      var e = items[i];
+      var date = formatTLDate(e);
+      html += '<div class="tl-item">' +
+        '<div class="tl-dot"></div>' +
+        '<div class="tl-card">' +
+        (date ? '<div class="tl-date">' + esc(date) + '</div>' : '') +
+        '<div class="tl-title">' + esc(e.title || '') + '</div>' +
+        (e.body ? '<div class="tl-body">' + esc(e.body) + '</div>' : '') +
+        (e.img ? '<img class="tl-img" src="' + esc(e.img) + '" alt="" loading="lazy">' : '') +
         '</div></div>';
     }
     html += '</div>';
@@ -211,18 +183,18 @@
     });
   }
 
-  // Load events + chapters
+  // Load timeline memories + storyline chapters
   Promise.all([
-    FB.get('project-events', 'list'),
+    FB.get('config', 'timeline').then(function (d) { return (d && d.list) || []; }),
     FB.get('project-texts', 'list')
   ]).then(function (results) {
-    var events = toArray(results[0]).filter(isPastEvent);
+    var timelineItems = results[0];
     var chapters = toArray(results[1]);
 
     var timelineEl = document.getElementById('storyTimeline');
     var chaptersEl = document.getElementById('storyChapters');
 
-    if (timelineEl) renderTimeline(events, timelineEl);
+    if (timelineEl) renderTimelineItems(timelineItems, timelineEl);
     if (chaptersEl) renderChapters(chapters, chaptersEl);
   }).catch(function () {
     var timelineEl = document.getElementById('storyTimeline');
