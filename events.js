@@ -77,6 +77,17 @@
     }
   }
 
+  function toArray(data) {
+    if (!data) return [];
+    if (Array.isArray(data)) return data;
+    if (data.list) return Array.isArray(data.list) ? data.list : toArray(data.list);
+    var keys = Object.keys(data).filter(function (k) { return k !== 'id' && k !== 'key'; });
+    if (keys.length && keys.every(function (k) { return String(parseInt(k, 10)) === k; })) {
+      return keys.sort(function (a, b) { return parseInt(a, 10) - parseInt(b, 10); }).map(function (k) { return data[k]; });
+    }
+    return [];
+  }
+
   function loadEvents() {
     if (typeof FB === 'undefined' || !FB.init) return;
     FB.init();
@@ -86,7 +97,7 @@
     ]).then(function (results) {
       var all = [];
       if (results[0] && results[0].list) all = all.concat(results[0].list);
-      if (results[1] && results[1].list) all = all.concat(results[1].list);
+      all = all.concat(toArray(results[1]));
       for (var i = 0; i < all.length; i++) {
         if (isActive(all[i])) applyEvent(all[i]);
       }
