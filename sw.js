@@ -1,4 +1,4 @@
-var CACHE = 'ash-v37'; // ponytail: bump version when adding/renaming cached files
+var CACHE = 'ash-v38'; // ponytail: bump version when adding/renaming cached files
 var urlsToCache = [
   '/',
   '/index.html',
@@ -123,7 +123,9 @@ var urlsToCache = [
   '/dynamic-content.js',
   '/activity-tracker.js',
   '/quiz.js',
-  '/our-story.js'
+  '/our-story.js',
+  '/story.html',
+  '/story-text.js'
 ];
 
 self.addEventListener('install', function (e) {
