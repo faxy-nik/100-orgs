@@ -87,6 +87,26 @@
   }
 
   var panel = null;
+  function createPuzzleBtn() {
+    if (document.getElementById('puzzleBtn')) return;
+    var btn = document.createElement('button');
+    btn.id = 'puzzleBtn';
+    btn.setAttribute('aria-label', 'Open treasure hunt');
+    btn.innerHTML = '\uD83D\uDD11';
+    document.body.appendChild(btn);
+    btn.addEventListener('click', function () {
+      var body = document.getElementById('ash-puzzle-body');
+      if (!body) return;
+      var shown = body.style.display === 'block';
+      body.style.display = shown ? 'none' : 'block';
+      if (body.style.display === 'block') {
+        loadAllPuzzles().then(function (data) {
+          if (data && data.list) renderPuzzleBody(data.list);
+        });
+      }
+    });
+    btn.classList.add('show');
+  }
   function renderPuzzlePanel() {
     if (!panel) {
       panel = document.createElement('div');
@@ -96,11 +116,18 @@
     }
     loadAllPuzzles().then(function (data) {
       if (!data || !data.list || !data.list.length) { panel.style.display = 'none'; return; }
-      var html = '<div style="padding:.75rem 1rem;border-bottom:1px solid rgba(255,210,150,.08);cursor:pointer;display:flex;align-items:center;justify-content:space-between;" id="ash-puzzle-toggle">' +
-        '<span style="color:#ffe680;font-size:.85rem;font-weight:600;">\uD83E\uDDE9 Treasure Hunt</span>' +
-        '<span style="color:#6b5f52;font-size:.7rem;" id="ash-puzzle-count"></span>' +
-      '</div><div id="ash-puzzle-body" style="padding:1rem;max-height:400px;overflow-y:auto;display:none;"></div>';
-      panel.innerHTML = html;
+      if (panel.innerHTML === '') {
+        var html = '<div style="padding:.75rem 1rem;border-bottom:1px solid rgba(255,210,150,.08);cursor:pointer;display:flex;align-items:center;justify-content:space-between;" id="ash-puzzle-toggle">' +
+          '<span style="color:#ffe680;font-size:.85rem;font-weight:600;">\uD83E\uDDE9 Treasure Hunt</span>' +
+          '<span style="color:#6b5f52;font-size:.7rem;" id="ash-puzzle-count"></span>' +
+        '</div><div id="ash-puzzle-body" style="padding:1rem;max-height:400px;overflow-y:auto;display:none;"></div>';
+        panel.innerHTML = html;
+        document.getElementById('ash-puzzle-toggle').addEventListener('click', function () {
+          var bd = document.getElementById('ash-puzzle-body');
+          bd.style.display = bd.style.display === 'none' ? 'block' : 'none';
+          if (bd.style.display === 'block') renderPuzzleBody(data.list);
+        });
+      }
       panel.style.display = 'block';
       var total = 0, solved = 0;
       for (var i = 0; i < data.list.length; i++) {
@@ -108,11 +135,7 @@
         if (isSolved(data.list[i])) solved++;
       }
       document.getElementById('ash-puzzle-count').textContent = solved + '/' + total + ' solved';
-      document.getElementById('ash-puzzle-toggle').addEventListener('click', function () {
-        var body = document.getElementById('ash-puzzle-body');
-        body.style.display = body.style.display === 'none' ? 'block' : 'none';
-        if (body.style.display === 'block') renderPuzzleBody(data.list);
-      });
+      createPuzzleBtn();
     }).catch(function () {});
   }
 
