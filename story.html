@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Story &mdash; 100 prghs for eeshah</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9D%A4%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+  <script src="fb-db.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0d0a12; color: #e8d8f0;
+      font-family: 'Lora', Georgia, serif; line-height: 1.8;
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 2rem;
+    }
+    .story-card {
+      max-width: 640px; width: 100%;
+      background: rgba(200,160,255,0.03); border: 1px solid rgba(200,160,255,0.08);
+      border-radius: 20px; padding: 3rem 2.5rem;
+      box-shadow: 0 0 60px rgba(200,160,255,0.04);
+    }
+    .story-title {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 1.6rem; font-weight: 400; font-style: italic;
+      color: #c8a8f0; text-align: center; margin-bottom: 1.5rem;
+    }
+    .story-body {
+      font-size: 1rem; color: #d0c0e0;
+      font-weight: 300; line-height: 2;
+      text-align: justify;
+      white-space: pre-wrap;
+    }
+    .story-body:empty::after {
+      content: 'The story is being written...';
+      color: #6a5a7a; font-style: italic;
+    }
+    .back {
+      display: block; text-align: center; margin-top: 2.5rem;
+      color: #6a5a7a; text-decoration: none; font-size: .85rem;
+      font-style: italic; transition: color .3s;
+    }
+    .back:hover { color: #c8a8f0; }
+    .loader { text-align: center; color: #6a5a7a; font-style: italic; }
+  </style>
+</head>
+<body>
+  <div class="story-card">
+    <div class="story-title" id="storyTitle">Our Story</div>
+    <div class="story-body" id="storyBody"><div class="loader">Loading...</div></div>
+    <a href="index.html" class="back">&larr; back to the beginning</a>
+  </div>
+  <script src="story-text.js"></script>
+</body>
+</html>

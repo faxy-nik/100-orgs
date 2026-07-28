@@ -354,6 +354,7 @@
       <button class="tab" data-tab="sectionRequests">&#x1F4CB; Sections</button>
       <button class="tab" data-tab="settings">&#x2699; Settings</button>
       <button class="tab" data-tab="dreams">&#x1F30C; Dreams</button>
+      <button class="tab" data-tab="project">&#x1F48E; Project</button>
       <button class="tab" data-tab="access">&#x1F510; Access</button>
     </div>
     <div class="admin-content">
@@ -571,6 +572,49 @@
       </div>
     </div>
     <div class="song-list" id="dreamList"></div>
+  </div>
+
+  <!-- Tab: Project (permanent data — survives cold start & reset) -->
+  <div class="tab-content" id="tabProject">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Permanent project data stored outside <code>config</code> — survives Cold Restart and Reset to Defaults.
+    </p>
+    <div class="feature-group">
+      <div class="feature-group-title">&#x1F9E9; Project Puzzles</div>
+      <p style="color:#6b5f52;font-size:.75rem;margin-bottom:.5rem;font-style:italic;">
+        Puzzles that stay forever. Same format as regular puzzles, stored in <code>project-puzzles</code>.
+      </p>
+      <div id="projectPuzzlesList"></div>
+      <button class="add-btn" id="addProjectPuzzleBtn">+ Add Project Puzzle</button>
+    </div>
+    <div class="feature-group">
+      <div class="feature-group-title">&#x1F382; Project Events</div>
+      <p style="color:#6b5f52;font-size:.75rem;margin-bottom:.5rem;font-style:italic;">
+        Events that survive reset. Same format as regular events, stored in <code>project-events</code>.
+      </p>
+      <div id="projectEventsList"></div>
+      <button class="add-btn" id="addProjectEventBtn">+ Add Project Event</button>
+    </div>
+    <div class="feature-group">
+      <div class="feature-group-title">&#x1F4D6; The Story</div>
+      <p style="color:#6b5f52;font-size:.75rem;margin-bottom:.5rem;font-style:italic;">
+        A single dynamic paragraph that explains this project — displayed on <code>story.html</code>. Stored in <code>project-texts</code>.
+      </p>
+      <div style="background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);border-radius:12px;padding:1.25rem;margin-bottom:1rem;">
+        <div class="field">
+          <label>Paragraph Title</label>
+          <input type="text" id="storyTitle" placeholder="e.g. Why I Built This" style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;">
+        </div>
+        <div class="field">
+          <label>Paragraph Body</label>
+          <textarea id="storyBody" rows="6" placeholder="Write the story of this project — the love, the reason, the meaning..." style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:'Lora',Georgia,serif;font-size:.85rem;outline:none;resize:vertical;"></textarea>
+        </div>
+        <div style="display:flex;gap:.75rem;">
+          <button id="storySaveBtn" style="padding:.45rem 1.25rem;border-radius:6px;cursor:pointer;font-family:'Fraunces',Georgia,serif;font-size:.8rem;background:rgba(255,230,128,.1);border:1px solid #ffe680;color:#ffe680;">Save Story</button>
+          <span id="storyStatus" style="font-size:.75rem;color:#6b5f52;align-self:center;"></span>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Tab: Access -->
@@ -1390,6 +1434,223 @@
       else puzzles[idx] = puzzle;
       FB.put('config', { id: 'puzzles', list: puzzles }).then(function () { closeModal(); renderPuzzles(); toast('Puzzle saved.'); });
     });
+  }
+
+  /* ───── Project Puzzles ───── */
+  function renderProjectPuzzles() {
+    var list = document.getElementById('projectPuzzlesList');
+    if (!list) return;
+    FB.get('project-puzzles', 'list').then(function (data) {
+      var puzzles = data && data.list ? data.list : [];
+      if (!puzzles.length) {
+        list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F9E9;</div><p>No project puzzles yet.</p></div>';
+        return;
+      }
+      var html = '';
+      for (var i = 0; i < puzzles.length; i++) {
+        var p = puzzles[i];
+        html +=
+          '<div class="song-card">' +
+            '<div class="info">' +
+              '<div class="stitle">' + esc(p.title || '') + '</div>' +
+              '<div class="smeta">' + (p.steps ? p.steps.length : 0) + ' steps</div>' +
+            '</div>' +
+            '<div class="actions">' +
+              '<button class="edit-btn" data-idx="' + i + '" style="background:rgba(255,230,128,.08);border:1px solid rgba(255,230,128,.2);color:#ffe680;padding:.3rem .6rem;border-radius:6px;cursor:pointer;font-size:.75rem;">Edit</button>' +
+              '<button class="del-btn" data-idx="' + i + '">Delete</button>' +
+            '</div>' +
+          '</div>';
+      }
+      list.innerHTML = html;
+      list.querySelectorAll('.edit-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () { openProjectPuzzleModal(parseInt(this.dataset.idx, 10), puzzles, data); });
+      });
+      list.querySelectorAll('.del-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (!confirm('Delete this puzzle?')) return;
+          var idx = parseInt(this.dataset.idx, 10);
+          puzzles.splice(idx, 1);
+          FB.put('project-puzzles', { id: 'list', list: puzzles }).then(function () { renderProjectPuzzles(); toast('Puzzle deleted.'); });
+        });
+      });
+    }).catch(function () { list.innerHTML = '<div class="empty-state"><div class="icon">&#x26A0;&#xFE0F;</div><p>Error loading</p></div>'; });
+  }
+
+  function openProjectPuzzleModal(idx, puzzles, data) {
+    var p = idx >= 0 && idx < puzzles.length ? puzzles[idx] : { steps: [] };
+    var isNew = idx < 0 || idx >= puzzles.length;
+    var stepsHtml = '';
+    var steps = p.steps || [];
+    for (var si = 0; si < steps.length; si++) {
+      stepsHtml += '<div class="pz-step" style="background:rgba(255,220,160,.03);border:1px solid rgba(255,210,150,.08);border-radius:6px;padding:.5rem;margin-bottom:.5rem;">' +
+        '<div class="field"><label>Hint</label><input type="text" class="pz-hint" value="' + esc(steps[si].hint || '') + '"></div>' +
+        '<div class="field"><label>Answer</label><input type="text" class="pz-answer" value="' + esc(steps[si].answer || '') + '"></div>' +
+        '<div class="field-row">' +
+          '<div class="field" style="flex:1;"><label>Auto type</label><select class="pz-auto-type" style="width:100%;padding:.4rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.8rem;outline:none;">' +
+            '<option value="">None (answer required)</option>' +
+            '<option value="page-visit"' + (steps[si].auto && steps[si].auto.type === 'page-visit' ? ' selected' : '') + '>Auto: visit page</option>' +
+            '<option value="section-view"' + (steps[si].auto && steps[si].auto.type === 'section-view' ? ' selected' : '') + '>Auto: view section</option>' +
+          '</select></div>' +
+          '<div class="field" style="flex:1;"><label>Auto target</label><input type="text" class="pz-auto-target" value="' + esc((steps[si].auto && steps[si].auto.target) || (steps[si].auto && steps[si].auto.page) || (steps[si].auto && String(steps[si].auto.sectionIdx)) || '') + '"></div>' +
+        '</div>' +
+        '<div style="display:flex;gap:4px;margin-top:4px;">' +
+          '<button class="pz-step-del" style="padding:.2rem .5rem;border-radius:4px;background:rgba(232,93,58,.1);border:1px solid #e85d3a44;color:#e85d3a;cursor:pointer;font-size:.7rem;">Remove</button>' +
+        '</div>' +
+      '</div>';
+    }
+    document.getElementById('modalContent').innerHTML =
+      '<h2>' + (isNew ? 'Add Project Puzzle' : 'Edit Project Puzzle') + '</h2>' +
+      '<div class="field"><label>Title</label><input type="text" id="fPzTitle" value="' + esc(p.title || '') + '"></div>' +
+      '<div class="field"><label>ID (unique, no spaces)</label><input type="text" id="fPzId" value="' + esc(p.id || '') + '"></div>' +
+      '<h3 style="color:#ffebd2;font-size:.9rem;margin:1rem 0 .5rem;">Steps</h3>' +
+      '<div id="pzStepsContainer">' + stepsHtml + '</div>' +
+      '<button id="pzAddStepBtn" style="margin-bottom:1rem;padding:.35rem .7rem;border-radius:6px;background:rgba(255,230,128,.08);border:1px solid rgba(255,230,128,.2);color:#ffe680;cursor:pointer;font-size:.8rem;">+ Add Step</button>' +
+      '<div class="modal-actions">' +
+        '<button class="btn-cancel" id="modalCancel">Cancel</button>' +
+        '<button class="btn-save" id="modalPzSave">' + (isNew ? 'Add' : 'Save') + '</button>' +
+      '</div>';
+    document.getElementById('modalOverlay').classList.add('open');
+    document.getElementById('modalCancel').addEventListener('click', closeModal);
+    document.getElementById('pzAddStepBtn').addEventListener('click', function () {
+      var container = document.getElementById('pzStepsContainer');
+      var div = document.createElement('div');
+      div.className = 'pz-step';
+      div.style.cssText = 'background:rgba(255,220,160,.03);border:1px solid rgba(255,210,150,.08);border-radius:6px;padding:.5rem;margin-bottom:.5rem;';
+      div.innerHTML =
+        '<div class="field"><label>Hint</label><input type="text" class="pz-hint"></div>' +
+        '<div class="field"><label>Answer</label><input type="text" class="pz-answer"></div>' +
+        '<div class="field-row">' +
+          '<div class="field" style="flex:1;"><label>Auto type</label><select class="pz-auto-type" style="width:100%;padding:.4rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.8rem;outline:none;">' +
+            '<option value="">None (answer required)</option>' +
+            '<option value="page-visit">Auto: visit page</option>' +
+            '<option value="section-view">Auto: view section</option>' +
+          '</select></div>' +
+          '<div class="field" style="flex:1;"><label>Auto target</label><input type="text" class="pz-auto-target"></div>' +
+        '</div>' +
+        '<div style="display:flex;gap:4px;margin-top:4px;">' +
+          '<button class="pz-step-del" style="padding:.2rem .5rem;border-radius:4px;background:rgba(232,93,58,.1);border:1px solid #e85d3a44;color:#e85d3a;cursor:pointer;font-size:.7rem;">Remove</button>' +
+        '</div>';
+      container.appendChild(div);
+      div.querySelector('.pz-step-del').addEventListener('click', function () { div.remove(); });
+    });
+    document.getElementById('pzStepsContainer').querySelectorAll('.pz-step-del').forEach(function (btn) {
+      btn.addEventListener('click', function () { this.closest('.pz-step').remove(); });
+    });
+    document.getElementById('modalPzSave').addEventListener('click', function () {
+      var stepEls = document.getElementById('pzStepsContainer').querySelectorAll('.pz-step');
+      var stepsData = [];
+      stepEls.forEach(function (el) {
+        var autoType = el.querySelector('.pz-auto-type').value;
+        var autoTarget = el.querySelector('.pz-auto-target').value.trim();
+        var step = { hint: el.querySelector('.pz-hint').value.trim(), answer: el.querySelector('.pz-answer').value.trim() };
+        if (autoType && autoTarget) {
+          if (autoType === 'page-visit') step.auto = { type: 'page-visit', page: autoTarget };
+          else if (autoType === 'section-view') step.auto = { type: 'section-view', sectionIdx: parseInt(autoTarget, 10) || 0 };
+        }
+        stepsData.push(step);
+      });
+      var puzzle = { id: document.getElementById('fPzId').value.trim(), title: document.getElementById('fPzTitle').value.trim(), steps: stepsData };
+      if (!puzzle.id || !puzzle.title) { toast('ID and title required.'); return; }
+      puzzles = data && data.list ? data.list : [];
+      if (isNew) puzzles.push(puzzle);
+      else puzzles[idx] = puzzle;
+      FB.put('project-puzzles', { id: 'list', list: puzzles }).then(function () { closeModal(); renderProjectPuzzles(); toast('Project puzzle saved.'); });
+    });
+  }
+
+  /* ───── Project Events ───── */
+  function renderProjectEvents() {
+    var list = document.getElementById('projectEventsList');
+    if (!list) return;
+    FB.get('project-events', 'list').then(function (data) {
+      var events = data && data.list ? data.list : [];
+      if (!events.length) {
+        list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F382;</div><p>No project events yet.</p></div>';
+        return;
+      }
+      var html = '';
+      for (var i = 0; i < events.length; i++) {
+        var e = events[i];
+        html +=
+          '<div class="song-card">' +
+            '<div class="info">' +
+              '<div class="stitle">' + esc(e.label || '') + '</div>' +
+              '<div class="smeta">' + (e.startDate || '') + (e.endDate ? ' \u2192 ' + e.endDate : '') + ' | ' + (e.type || 'annual') + (e.sky ? ' | Sky: ' + esc(e.sky) : '') + '</div>' +
+            '</div>' +
+            '<div class="actions">' +
+              '<button class="edit-btn" data-idx="' + i + '" style="background:rgba(255,230,128,.08);border:1px solid rgba(255,230,128,.2);color:#ffe680;padding:.3rem .6rem;border-radius:6px;cursor:pointer;font-size:.75rem;">Edit</button>' +
+              '<button class="del-btn" data-idx="' + i + '">Delete</button>' +
+            '</div>' +
+          '</div>';
+      }
+      list.innerHTML = html;
+      list.querySelectorAll('.edit-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () { openProjectEventModal(parseInt(this.dataset.idx, 10), events, data); });
+      });
+      list.querySelectorAll('.del-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (!confirm('Delete this event?')) return;
+          var idx = parseInt(this.dataset.idx, 10);
+          events.splice(idx, 1);
+          FB.put('project-events', { id: 'list', list: events }).then(function () { renderProjectEvents(); toast('Event deleted.'); });
+        });
+      });
+    }).catch(function () { list.innerHTML = '<div class="empty-state"><div class="icon">&#x26A0;&#xFE0F;</div><p>Error loading events</p></div>'; });
+  }
+
+  function openProjectEventModal(idx, events, data) {
+    var e = idx >= 0 ? events[idx] : {};
+    var isNew = idx < 0 || idx >= events.length;
+    document.getElementById('modalContent').innerHTML =
+      '<h2>' + (isNew ? 'Add Project Event' : 'Edit Project Event') + '</h2>' +
+      '<div class="field"><label>Label</label><input type="text" id="fEvLabel" value="' + esc(e.label || '') + '"></div>' +
+      '<div class="field-row">' +
+        '<div class="field"><label>Type</label><select id="fEvType" style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;">' +
+          '<option value="annual"' + (e.type === 'annual' ? ' selected' : '') + '>Annual (repeats)</option>' +
+          '<option value="one-time"' + (e.type === 'one-time' ? ' selected' : '') + '>One-time</option>' +
+        '</select></div>' +
+        '<div class="field"><label>Start (MM-DD)</label><input type="text" id="fEvStart" value="' + esc(e.startDate || '') + '" placeholder="07-20"></div>' +
+        '<div class="field"><label>End (MM-DD)</label><input type="text" id="fEvEnd" value="' + esc(e.endDate || '') + '" placeholder="07-27 (leave blank for 1 day)"></div>' +
+      '</div>' +
+      '<div class="field"><label>Sky tag</label><input type="text" id="fEvSky" value="' + esc(e.sky || '') + '" placeholder="e.g. Sunset Bliss, Starry Night"></div>' +
+      '<div class="field"><label>Accent color</label><input type="text" id="fEvColor" value="' + esc(e.accentColor || '') + '" placeholder="#ff6b6b"></div>' +
+      '<div class="field"><label>Icon (emoji)</label><input type="text" id="fEvIcon" value="' + esc(e.icon || '') + '" placeholder="&#x1F389;"></div>' +
+      '<div class="field"><label>Popup message</label><textarea id="fEvMsg" rows="2" placeholder="Happy birthday!">' + esc(e.message || '') + '</textarea></div>' +
+      '<div class="field"><label>Custom CSS</label><textarea id="fEvCss" rows="2" placeholder="body { filter: sepia(0.3); }">' + esc(e.css || '') + '</textarea></div>' +
+      '<div class="modal-actions">' +
+        '<button class="btn-cancel" id="modalCancel">Cancel</button>' +
+        '<button class="btn-save" id="modalEvSave">' + (isNew ? 'Add' : 'Save') + '</button>' +
+      '</div>';
+    document.getElementById('modalOverlay').classList.add('open');
+    document.getElementById('modalCancel').addEventListener('click', closeModal);
+    document.getElementById('modalEvSave').addEventListener('click', function () {
+      var ev = {
+        label: document.getElementById('fEvLabel').value.trim(),
+        type: document.getElementById('fEvType').value,
+        startDate: document.getElementById('fEvStart').value.trim(),
+        endDate: document.getElementById('fEvEnd').value.trim() || '',
+        sky: document.getElementById('fEvSky').value.trim(),
+        accentColor: document.getElementById('fEvColor').value.trim(),
+        icon: document.getElementById('fEvIcon').value.trim(),
+        message: document.getElementById('fEvMsg').value.trim(),
+        css: document.getElementById('fEvCss').value.trim()
+      };
+      if (ev.type === 'one-time') ev.year = new Date().getFullYear();
+      if (!ev.label || !ev.startDate) { toast('Label and start date required.'); return; }
+      events = data && data.list ? data.list : [];
+      if (isNew) events.push(ev);
+      else events[idx] = ev;
+      FB.put('project-events', { id: 'list', list: events }).then(function () { closeModal(); renderProjectEvents(); toast('Project event saved.'); });
+    });
+  }
+
+  /* ───── Story (project-texts) ───── */
+  function loadStory() {
+    FB.get('project-texts', 'story').then(function (data) {
+      if (!data) return;
+      document.getElementById('storyTitle').value = data.title || '';
+      document.getElementById('storyBody').value = data.body || '';
+    }).catch(function () {});
   }
 
   function renderLetters() {
@@ -2493,6 +2754,23 @@
         toast('Dream posted.');
       }).catch(function () { toast('Failed to post.'); });
     });
+    // Project tab
+    document.getElementById('addProjectPuzzleBtn') && document.getElementById('addProjectPuzzleBtn').addEventListener('click', function () {
+      FB.get('project-puzzles', 'list').then(function (data) { openProjectPuzzleModal(-1, [], data); });
+    });
+    document.getElementById('addProjectEventBtn') && document.getElementById('addProjectEventBtn').addEventListener('click', function () {
+      FB.get('project-events', 'list').then(function (data) { openProjectEventModal(-1, [], data); });
+    });
+    document.getElementById('storySaveBtn') && document.getElementById('storySaveBtn').addEventListener('click', function () {
+      var title = document.getElementById('storyTitle').value.trim();
+      var body = document.getElementById('storyBody').value.trim();
+      if (!body) { toast('Write something first.'); return; }
+      FB.put('project-texts', { id: 'story', title: title || 'Our Story', body: body }).then(function () {
+        document.getElementById('storyStatus').textContent = 'Saved!';
+        setTimeout(function () { document.getElementById('storyStatus').textContent = ''; }, 2000);
+        toast('Story saved.');
+      }).catch(function () { toast('Error saving.'); });
+    });
     document.getElementById('galleryAddBtn').addEventListener('click', function () { openGalleryModal(-1); });
 
     // Gallery batch upload
@@ -2595,6 +2873,7 @@
         if (this.dataset.tab === 'timeline') renderTimeline();
         if (this.dataset.tab === 'dreams') renderDreams();
         if (this.dataset.tab === 'activity') loadActivity();
+        if (this.dataset.tab === 'project') { renderProjectPuzzles(); renderProjectEvents(); loadStory(); }
       });
     });
 

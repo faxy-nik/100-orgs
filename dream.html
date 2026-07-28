@@ -831,12 +831,28 @@
     return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
   }
 
+  var SEEDED_FAXY_DREAM = {
+    id: 'dream_seeded_faxy',
+    author: 'faxy',
+    type: 'text',
+    text: 'I dreamed we were lying on a rooftop somewhere neither of us had ever been. The sky was full of stars — the kind you only see when you are far from every city. You were sleeping on my chest, and I was counting your breaths because they reminded me that some things are real. There was no noise. No future. No past. Just your weight on me, and the certainty that I would stay like that forever if the dream let me.',
+    createdAt: 1720000000000
+  };
+
   function loadDreams() {
     if (typeof FB === 'undefined' || !FB.init) return;
     FB.init();
     FB.getAll('dreams').then(function (items) {
-      renderDreams(items || []);
-    }).catch(function () {});
+      items = items || [];
+      var hasFaxySeed = items.some(function (i) { return i.id === SEEDED_FAXY_DREAM.id; });
+      if (!hasFaxySeed) {
+        FB.put('dreams', SEEDED_FAXY_DREAM).catch(function () {});
+        items.push(SEEDED_FAXY_DREAM);
+      }
+      renderDreams(items);
+    }).catch(function () {
+      renderDreams([SEEDED_FAXY_DREAM]);
+    });
   }
 
   function renderDreams(items) {

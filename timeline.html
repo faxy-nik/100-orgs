@@ -55,14 +55,42 @@
 
       function esc(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
+      function friendlyPage(p) {
+        var map = { 'index': 'Home', 'love': 'Love', '100-organs': '100 Organs', 'fantasies': 'Fantasies', 'sky-observatory': 'Sky Observatory', 'photo-gallery': 'Photo Gallery', 'timeline': 'Timeline', 'dream': 'Dream Journal', 'make-her-sleep': 'Make Her Sleep', 'story': 'Our Story', 'stats': 'Stats', 'admin': 'Admin' };
+        return map[p] || p;
+      }
+
       function entryHtml(e) {
-        if (e.type === 'activity') {
-          var label = e.activityType === 'page-visit' ? 'Visited ' + esc(e.page) : e.activityType === 'section-view' ? 'Read section ' + (e.sectionIdx + 1) + ' on ' + esc(e.page) : e.activityType === 'review' ? 'Left a ' + esc(e.reviewType) + ' review on ' + esc(e.page) + (e.sectionIdx !== undefined ? ' (section ' + (e.sectionIdx + 1) + ')' : '') : e.activityType === 'image-view' ? 'Viewed ' + esc(e.file) : esc(e.activityType);
+        if (e.type === 'activity' || e.activityType) {
+          var aType = e.activityType || e.type;
+          var page = friendlyPage(e.page || '');
+          var label = '';
+          var extra = '';
+          if (aType === 'page-visit') {
+            label = 'Visited ' + page;
+            if (e.referrer && e.referrer !== page) extra = ' from ' + friendlyPage(e.referrer);
+          } else if (aType === 'section-view') {
+            label = 'Read section ' + (e.sectionIdx + 1) + ' on ' + page;
+          } else if (aType === 'review') {
+            label = 'Left a ' + esc(e.reviewType) + ' review on ' + page;
+            if (e.sectionIdx !== undefined) extra = ' (section ' + (e.sectionIdx + 1) + ')';
+          } else if (aType === 'image-view') {
+            label = 'Viewed ' + esc(e.file);
+          } else if (aType === 'navigate') {
+            label = 'Clicked "' + esc(e.linkText || '') + '" \u2192 ' + friendlyPage(e.to || '');
+          } else if (aType === 'time-spent') {
+            var mins = Math.floor((e.seconds || 0) / 60);
+            var secs = (e.seconds || 0) % 60;
+            label = 'Spent ' + mins + 'm ' + secs + 's on ' + page;
+          } else {
+            label = esc(aType) + ' on ' + page;
+          }
           var date = new Date(e.timestamp).toLocaleDateString() + ' ' + new Date(e.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          var dotColor = aType === 'navigate' ? '#6fcf97' : aType === 'time-spent' ? '#b8a8f0' : '#8a7a6a';
           return '<div class="tl-line" style="opacity:.7;">' +
-            '<div class="tl-dot" style="background:#8a7a6a;"></div>' +
+            '<div class="tl-dot" style="background:' + dotColor + ';"></div>' +
             '<div class="tl-date">' + date + '</div>' +
-            '<div class="tl-body" style="font-size:.8rem;">' + label + '</div>' +
+            '<div class="tl-body" style="font-size:.8rem;">' + label + '<span style="color:#6b5f52;font-size:.75rem;">' + extra + '</span></div>' +
           '</div>';
         }
         return '<div class="tl-line">' +
@@ -77,7 +105,7 @@
       Promise.all([
         FB.get('config', 'timeline').then(function (data) { return (data && data.list) || []; }),
         FB.getAll('activity').then(function (items) {
-          return (items || []).map(function (a) { a.type = 'activity'; a.activityType = a.type || 'event'; return a; });
+          return (items || []).map(function (a) { a.activityType = a.type || 'event'; a.type = 'activity'; return a; });
         })
       ]).then(function (results) {
         var memories = results[0];

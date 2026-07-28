@@ -19,13 +19,23 @@
     return currentStep(puzzle) >= puzzle.steps.length;
   }
 
+  function loadAllPuzzles() {
+    return Promise.all([
+      FB.get('config', 'puzzles'),
+      FB.get('project-puzzles', 'list')
+    ]).then(function (results) {
+      var a = results[0], b = results[1];
+      var list = [];
+      if (a && a.list) list = list.concat(a.list);
+      if (b && b.list) list = list.concat(b.list);
+      return { list: list };
+    });
+  }
+
   function checkAutoClues() {
     if (typeof FB === 'undefined') return;
-    FB.get('config', 'puzzles').then(function (data) {
+    loadAllPuzzles().then(function (data) {
       if (!data || !data.list) return;
-      var changed = false;
-      for (var pi = 0; pi < data.list.length; pi++) {
-        var puzzle = data.list[pi];
         var pz = progress[puzzle.id] || 0;
         for (var si = pz; si < puzzle.steps.length; si++) {
           var step = puzzle.steps[si];
@@ -59,7 +69,7 @@
   }
 
   function submitAnswer(puzzleId, stepIdx, answer) {
-    FB.get('config', 'puzzles').then(function (data) {
+    loadAllPuzzles().then(function (data) {
       if (!data || !data.list) return;
       var puzzle = null;
       for (var i = 0; i < data.list.length; i++) {
@@ -91,7 +101,7 @@
       panel.style.cssText = 'position:fixed;bottom:80px;right:16px;z-index:9999;max-width:320px;width:90%;background:#1c181a;border:1px solid rgba(255,210,150,.15);border-radius:12px;padding:0;display:none;box-shadow:0 8px 32px rgba(0,0,0,.4);';
       document.body.appendChild(panel);
     }
-    FB.get('config', 'puzzles').then(function (data) {
+    loadAllPuzzles().then(function (data) {
       if (!data || !data.list || !data.list.length) { panel.style.display = 'none'; return; }
       var html = '<div style="padding:.75rem 1rem;border-bottom:1px solid rgba(255,210,150,.08);cursor:pointer;display:flex;align-items:center;justify-content:space-between;" id="ash-puzzle-toggle">' +
         '<span style="color:#ffe680;font-size:.85rem;font-weight:600;">\uD83E\uDDE9 Treasure Hunt</span>' +

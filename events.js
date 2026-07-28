@@ -80,10 +80,15 @@
   function loadEvents() {
     if (typeof FB === 'undefined' || !FB.init) return;
     FB.init();
-    FB.get('config', 'events').then(function (data) {
-      if (!data || !data.list || !data.list.length) return;
-      for (var i = 0; i < data.list.length; i++) {
-        if (isActive(data.list[i])) applyEvent(data.list[i]);
+    Promise.all([
+      FB.get('config', 'events'),
+      FB.get('project-events', 'list')
+    ]).then(function (results) {
+      var all = [];
+      if (results[0] && results[0].list) all = all.concat(results[0].list);
+      if (results[1] && results[1].list) all = all.concat(results[1].list);
+      for (var i = 0; i < all.length; i++) {
+        if (isActive(all[i])) applyEvent(all[i]);
       }
     }).catch(function () {});
   }
