@@ -89,36 +89,49 @@
   }
 
   var panel = null;
-  function renderPuzzlePanel() {
+  var panelShown = false;
+  function showPuzzlePanel() {
     if (!panel) {
       panel = document.createElement('div');
       panel.id = 'ash-puzzle-panel';
-      panel.style.cssText = 'position:fixed;bottom:80px;right:16px;z-index:9999;max-width:320px;width:90%;background:#1c181a;border:1px solid rgba(255,210,150,.15);border-radius:12px;padding:0;display:none;box-shadow:0 8px 32px rgba(0,0,0,.4);';
-      panel.innerHTML = '<div style="padding:.75rem 1rem;border-bottom:1px solid rgba(255,210,150,.08);cursor:pointer;display:flex;align-items:center;justify-content:space-between;" id="ash-puzzle-toggle">' +
-        '<span style="color:#ffe680;font-size:.85rem;font-weight:600;">\uD83E\uDDE9 Treasure Hunt</span>' +
-        '<span style="color:#6b5f52;font-size:.7rem;" id="ash-puzzle-count"></span>' +
-      '</div><div id="ash-puzzle-body" style="padding:1rem;max-height:400px;overflow-y:auto;display:none;"></div>';
+      panel.style.cssText = 'position:fixed;bottom:80px;right:16px;z-index:9999;max-width:320px;width:90%;background:#1c181a;border:1px solid rgba(255,210,150,.15);border-radius:12px;padding:1rem;display:none;box-shadow:0 8px 32px rgba(0,0,0,.4);';
       document.body.appendChild(panel);
-      document.getElementById('ash-puzzle-toggle').addEventListener('click', function () {
-        var bd = document.getElementById('ash-puzzle-body');
-        if (!bd) return;
-        if (bd.style.display === 'block') { bd.style.display = 'none'; return; }
-        bd.style.display = 'block';
-        loadAllPuzzles().then(function (data) {
-          if (data && data.list) renderPuzzleBody(data.list);
-        }).catch(function (e) { console.error('[PuzzleHunt] load error:', e); });
+      document.addEventListener('click', function (e) {
+        if (panelShown && !panel.contains(e.target) && e.target.id !== 'puzzleBtn') {
+          panel.style.display = 'none'; panelShown = false;
+        }
       });
     }
+    if (panelShown) { panel.style.display = 'none'; panelShown = false; return; }
+    panel.style.display = 'block'; panelShown = true;
+    panel.innerHTML = '<div style="color:#6b5f52;font-size:.7rem;margin-bottom:8px;" id="ash-puzzle-count"></div><div id="ash-puzzle-body" style="max-height:400px;overflow-y:auto;"></div>';
     loadAllPuzzles().then(function (data) {
-      if (!data || !data.list || !data.list.length) { panel.style.display = 'none'; return; }
-      panel.style.display = 'block';
+      if (!data || !data.list || !data.list.length) { panel.innerHTML = '<div style="color:#6b5f52;">No puzzles yet.</div>'; return; }
       var total = 0, solved = 0;
-      for (var i = 0; i < data.list.length; i++) {
-        total++;
-        if (isSolved(data.list[i])) solved++;
-      }
+      for (var i = 0; i < data.list.length; i++) { total++; if (isSolved(data.list[i])) solved++; }
       document.getElementById('ash-puzzle-count').textContent = solved + '/' + total + ' solved';
-    }).catch(function (e) { console.error('[PuzzleHunt] render error:', e); });
+      renderPuzzleBody(data.list);
+    }).catch(function (e) { console.error('[PuzzleHunt] load error:', e); panel.innerHTML = '<div style="color:#6b5f52;">Failed to load.</div>'; });
+  }
+  function createPuzzleBtn() {
+    if (document.getElementById('puzzleBtn')) return;
+    var btn = document.createElement('button');
+    btn.id = 'puzzleBtn';
+    btn.setAttribute('aria-label', 'Open treasure hunt');
+    btn.innerHTML = '\uD83D\uDD11';
+    document.body.appendChild(btn);
+    btn.addEventListener('click', showPuzzlePanel);
+    btn.classList.add('show');
+  }
+  function renderPuzzlePanel() {
+    createPuzzleBtn();
+    loadAllPuzzles().then(function (data) {
+      if (!data || !data.list || !data.list.length) return;
+      var total = 0, solved = 0;
+      for (var i = 0; i < data.list.length; i++) { total++; if (isSolved(data.list[i])) solved++; }
+      var c = document.getElementById('ash-puzzle-count');
+      if (c) c.textContent = solved + '/' + total + ' solved';
+    }).catch(function () {});
   }
 
   function renderPuzzleBody(puzzles) {
