@@ -19,17 +19,6 @@
     return currentStep(puzzle) >= puzzle.steps.length;
   }
 
-  function toArray(data) {
-    if (!data) return [];
-    if (Array.isArray(data)) return data;
-    if (data.list) return Array.isArray(data.list) ? data.list : toArray(data.list);
-    var keys = Object.keys(data).filter(function (k) { return k !== 'id' && k !== 'key'; });
-    if (keys.length && keys.every(function (k) { return String(parseInt(k, 10)) === k; })) {
-      return keys.sort(function (a, b) { return parseInt(a, 10) - parseInt(b, 10); }).map(function (k) { return data[k]; });
-    }
-    return [];
-  }
-
   function loadAllPuzzles() {
     return FB.get('project-puzzles', 'list').then(function (data) {
       return { list: toArray(data) };

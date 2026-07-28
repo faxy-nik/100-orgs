@@ -4,21 +4,6 @@
 
   var ANSWERS = {};
 
-  function toArray(data) {
-    if (!data) return [];
-    if (Array.isArray(data)) return data;
-    if (data.list) return Array.isArray(data.list) ? data.list : toArray(data.list);
-    var keys = Object.keys(data).filter(function (k) { return k !== 'id' && k !== 'key'; });
-    if (keys.length && keys.every(function (k) { return String(parseInt(k, 10)) === k; })) {
-      return keys.sort(function (a, b) { return parseInt(a, 10) - parseInt(b, 10); }).map(function (k) { return data[k]; });
-    }
-    return [];
-  }
-
-  function esc(str) {
-    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-  }
-
   function formatTLDate(e) {
     if (!e.date) return '';
     var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];

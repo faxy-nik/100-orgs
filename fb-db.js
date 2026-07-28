@@ -1,6 +1,21 @@
 /* ---- Firebase Realtime Database Helper ---- */
 /* Requires: firebase-app-compat.js + firebase-database-compat.js */
 
+function toArray(data) {
+  if (!data) return [];
+  if (Array.isArray(data)) return data;
+  if (data.list) return Array.isArray(data.list) ? data.list : toArray(data.list);
+  var keys = Object.keys(data).filter(function (k) { return k !== 'id' && k !== 'key'; });
+  if (keys.length && keys.every(function (k) { return String(parseInt(k, 10)) === k; })) {
+    return keys.sort(function (a, b) { return parseInt(a, 10) - parseInt(b, 10); }).map(function (k) { return data[k]; });
+  }
+  return [];
+}
+
+function esc(str) {
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
+
 var FB = (function () {
   var isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
 
@@ -164,6 +179,10 @@ var FB = (function () {
     return ref(store).set(null);
   }
 
+  function fbSet(store, data) {
+    return ref(store).set(data);
+  }
+
   function decodeBlobs(item) {
     for (var k in item) {
       if (k.indexOf('_Base64') > 0) {
@@ -205,7 +224,10 @@ var FB = (function () {
     put: fbPut,
     delete: fbDelete,
     clear: fbClear,
+    set: fbSet,
     blobToBase64: blobToBase64,
-    base64ToBlob: base64ToBlob
+    base64ToBlob: base64ToBlob,
+    toArray: toArray,
+    esc: esc
   };
 })();
