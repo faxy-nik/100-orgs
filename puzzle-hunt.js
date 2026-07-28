@@ -29,6 +29,8 @@
     if (typeof FB === 'undefined') return;
     loadAllPuzzles().then(function (data) {
       if (!data || !data.list) return;
+      for (var pi = 0; pi < data.list.length; pi++) {
+        var puzzle = data.list[pi];
         var pz = progress[puzzle.id] || 0;
         for (var si = pz; si < puzzle.steps.length; si++) {
           var step = puzzle.steps[si];
@@ -87,6 +89,14 @@
   }
 
   var panel = null;
+  function openPuzzlePanel() {
+    var body = document.getElementById('ash-puzzle-body');
+    if (!body) return;
+    body.style.display = 'block';
+    loadAllPuzzles().then(function (data) {
+      if (data && data.list) renderPuzzleBody(data.list);
+    }).catch(function (e) { console.error('[PuzzleHunt] load error:', e); });
+  }
   function createPuzzleBtn() {
     if (document.getElementById('puzzleBtn')) return;
     var btn = document.createElement('button');
@@ -97,13 +107,8 @@
     btn.addEventListener('click', function () {
       var body = document.getElementById('ash-puzzle-body');
       if (!body) return;
-      var shown = body.style.display === 'block';
-      body.style.display = shown ? 'none' : 'block';
-      if (body.style.display === 'block') {
-        loadAllPuzzles().then(function (data) {
-          if (data && data.list) renderPuzzleBody(data.list);
-        });
-      }
+      if (body.style.display === 'block') { body.style.display = 'none'; return; }
+      openPuzzlePanel();
     });
     btn.classList.add('show');
   }
@@ -114,6 +119,7 @@
       panel.style.cssText = 'position:fixed;bottom:80px;right:16px;z-index:9999;max-width:320px;width:90%;background:#1c181a;border:1px solid rgba(255,210,150,.15);border-radius:12px;padding:0;display:none;box-shadow:0 8px 32px rgba(0,0,0,.4);';
       document.body.appendChild(panel);
     }
+    createPuzzleBtn();
     loadAllPuzzles().then(function (data) {
       if (!data || !data.list || !data.list.length) { panel.style.display = 'none'; return; }
       if (panel.innerHTML === '') {
@@ -124,8 +130,8 @@
         panel.innerHTML = html;
         document.getElementById('ash-puzzle-toggle').addEventListener('click', function () {
           var bd = document.getElementById('ash-puzzle-body');
-          bd.style.display = bd.style.display === 'none' ? 'block' : 'none';
-          if (bd.style.display === 'block') renderPuzzleBody(data.list);
+          if (bd.style.display === 'block') { bd.style.display = 'none'; return; }
+          openPuzzlePanel();
         });
       }
       panel.style.display = 'block';
@@ -135,8 +141,7 @@
         if (isSolved(data.list[i])) solved++;
       }
       document.getElementById('ash-puzzle-count').textContent = solved + '/' + total + ' solved';
-      createPuzzleBtn();
-    }).catch(function () {});
+    }).catch(function (e) { console.error('[PuzzleHunt] render error:', e); });
   }
 
   function renderPuzzleBody(puzzles) {
