@@ -29,6 +29,7 @@
       container.innerHTML = '<div class="empty-state">No memories yet. Add them in Admin → 📅 Timeline.</div>';
       return;
     }
+    items.sort(function (a, b) { return (a.year || '').localeCompare(b.year || '') || (a.date || '').localeCompare(b.date || ''); });
     var html = '<div class="tl-wrap">';
     for (var i = 0; i < items.length; i++) {
       var e = items[i];
