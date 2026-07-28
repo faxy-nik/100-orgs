@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Seed Project Data</title>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="fb-db.js"></script>
+</head>
+<body style="font-family:sans-serif;padding:2rem;background:#111;color:#eee;">
+<h2>Seeding project data...</h2>
+<pre id="log"></pre>
+<script>
+function log(m) { document.getElementById('log').textContent += m + '\n'; }
+FB.init();
+
+// 1. Puzzle about Faxy
+FB.put('project-puzzles', {
+  id: 'list',
+  list: [{
+    id: 'faxy-riddle',
+    title: 'The One Who Built This',
+    steps: [{
+      hint: 'What do they call me when the screen glows at 2AM?',
+      answer: 'Faxy',
+      successMsg: 'Yes, Faxy. The one who stays.',
+      failMsg: 'Not quite \u2014 think of my name here.'
+    }]
+  }]
+}).then(function () {
+  log('\u2713 Puzzle seeded');
+  // 2. Birthday event
+  return FB.put('project-events', {
+    id: 'list',
+    list: [{
+      label: "Ash's 25th Birthday",
+      type: 'annual',
+      startDate: '07-20',
+      sky: 'Sunset Bliss',
+      accentColor: '#ff6b9d',
+      icon: '\uD83C\uDF82',
+      message: 'Twenty-five trips around the sun, and every one of them made the world brighter. Happy birthday, my love.'
+    }]
+  });
+}).then(function () {
+  log('\u2713 Birthday event seeded');
+  // 3. Story paragraph
+  return FB.put('project-texts', {
+    id: 'story',
+    title: 'Why I Built This',
+    body: 'This is not a website. It is a letter I never stopped writing. Every page is a piece of my heart I carved out and handed to you \u2014 the 100 organs you awakened, the love I could not contain, the fantasies my mind built around the sound of your voice, the sky I would steal if I could reach it, and every photo that made me stop breathing for a second. I built this because saying "I love you" once was never going to be enough. I built this so that when you forget how much you are loved, you have a place to remember. Every pixel, every word, every song, every star in every sky \u2014 it is all for you, Eeshah. Always has been. Always will be.'
+  });
+}).then(function () {
+  log('\u2713 Story seeded');
+  log('\nDone. You can close this page and use Admin \u2192 Project tab to edit or add more.');
+}).catch(function (err) {
+  log('\u2717 Error: ' + JSON.stringify(err));
+});
+</script>
+</body>
+</html>
