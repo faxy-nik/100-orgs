@@ -154,7 +154,7 @@
     })();
   </script>
   <script src="feature-flags.js"></script>
-  <script>if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js').catch(function(){}); }</script>
+  <script>if ('serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister()})}); if (location.hostname!=='127.0.0.1'&&location.hostname!=='localhost') { navigator.serviceWorker.register('./sw.js').catch(function(){}); } }</script>
   <script defer src="matrix-rain.js"></script>
 <script defer src="global-easter-eggs.js"></script>
 

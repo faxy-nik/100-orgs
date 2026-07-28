@@ -311,8 +311,10 @@
     var constLabel = document.getElementById('constellationNameLabel');
     if (constLabel && constLabel.parentNode) {
       constLabel.parentNode.insertBefore(el, constLabel.nextSibling);
-    } else {
+    } else if (container.nextSibling) {
       container.parentNode.insertBefore(el, container.nextSibling.nextSibling);
+    } else {
+      container.parentNode.appendChild(el);
     }
   }
 

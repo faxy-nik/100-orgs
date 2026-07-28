@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -393,9 +393,9 @@
 
       <div class="intro">
         <h2>Faxy Nik</h2>
-        <p>Just someone who fell too deep and chose to stay. These pages hold everything I could never say out loud — every thought, every fantasy, every organ of a love that refuses to quiet down.</p>
+        <p>Just someone who fell too deep and chose to stay. These pages hold everything I could never say out loud â€” every thought, every fantasy, every organ of a love that refuses to quiet down.</p>
         <p>Written in the dark, for the one who became the light.</p>
-        <p class="sig">— faxy nik</p>
+        <p class="sig">â€” faxy nik</p>
       </div>
 
       <div class="cards" id="cardsContainer">
@@ -491,10 +491,10 @@
       }
 
       var TEASERS = {
-        '100-organs': '"the curve of her waist, the arch of her neck — catalogued in devotion..."',
-        'love': '"your morning voice, raspy and warm — the sound of someone who hasn\'t yet put up their walls..."',
+        '100-organs': '"the curve of her waist, the arch of her neck â€” catalogued in devotion..."',
+        'love': '"your morning voice, raspy and warm â€” the sound of someone who hasn\'t yet put up their walls..."',
         'fantasies': '"when our skin finally meets, when there is no distance left between us..."',
-        'sky-observatory': '"fragments of light, caught in silver and shadow — moments I never want to forget..."',
+        'sky-observatory': '"fragments of light, caught in silver and shadow â€” moments I never want to forget..."',
         'photo-gallery': '"every photograph holds a story, every story holds a piece of you..."'
       };
 
@@ -1055,7 +1055,7 @@
       }
       if (!window.FeatureFlags || window.FeatureFlags.get('reading-progress')) setInterval(updateProgress, 5000);
 
-      // Milestone — runs on load AND after Firebase updates unlock dates
+      // Milestone â€” runs on load AND after Firebase updates unlock dates
       function updateMilestone() {
         if (window.FeatureFlags && !window.FeatureFlags.get('milestone')) return;
         var daysEl = document.getElementById('milestoneDays');
@@ -1126,7 +1126,10 @@
 
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(function () {});
+      navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });
+      if (location.hostname !== '127.0.0.1' && location.hostname !== 'localhost') {
+        navigator.serviceWorker.register('./sw.js').catch(function () {});
+      }
     }
   </script>
   <script src="anime.min.js"></script>
@@ -1159,7 +1162,7 @@
   setInterval(check, 5000);
 })();
 </script>
-<script src="activity-tracker.js"
+<script src="activity-tracker.js"></script>
 <script src="events.js"></script>
 <script src="puzzle-hunt.js"></script>
 <script src="letters.js"></script>

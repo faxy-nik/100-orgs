@@ -1,4 +1,4 @@
-var CACHE = 'ash-v36'; // ponytail: bump version when adding/renaming cached files
+var CACHE = 'ash-v37'; // ponytail: bump version when adding/renaming cached files
 var urlsToCache = [
   '/',
   '/index.html',
@@ -135,18 +135,26 @@ self.addEventListener('install', function (e) {
 });
 
 self.addEventListener('fetch', function (e) {
-  e.respondWith(
-    caches.match(e.request).then(function (r) {
-      return r || fetch(e.request).then(function (res) {
-        return caches.open(CACHE).then(function (cache) {
-          if (e.request.url.startsWith(self.location.origin)) {
-            cache.put(e.request, res.clone());
-          }
-          return res;
+  var url = new URL(e.request.url);
+  // ponytail: HTML = network-first so fresh content always loads; assets = cache-first
+  if (url.pathname.endsWith('.html') || url.pathname === '/') {
+    e.respondWith(
+      fetch(e.request).then(function (res) {
+        return caches.open(CACHE).then(function (cache) { cache.put(e.request, res.clone()); return res; });
+      }).catch(function () { return caches.match(e.request); })
+    );
+  } else {
+    e.respondWith(
+      caches.match(e.request).then(function (r) {
+        return r || fetch(e.request).then(function (res) {
+          return caches.open(CACHE).then(function (cache) {
+            if (e.request.url.startsWith(self.location.origin)) { cache.put(e.request, res.clone()); }
+            return res;
+          });
         });
-      });
-    })
-  );
+      })
+    );
+  }
 });
 
 self.addEventListener('activate', function (e) {
