@@ -353,6 +353,7 @@
       <button class="tab" data-tab="timeline">&#x1F4C5; Timeline</button>
       <button class="tab" data-tab="sectionRequests">&#x1F4CB; Sections</button>
       <button class="tab" data-tab="settings">&#x2699; Settings</button>
+      <button class="tab" data-tab="dreams">&#x1F30C; Dreams</button>
       <button class="tab" data-tab="access">&#x1F510; Access</button>
     </div>
     <div class="admin-content">
@@ -547,6 +548,29 @@
       Letters written from the site.
     </p>
     <div id="lettersList"></div>
+  </div>
+
+  <!-- Tab: Dreams -->
+  <div class="tab-content" id="tabDreams">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Write dreams for the Dream Journal. Faxy's dreams appear on the left, Ash's on the right.
+    </p>
+    <div style="background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);border-radius:12px;padding:1.25rem;margin-bottom:1.5rem;">
+      <div class="field" style="margin-bottom:.85rem;">
+        <label style="display:block;font-size:.7rem;color:#6b5f52;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;">Dream Text</label>
+        <textarea id="dreamText" rows="4" placeholder="Write the dream here..." style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:'Lora',Georgia,serif;font-size:.85rem;outline:none;resize:vertical;"></textarea>
+      </div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;margin-bottom:.85rem;">
+        <select id="dreamAuthor" style="padding:.5rem .7rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;">
+          <option value="faxy">Faxy's Dream</option>
+          <option value="ash">Ash's Dream</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:.75rem;">
+        <button id="dreamPostBtn" style="padding:.5rem 1.25rem;border-radius:6px;cursor:pointer;font-family:'Fraunces',Georgia,serif;font-size:.85rem;background:rgba(255,230,128,.1);border:1px solid #ffe680;color:#ffe680;">Post Dream</button>
+      </div>
+    </div>
+    <div class="song-list" id="dreamList"></div>
   </div>
 
   <!-- Tab: Access -->
@@ -2272,6 +2296,51 @@
     return html;
   }
 
+  /* ---- Dreams ---- */
+  function renderDreams() {
+    var list = document.getElementById('dreamList');
+    if (!list) return;
+    FB.getAll('dreams').then(function (items) {
+      items = items || [];
+      items.sort(function (a, b) { return b.createdAt - a.createdAt; });
+      if (!items.length) {
+        list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F30C;</div><p>No dreams yet.</p></div>';
+        return;
+      }
+      var html = '';
+      for (var i = 0; i < items.length; i++) {
+        var d = items[i];
+        var author = d.author === 'faxy' ? 'Faxy' : 'Ash';
+        var typeLabel = d.type === 'voice' ? ' &#x1F3A7;' : '';
+        html +=
+          '<div class="song-card">' +
+            '<div class="info">' +
+              '<div class="stitle">' + esc(author) + typeLabel + '</div>' +
+              '<div class="smeta">' + (d.createdAt ? new Date(d.createdAt).toLocaleDateString() : '') + '</div>' +
+              '<div style="font-size:.8rem;color:#d4c5b2;margin-top:4px;font-style:italic;">' +
+                (d.text ? esc(d.text).slice(0, 200) : (d.type === 'voice' ? '[Voice message]' : '')) +
+              '</div>' +
+            '</div>' +
+            '<div class="actions">' +
+              '<button class="del-btn" data-dream-id="' + esc(d.id) + '">Delete</button>' +
+            '</div>' +
+          '</div>';
+      }
+      list.innerHTML = html;
+      list.querySelectorAll('.del-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (!confirm('Delete this dream?')) return;
+          FB.delete('dreams', this.dataset.dreamId).then(function () {
+            renderDreams();
+            toast('Dream deleted.');
+          }).catch(function () { toast('Failed to delete.'); });
+        });
+      });
+    }).catch(function () {
+      list.innerHTML = '<div class="empty-state"><div class="icon">&#x26A0;&#xFE0F;</div><p>Error loading dreams</p></div>';
+    });
+  }
+
   /* ---- Secret Song ---- */
   function loadSecretForm() {
     dbGet('config', 'secretSong').then(function (data) {
@@ -2408,6 +2477,22 @@
         });
       });
     });
+    document.getElementById('dreamPostBtn').addEventListener('click', function () {
+      var text = document.getElementById('dreamText').value.trim();
+      var author = document.getElementById('dreamAuthor').value;
+      if (!text) { toast('Write a dream first.'); return; }
+      FB.put('dreams', {
+        id: 'dream_' + Date.now(),
+        author: author,
+        text: text,
+        type: 'text',
+        createdAt: Date.now()
+      }).then(function () {
+        document.getElementById('dreamText').value = '';
+        renderDreams();
+        toast('Dream posted.');
+      }).catch(function () { toast('Failed to post.'); });
+    });
     document.getElementById('galleryAddBtn').addEventListener('click', function () { openGalleryModal(-1); });
 
     // Gallery batch upload
@@ -2508,6 +2593,7 @@
         if (this.dataset.tab === 'letters') renderLetters();
         if (this.dataset.tab === 'dynamic') renderDynamicContent();
         if (this.dataset.tab === 'timeline') renderTimeline();
+        if (this.dataset.tab === 'dreams') renderDreams();
         if (this.dataset.tab === 'activity') loadActivity();
       });
     });
@@ -2603,7 +2689,10 @@
 </script>
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(function () {});
+      navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });
+      if (location.hostname !== '127.0.0.1' && location.hostname !== 'localhost') {
+        navigator.serviceWorker.register('./sw.js').catch(function () {});
+      }
     }
   </script>
   <script src="anime.min.js"></script>

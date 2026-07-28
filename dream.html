@@ -64,15 +64,6 @@
     transition-duration:0.6s;
   }
 
-  .dream-message {
-    margin-top:4rem; max-width:600px; text-align:center;
-    font-size:clamp(0.95rem, 2.5vw, 1.15rem); font-weight:300; font-style:italic;
-    color:#c8b89e; line-height:1.9;
-    opacity:0; transform:translateY(20px);
-    transition:opacity 2.5s ease 1s, transform 2.5s ease 1s;
-  }
-  .dream-message.visible { opacity:0.8; transform:translateY(0); }
-
   .dream-return {
     margin-top:2rem; padding:0.7rem 1.8rem;
     background:rgba(255,220,160,0.06); border:1px solid rgba(255,210,150,0.15);
@@ -271,6 +262,103 @@
     text-align:center; font-style:italic; color:#5a5048; font-size:0.8rem;
     opacity:0.5; padding:1rem 0;
   }
+
+  /* ---- Dream Journal ---- */
+  .dream-journal {
+    margin-top:4rem; width:100%; max-width:700px;
+    opacity:0; transform:translateY(20px);
+    transition:opacity 2s ease 1.5s, transform 2s ease 1.5s;
+  }
+  .dream-journal.visible { opacity:1; transform:translateY(0); }
+
+  .dream-journal-title {
+    font-size:clamp(1rem, 3vw, 1.4rem); font-weight:300; font-style:italic;
+    color:#c8b89e; text-align:center; margin-bottom:2rem; opacity:0.8;
+  }
+
+  .dream-entries {
+    display:flex; flex-direction:column; gap:1.2rem;
+  }
+
+  .dream-entry {
+    max-width:85%; padding:1rem 1.3rem; border-radius:16px;
+    font-size:clamp(0.88rem, 2.2vw, 1rem); line-height:1.75;
+    font-weight:300; font-style:italic;
+    opacity:1;
+  }
+  .dream-entry.faxy {
+    align-self:flex-start;
+    background:rgba(200,170,255,0.08); border:1px solid rgba(200,170,255,0.18);
+    color:#d4c8f0; border-bottom-left-radius:4px;
+  }
+  .dream-entry.ash {
+    align-self:flex-end;
+    background:rgba(255,220,160,0.06); border:1px solid rgba(255,210,150,0.12);
+    color:#c8b89e; border-bottom-right-radius:4px;
+  }
+
+  .dream-entry-label {
+    font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em;
+    margin-bottom:0.3rem; opacity:0.5;
+  }
+  .dream-entry.faxy .dream-entry-label { color:#b8a0e0; }
+  .dream-entry.ash .dream-entry-label { color:#b8a880; }
+
+  .dream-entry-text { margin-bottom:0.4rem; }
+  .dream-entry-time {
+    font-size:0.65rem; color:#6b5f52; font-style:normal;
+  }
+
+  .dream-entry audio {
+    width:100%; margin-top:0.3rem; border-radius:6px;
+  }
+
+  .dream-reply-form {
+    margin-top:2rem; display:flex; flex-direction:column; gap:0.7rem;
+    max-width:600px; width:100%; align-self:center;
+  }
+  .dream-reply-form textarea {
+    width:100%; padding:.7rem .9rem; border-radius:10px;
+    background:rgba(255,220,160,0.04); border:1px solid rgba(255,210,150,0.1);
+    color:#ffebd2; font-family:Fraunces,Georgia,serif; font-size:.9rem;
+    font-style:italic; outline:none; resize:vertical; min-height:60px;
+    transition:border-color 0.3s;
+  }
+  .dream-reply-form textarea:focus { border-color:rgba(255,210,150,0.3); }
+
+  .dream-reply-controls {
+    display:flex; gap:0.6rem; align-items:center; flex-wrap:wrap;
+  }
+  .dream-reply-controls button {
+    padding:.5rem 1.2rem; border-radius:8px; cursor:pointer;
+    font-family:Fraunces,Georgia,serif; font-size:.85rem; font-style:italic;
+    transition:all 0.25s;
+  }
+  .dream-reply-send {
+    background:rgba(255,230,128,.1); border:1px solid #ffe680;
+    color:#ffe680; flex:1;
+  }
+  .dream-reply-send:hover { background:#ffe680; color:#181214; }
+  .dream-reply-send:disabled { opacity:0.3; cursor:default; }
+
+  .dream-reply-record {
+    background:rgba(232,93,58,.1); border:1px solid #e85d3a;
+    color:#e85d3a;
+  }
+  .dream-reply-record:hover { background:#e85d3a; color:#fff; }
+  .dream-reply-record.recording {
+    background:#e85d3a; color:#fff;
+    animation:recordPulse 1s ease-in-out infinite;
+  }
+  @keyframes recordPulse {
+    0%, 100% { opacity:1; }
+    50% { opacity:0.5; }
+  }
+
+  .dream-empty {
+    text-align:center; font-style:italic; color:#6b5f52; font-size:0.9rem;
+    padding:2rem 0; opacity:0.7;
+  }
 </style>
 </head>
 <body>
@@ -297,11 +385,16 @@
     <div class="lantern-history-list" id="lanternHistoryList"></div>
   </div>
 
-  <div class="dream-message" id="dreamMessage">
-    "In my dreams, you are always here �<br>
-    your warmth beside me, your laughter in the air,<br>
-    and the world is soft and golden,<br>
-    just like the way I see you."
+  <div class="dream-journal" id="dreamJournal">
+    <div class="dream-journal-title">Dream Journal</div>
+    <div class="dream-entries" id="dreamEntries"></div>
+    <div class="dream-reply-form" id="dreamReplyForm">
+      <textarea id="dreamReplyInput" placeholder="Ash's reply... or record a voice message..." rows="2"></textarea>
+      <div class="dream-reply-controls">
+        <button class="dream-reply-record" id="dreamRecordBtn">&#x1F3A7; Record</button>
+        <button class="dream-reply-send" id="dreamSendBtn">&#x2728; Send</button>
+      </div>
+    </div>
   </div>
 
   <a href="index.html" class="dream-return">&larr; Return from the dream</a>
@@ -349,11 +442,6 @@
     gallery.appendChild(img);
     setTimeout(function () { img.classList.add('visible'); }, 500 + idx * 400);
   });
-
-  // ===== Dream message fade in =====
-  setTimeout(function () {
-    document.getElementById('dreamMessage').classList.add('visible');
-  }, 3000);
 
   // ===== Floating petals =====
   var PETAL_CHARS = ['\uD83C\uDF38', '\uD83C\uDF3A', '\u2726', '\u2734', '\u00B7'];
@@ -412,7 +500,7 @@
       if (e.isIntersecting) e.target.classList.add('visible');
     });
   }, { threshold: 0.15 });
-  document.querySelectorAll('.dream-image, .dream-message').forEach(function (el) {
+  document.querySelectorAll('.dream-image').forEach(function (el) {
     observer.observe(el);
   });
 })();
@@ -723,9 +811,160 @@
   }
 })();
 </script>
+<script>
+(function () {
+  'use strict';
+  var DREAM_REFRESH_INTERVAL = null;
+  var dreamRecorder = null;
+  var dreamRecordStream = null;
+  var dreamAudioChunks = [];
+
+  function esc(s) {
+    if (typeof s !== 'string') return s;
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  }
+
+  function fmtDate(ts) {
+    if (!ts) return '';
+    var d = new Date(ts);
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+  }
+
+  function loadDreams() {
+    if (typeof FB === 'undefined' || !FB.init) return;
+    FB.init();
+    FB.getAll('dreams').then(function (items) {
+      renderDreams(items || []);
+    }).catch(function () {});
+  }
+
+  function renderDreams(items) {
+    var container = document.getElementById('dreamEntries');
+    if (!container) return;
+    if (!items.length) {
+      container.innerHTML = '<div class="dream-empty">No dreams yet...</div>';
+      return;
+    }
+    items.sort(function (a, b) { return a.createdAt - b.createdAt; });
+    var html = '';
+    for (var i = 0; i < items.length; i++) {
+      var d = items[i];
+      var author = d.author === 'faxy' ? 'Faxy\'s Dream' : 'Ash\'s Dream';
+      var cls = d.author === 'faxy' ? 'faxy' : 'ash';
+      html += '<div class="dream-entry ' + cls + '">';
+      html += '<div class="dream-entry-label">' + author + '</div>';
+      if (d.text) {
+        html += '<div class="dream-entry-text">' + esc(d.text) + '</div>';
+      }
+      if (d.type === 'voice' && d.audioBlob) {
+        var url = URL.createObjectURL(d.audioBlob);
+        html += '<audio controls src="' + url + '"></audio>';
+      }
+      html += '<div class="dream-entry-time">' + fmtDate(d.createdAt) + '</div>';
+      html += '</div>';
+    }
+    container.innerHTML = html;
+  }
+
+  function getAudioBlob() {
+    if (!dreamAudioChunks.length) return null;
+    var blob = new Blob(dreamAudioChunks, { type: 'audio/webm' });
+    dreamAudioChunks = [];
+    return blob;
+  }
+
+  // Init
+  var sendBtn = document.getElementById('dreamSendBtn');
+  var input = document.getElementById('dreamReplyInput');
+  var recordBtn = document.getElementById('dreamRecordBtn');
+
+  function submitReply() {
+    var text = (input ? input.value : '').trim();
+    var blob = getAudioBlob();
+    if (!text && !blob) return;
+    if (typeof FB === 'undefined' || !FB.init) return;
+    FB.init();
+    var entry = {
+      id: 'dream_' + Date.now(),
+      author: 'ash',
+      type: blob ? 'voice' : 'text',
+      createdAt: Date.now()
+    };
+    if (text) entry.text = text;
+    if (blob) {
+      // fb-db.js handles blob to base64 conversion
+      entry.audioBlob = blob;
+    }
+    sendBtn.disabled = true;
+    sendBtn.textContent = 'Sending...';
+    FB.put('dreams', entry).then(function () {
+      if (input) input.value = '';
+      sendBtn.disabled = false;
+      sendBtn.textContent = '\u2728 Send';
+      loadDreams();
+    }).catch(function () {
+      sendBtn.disabled = false;
+      sendBtn.textContent = '\u2728 Send';
+      alert('Failed to send reply.');
+    });
+  }
+
+  if (sendBtn && input) {
+    sendBtn.addEventListener('click', submitReply);
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitReply(); }
+    });
+  }
+
+  if (recordBtn) {
+    recordBtn.addEventListener('click', function () {
+      if (dreamRecorder && dreamRecorder.state === 'recording') {
+        dreamRecorder.stop();
+        return;
+      }
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert('Voice recording not supported in this browser.');
+        return;
+      }
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+        dreamRecordStream = stream;
+        dreamAudioChunks = [];
+        dreamRecorder = new MediaRecorder(stream);
+        dreamRecorder.ondataavailable = function (e) {
+          if (e.data.size > 0) dreamAudioChunks.push(e.data);
+        };
+        dreamRecorder.onstop = function () {
+          if (dreamRecordStream) {
+            dreamRecordStream.getTracks().forEach(function (t) { t.stop(); });
+            dreamRecordStream = null;
+          }
+          dreamRecorder = null;
+          recordBtn.textContent = '\uD83C\uDFA7 Record';
+          recordBtn.classList.remove('recording');
+          if (input) input.placeholder = dreamAudioChunks.length ? 'Voice message ready! Add text or just send...' : "Ash's reply... or record a voice message...";
+        };
+        dreamRecorder.start();
+        recordBtn.textContent = '\u23F9 Stop';
+        recordBtn.classList.add('recording');
+      }).catch(function () {
+        alert('Microphone access denied.');
+      });
+    });
+  }
+
+  loadDreams();
+  if (DREAM_REFRESH_INTERVAL) clearInterval(DREAM_REFRESH_INTERVAL);
+  DREAM_REFRESH_INTERVAL = setInterval(loadDreams, 8000);
+
+  document.getElementById('dreamJournal') && setTimeout(function () {
+    document.getElementById('dreamJournal').classList.add('visible');
+  }, 500);
+})();
+</script>
 <script src="global-interactions.js"></script>
 <script>document.addEventListener('mousedown',function(){document.body.style.cursor="url('cursor images/imresizer-meme-pop-cat-pack click.jpg'), auto"});document.addEventListener('mouseup',function(){document.body.style.cursor="url('cursor images/imresizer-meme-pop-cat-pack.jpg'), auto"});</script>
-<script src="activity-tracker.js"
+<script src="activity-tracker.js"></script>
 <script src="events.js"></script>
 <script src="puzzle-hunt.js"></script>
 <script src="letters.js"></script>
