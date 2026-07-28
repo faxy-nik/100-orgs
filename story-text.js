@@ -19,6 +19,23 @@
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
   }
 
+  function isPastEvent(ev) {
+    var now = new Date();
+    var curYear = now.getFullYear();
+    var curMonth = now.getMonth() + 1;
+    var curDay = now.getDate();
+    if (ev.type === 'one-time' && ev.year) {
+      if (parseInt(ev.year, 10) > curYear) return false;
+      if (parseInt(ev.year, 10) < curYear) return true;
+    }
+    if (ev.startDate) {
+      var parts = ev.startDate.split('-');
+      var m = parseInt(parts[0], 10), d = parseInt(parts[1], 10);
+      if (m > curMonth || (m === curMonth && d > curDay)) return false;
+    }
+    return true;
+  }
+
   function formatDate(ev) {
     var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     if (ev.type === 'range' && ev.startDate && ev.endDate) {
@@ -199,7 +216,7 @@
     FB.get('project-events', 'list'),
     FB.get('project-texts', 'list')
   ]).then(function (results) {
-    var events = toArray(results[0]);
+    var events = toArray(results[0]).filter(isPastEvent);
     var chapters = toArray(results[1]);
 
     var timelineEl = document.getElementById('storyTimeline');
