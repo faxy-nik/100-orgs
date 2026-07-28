@@ -89,29 +89,6 @@
   }
 
   var panel = null;
-  function openPuzzlePanel() {
-    var body = document.getElementById('ash-puzzle-body');
-    if (!body) return;
-    body.style.display = 'block';
-    loadAllPuzzles().then(function (data) {
-      if (data && data.list) renderPuzzleBody(data.list);
-    }).catch(function (e) { console.error('[PuzzleHunt] load error:', e); });
-  }
-  function createPuzzleBtn() {
-    if (document.getElementById('puzzleBtn')) return;
-    var btn = document.createElement('button');
-    btn.id = 'puzzleBtn';
-    btn.setAttribute('aria-label', 'Open treasure hunt');
-    btn.innerHTML = '\uD83D\uDD11';
-    document.body.appendChild(btn);
-    btn.addEventListener('click', function () {
-      var body = document.getElementById('ash-puzzle-body');
-      if (!body) return;
-      if (body.style.display === 'block') { body.style.display = 'none'; return; }
-      openPuzzlePanel();
-    });
-    btn.classList.add('show');
-  }
   function renderPuzzlePanel() {
     if (!panel) {
       panel = document.createElement('div');
@@ -124,11 +101,14 @@
       document.body.appendChild(panel);
       document.getElementById('ash-puzzle-toggle').addEventListener('click', function () {
         var bd = document.getElementById('ash-puzzle-body');
+        if (!bd) return;
         if (bd.style.display === 'block') { bd.style.display = 'none'; return; }
-        openPuzzlePanel();
+        bd.style.display = 'block';
+        loadAllPuzzles().then(function (data) {
+          if (data && data.list) renderPuzzleBody(data.list);
+        }).catch(function (e) { console.error('[PuzzleHunt] load error:', e); });
       });
     }
-    createPuzzleBtn();
     loadAllPuzzles().then(function (data) {
       if (!data || !data.list || !data.list.length) { panel.style.display = 'none'; return; }
       panel.style.display = 'block';
