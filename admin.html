@@ -1437,11 +1437,15 @@
   }
 
   /* ───── Project Puzzles ───── */
+  function getProjectPuzzles(data) {
+    return Array.isArray(data) ? data : (data && data.list ? data.list : []);
+  }
+
   function renderProjectPuzzles() {
     var list = document.getElementById('projectPuzzlesList');
     if (!list) return;
     FB.get('project-puzzles', 'list').then(function (data) {
-      var puzzles = data && data.list ? data.list : [];
+      var puzzles = getProjectPuzzles(data);
       if (!puzzles.length) {
         list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F9E9;</div><p>No project puzzles yet.</p></div>';
         return;
@@ -1462,8 +1466,9 @@
           '</div>';
       }
       list.innerHTML = html;
+      var pData = data;
       list.querySelectorAll('.edit-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () { openProjectPuzzleModal(parseInt(this.dataset.idx, 10), puzzles, data); });
+        btn.addEventListener('click', function () { openProjectPuzzleModal(parseInt(this.dataset.idx, 10), puzzles, pData); });
       });
       list.querySelectorAll('.del-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -1551,7 +1556,7 @@
       });
       var puzzle = { id: document.getElementById('fPzId').value.trim(), title: document.getElementById('fPzTitle').value.trim(), steps: stepsData };
       if (!puzzle.id || !puzzle.title) { toast('ID and title required.'); return; }
-      puzzles = data && data.list ? data.list : [];
+      puzzles = getProjectPuzzles(data);
       if (isNew) puzzles.push(puzzle);
       else puzzles[idx] = puzzle;
       FB.put('project-puzzles', { id: 'list', list: puzzles }).then(function () { closeModal(); renderProjectPuzzles(); toast('Project puzzle saved.'); });
@@ -1563,7 +1568,7 @@
     var list = document.getElementById('projectEventsList');
     if (!list) return;
     FB.get('project-events', 'list').then(function (data) {
-      var events = data && data.list ? data.list : [];
+      var events = getProjectPuzzles(data);
       if (!events.length) {
         list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F382;</div><p>No project events yet.</p></div>';
         return;
@@ -1584,8 +1589,9 @@
           '</div>';
       }
       list.innerHTML = html;
+      var pData = data;
       list.querySelectorAll('.edit-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () { openProjectEventModal(parseInt(this.dataset.idx, 10), events, data); });
+        btn.addEventListener('click', function () { openProjectEventModal(parseInt(this.dataset.idx, 10), events, pData); });
       });
       list.querySelectorAll('.del-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -1637,7 +1643,7 @@
       };
       if (ev.type === 'one-time') ev.year = new Date().getFullYear();
       if (!ev.label || !ev.startDate) { toast('Label and start date required.'); return; }
-      events = data && data.list ? data.list : [];
+      events = getProjectPuzzles(data);
       if (isNew) events.push(ev);
       else events[idx] = ev;
       FB.put('project-events', { id: 'list', list: events }).then(function () { closeModal(); renderProjectEvents(); toast('Project event saved.'); });
@@ -2756,10 +2762,10 @@
     });
     // Project tab
     document.getElementById('addProjectPuzzleBtn') && document.getElementById('addProjectPuzzleBtn').addEventListener('click', function () {
-      FB.get('project-puzzles', 'list').then(function (data) { openProjectPuzzleModal(-1, [], data); });
+      FB.get('project-puzzles', 'list').then(function (data) { openProjectPuzzleModal(-1, [], data); }).catch(function () { openProjectPuzzleModal(-1, [], null); });
     });
     document.getElementById('addProjectEventBtn') && document.getElementById('addProjectEventBtn').addEventListener('click', function () {
-      FB.get('project-events', 'list').then(function (data) { openProjectEventModal(-1, [], data); });
+      FB.get('project-events', 'list').then(function (data) { openProjectEventModal(-1, [], data); }).catch(function () { openProjectEventModal(-1, [], null); });
     });
     document.getElementById('storySaveBtn') && document.getElementById('storySaveBtn').addEventListener('click', function () {
       var title = document.getElementById('storyTitle').value.trim();
