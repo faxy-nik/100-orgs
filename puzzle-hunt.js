@@ -31,15 +31,8 @@
   }
 
   function loadAllPuzzles() {
-    return Promise.all([
-      FB.get('config', 'puzzles'),
-      FB.get('project-puzzles', 'list')
-    ]).then(function (results) {
-      var a = results[0], b = results[1];
-      var list = [];
-      if (a && a.list) list = list.concat(a.list);
-      list = list.concat(toArray(b));
-      return { list: list };
+    return FB.get('project-puzzles', 'list').then(function (data) {
+      return { list: toArray(data) };
     });
   }
 

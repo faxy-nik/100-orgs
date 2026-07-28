@@ -347,7 +347,6 @@
       <button class="tab" data-tab="activity">&#x1F4C8; Activity</button>
       <button class="tab" data-tab="quiz">&#x1F4DD; Quiz</button>
       <button class="tab" data-tab="events">&#x1F3C4; Events</button>
-      <button class="tab" data-tab="puzzles">&#x1F9E9; Puzzles</button>
       <button class="tab" data-tab="letters" id="lettersTabBtn">&#x1F4DD; Letters</button>
       <button class="tab" data-tab="dynamic">&#x2728; Dynamic</button>
       <button class="tab" data-tab="timeline">&#x1F4C5; Timeline</button>
@@ -514,15 +513,6 @@
     </p>
     <div id="eventsList"></div>
     <button class="add-btn" id="addEventBtn">+ Add Event</button>
-  </div>
-
-  <!-- Tab: Puzzles -->
-  <div class="tab-content" id="tabPuzzles">
-    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
-      Treasure hunt puzzles with multi-step clues.
-    </p>
-    <div id="puzzlesList"></div>
-    <button class="add-btn" id="addPuzzleBtn">+ Add Puzzle</button>
   </div>
 
   <!-- Tab: Letter -->
@@ -1294,134 +1284,6 @@
       }
       container.innerHTML = html;
     }).catch(function () {});
-  }
-
-  function renderPuzzles() {
-    var list = document.getElementById('puzzlesList');
-    if (!list) return;
-    FB.get('config', 'puzzles').then(function (data) {
-      var puzzles = data && data.list ? data.list : [];
-      if (!puzzles.length) {
-        list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F9E9;</div><p>No puzzles. Create one to start a treasure hunt.</p></div>';
-        return;
-      }
-      var html = '';
-      for (var i = 0; i < puzzles.length; i++) {
-        var p = puzzles[i];
-        html +=
-          '<div class="song-card">' +
-            '<div class="info">' +
-              '<div class="stitle">' + esc(p.title || '') + '</div>' +
-              '<div class="smeta">' + (p.steps ? p.steps.length : 0) + ' steps</div>' +
-            '</div>' +
-            '<div class="actions">' +
-              '<button class="edit-btn" data-pz-idx="' + i + '" style="background:rgba(255,230,128,.08);border:1px solid rgba(255,230,128,.2);color:#ffe680;padding:.3rem .6rem;border-radius:6px;cursor:pointer;font-size:.75rem;">Edit</button>' +
-              '<button class="del-btn" data-pz-idx="' + i + '">Delete</button>' +
-            '</div>' +
-          '</div>';
-      }
-      list.innerHTML = html;
-      list.querySelectorAll('.edit-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () { openPuzzleModal(parseInt(this.dataset.pzIdx, 10), puzzles, data); });
-      });
-      list.querySelectorAll('.del-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          if (!confirm('Delete this puzzle?')) return;
-          var idx = parseInt(this.dataset.pzIdx, 10);
-          puzzles.splice(idx, 1);
-          FB.put('config', { id: 'puzzles', list: puzzles }).then(function () { renderPuzzles(); toast('Puzzle deleted.'); });
-        });
-      });
-    }).catch(function () { list.innerHTML = '<div class="empty-state"><div class="icon">&#x26A0;&#xFE0F;</div><p>Error loading puzzles</p></div>'; });
-  }
-
-  function openPuzzleModal(idx, puzzles, data) {
-    var p = idx >= 0 && idx < puzzles.length ? puzzles[idx] : { steps: [] };
-    var isNew = idx < 0 || idx >= puzzles.length;
-    var stepsHtml = '';
-    var steps = p.steps || [];
-    for (var si = 0; si < steps.length; si++) {
-      stepsHtml += '<div class="pz-step" style="background:rgba(255,220,160,.03);border:1px solid rgba(255,210,150,.08);border-radius:6px;padding:.5rem;margin-bottom:.5rem;">' +
-        '<div class="field"><label>Hint</label><input type="text" class="pz-hint" value="' + esc(steps[si].hint || '') + '"></div>' +
-        '<div class="field"><label>Answer</label><input type="text" class="pz-answer" value="' + esc(steps[si].answer || '') + '"></div>' +
-        '<div class="field-row">' +
-          '<div class="field" style="flex:1;"><label>Auto type</label><select class="pz-auto-type" style="width:100%;padding:.4rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.8rem;outline:none;">' +
-            '<option value="">None (answer required)</option>' +
-            '<option value="page-visit"' + (steps[si].auto && steps[si].auto.type === 'page-visit' ? ' selected' : '') + '>Auto: visit page</option>' +
-            '<option value="section-view"' + (steps[si].auto && steps[si].auto.type === 'section-view' ? ' selected' : '') + '>Auto: view section</option>' +
-          '</select></div>' +
-          '<div class="field" style="flex:1;"><label>Auto target</label><input type="text" class="pz-auto-target" value="' + esc((steps[si].auto && steps[si].auto.target) || (steps[si].auto && steps[si].auto.page) || (steps[si].auto && String(steps[si].auto.sectionIdx)) || '') + '"></div>' +
-        '</div>' +
-        '<div style="display:flex;gap:4px;margin-top:4px;">' +
-          '<button class="pz-step-del" style="padding:.2rem .5rem;border-radius:4px;background:rgba(232,93,58,.1);border:1px solid #e85d3a44;color:#e85d3a;cursor:pointer;font-size:.7rem;">Remove</button>' +
-        '</div>' +
-      '</div>';
-    }
-    document.getElementById('modalContent').innerHTML =
-      '<h2>' + (isNew ? 'Add Puzzle' : 'Edit Puzzle') + '</h2>' +
-      '<div class="field"><label>Title</label><input type="text" id="fPzTitle" value="' + esc(p.title || '') + '"></div>' +
-      '<div class="field"><label>ID (unique, no spaces)</label><input type="text" id="fPzId" value="' + esc(p.id || '') + '"></div>' +
-      '<h3 style="color:#ffebd2;font-size:.9rem;margin:1rem 0 .5rem;">Steps</h3>' +
-      '<div id="pzStepsContainer">' + stepsHtml + '</div>' +
-      '<button id="pzAddStepBtn" style="margin-bottom:1rem;padding:.35rem .7rem;border-radius:6px;background:rgba(255,230,128,.08);border:1px solid rgba(255,230,128,.2);color:#ffe680;cursor:pointer;font-size:.8rem;">+ Add Step</button>' +
-      '<div class="modal-actions">' +
-        '<button class="btn-cancel" id="modalCancel">Cancel</button>' +
-        '<button class="btn-save" id="modalPzSave">' + (isNew ? 'Add' : 'Save') + '</button>' +
-      '</div>';
-    document.getElementById('modalOverlay').classList.add('open');
-    document.getElementById('modalCancel').addEventListener('click', closeModal);
-    document.getElementById('pzAddStepBtn').addEventListener('click', function () {
-      var container = document.getElementById('pzStepsContainer');
-      var div = document.createElement('div');
-      div.className = 'pz-step';
-      div.style.cssText = 'background:rgba(255,220,160,.03);border:1px solid rgba(255,210,150,.08);border-radius:6px;padding:.5rem;margin-bottom:.5rem;';
-      div.innerHTML =
-        '<div class="field"><label>Hint</label><input type="text" class="pz-hint"></div>' +
-        '<div class="field"><label>Answer</label><input type="text" class="pz-answer"></div>' +
-        '<div class="field-row">' +
-          '<div class="field" style="flex:1;"><label>Auto type</label><select class="pz-auto-type" style="width:100%;padding:.4rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.8rem;outline:none;">' +
-            '<option value="">None (answer required)</option>' +
-            '<option value="page-visit">Auto: visit page</option>' +
-            '<option value="section-view">Auto: view section</option>' +
-          '</select></div>' +
-          '<div class="field" style="flex:1;"><label>Auto target</label><input type="text" class="pz-auto-target"></div>' +
-        '</div>' +
-        '<div style="display:flex;gap:4px;margin-top:4px;">' +
-          '<button class="pz-step-del" style="padding:.2rem .5rem;border-radius:4px;background:rgba(232,93,58,.1);border:1px solid #e85d3a44;color:#e85d3a;cursor:pointer;font-size:.7rem;">Remove</button>' +
-        '</div>';
-      container.appendChild(div);
-      div.querySelector('.pz-step-del').addEventListener('click', function () { div.remove(); });
-    });
-    document.getElementById('pzStepsContainer').querySelectorAll('.pz-step-del').forEach(function (btn) {
-      btn.addEventListener('click', function () { this.closest('.pz-step').remove(); });
-    });
-    document.getElementById('modalPzSave').addEventListener('click', function () {
-      var stepEls = document.getElementById('pzStepsContainer').querySelectorAll('.pz-step');
-      var stepsData = [];
-      stepEls.forEach(function (el) {
-        var autoType = el.querySelector('.pz-auto-type').value;
-        var autoTarget = el.querySelector('.pz-auto-target').value.trim();
-        var step = {
-          hint: el.querySelector('.pz-hint').value.trim(),
-          answer: el.querySelector('.pz-answer').value.trim()
-        };
-        if (autoType && autoTarget) {
-          if (autoType === 'page-visit') step.auto = { type: 'page-visit', page: autoTarget };
-          else if (autoType === 'section-view') step.auto = { type: 'section-view', sectionIdx: parseInt(autoTarget, 10) || 0 };
-        }
-        stepsData.push(step);
-      });
-      var puzzle = {
-        id: document.getElementById('fPzId').value.trim(),
-        title: document.getElementById('fPzTitle').value.trim(),
-        steps: stepsData
-      };
-      if (!puzzle.id || !puzzle.title) { toast('ID and title required.'); return; }
-      puzzles = data && data.list ? data.list : [];
-      if (isNew) puzzles.push(puzzle);
-      else puzzles[idx] = puzzle;
-      FB.put('config', { id: 'puzzles', list: puzzles }).then(function () { closeModal(); renderPuzzles(); toast('Puzzle saved.'); });
-    });
   }
 
   /* ───── Project Puzzles ───── */
@@ -2772,9 +2634,6 @@
     document.getElementById('addEventBtn') && document.getElementById('addEventBtn').addEventListener('click', function () {
       FB.get('config', 'events').then(function (data) { openEventModal(-1, [], data); });
     });
-    document.getElementById('addPuzzleBtn') && document.getElementById('addPuzzleBtn').addEventListener('click', function () {
-      FB.get('config', 'puzzles').then(function (data) { openPuzzleModal(-1, [], data); });
-    });
     document.getElementById('addDynamicBtn') && document.getElementById('addDynamicBtn').addEventListener('click', function () {
       FB.get('config', 'dynamicContent').then(function (data) { openDynamicModal(-1, [], data); });
     });
@@ -2919,7 +2778,6 @@
         if (this.dataset.tab === 'sectionRequests') renderSectionRequests();
         if (this.dataset.tab === 'events') renderEvents();
         if (this.dataset.tab === 'quiz') renderQuiz();
-        if (this.dataset.tab === 'puzzles') renderPuzzles();
         if (this.dataset.tab === 'letters') renderLetters();
         if (this.dataset.tab === 'dynamic') renderDynamicContent();
         if (this.dataset.tab === 'timeline') renderTimeline();
