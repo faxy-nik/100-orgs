@@ -123,7 +123,6 @@ var urlsToCache = [
   '/dynamic-content.js',
   '/activity-tracker.js',
   '/quiz.js',
-  '/our-story.js',
   '/story.html',
   '/story-text.js'
 ];

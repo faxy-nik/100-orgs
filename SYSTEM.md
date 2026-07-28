@@ -43,7 +43,6 @@ A romantic web experience ("100 prghs for eeshah") featuring living companion ch
 | `fb-db.js` | Firebase Realtime DB helper (CRUD, blob encode). **Localhost:** localStorage-backed mock. **Remote:** Firebase RTDB |
 | `content-common.js` | IntersectionObserver for section tracking, streak counter, parallax, voice controls, review tracking |
 | `quiz.js` | Per-section quiz buttons (`addSectionQuizBtn`, `addQuizButtons`). 10 questions each for sections 0-1 on both 100-organs and love. Submits scores to `quizHistory` in Firebase |
-| `our-story.js` | Relationship Q&A viewer (105 questions from `quiz.json` or inline `#quizJsonData`). Collects answers → `ourStoryAnswers` in Firebase |
 | `activity-tracker.js` | Auto-records `page-visit`, `section-view`, `image-view` to `activity` in Firebase |
 | `events.js` | Seasonal event engine — reads `config/events`, matches today's date, applies sky/theme/popup |
 | `puzzle-hunt.js` | Treasure hunt puzzles — floating panel with multi-step puzzles from `config/puzzles` |
@@ -79,7 +78,7 @@ A romantic web experience ("100 prghs for eeshah") featuring living companion ch
 | Reviews | `reviews/{id}` | content-common.js + admin | `{id, page, section, text, audioBlob, type, date}` |
 | Activity | `activity/{id}` | activity-tracker.js + admin | `{id, type, page, timestamp, sectionIdx, file}` |
 | Letters | `letters/{id}` | letters.js + admin | `{id, subject, body, createdAt, read}` |
-| Our Story answers | `ourStoryAnswers` | our-story.js | `{questionId: answer, ...}` (single object, overwritten on save) |
+| Storyline | `config/texts` | Admin (💎 Project) | `{id: 'story', body, title}` — OBSOLETE, use `project-texts/list` |
 | Feature flags | `config/featureFlags` | feature-flags.js | `{id: 'featureFlags', flags: {key: true/false}}` |
 
 ### localStorage Keys
@@ -119,15 +118,6 @@ A romantic web experience ("100 prghs for eeshah") featuring living companion ch
 - Quiz opens modal → submit → score calculated → stored in `quizHistory`
 - No unlock effect — purely engagement
 - **Script ordering:** `quiz.js` must load **before** the inline init script (fixed v5)
-
-### Our Story Q&A (our-story.js)
-
-- Opens via "Our Story" link in index.html footer
-- Fetches `quiz.json` (105 relationship questions) or falls back to inline `#quizJsonData`
-- Displays collapsible categories with input fields per question type (text, textarea, date, number, yes/no, choice)
-- "Save Answers" button stores all responses in `ourStoryAnswers` in Firebase
-- Previously saved answers are loaded on modal open
-- **Localhost note:** `quiz.json` fetch fails on file:// protocol → uses inline `<script id="quizJsonData">` data embedded in index.html
 
 ### Seasonal Events (events.js)
 
@@ -178,7 +168,7 @@ A romantic web experience ("100 prghs for eeshah") featuring living companion ch
 |--------|--------|
 | **Section unlock flow** | 100-organs and love: groups hidden by default, request button at boundary, admin approval, daily cap 2/page/day |
 | **Quiz buttons** | Per-section quiz (10 Qs) for sections 0-1 on both pages. `quiz.js` must load before inline init script |
-| **Our Story data collection** | Input fields per question type, "Save Answers" stores to `ourStoryAnswers` in Firebase |
+| **Story quiz data collection** | Story page (story.html) loads quiz.json inline with save to Firebase |
 | **Seasonal events fix** | Cross-year boundary annual events now work. Multiple overlapping events apply (removed `break`) |
 | **Admin layout fix** | Activity and Quiz tabs moved inside `admin-content` div (were floating outside) |
 | **Wish grant fix** | Fixed `result.data` → `result` (FB.get returns object directly). Fixed `new (w.releasedAt)` → `new Date(w.releasedAt)` |
@@ -192,7 +182,7 @@ A romantic web experience ("100 prghs for eeshah") featuring living companion ch
 
 **File:** `sw.js` — cache name `ash-v36`
 
-**Cached assets:** All pages, all scripts (companion + core + quiz + our-story + activity-tracker + events + etc.), companion assets, CSS, manifest.
+**Cached assets:** All pages, all scripts (companion + core + quiz + activity-tracker + events + etc.), companion assets, CSS, manifest.
 
 **Strategy:** Cache-first, network fallback. New responses cached on fetch. Old caches deleted on activate.
 
