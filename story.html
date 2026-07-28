@@ -24,9 +24,7 @@
       font-size: 2rem; font-weight: 400; font-style: italic;
       color: #c8a8f0; text-align: center; margin-bottom: 0.5rem;
     }
-    .story-sub {
-      text-align: center; color: #6a5a7a; font-size: .85rem; font-style: italic; margin-bottom: 2rem;
-    }
+    .story-sub { text-align: center; color: #6a5a7a; font-size: .85rem; font-style: italic; margin-bottom: 2rem; }
     .section-title {
       font-family: 'Fraunces', Georgia, serif;
       font-size: 1.1rem; font-weight: 400; font-style: italic;
@@ -54,19 +52,10 @@
       background: rgba(200,160,255,0.02); border: 1px solid rgba(200,160,255,0.06);
       border-radius: 12px; padding: 1.2rem 1.4rem;
     }
-    .timeline-date {
-      font-size: .75rem; font-weight: 500; letter-spacing: 0.5px;
-      margin-bottom: 4px;
-    }
+    .timeline-date { font-size: .75rem; font-weight: 500; letter-spacing: 0.5px; margin-bottom: 4px; }
     .timeline-icon { font-size: 1.4rem; margin-right: 6px; vertical-align: middle; }
-    .timeline-label {
-      font-family: 'Fraunces', Georgia, serif;
-      font-size: 1rem; font-weight: 400; color: #d8c8e8;
-      display: inline; vertical-align: middle;
-    }
-    .timeline-message {
-      font-size: .85rem; color: #b0a0c0; margin-top: 6px; line-height: 1.6;
-    }
+    .timeline-label { font-family: 'Fraunces', Georgia, serif; font-size: 1rem; font-weight: 400; color: #d8c8e8; display: inline; vertical-align: middle; }
+    .timeline-message { font-size: .85rem; color: #b0a0c0; margin-top: 6px; line-height: 1.6; }
     .story-chapter {
       background: rgba(200,160,255,0.02); border: 1px solid rgba(200,160,255,0.06);
       border-radius: 16px; padding: 2rem 2rem; margin-bottom: 1.5rem;
@@ -76,15 +65,8 @@
       font-size: 1.3rem; font-weight: 400; font-style: italic;
       color: #b8a0d8; margin-bottom: 1rem;
     }
-    .story-chapter-body {
-      font-size: 0.95rem; color: #d0c0e0;
-      font-weight: 300; line-height: 2;
-      white-space: pre-wrap;
-    }
-    .empty-state {
-      text-align: center; color: #6a5a7a; font-style: italic; padding: 3rem 0;
-      font-size: .85rem;
-    }
+    .story-chapter-body { font-size: 0.95rem; color: #d0c0e0; font-weight: 300; line-height: 2; white-space: pre-wrap; }
+    .empty-state { text-align: center; color: #6a5a7a; font-style: italic; padding: 3rem 0; font-size: .85rem; }
     .loader { text-align: center; color: #6a5a7a; font-style: italic; padding: 3rem 0; }
     .back {
       display: block; text-align: center; margin-top: 2.5rem;
@@ -92,6 +74,40 @@
       font-style: italic; transition: color .3s;
     }
     .back:hover { color: #c8a8f0; }
+
+    .quiz-wrap { font-size: .85rem; }
+    .quiz-progress { text-align: center; color: #7a6a8a; margin-bottom: 1.2rem; font-size: .8rem; font-style: italic; }
+    .quiz-cat { margin-bottom: .75rem; border-radius: 8px; border: 1px solid rgba(200,160,255,0.06); overflow: hidden; }
+    .quiz-cat-header {
+      padding: .6rem .9rem; background: rgba(200,160,255,0.04);
+      cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+      font-size: .85rem; color: #c8a8f0; font-weight: 600; user-select: none;
+    }
+    .quiz-arrow { transition: transform .2s; font-size: .75rem; }
+    .quiz-cat-body { padding: 0 .9rem; max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+    .quiz-q { padding: .7rem 0; border-bottom: 1px solid rgba(200,160,255,0.04); }
+    .quiz-q:last-child { border-bottom: none; }
+    .quiz-q-text { color: #e8d8f0; font-size: .82rem; margin-bottom: 3px; }
+    .quiz-q-meta { color: #7a6a8a; font-size: .7rem; font-style: italic; }
+    .quiz-unlock { color: #6fcf93; }
+    .quiz-q-inputs { margin-top: 6px; }
+    .quiz-input {
+      width: 100%; padding: .4rem .6rem; border-radius: 5px;
+      background: rgba(200,160,255,0.04); border: 1px solid rgba(200,160,255,0.1);
+      color: #e8d8f0; font-family: 'Lora', Georgia, serif; font-size: .82rem;
+      outline: none; resize: vertical; box-sizing: border-box;
+    }
+    .quiz-textarea { min-height: 50px; }
+    .quiz-radio-label, .quiz-opt-label {
+      display: inline-block; color: #c0b0d0; font-size: .8rem; margin-right: 12px; padding: 3px 0; cursor: pointer;
+    }
+    .quiz-opt-label { display: block; }
+    .quiz-save-btn {
+      display: block; width: 100%; padding: .55rem; border-radius: 6px;
+      background: rgba(200,160,255,0.08); border: 1px solid rgba(200,160,255,0.2);
+      color: #c8a8f0; cursor: pointer; font-size: .85rem; margin-top: 1rem; transition: all .25s;
+    }
+    .quiz-save-btn:hover { background: rgba(200,160,255,0.15); }
     @media (max-width: 500px) {
       body { padding: 1.5rem 1rem; }
       .story-chapter { padding: 1.2rem; }
@@ -102,7 +118,7 @@
 <body>
   <div class="story-container">
     <div class="story-main-title">&#x1F4D6; Our Story</div>
-    <p class="story-sub">the timeline of everything &middot; the whole storyline</p>
+    <p class="story-sub">the timeline &middot; the storyline &middot; the quiz</p>
 
     <div class="section-title"><span class="icon">&#x23F3;</span> timeline</div>
     <div id="storyTimeline"><div class="loader">Loading...</div></div>
@@ -112,8 +128,13 @@
     <div class="section-title"><span class="icon">&#x1F4DC;</span> the storyline</div>
     <div id="storyChapters"><div class="loader">Loading...</div></div>
 
+    <hr class="section-divider">
+
+    <div class="section-title"><span class="icon">&#x1F4D6;</span> the story of us</div>
+    <div id="storyQuiz"><div class="loader">Loading quiz...</div></div>
+
     <a href="index.html" class="back">&larr; back to the beginning</a>
   </div>
-  <script src="story-text.js?v=3"></script>
+  <script src="story-text.js?v=4"></script>
 </body>
 </html>
