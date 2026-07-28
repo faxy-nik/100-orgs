@@ -17,17 +17,7 @@
 
   link.addEventListener('click', function (e) {
     e.preventDefault();
-    loadData(function (data) {
-      DATA = data;
-      FB.init();
-      FB.get('ourStoryAnswers', 'responses').then(function (d) {
-        ANSWERS = d && d.questions ? d.questions : {};
-        showStoryModal(data);
-      }).catch(function () {
-        ANSWERS = {};
-        showStoryModal(data);
-      });
-    });
+    window.location.href = link.getAttribute('href');
   });
 
   function showStoryModal(data) {
