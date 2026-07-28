@@ -1454,7 +1454,8 @@
     FB.get('project-puzzles', 'list').then(function (data) {
       var puzzles = getProjectPuzzles(data);
       if (!puzzles.length) {
-        list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F9E9;</div><p>No project puzzles yet.</p></div>';
+        var debug = typeof data === 'object' && data !== null ? JSON.stringify(data).slice(0, 300) : String(data);
+        list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F9E9;</div><p>No project puzzles yet.</p><div style="font-size:.65rem;color:#6b5f52;word-break:break-all;margin-top:8px;">raw: ' + esc(debug) + '</div></div>';
         return;
       }
       var html = '';
