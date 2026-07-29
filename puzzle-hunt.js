@@ -72,7 +72,8 @@
       }
       if (!puzzle || !puzzle.steps[stepIdx]) return;
       var step = puzzle.steps[stepIdx];
-      if (answer.trim().toLowerCase() === (step.answer || '').toLowerCase()) {
+      var valid = (step.answers || [step.answer]).map(function (a) { return String(a).toLowerCase(); });
+      if (valid.indexOf(answer.trim().toLowerCase()) !== -1) {
         if (!progress[puzzleId]) progress[puzzleId] = 0;
         progress[puzzleId] = Math.max(progress[puzzleId], stepIdx + 1);
         saveProgress(progress);
@@ -90,6 +91,7 @@
 
   var panel = null;
   var panelShown = false;
+  function closePanel() { panel.style.display = 'none'; panelShown = false; }
   function showPuzzlePanel() {
     if (!panel) {
       panel = document.createElement('div');
@@ -98,20 +100,24 @@
       document.body.appendChild(panel);
       document.addEventListener('click', function (e) {
         if (panelShown && !panel.contains(e.target) && e.target.id !== 'puzzleBtn') {
-          panel.style.display = 'none'; panelShown = false;
+          closePanel();
         }
       });
     }
-    if (panelShown) { panel.style.display = 'none'; panelShown = false; return; }
+    if (panelShown) { closePanel(); return; }
     panel.style.display = 'block'; panelShown = true;
-    panel.innerHTML = '<div style="color:#6b5f52;font-size:.7rem;margin-bottom:8px;" id="ash-puzzle-count"></div><div id="ash-puzzle-body" style="max-height:400px;overflow-y:auto;"></div>';
+    panel.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">' +
+      '<span style="color:#6b5f52;font-size:.7rem;" id="ash-puzzle-count"></span>' +
+      '<button id="ash-pz-close" style="background:none;border:none;color:#6b5f52;cursor:pointer;font-size:1.1rem;padding:0;line-height:1;">\u00D7</button></div>' +
+      '<div id="ash-puzzle-body" style="max-height:400px;overflow-y:auto;"></div>';
+    document.getElementById('ash-pz-close').addEventListener('click', closePanel);
     loadAllPuzzles().then(function (data) {
-      if (!data || !data.list || !data.list.length) { panel.innerHTML = '<div style="color:#6b5f52;">No puzzles yet.</div>'; return; }
+      if (!data || !data.list || !data.list.length) { document.getElementById('ash-puzzle-body').innerHTML = '<div style="color:#6b5f52;">No puzzles yet.</div>'; return; }
       var total = 0, solved = 0;
       for (var i = 0; i < data.list.length; i++) { total++; if (isSolved(data.list[i])) solved++; }
       document.getElementById('ash-puzzle-count').textContent = solved + '/' + total + ' solved';
       renderPuzzleBody(data.list);
-    }).catch(function (e) { console.error('[PuzzleHunt] load error:', e); panel.innerHTML = '<div style="color:#6b5f52;">Failed to load.</div>'; });
+    }).catch(function (e) { console.error('[PuzzleHunt] load error:', e); document.getElementById('ash-puzzle-body').innerHTML = '<div style="color:#6b5f52;">Failed to load.</div>'; });
   }
   function createPuzzleBtn() {
     if (document.getElementById('puzzleBtn')) return;
@@ -144,7 +150,9 @@
       var done = isSolved(p);
       html += '<div style="margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid rgba(255,210,150,.06);">' +
         '<div style="color:' + (done ? '#6fcf93' : '#ffe680') + ';font-size:.85rem;font-weight:600;margin-bottom:4px;">' +
-        (done ? '\u2713 ' : '\uD83D\uDD11 ') + (p.title || 'Puzzle') + '</div>';
+        (done ? '\u2713 ' : '\uD83D\uDD11 ') + (p.title || 'Puzzle') + '</div>' +
+        ((p.subtitle && !done) ? '<div style="color:#ffe68088;font-size:.7rem;font-style:italic;margin-bottom:6px;">' + esc(p.subtitle) + '</div>' : '') +
+        ((p.intro && !done && stepIdx === 0) ? '<div style="color:#d4c5b2;font-size:.75rem;margin-bottom:8px;">' + esc(p.intro) + '</div>' : '');
       if (done) {
         html += '<div style="color:#6fcf93;font-size:.8rem;">Solved!</div>';
       } else {
