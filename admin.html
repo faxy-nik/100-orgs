@@ -617,6 +617,7 @@
     <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
       Auto-recorded user activity: page visits, section views, reviews, and image views.
     </p>
+    <div id="activityStats" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;"></div>
     <div style="margin-bottom:.5rem;">
       <select id="activityFilter" style="padding:.35rem .5rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.8rem;outline:none;">
         <option value="all">All</option>
@@ -1772,6 +1773,33 @@
     });
   }
 
+  function renderActivityStats(items) {
+    var el = document.getElementById('activityStats');
+    if (!el) return;
+    var visits = 0, sections = 0, reviews = 0, images = 0, pages = {};
+    items.forEach(function (a) {
+      if (a.type === 'page-visit') { visits++; if (a.page) pages[a.page] = (pages[a.page] || 0) + 1; }
+      else if (a.type === 'section-view') sections++;
+      else if (a.type === 'review') reviews++;
+      else if (a.type === 'image-view') images++;
+    });
+    var topPages = Object.keys(pages).sort(function (a, b) { return pages[b] - pages[a]; }).slice(0, 3);
+    el.innerHTML =
+      '<div class="stat-card" style="flex:1;min-width:100px;padding:10px 14px;border-radius:8px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.08);text-align:center;">' +
+        '<div style="font-size:1.3rem;font-weight:bold;color:#ffe680;">' + items.length + '</div>' +
+        '<div style="font-size:.65rem;color:#6b5f52;text-transform:uppercase;letter-spacing:.05em;">Total</div></div>' +
+      '<div class="stat-card" style="flex:1;min-width:100px;padding:10px 14px;border-radius:8px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.08);text-align:center;">' +
+        '<div style="font-size:1.3rem;font-weight:bold;color:#6fcf93;">' + visits + '</div>' +
+        '<div style="font-size:.65rem;color:#6b5f52;text-transform:uppercase;letter-spacing:.05em;">Visits</div></div>' +
+      '<div class="stat-card" style="flex:1;min-width:100px;padding:10px 14px;border-radius:8px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.08);text-align:center;">' +
+        '<div style="font-size:1.3rem;font-weight:bold;color:#7ec8f0;">' + sections + '</div>' +
+        '<div style="font-size:.65rem;color:#6b5f52;text-transform:uppercase;letter-spacing:.05em;">Sections</div></div>' +
+      '<div class="stat-card" style="flex:1;min-width:100px;padding:10px 14px;border-radius:8px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.08);text-align:center;">' +
+        '<div style="font-size:1.3rem;font-weight:bold;color:#e8b87a;">' + Object.keys(pages).length + '</div>' +
+        '<div style="font-size:.65rem;color:#6b5f52;text-transform:uppercase;letter-spacing:.05em;">Pages</div></div>' +
+      (topPages.length ? '<div style="width:100%;font-size:.75rem;color:#6b5f52;margin-top:4px;">Top pages: ' + topPages.map(function (p) { return '<span style="color:#d4c5b2;">' + p + '</span> (' + pages[p] + ')'; }).join(' &bull; ') + '</div>' : '');
+  }
+
   function loadActivity() {
     var list = document.getElementById('activityList');
     if (!list) return;
@@ -1780,9 +1808,11 @@
     list.innerHTML = '<div class="empty-state"><div class="icon">&#x23F3;</div><p>Loading activity...</p></div>';
     FB.getAll('activity').then(function (items) {
       if (!items || !items.length) {
+        document.getElementById('activityStats').innerHTML = '';
         list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F4C8;</div><p>No activity recorded yet.</p></div>';
         return;
       }
+      renderActivityStats(items);
       items.sort(function (a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
       if (filterVal !== 'all') items = items.filter(function (i) { return i.type === filterVal; });
       if (!items.length) {
