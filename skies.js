@@ -24,6 +24,7 @@
    =================================================================== */
 (function () {
   'use strict';
+  if (window.FeatureFlags && !window.FeatureFlags.get('skies')) return;
 
   var SKY_KEY = 'ash-jukebox-sky';
   var msgEl = null;

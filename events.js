@@ -1,4 +1,5 @@
 (function () {
+  if (window.FeatureFlags && !window.FeatureFlags.get('events')) return;
   var STORAGE_KEY = 'ash-events-seen';
 
   function getSeen() {

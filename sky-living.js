@@ -56,6 +56,7 @@
    =================================================================== */
 (function () {
   'use strict';
+  if (window.FeatureFlags && !window.FeatureFlags.get('sky-living')) return;
 
   if (!window.Skies) {
     console.warn('[SkyLiving] window.Skies not found — load skies.js before sky-living.js. Aborting.');

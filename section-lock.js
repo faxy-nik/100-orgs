@@ -3,6 +3,7 @@
 /* Usage: <script>sectionLock('page-key')</script> after fb-db.js */
 
 function sectionLock(k) {
+  if (window.FeatureFlags && !window.FeatureFlags.get('section-lock')) return;
   var hidden = false;
   function hide(msg) {
     if (hidden) return;

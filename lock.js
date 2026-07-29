@@ -1,4 +1,5 @@
 (function () {
+  if (window.FeatureFlags && !window.FeatureFlags.get('section-unlock')) return;
   var PAGE = document.body && document.body.dataset.page || window.location.pathname.split('/').pop().replace('.html', '') || 'index';
   var STORAGE_KEY = 'ash-unlocked-group-' + PAGE;
 

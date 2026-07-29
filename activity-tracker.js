@@ -1,4 +1,5 @@
 (function () {
+  if (window.FeatureFlags && !window.FeatureFlags.get('activity-tracker')) return;
   var PAGE = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
   var PAGE_TITLE = document.title || '';
   var RECORDED_KEY = 'ash-tracked-events';

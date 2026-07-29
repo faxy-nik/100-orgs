@@ -1,4 +1,5 @@
 (function () {
+  if (window.FeatureFlags && !window.FeatureFlags.get('quiz')) return;
   var PAGE = document.body.dataset.page || '';
   var QUIZZES = getDefaultQuizzes();
   var USED_KEYS = {};

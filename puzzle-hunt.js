@@ -1,4 +1,5 @@
 (function () {
+  if (window.FeatureFlags && !window.FeatureFlags.get('puzzle-hunt')) return;
   var STORAGE_KEY = 'ash-puzzle-progress';
 
   function loadProgress() {

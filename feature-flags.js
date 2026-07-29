@@ -50,6 +50,18 @@
     { id:'hide-docs', label:'Hide Docs Link', cat:'Visual', desc:'Hide the documentation link from footer', auto:'', defaultOff: true },
     { id:'force-timeline', label:'Show Timeline', cat:'Content', desc:'Always show timeline link (bypass all-sections-read gate)', auto:'', defaultOff: true },
     { id:'admin-timeline-visibility', label:'Admin Timeline Override', cat:'Admin', desc:'Force timeline visible (admin-only override)', auto:'', defaultOff: true },
+    { id:'landscape', label:'Landscape', cat:'Visual', desc:'Canvas hills/trees background', auto:'' },
+    { id:'quiz', label:'Quiz', cat:'Features', desc:'Section unlock quiz buttons', auto:'' },
+    { id:'activity-tracker', label:'Activity Tracker', cat:'Features', desc:'Page visit and section view tracking', auto:'' },
+    { id:'events', label:'Seasonal Events', cat:'Content', desc:'Seasonal event popups and sky overrides', auto:'' },
+    { id:'puzzle-hunt', label:'Puzzle Hunt', cat:'Interactive', desc:'Treasure hunt overlay with progress', auto:'' },
+    { id:'letters', label:'Letters', cat:'Features', desc:'Write a letter modal and Firebase storage', auto:'' },
+    { id:'dynamic-content', label:'Dynamic Content', cat:'Content', desc:'Extra Firebase-managed content appended to pages', auto:'' },
+    { id:'skies', label:'Sky Engine', cat:'Visual', desc:'Atmospheric canvas sky rendering', auto:'' },
+    { id:'sky-living', label:'Sky Living', cat:'Visual', desc:'Interactive sky layer (moon, stars, birds, dragons)', auto:'' },
+    { id:'track', label:'Track', cat:'Features', desc:'IndexedDB play counter for jukebox', auto:'' },
+    { id:'section-unlock', label:'Section Unlock Requests', cat:'Features', desc:'Daily section unlock request buttons and Firebase listener', auto:'' },
+    { id:'section-lock', label:'Section Lock (Date Gate)', cat:'Features', desc:'Page-level date-lock that hides content until unlock date', auto:'' },
   ];
 
   function load() {

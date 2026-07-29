@@ -5,6 +5,7 @@
    =================================================================== */
 (function () {
   'use strict';
+  if (window.FeatureFlags && !window.FeatureFlags.get('landscape')) return;
 
   var SL = window.SkyLiving;
   if (!SL) return;

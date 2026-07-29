@@ -1,4 +1,5 @@
 (function () {
+  if (window.FeatureFlags && !window.FeatureFlags.get('letters')) return;
   function openLetterModal() {
     if (typeof FB === 'undefined') return;
     var overlay = document.createElement('div');

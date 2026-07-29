@@ -1,4 +1,5 @@
 (function () {
+  if (window.FeatureFlags && !window.FeatureFlags.get('track')) return;
   var DB = 'ash-jukebox-db';
 
   function openDB() {

@@ -1,4 +1,5 @@
 (function () {
+  if (window.FeatureFlags && !window.FeatureFlags.get('dynamic-content')) return;
   var PAGE = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
 
   function renderDynamicContent() {
