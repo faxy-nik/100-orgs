@@ -17,15 +17,27 @@ function sectionLock(k) {
   }
   // Hide body until we confirm access
   if (document.body) document.body.style.display = 'none';
-  // Check admin lock in localStorage
-  try {
-    var ar = localStorage.getItem('ash-section-access');
-    if (ar) {
-      var ac = JSON.parse(ar);
-      var sc = ac[k];
-      if (sc && sc.adminLocked) { hide('This section is currently locked by the admin.'); return; }
-    }
-  } catch (e) {}
+  // Check admin lock from Firebase, fall back to localStorage
+  function checkAdminLock() {
+    if (typeof FB !== 'undefined' && FB.set) {
+      FB.init();
+      FB.get('config', 'access').then(function (ac) {
+        if (ac && ac[k] && ac[k].adminLocked) { hide('This section is currently locked by the admin.'); return; }
+        verify();
+      }).catch(function () { checkLocalLock(); });
+    } else { checkLocalLock(); }
+  }
+  function checkLocalLock() {
+    try {
+      var ar = localStorage.getItem('ash-section-access');
+      if (ar) {
+        var ac = JSON.parse(ar);
+        var sc = ac[k];
+        if (sc && sc.adminLocked) { hide('This section is currently locked by the admin.'); return; }
+      }
+    } catch (e) {}
+    verify();
+  }
   // Check date lock from Firebase
   function verify() {
     if (typeof FB === 'undefined' || !FB.init) { setTimeout(verify, 10); return; }
@@ -46,5 +58,5 @@ function sectionLock(k) {
       show();
     }).catch(function () { show(); });
   }
-  verify();
+  checkAdminLock();
 }

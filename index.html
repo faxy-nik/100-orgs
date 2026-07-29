@@ -823,6 +823,15 @@
         return def;
       }
 
+      // Sync access config from Firebase
+      if (typeof FB !== 'undefined' && FB.set) {
+        FB.get('config', 'access').then(function (ac) {
+          if (ac) {
+            try { localStorage.setItem(SECTION_ACCESS_KEY, JSON.stringify(ac)); } catch(e) {}
+          }
+        }).catch(function () {});
+      }
+
       function esc(str) {
         if (typeof str !== 'string') return '';
         var d = document.createElement('div');
@@ -1158,7 +1167,7 @@
     } catch (e) { allRead = false; }
     tl.style.display = allRead ? '' : 'none';
   }
-  check();
+  (window.FeatureFlags ? window.FeatureFlags.onReady : function(fn){fn();})(check);
   setInterval(check, 5000);
 })();
 </script>

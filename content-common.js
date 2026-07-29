@@ -1091,6 +1091,7 @@ console.error = function () {
       // --- Parallax backgrounds for ALL sections ---
       // 20 original PNGs + 2 ash photos in pool; keyword map uses old PNGs
       (function applyParallaxToAll() {
+        var run = function () {
         if (window.FeatureFlags && !window.FeatureFlags.get('parallax')) return;
         var parallaxImages = window.ASH_CONFIG.parallaxImages;
 
@@ -1467,6 +1468,8 @@ console.error = function () {
             d.el.style.backgroundSize = 'cover';
           });
         }
+      };
+      (window.FeatureFlags ? window.FeatureFlags.onReady : function(fn){fn();})(run);
       })();
 
       // --- Bookmarks / Favorites system ---
