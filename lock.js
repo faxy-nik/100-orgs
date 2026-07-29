@@ -105,5 +105,4 @@
   var origOpen = document.querySelector('.accordion-group');
   if (origOpen) origOpen.classList.add('open');
   init();
-  applyLockState();
 })();
