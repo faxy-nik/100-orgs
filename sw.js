@@ -113,7 +113,6 @@ var urlsToCache = [
   '/activity-tracker.js',
   '/section-lock.js',
   '/lock.js',
-  '/lazy-bg.js',
   '/quiz.js',
   '/story.html',
   '/story-text.js'
