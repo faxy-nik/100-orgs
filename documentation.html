@@ -248,19 +248,19 @@ var CONTENT = [
   }},
   { id:'girl-companion', cat:'Companions', label:'Girl Companion', html:function(){
     return '<h3 id="girl-companion">Girl Companion (Sprite-Sheet Based)</h3>' +
-    '<p>10 JS modules + atlas assets. Sprite sheet from <code>ash_pixel.png</code>.</p>' +
-    '<table><thead><tr><th>File</th><th>Purpose</th></tr></thead><tbody>' +
-    '<tr><td>GirlConfig.js</td><td>Constants, speeds, thresholds</td></tr>' +
-    '<tr><td>GirlStorage.js</td><td>localStorage wrapper</td></tr>' +
-    '<tr><td>GirlMemory.js</td><td>Persistent memory (visits, sections, flowers, stars)</td></tr>' +
-    '<tr><td>GirlEvents.js</td><td>Pub/sub EventBus + DOM listeners</td></tr>' +
-    '<tr><td>GirlAnimationController.js</td><td>Frame playback + fallback to idle</td></tr>' +
-    '<tr><td>GirlRenderer.js</td><td>Canvas painter, DPR-aware</td></tr>' +
-    '<tr><td>GirlStateMachine.js</td><td>7 emotional variables, 27 behaviours + 11 hidden moments</td></tr>' +
-    '<tr><td>GirlNavigation.js</td><td>Safe-area wandering</td></tr>' +
-    '<tr><td>GirlInteractions.js</td><td>Cursor proximity, reading dwell, section changes</td></tr>' +
-    '<tr><td>GirlCompanion.js</td><td>Public API + main rAF loop</td></tr>' +
-    '<tr><td>girl-particles.js</td><td>Particle effects (hearts, stars, flowers, sparkles, notes, zzz)</td></tr>' +
+    '<p>Consolidated into <code>companion-girl.js</code> + atlas assets. Sprite sheet from <code>ash_pixel.png</code>.</p>' +
+    '<table><thead><tr><th>Module</th><th>Purpose</th></tr></thead><tbody>' +
+    '<tr><td>Config (GirlConfig)</td><td>Constants, speeds, thresholds</td></tr>' +
+    '<tr><td>Storage (GirlStorage)</td><td>localStorage wrapper</td></tr>' +
+    '<tr><td>Memory (GirlMemory)</td><td>Persistent memory (visits, sections, flowers, stars)</td></tr>' +
+    '<tr><td>Events (GirlEvents)</td><td>Pub/sub EventBus + DOM listeners</td></tr>' +
+    '<tr><td>Animation (GirlAnimationController)</td><td>Frame playback + fallback to idle</td></tr>' +
+    '<tr><td>Renderer (GirlRenderer)</td><td>Canvas painter, DPR-aware</td></tr>' +
+    '<tr><td>State (GirlStateMachine)</td><td>7 emotional variables, 27 behaviours + 11 hidden moments</td></tr>' +
+    '<tr><td>Navigation (GirlNavigation)</td><td>Safe-area wandering</td></tr>' +
+    '<tr><td>Interactions (GirlInteractions)</td><td>Cursor proximity, reading dwell, section changes</td></tr>' +
+    '<tr><td>API (GirlCompanion)</td><td>Public API + main rAF loop</td></tr>' +
+    '<tr><td>Particles (girl-particles)</td><td>Particle effects (hearts, stars, flowers, sparkles, notes, zzz)</td></tr>' +
     '</tbody></table>' +
     '<pre>GirlCompanion.init({ container: document.body })</pre>' +
     '<p><strong>Z-index:</strong> 999999 &nbsp; <strong>Behaviours:</strong> 27 &nbsp; <strong>Hidden moments:</strong> 11' +
@@ -351,7 +351,7 @@ var CONTENT = [
   }},
   { id:'technical', cat:'Technical', label:'Anime.js', html:function(){
     return '<h2 id="anime">Anime.js Integration</h2>' +
-    '<p><strong>File:</strong> <code>anime.min.js</code> (118KB). Powers particles in <code>girl-particles.js</code> and cinematic effects in <code>motion-masterpiece.js</code>.</p>' +
+    '<p><strong>File:</strong> <code>anime.min.js</code> (118KB). Powers particles in <code>companion-girl.js</code> (girl-particles module) and cinematic effects in <code>motion-masterpiece.js</code>.</p>' +
     '<p>6 particle types on shared canvas (z-index 999998): hearts, stars, flowers, sparkles, notes, zzz.</p>';
   }},
   { id:'motion', cat:'Technical', label:'Motion Masterpiece', html:function(){

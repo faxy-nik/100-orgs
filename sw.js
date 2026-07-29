@@ -1,4 +1,4 @@
-var CACHE = 'ash-v42'; // ponytail: bump version when adding/renaming cached files
+var CACHE = 'ash-v43'; // ponytail: bump version when adding/renaming cached files
 var urlsToCache = [
   '/',
   '/index.html',
@@ -28,21 +28,10 @@ var urlsToCache = [
   '/anime.min.js',
   '/motion-masterpiece.js',
   '/dragon-companion.js',
-  '/GirlConfig.js',
-  '/GirlStorage.js',
-  '/GirlMemory.js',
-  '/GirlEvents.js',
-  '/GirlAnimationController.js',
-  '/GirlRenderer.js',
-  '/GirlStateMachine.js',
-  '/GirlNavigation.js',
-  '/GirlInteractions.js',
-  '/GirlCompanion.js',
-  '/girl-particles.js',
+  '/companion-girl.js',
   '/girl-assets/atlas.json',
   '/girl-assets/atlas.png',
-  '/BoyConfig.js',
-  '/BoyCompanion.js',
+  '/companion-boy.js',
   '/boy-assets/atlas.json',
   '/boy-assets/atlas.png',
   '/ash/ash10.jpeg',
@@ -124,6 +113,7 @@ var urlsToCache = [
   '/activity-tracker.js',
   '/section-lock.js',
   '/lock.js',
+  '/lazy-bg.js',
   '/quiz.js',
   '/story.html',
   '/story-text.js'

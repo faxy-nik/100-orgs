@@ -163,7 +163,7 @@
           Forever yours.</p>
       </section>
 
-      <div class="parallax-divider" style="background-image: url('./ash/ash.jpeg');">
+      <div class="parallax-divider" data-bg="./ash/ash.jpeg">
         <div class="parallax-overlay"></div>
         <div class="parallax-text">A single light in the dark...</div>
       </div>
@@ -2066,7 +2066,7 @@
                 worshipping them and watching you unravel for me.</p>
             </div>
 
-            <div class="parallax-divider" style="background-image: url('./ash/ash1.jpeg');">
+            <div class="parallax-divider" data-bg="./ash/ash1.jpeg">
               <div class="parallax-overlay"></div>
               <div class="parallax-text">Two hands holding the weight of the world...</div>
             </div>
@@ -5441,7 +5441,7 @@
             </div>
 
             <div class="section-interlude"><span>New Fantasies & Comforts</span></div>
-            <div class="parallax-divider" style="background-image: url('./ash/ash2.jpeg');">
+            <div class="parallax-divider" data-bg="./ash/ash2.jpeg">
               <div class="parallax-overlay"></div>
               <div class="parallax-text">Watching the sun go home...</div>
             </div>
@@ -6338,19 +6338,8 @@
   <script src="anime.min.js"></script>
   <script src="motion-masterpiece.js"></script>
   <script src="dragon-companion.js"></script>
-  <script src="GirlConfig.js"></script>
-  <script src="GirlStorage.js"></script>
-  <script src="GirlMemory.js"></script>
-  <script src="GirlEvents.js"></script>
-  <script src="GirlAnimationController.js"></script>
-  <script src="GirlRenderer.js"></script>
-  <script src="GirlStateMachine.js"></script>
-  <script src="GirlNavigation.js"></script>
-  <script src="GirlInteractions.js"></script>
-  <script src="GirlCompanion.js"></script>
-  <script src="girl-particles.js"></script>
-  <script src="BoyConfig.js"></script>
-  <script src="BoyCompanion.js"></script>
+  <script src="companion-girl.js"></script>
+  <script src="companion-boy.js"></script>
   <script>
     if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       BoyCompanion.init({ container: document.body }).catch(function (e) { console.warn("Boy companion:", e); });
@@ -6406,5 +6395,6 @@
 <script src="events.js"></script>
 <script src="puzzle-hunt.js"></script>
 <script src="letters.js"></script>
+<script src="lazy-bg.js"></script>
 
 </html>

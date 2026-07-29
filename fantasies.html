@@ -154,7 +154,7 @@
           Yours, in every way a person can belong to another.</p>
       </section>
 
-      <div class="parallax-divider" style="background-image: url('./parallax/parallax_candle.png');">
+      <div class="parallax-divider" data-bg="./parallax/parallax_candle.png">
         <div class="parallax-overlay"></div>
         <div class="parallax-text">A single light in the dark...</div>
       </div>
@@ -1223,19 +1223,8 @@
   <script src="anime.min.js"></script>
   <script src="motion-masterpiece.js"></script>
   <script src="dragon-companion.js"></script>
-  <script src="GirlConfig.js"></script>
-  <script src="GirlStorage.js"></script>
-  <script src="GirlMemory.js"></script>
-  <script src="GirlEvents.js"></script>
-  <script src="GirlAnimationController.js"></script>
-  <script src="GirlRenderer.js"></script>
-  <script src="GirlStateMachine.js"></script>
-  <script src="GirlNavigation.js"></script>
-  <script src="GirlInteractions.js"></script>
-  <script src="GirlCompanion.js"></script>
-  <script src="girl-particles.js"></script>
-  <script src="BoyConfig.js"></script>
-  <script src="BoyCompanion.js"></script>
+  <script src="companion-girl.js"></script>
+  <script src="companion-boy.js"></script>
   <script>
 if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   BoyCompanion.init({ container: document.body }).catch(function(e) { console.warn("Boy companion:", e); });
@@ -1259,6 +1248,7 @@ if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 <script src="puzzle-hunt.js"></script>
 <script src="letters.js"></script>
 <script src="dynamic-content.js"></script>
+<script src="lazy-bg.js"></script>
 </body>
 
 </html>
