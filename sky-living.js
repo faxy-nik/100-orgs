@@ -1034,7 +1034,7 @@
 
   /* ===================== LIVING LANDSCAPE SYSTEM ===================== */
   var landscapeType = null;
-  var landscapeVisible = (function () { try { return localStorage.getItem('sky-landscape-visible') === 'true'; } catch (e) { return false; } })();
+  var landscapeVisible = (function () { try { return localStorage.getItem('sky-landscape-visible') !== 'false'; } catch (e) { return true; } })();
 
   function setLandscapeVisible(v) {
     landscapeVisible = v;

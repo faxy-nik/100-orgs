@@ -1711,6 +1711,7 @@ console.error = function () {
 
   // Wallpaper Download
   (function () {
+    if (window.FeatureFlags && !window.FeatureFlags.get('wallpaper')) return;
     var btn = document.createElement('button');
     btn.textContent = '\uD83D\uDCF7 Wallpaper';
     btn.style.cssText = 'position:fixed;bottom:459px;right:25px;z-index:100;background:rgba(100,200,255,0.1);border:1px solid rgba(100,200,255,0.2);color:var(--parchment);padding:10px 18px;border-radius:24px;cursor:pointer;font-family:var(--font-display);font-size:0.85rem;transition:all 0.3s;backdrop-filter:blur(6px);';
