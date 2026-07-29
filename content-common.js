@@ -1288,7 +1288,7 @@ console.error = function () {
         // ponytail: apply all parallax backgrounds immediately (accordion groups
         // with overflow:hidden break IntersectionObserver lazy-loading)
         tributeData.forEach(function (d) {
-          if (!d.skipped && d.bg && window.innerWidth >= 768) {
+          if (!d.skipped && d.bg) {
             d.el.style.backgroundImage = d.bg;
             d.el.style.backgroundAttachment = d.attachment;
             d.el.style.backgroundPosition = 'center';

@@ -6360,7 +6360,7 @@
       function applyParallax(el) {
         if (el.style.backgroundImage) return;
         var bg = el.getAttribute('data-parallax-bg');
-        if (bg && window.innerWidth >= 768) {
+        if (bg) {
           el.style.backgroundImage = bg;
           el.style.backgroundAttachment = el.getAttribute('data-parallax-attachment') || 'scroll';
           el.style.backgroundPosition = 'center';
