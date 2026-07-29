@@ -49,6 +49,7 @@
     { id:'easter-eggs', label:'Global Easter Eggs', cat:'Content', desc:'Keyboard shortcut easter eggs', auto:'' },
     { id:'hide-docs', label:'Hide Docs Link', cat:'Visual', desc:'Hide the documentation link from footer', auto:'', defaultOff: true },
     { id:'force-timeline', label:'Show Timeline', cat:'Content', desc:'Always show timeline link (bypass all-sections-read gate)', auto:'', defaultOff: true },
+    { id:'admin-timeline-visibility', label:'Admin Timeline Override', cat:'Admin', desc:'Force timeline visible (admin-only override)', auto:'', defaultOff: true },
   ];
 
   function load() {
