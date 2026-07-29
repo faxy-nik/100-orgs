@@ -1674,69 +1674,71 @@ console.error = function () {
 
   // Love Letter Generator
   (function () {
-    if (window.FeatureFlags && !window.FeatureFlags.get('love-letter-gen')) return;
-    var btn = document.createElement('button');
-    btn.textContent = 'Write me a letter';
-    btn.style.cssText = 'position:fixed;bottom:403px;right:25px;z-index:100;background:rgba(232,93,58,0.15);border:1px solid rgba(232,93,58,0.35);color:var(--parchment);padding:10px 18px;border-radius:24px;cursor:pointer;font-family:var(--font-display);font-size:0.85rem;transition:all 0.3s;backdrop-filter:blur(6px);';
-    btn.addEventListener('mouseenter', function () { this.style.background = 'rgba(232,93,58,0.3)'; });
-    btn.addEventListener('mouseleave', function () { this.style.background = 'rgba(232,93,58,0.15)'; });
-    btn.addEventListener('click', function () {
-      var sections = document.querySelectorAll('.tribute');
-      if (sections.length < 5) return;
-      var picks = [], used = new Set();
-      while (picks.length < 5) {
-        var idx = Math.floor(Math.random() * sections.length);
-        if (!used.has(idx)) { used.add(idx); picks.push(sections[idx]); }
-      }
-      var html = '<div style="position:fixed;inset:0;z-index:9999;background:rgba(15,10,8,0.97);overflow-y:auto;padding:3rem 1.5rem;"><button onclick="this.parentElement.remove()" style="position:fixed;top:16px;right:20px;z-index:10000;background:transparent;border:1px solid rgba(255,255,255,0.15);color:var(--parchment);font-size:1.5rem;width:44px;height:44px;border-radius:50%;cursor:pointer;">\u2716</button><div style="max-width:640px;margin:0 auto;font-family:var(--font-display);">';
-      html += '<h1 style="font-size:2rem;margin-bottom:0.5rem;font-weight:400;">a letter for you</h1>';
-      html += '<p style="color:var(--parchment-dim);margin-bottom:3rem;font-style:italic;">picked from ' + document.title + '</p>';
-      picks.forEach(function (s, i) {
-        var title = s.querySelector('.tribute-lead');
-        var body = s.querySelector('.tribute-body');
-        html += '<div style="margin-bottom:2.5rem;padding:1.5rem;border-left:2px solid rgba(232,93,58,0.3);">';
-        if (title) html += title.outerHTML;
-        if (body) html += body.outerHTML;
-        html += '</div>';
+    var init = function () {
+      if (window.FeatureFlags && !window.FeatureFlags.get('love-letter-gen')) return;
+      var btn = document.createElement('button');
+      btn.textContent = 'Write me a letter';
+      btn.style.cssText = 'position:fixed;bottom:403px;right:25px;z-index:100;background:rgba(232,93,58,0.15);border:1px solid rgba(232,93,58,0.35);color:var(--parchment);padding:10px 18px;border-radius:24px;cursor:pointer;font-family:var(--font-display);font-size:0.85rem;transition:all 0.3s;backdrop-filter:blur(6px);';
+      btn.addEventListener('mouseenter', function () { this.style.background = 'rgba(232,93,58,0.3)'; });
+      btn.addEventListener('mouseleave', function () { this.style.background = 'rgba(232,93,58,0.15)'; });
+      btn.addEventListener('click', function () {
+        var sections = document.querySelectorAll('.tribute');
+        if (sections.length < 5) return;
+        var picks = [], used = new Set();
+        while (picks.length < 5) {
+          var idx = Math.floor(Math.random() * sections.length);
+          if (!used.has(idx)) { used.add(idx); picks.push(sections[idx]); }
+        }
+        var html = '<div style="position:fixed;inset:0;z-index:9999;background:rgba(15,10,8,0.97);overflow-y:auto;padding:3rem 1.5rem;"><button onclick="this.parentElement.remove()" style="position:fixed;top:16px;right:20px;z-index:10000;background:transparent;border:1px solid rgba(255,255,255,0.15);color:var(--parchment);font-size:1.5rem;width:44px;height:44px;border-radius:50%;cursor:pointer;">\u2716</button><div style="max-width:640px;margin:0 auto;font-family:var(--font-display);">';
+        html += '<h1 style="font-size:2rem;margin-bottom:0.5rem;font-weight:400;">a letter for you</h1>';
+        html += '<p style="color:var(--parchment-dim);margin-bottom:3rem;font-style:italic;">picked from ' + document.title + '</p>';
+        picks.forEach(function (s, i) {
+          var title = s.querySelector('.tribute-lead');
+          var body = s.querySelector('.tribute-body');
+          html += '<div style="margin-bottom:2.5rem;padding:1.5rem;border-left:2px solid rgba(232,93,58,0.3);">';
+          if (title) html += title.outerHTML;
+          if (body) html += body.outerHTML;
+          html += '</div>';
+        });
+        html += '</div></div>';
+        var div = document.createElement('div');
+        div.innerHTML = html;
+        document.body.appendChild(div.firstChild);
       });
-      html += '</div></div>';
-      var div = document.createElement('div');
-      div.innerHTML = html;
-      document.body.appendChild(div.firstChild);
-    });
-    document.body.appendChild(btn);
+      document.body.appendChild(btn);
+    };
+    (window.FeatureFlags ? window.FeatureFlags.onReady : function(fn){fn();})(init);
   })();
-
-
 
   // Wallpaper Download
   (function () {
-    if (window.FeatureFlags && !window.FeatureFlags.get('wallpaper')) return;
-    var btn = document.createElement('button');
-    btn.textContent = '\uD83D\uDCF7 Wallpaper';
-    btn.style.cssText = 'position:fixed;bottom:459px;right:25px;z-index:100;background:rgba(100,200,255,0.1);border:1px solid rgba(100,200,255,0.2);color:var(--parchment);padding:10px 18px;border-radius:24px;cursor:pointer;font-family:var(--font-display);font-size:0.85rem;transition:all 0.3s;backdrop-filter:blur(6px);';
-    btn.addEventListener('mouseenter', function () { this.style.background = 'rgba(100,200,255,0.2)'; });
-    btn.addEventListener('mouseleave', function () { this.style.background = 'rgba(100,200,255,0.1)'; });
-    btn.addEventListener('click', function () {
-      var tributes = document.querySelectorAll('.tribute');
-      if (!tributes.length) return;
-      var pick = tributes[Math.floor(Math.random() * tributes.length)];
-      var body = pick.querySelector('.tribute-body');
-      var quote = body ? body.textContent.trim() : 'for eeshah';
-      var titleEl = pick.querySelector('.tribute-lead');
-      var label = titleEl ? titleEl.textContent.trim() : '';
+    var init = function () {
+      if (window.FeatureFlags && !window.FeatureFlags.get('wallpaper')) return;
+      var btn = document.createElement('button');
+      btn.textContent = '\uD83D\uDCF7 Wallpaper';
+      btn.style.cssText = 'position:fixed;bottom:459px;right:25px;z-index:100;background:rgba(100,200,255,0.1);border:1px solid rgba(100,200,255,0.2);color:var(--parchment);padding:10px 18px;border-radius:24px;cursor:pointer;font-family:var(--font-display);font-size:0.85rem;transition:all 0.3s;backdrop-filter:blur(6px);';
+      btn.addEventListener('mouseenter', function () { this.style.background = 'rgba(100,200,255,0.2)'; });
+      btn.addEventListener('mouseleave', function () { this.style.background = 'rgba(100,200,255,0.1)'; });
+      btn.addEventListener('click', function () {
+        var tributes = document.querySelectorAll('.tribute');
+        if (!tributes.length) return;
+        var pick = tributes[Math.floor(Math.random() * tributes.length)];
+        var body = pick.querySelector('.tribute-body');
+        var quote = body ? body.textContent.trim() : 'for eeshah';
+        var titleEl = pick.querySelector('.tribute-lead');
+        var label = titleEl ? titleEl.textContent.trim() : '';
 
-      var ashFiles = ['ash1.jpeg', 'ash2.jpeg', 'ash3.jpeg', 'ash4.jpeg', 'ash5.jpeg', 'ash6.jpeg', 'ash7.jpeg', 'ash8.jpeg', 'ash9.jpeg', 'ash10.jpeg', 'ash11.jpeg', 'ash.jpeg', 'ash_childhood.jpeg', 'ash_childhood1.jpeg', 'ash_childhood2.jpeg', 'ash_childhood3.jpeg'];
-      var imgPath = './ash/' + ashFiles[Math.floor(Math.random() * ashFiles.length)];
+        var ashFiles = ['ash1.jpeg', 'ash2.jpeg', 'ash3.jpeg', 'ash4.jpeg', 'ash5.jpeg', 'ash6.jpeg', 'ash7.jpeg', 'ash8.jpeg', 'ash9.jpeg', 'ash10.jpeg', 'ash11.jpeg', 'ash.jpeg', 'ash_childhood.jpeg', 'ash_childhood1.jpeg', 'ash_childhood2.jpeg', 'ash_childhood3.jpeg'];
+        var imgPath = './ash/' + ashFiles[Math.floor(Math.random() * ashFiles.length)];
 
-      var canvas = document.createElement('canvas');
-      canvas.width = 1080;
-      canvas.height = 1920;
-      var ctx = canvas.getContext('2d');
+        var canvas = document.createElement('canvas');
+        canvas.width = 1080;
+        canvas.height = 1920;
+        var ctx = canvas.getContext('2d');
 
-      var img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = function () {
+        var img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = function () {
         var scale = Math.max(canvas.width / img.width, canvas.height / img.height);
         var x = (canvas.width - img.width * scale) / 2;
         var y = (canvas.height - img.height * scale) / 2;
@@ -1812,6 +1814,8 @@ console.error = function () {
       img.src = imgPath;
     });
     document.body.appendChild(btn);
+    };
+    (window.FeatureFlags ? window.FeatureFlags.onReady : function(fn){fn();})(init);
   })();
 
   /*======= ACCESSIBILITY =======*/

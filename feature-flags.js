@@ -71,16 +71,23 @@
 
   var USE_FB = typeof FB !== 'undefined' && typeof FB.on === 'function';
 
+  var _queue = [];
+
   if (USE_FB) {
     FB.on('config', 'features', function (val) {
       if (val && typeof val === 'object') {
         for (var k in val) flags[k] = val[k];
         try { localStorage.setItem(KEY, JSON.stringify(flags)); } catch(e) {}
       }
+      _queue.forEach(function(fn) { fn(); });
+      _queue = [];
     });
+  } else {
+    setTimeout(function() { _queue.forEach(function(fn) { fn(); }); _queue = []; }, 0);
   }
 
   window.FeatureFlags = {
+    onReady: function(fn) { _queue.push(fn); },
     getAll: function () { return JSON.parse(JSON.stringify(flags)); },
     get: function (id) {
       if (flags[id] !== undefined) return flags[id];
