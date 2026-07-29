@@ -183,6 +183,13 @@ var FB = (function () {
     return ref(store).set(data);
   }
 
+  function fbOn(store, key, cb) {
+    init();
+    var r = db.ref(store).child(key);
+    r.on('value', function (snap) { cb(snap.val()); });
+    return function () { r.off('value'); };
+  }
+
   function decodeBlobs(item) {
     for (var k in item) {
       if (k.indexOf('_Base64') > 0) {
@@ -225,6 +232,7 @@ var FB = (function () {
     delete: fbDelete,
     clear: fbClear,
     set: fbSet,
+    on: fbOn,
     blobToBase64: blobToBase64,
     base64ToBlob: base64ToBlob,
     toArray: toArray,

@@ -1,5 +1,5 @@
 (function () {
-  var PAGE = '100-organs';
+  var PAGE = document.body && document.body.dataset.page || window.location.pathname.split('/').pop().replace('.html', '') || 'index';
   var STORAGE_KEY = 'ash-unlocked-group-' + PAGE;
 
   function dailyRemaining(page) {
@@ -26,16 +26,6 @@
   }
   function setUnlockedIdx(n) {
     try { localStorage.setItem(STORAGE_KEY, n); } catch (e) {}
-  }
-
-  function pollApprovals() {
-    FB.get('sectionUnlock', PAGE).then(function (d) {
-      var fw = d && typeof d.unlocked === 'number' ? d.unlocked : 0;
-      if (fw !== getUnlockedIdx()) {
-        setUnlockedIdx(fw);
-        applyLockState();
-      }
-    }).catch(function () {});
   }
 
   function applyLockState() {
@@ -97,20 +87,19 @@
       FB.get('sectionUnlock', PAGE).then(function (d) {
         setUnlockedIdx(d && typeof d.unlocked === 'number' ? d.unlocked : 0);
         applyLockState();
-        setInterval(pollApprovals, 5000);
+        FB.on('sectionUnlock', PAGE, function (val) {
+          var fw = val && typeof val.unlocked === 'number' ? val.unlocked : 0;
+          if (fw !== getUnlockedIdx()) {
+            setUnlockedIdx(fw);
+            applyLockState();
+          }
+        });
       }).catch(function () {
         applyLockState();
-        setInterval(pollApprovals, 5000);
       });
     } else {
       applyLockState();
     }
-    setInterval(function () {
-      var gs = document.querySelectorAll('.accordion-group');
-      var u = getUnlockedIdx();
-      if (u >= gs.length) { u = 0; setUnlockedIdx(0); }
-      gs.forEach(function (g, i) { g.style.display = i <= u ? '' : 'none'; });
-    }, 2000);
   }
 
   var origOpen = document.querySelector('.accordion-group');

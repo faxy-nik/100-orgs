@@ -20,9 +20,8 @@
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
   <script src="fb-db.js"></script>
-  <script>
-(function(){var k='love';if(document.body)document.body.style.display='none';try{var ar=localStorage.getItem('ash-section-access');if(ar){var ac=JSON.parse(ar);var sc=ac[k];if(sc&&sc.adminLocked){if(document.body)document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#181214;color:#ffebd2;font-family:Georgia,serif;padding:2rem;text-align:center"><div><h1 style="font-family:Fraunces,Georgia,serif;color:#ffe680">🔒 Locked</h1><p style="color:#6b5f52;margin-top:1rem">This section is currently locked by the admin.</p><a href="index.html" style="display:inline-block;margin-top:1.5rem;padding:.6rem 1.5rem;border:1px solid #ffe680;color:#ffe680;border-radius:8px;text-decoration:none;font-family:Fraunces,Georgia,serif">← Back home</a></div></div>';return;} } } catch(e){}var ck=function(){FB.get('config','sections').then(function(d){if(document.body)document.body.style.display='';var c=d&&d.data;if(c)for(var i=0;i<c.length;i++)if(c[i].key===k){var u=c[i];if(u.unlockDate&&u.autoUnlock!==false){var p=u.unlockDate.split('-'),un=new Date(+p[0],+p[1]-1,+p[2]),nw=new Date();nw.setHours(0,0,0,0);if(nw<un&&document.body){document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#181214;color:#ffebd2;font-family:Georgia,serif;padding:2rem;text-align:center"><div><h1 style="font-family:Fraunces,Georgia,serif;color:#ffe680">🔒 Locked</h1><p style="color:#6b5f52;margin-top:1rem">This section unlocks on '+u.unlockDate+'.</p><a href="index.html" style="display:inline-block;margin-top:1.5rem;padding:.6rem 1.5rem;border:1px solid #ffe680;color:#ffe680;border-radius:8px;text-decoration:none;font-family:Fraunces,Georgia,serif">← Back home</a></div></div>'}}}}).catch(function(){if(document.body)document.body.style.display='';});};if(typeof FB!=='undefined'&&FB.init){FB.init();ck();}else{var iv=setInterval(function(){if(typeof FB!=='undefined'&&FB.init){clearInterval(iv);FB.init();ck();}},10);}})();
-  </script>
+  <script src="section-lock.js"></script>
+  <script>sectionLock('love');</script>
   <style>.mood-btn:hover{background:rgba(255,255,255,0.12)!important}</style>
 </head>
 
@@ -1483,122 +1482,7 @@ if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   <script src="global-interactions.js"></script>
 <script>document.addEventListener('mousedown',function(){document.body.style.cursor='url("cursor images/kuromi click.jpg"), auto'});document.addEventListener('mouseup',function(){document.body.style.cursor='url("cursor images/kuromi idle.jpg"), auto'});</script>
 <script src="quiz.js"></script>
-<script>
-(function () {
-  var PAGE = 'love';
-  var STORAGE_KEY = 'ash-unlocked-group-' + PAGE;
-
-  function dailyRemaining(page) {
-    var key = 'ash-daily-' + page;
-    var today = new Date().toDateString();
-    try {
-      var data = JSON.parse(localStorage.getItem(key));
-      if (!data || data.date !== today) { localStorage.setItem(key, JSON.stringify({ date: today, count: 0 })); return 2; }
-      return Math.max(0, 2 - data.count);
-    } catch (e) { return 2; }
-  }
-  function markDailyRequest(page) {
-    var key = 'ash-daily-' + page;
-    var today = new Date().toDateString();
-    try {
-      var data = JSON.parse(localStorage.getItem(key)) || { date: today, count: 0 };
-      if (data.date !== today) data = { date: today, count: 0 };
-      data.count++; localStorage.setItem(key, JSON.stringify(data));
-    } catch (e) {}
-  }
-
-  function getUnlockedIdx() {
-    try { var v = localStorage.getItem(STORAGE_KEY); return v !== null ? parseInt(v, 10) : 0; } catch (e) { return 0; }
-  }
-  function setUnlockedIdx(n) {
-    try { localStorage.setItem(STORAGE_KEY, n); } catch (e) {}
-  }
-
-  function pollApprovals() {
-    FB.get('sectionUnlock', PAGE).then(function (d) {
-      var fw = d && typeof d.unlocked === 'number' ? d.unlocked : 0;
-      if (fw !== getUnlockedIdx()) {
-        setUnlockedIdx(fw);
-        applyLockState();
-      }
-    }).catch(function () {});
-  }
-
-  function applyLockState() {
-    var groups = document.querySelectorAll('.accordion-group');
-    var unlocked = getUnlockedIdx();
-    // ponytail: invalid unlock index (≥ groups) = stale test data, reset to 0
-    if (unlocked >= groups.length) { unlocked = 0; setUnlockedIdx(0); }
-    var remaining = dailyRemaining(PAGE);
-    groups.forEach(function (g, i) {
-      var content = g.querySelector('.accordion-content');
-      if (i <= unlocked) {
-        g.style.display = '';
-        g.classList.add('open');
-        var oldBtn = g.querySelector('.section-request-btn');
-        if (oldBtn) oldBtn.remove();
-        if (i === unlocked && i < groups.length - 1) {
-          var btn = document.createElement('button');
-          btn.className = 'section-request-btn';
-          btn.textContent = remaining > 0 ? '\uD83D\uDD12 Request (' + remaining + '/2 today)' : '\u23F3 Daily limit (2/2)';
-          btn.style.cssText = 'display:block;margin:2rem auto;padding:.7rem 1.5rem;border-radius:8px;background:rgba(255,230,128,.1);border:1px solid #ffe680;color:#ffe680;font-family:Fraunces,Georgia,serif;font-size:.9rem;cursor:pointer;transition:all .25s;';
-          btn.onmouseover = function () { this.style.background = '#ffe680'; this.style.color = '#181214'; };
-          btn.onmouseout = function () { this.style.background = 'rgba(255,230,128,.1)'; this.style.color = '#ffe680'; };
-          if (remaining <= 0) { btn.disabled = true; btn.style.opacity = '0.4'; btn.style.cursor = 'default'; }
-          else btn.onclick = function () {
-            var reqKey = PAGE + '-' + (i + 1);
-            FB.get('sectionRequests', reqKey).then(function (existing) {
-              if (existing && existing.status === 'pending') {
-                alert('Request already sent. Waiting for approval.');
-                return;
-              }
-              FB.put('sectionRequests', {
-                id: reqKey,
-                page: PAGE,
-                groupIndex: i + 1,
-                status: 'pending',
-                createdAt: Date.now()
-              }).then(function () {
-                markDailyRequest(PAGE);
-                btn.textContent = '\u23F3 Request sent — waiting...';
-                btn.disabled = true;
-                btn.style.opacity = '0.5';
-                btn.style.cursor = 'default';
-              }).catch(function () { alert('Failed to send request.'); });
-            }).catch(function () { alert('Failed to check.'); });
-          };
-          var lastTribute = content.querySelector('.tribute:last-of-type');
-          if (lastTribute) lastTribute.after(btn);
-          else content.appendChild(btn);
-        }
-        if (window.addSectionQuizBtn) window.addSectionQuizBtn(content, PAGE, i);
-      } else {
-        g.style.display = 'none';
-      }
-    });
-  }
-
-  function init() {
-    if (typeof FB !== 'undefined' && FB.init) {
-      FB.init();
-      FB.get('sectionUnlock', PAGE).then(function (d) {
-        setUnlockedIdx(d && typeof d.unlocked === 'number' ? d.unlocked : 0);
-        applyLockState();
-        setInterval(pollApprovals, 5000);
-      }).catch(function () {
-        applyLockState();
-        setInterval(pollApprovals, 5000);
-      });
-    } else {
-      applyLockState();
-    }
-  }
-
-  var origOpen = document.querySelector('.accordion-group');
-  if (origOpen) origOpen.classList.add('open');
-  init();
-})();
-</script>
+<script src="lock.js"></script>
 <script src="activity-tracker.js"></script>
 <script src="events.js"></script>
 <script src="puzzle-hunt.js"></script>
