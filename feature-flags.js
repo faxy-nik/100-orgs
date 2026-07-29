@@ -1,22 +1,19 @@
 (function () {
   'use strict';
   var KEY = 'ash-features';
-  var FEATURES_KEY = 'ash-features-list';
+  var FB_PATH = 'config/features';
 
   var ALL_FEATURES = [
-    // Sections
     { id:'section-100-organs', label:'100 Organs', cat:'Sections', desc:'The main tribute', auto:'section dates' },
     { id:'section-love', label:'Love', cat:'Sections', desc:'Love-themed content', auto:'section dates' },
     { id:'section-fantasies', label:'Fantasies', cat:'Sections', desc:'Fantasies & comforts', auto:'section dates' },
     { id:'section-sky-observatory', label:'Sky Observatory', cat:'Sections', desc:'Sky gallery & features', auto:'section dates' },
     { id:'section-photo-gallery', label:'Photo Gallery', cat:'Sections', desc:'Photo & video gallery', auto:'section dates' },
-    // Interactive
     { id:'balloons', label:'Balloons', cat:'Interactive', desc:'Floating balloons across pages', auto:'' },
     { id:'feathers', label:'Feathers', cat:'Interactive', desc:'Drifting feathers', auto:'' },
     { id:'coffee', label:'Coffee Break', cat:'Interactive', desc:'Coffee reminder after 20min', auto:'20 minutes after page load' },
     { id:'lucky-star', label:'Lucky Star', cat:'Interactive', desc:'Special star in sky observatory', auto:'on certain skies' },
     { id:'fragments', label:'Puzzle Fragments', cat:'Interactive', desc:'Hidden collectible fragments', auto:'' },
-    // Features
     { id:'firefly-jar', label:'Firefly Jar', cat:'Features', desc:'Firefly catch counter UI', auto:'after first firefly caught' },
     { id:'globe', label:'Globe', cat:'Features', desc:'World progress globe', auto:'after all 5 sections read' },
     { id:'favorites', label:'Favorites Button', cat:'Features', desc:'Favorite/save toggle on content', auto:'after first favorite' },
@@ -26,7 +23,6 @@
     { id:'reading-progress', label:'Reading Progress Bar', cat:'Features', desc:'Bottom progress tracker', auto:'' },
     { id:'song-request', label:'Song Request', cat:'Features', desc:'Request a song form', auto:'' },
     { id:'milestone', label:'Milestone Counter', cat:'Features', desc:'Days since first entry', auto:'' },
-    // Visual
     { id:'companion-girl', label:'Girl Companion', cat:'Visual', desc:'Animated girl character', auto:'' },
     { id:'companion-boy', label:'Boy Companion', cat:'Visual', desc:'Animated boy character', auto:'' },
     { id:'companion-dragon', label:'Dragon Companion', cat:'Visual', desc:'Flying dragon companion', auto:'' },
@@ -37,7 +33,6 @@
     { id:'motion-masterpiece', label:'Motion Effects', cat:'Visual', desc:'Cinematic entrance/scroll effects', auto:'' },
     { id:'tree-of-memories', label:'Tree of Memories', cat:'Visual', desc:'Fractal growth tree', auto:'after dream + sleep visited' },
     { id:'adaptive-text', label:'Adaptive Text', cat:'Visual', desc:'Text animations', auto:'' },
-    // Content
     { id:'wish-system', label:'Wish System', cat:'Content', desc:'Make-a-wish & lantern release', auto:'' },
     { id:'parallax', label:'Parallax Effects', cat:'Content', desc:'Scroll-based parallax', auto:'' },
     { id:'floating-hearts', label:'Floating Hearts', cat:'Content', desc:'Heart particles on content', auto:'' },
@@ -74,6 +69,17 @@
 
   var flags = load();
 
+  var USE_FB = typeof FB !== 'undefined' && typeof FB.on === 'function';
+
+  if (USE_FB) {
+    FB.on('config', 'features', function (val) {
+      if (val && typeof val === 'object') {
+        for (var k in val) flags[k] = val[k];
+        try { localStorage.setItem(KEY, JSON.stringify(flags)); } catch(e) {}
+      }
+    });
+  }
+
   window.FeatureFlags = {
     getAll: function () { return JSON.parse(JSON.stringify(flags)); },
     get: function (id) {
@@ -89,7 +95,14 @@
     },
     toggle: function (id) { this.set(id, !this.get(id)); return this.get(id); },
     list: function () { return ALL_FEATURES; },
-    reset: function () { flags = {}; for (var i = 0; i < ALL_FEATURES.length; i++) flags[ALL_FEATURES[i].id] = true; try { localStorage.setItem(KEY, JSON.stringify(flags)); } catch(e) {} },
+    reset: function () {
+      flags = {};
+      for (var i = 0; i < ALL_FEATURES.length; i++) flags[ALL_FEATURES[i].id] = true;
+      try { localStorage.setItem(KEY, JSON.stringify(flags)); } catch(e) {}
+    },
+    save: function () {
+      if (USE_FB) { FB.set(FB_PATH, JSON.parse(JSON.stringify(flags))).catch(function () {}); }
+    },
     getAutoInfo: function (id) {
       for (var i = 0; i < ALL_FEATURES.length; i++) {
         if (ALL_FEATURES[i].id === id) return ALL_FEATURES[i].auto;

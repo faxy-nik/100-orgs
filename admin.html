@@ -487,6 +487,10 @@
       Enable or disable any feature. Disabling hides the feature without stopping its background logic. Toggle on to instantly restore.
     </p>
     <div class="section-dates" id="settingsList"></div>
+    <div style="display:flex;gap:8px;align-items:center;margin-top:1rem;">
+      <button id="saveFeaturesBtn" style="padding:.45rem 1.25rem;border-radius:6px;cursor:pointer;font-family:'Fraunces',Georgia,serif;font-size:.8rem;background:rgba(111,207,147,.1);border:1px solid rgba(111,207,147,.3);color:#6fcf93;">Save to Firebase</button>
+      <span id="featuresSaveStatus" style="font-size:.75rem;color:#6b5f52;"></span>
+    </div>
     <hr style="border-color:rgba(255,210,150,.08);margin:1.5rem 0;">
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
       <div style="flex:1;min-width:120px;">
@@ -2758,6 +2762,15 @@
           loadAll().then(function () { renderSections(); renderSongs(); renderGallery(); toast('Reset to defaults'); });
         });
       });
+    });
+
+    // Save features to Firebase
+    document.getElementById('saveFeaturesBtn').addEventListener('click', function () {
+      var status = document.getElementById('featuresSaveStatus');
+      status.textContent = 'Saving...';
+      window.FeatureFlags.save();
+      status.textContent = 'Saved at ' + new Date().toLocaleTimeString();
+      setTimeout(function () { status.textContent = ''; }, 4000);
     });
 
     // Tabs
