@@ -1023,7 +1023,7 @@
           var audioHtml = '';
           if (a.audioBlob) {
             var url = URL.createObjectURL(a.audioBlob);
-            audioHtml = '<div style="display:flex;gap:6px;align-items:center;"><audio controls src="' + url + '" style="flex:1;height:32px;"></audio><a href="' + url + '" download="voice-review-' + (a.id || 'unknown') + '.webm" style="padding:2px 8px;border-radius:4px;background:rgba(255,210,150,.1);color:#ffebd2;text-decoration:none;font-size:.7rem;white-space:nowrap;">&#x2B07; Download</a></div>';
+            audioHtml = '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><audio controls src="' + url + '" style="flex:1;min-width:160px;height:32px;"></audio><a href="' + url + '" download="voice-review-' + (a.id || 'unknown') + '.webm" style="padding:6px 14px;border-radius:6px;background:rgba(255,210,150,.12);border:1px solid rgba(255,210,150,.2);color:#ffebd2;text-decoration:none;font-size:.78rem;white-space:nowrap;cursor:pointer;">&#x2B07; Download</a></div>';
           }
           html +=
             '<div class="song-card">' +
