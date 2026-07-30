@@ -228,11 +228,28 @@ body {
   display: none;
 }
 
-/* History */
-.history {
+/* Game layout */
+.game-layout {
+  display: flex;
+  gap: 2rem;
   width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
+  align-items: flex-start;
+}
+.game-left {
+  flex: 0 0 260px;
+  position: sticky;
+  top: 2rem;
+}
+.game-right {
+  flex: 1;
+  min-width: 0;
+}
+
+/* History (left sidebar) */
+.history {
+  max-height: 80vh;
+  overflow-y: auto;
+  padding-right: 0.5rem;
 }
 .history .title {
   font-family: var(--font-display);
@@ -240,30 +257,10 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: var(--ash);
-  text-align: center;
-  cursor: pointer;
-  user-select: none;
-  transition: color 0.3s;
+  margin-bottom: 0.75rem;
 }
-.history .title:hover { color: var(--ember); }
-.history .title .arrow {
-  display: inline-block;
-  transition: transform 0.3s;
-  margin-left: 4px;
-}
-.history .title .arrow.open { transform: rotate(90deg); }
-.history-scroll {
-  max-height: 0;
-  overflow-y: auto;
-  transition: max-height 0.4s ease, opacity 0.3s ease;
-  opacity: 0;
-}
-.history-scroll.open {
-  max-height: 200px;
-  opacity: 1;
-}
-.history-scroll::-webkit-scrollbar { width: 4px; }
-.history-scroll::-webkit-scrollbar-thumb { background: var(--ink-line); border-radius: 2px; }
+.history::-webkit-scrollbar { width: 4px; }
+.history::-webkit-scrollbar-thumb { background: var(--ink-line); border-radius: 2px; }
 .history-item {
   display: flex;
   align-items: center;
@@ -290,6 +287,39 @@ body {
 }
 .history-item .choice-text {
   color: var(--ember);
+}
+
+/* Accumulated narrative (right side) */
+.narrative-box {
+  margin-top: 2rem;
+  padding: 0 0.5rem;
+}
+.narrative-box .title {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ash);
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+.narrative-step {
+  margin-bottom: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 6px;
+  background: rgba(255, 220, 160, 0.03);
+  font-size: 0.82rem;
+  color: var(--parchment-dim);
+  line-height: 1.6;
+  border-left: 2px solid var(--ember);
+  animation: slideIn 0.4s ease;
+}
+.narrative-step .level-tag {
+  font-size: 0.6rem;
+  color: var(--ash);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.2rem;
 }
 
 /* Reset */
@@ -389,17 +419,24 @@ body {
 
   <!-- Game -->
   <div id="gameScreen">
-    <div class="level-bar" id="levelBar"></div>
-    <div class="prompt">
-      <div class="label" id="levelLabel">Level 1</div>
-      <div class="text" id="promptText"></div>
-    </div>
-    <div class="scene-box" id="sceneBox"></div>
-    <div class="transition-box" id="transitionBox"></div>
-    <div class="options" id="optionsContainer"></div>
-    <div class="history">
-      <div class="title" id="historyToggle">&#x2661; Your Path <span class="arrow" id="historyArrow">&#x25B6;</span></div>
-      <div class="history-scroll" id="historyScroll"><div id="historyList"></div></div>
+    <div class="game-layout">
+      <div class="game-left">
+        <div class="history" id="historyList"></div>
+      </div>
+      <div class="game-right">
+        <div class="level-bar" id="levelBar"></div>
+        <div class="prompt">
+          <div class="label" id="levelLabel">Level 1</div>
+          <div class="text" id="promptText"></div>
+        </div>
+        <div class="scene-box" id="sceneBox"></div>
+        <div class="transition-box" id="transitionBox"></div>
+        <div class="options" id="optionsContainer"></div>
+        <div class="narrative-box" id="narrativeBox">
+          <div class="title">&#x2661; The Story So Far</div>
+          <div id="narrativeList"></div>
+        </div>
+      </div>
     </div>
     <button class="reset-btn" id="resetBtn">&#x21BA; Start Over</button>
   </div>
@@ -415,8 +452,7 @@ body {
 </div>
 
 <script>
-var state = { stepId: null, history: [] };
-var historyOpen = false;
+var state = { stepId: null, history: [], narrative: [] };
 var TRANSITION_DELAY = 1800;
 var LEVEL_NAMES = ['Awakening', 'Teasing', 'Touching', 'Yearning', 'Surrender', 'Pleasure', 'Ecstasy', 'Intimacy', 'Vulnerability', 'Union'];
 var STEPS = getDefaultSteps();
@@ -806,6 +842,7 @@ function initGame() {
   if (saved) {
     try {
       state = JSON.parse(saved);
+      if (!state.narrative) state.narrative = [];
       if (state.stepId) {
         renderGame();
         return;
@@ -822,7 +859,7 @@ function showStart() {
 }
 
 function startGame() {
-  state = { stepId: 1, history: [] };
+  state = { stepId: 1, history: [], narrative: [] };
   saveState();
   renderGame();
 }
@@ -883,7 +920,9 @@ function renderGame() {
       var text = this.textContent;
       var transition = this.dataset.transition;
 
+      // Save this step's scene to narrative before moving on
       state.history.push({ prompt: step.prompt, choice: text, stepId: state.stepId });
+      if (step.scene) state.narrative.push({ level: step.level, text: step.scene });
 
       if (next === -1) {
         state.stepId = null;
@@ -892,9 +931,9 @@ function renderGame() {
         return;
       }
 
-      // Show transition text
       state.stepId = next;
       saveState();
+
       if (transition) {
         document.getElementById('optionsContainer').style.display = 'none';
         document.getElementById('transitionBox').textContent = transition;
@@ -908,8 +947,9 @@ function renderGame() {
     });
   });
 
-  // History
+  // History + narrative
   renderHistory();
+  renderNarrative();
 }
 
 function renderHistory() {
@@ -920,15 +960,17 @@ function renderHistory() {
       '<div><div class="choice-prompt">' + esc(h.prompt) + '</div><div class="choice-text">' + esc(h.choice) + '</div></div>' +
       '</div>';
   });
-  document.getElementById('historyList').innerHTML = html;
+  document.getElementById('historyList').innerHTML =
+    '<div class="title">&#x2661; Your Path</div>' + html;
 }
 
-function toggleHistory() {
-  historyOpen = !historyOpen;
-  var scroll = document.getElementById('historyScroll');
-  var arrow = document.getElementById('historyArrow');
-  scroll.classList.toggle('open', historyOpen);
-  arrow.classList.toggle('open', historyOpen);
+function renderNarrative() {
+  var html = '';
+  state.narrative.forEach(function (n, i) {
+    html += '<div class="narrative-step"><div class="level-tag">' +
+      LEVEL_NAMES[n.level] + '</div>' + esc(n.text) + '</div>';
+  });
+  document.getElementById('narrativeList').innerHTML = html;
 }
 
 function showEnd() {
@@ -961,7 +1003,7 @@ function saveState() {
 
 function resetGame() {
   localStorage.removeItem('turn-on-state');
-  state = { stepId: null, history: [] };
+  state = { stepId: null, history: [], narrative: [] };
   showStart();
 }
 
@@ -972,7 +1014,6 @@ function esc(s) {
 document.getElementById('startBtn').addEventListener('click', startGame);
 document.getElementById('resetBtn').addEventListener('click', resetGame);
 document.getElementById('endResetBtn').addEventListener('click', resetGame);
-document.getElementById('historyToggle').addEventListener('click', toggleHistory);
 
 initGame();
 </script>
