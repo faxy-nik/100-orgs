@@ -19,7 +19,7 @@
   --ember: #e85d3a;
   --font-display: "Fraunces", Georgia, "Times New Roman", serif;
   --font-body: "Lora", Georgia, "Times New Roman", serif;
-  --measure: 560px;
+  --measure: 860px;
   --pad-inline: clamp(1.25rem, 6vw, 2.25rem);
   --glass: rgba(255, 220, 160, .08);
   --glassBorder: rgba(255, 210, 150, .35);
@@ -52,14 +52,14 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
 }
 
 /* Start screen */
 #startScreen {
   text-align: center;
   animation: fadeIn 1s ease;
+  align-self: center;
+  margin: auto;
 }
 #startScreen h1 {
   font-family: var(--font-display);
@@ -355,6 +355,8 @@ body {
   display: none;
   text-align: center;
   animation: fadeIn 0.6s ease;
+  align-self: center;
+  margin: auto;
 }
 #endScreen h2 {
   font-family: var(--font-display);
@@ -404,6 +406,11 @@ body {
   color: var(--ash);
   font-style: italic;
   font-size: 0.9rem;
+}
+
+@media (max-width: 700px) {
+  .game-layout { flex-direction: column; }
+  .game-left { flex: none; width: 100%; position: static; max-height: 200px; }
 }
 </style>
 </head>
