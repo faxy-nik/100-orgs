@@ -507,7 +507,7 @@ function initGame() {
 }
 
 function showStart() {
-  document.getElementById('startScreen').style.display = '';
+  document.getElementById('startScreen').style.display = 'block';
   document.getElementById('gameScreen').style.display = 'none';
   document.getElementById('endScreen').style.display = 'none';
 }
@@ -527,7 +527,7 @@ function getStep(id) {
 
 function renderGame() {
   document.getElementById('startScreen').style.display = 'none';
-  document.getElementById('gameScreen').style.display = '';
+  document.getElementById('gameScreen').style.display = 'block';
   document.getElementById('endScreen').style.display = 'none';
 
   var step = getStep(state.stepId);
@@ -596,7 +596,7 @@ function renderHistory() {
 function showEnd() {
   document.getElementById('startScreen').style.display = 'none';
   document.getElementById('gameScreen').style.display = 'none';
-  document.getElementById('endScreen').style.display = '';
+  document.getElementById('endScreen').style.display = 'block';
 }
 
 function saveState() {
