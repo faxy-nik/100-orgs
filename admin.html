@@ -1023,7 +1023,7 @@
           var audioHtml = '';
           if (a.audioBlob) {
             var url = URL.createObjectURL(a.audioBlob);
-            audioHtml = '<audio controls src="' + url + '" style="width:100%;height:32px;"></audio>';
+            audioHtml = '<div style="display:flex;gap:6px;align-items:center;"><audio controls src="' + url + '" style="flex:1;height:32px;"></audio><a href="' + url + '" download="voice-review-' + (a.id || 'unknown') + '.webm" style="padding:2px 8px;border-radius:4px;background:rgba(255,210,150,.1);color:#ffebd2;text-decoration:none;font-size:.7rem;white-space:nowrap;">&#x2B07; Download</a></div>';
           }
           html +=
             '<div class="song-card">' +

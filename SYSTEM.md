@@ -1,6 +1,6 @@
 # SYSTEM.md — 100 prghs for eeshah
 
-Last updated: 2026-07-27 (v5 — gated content, interactive features, storage audit)
+Last updated: 2026-07-31 (v6 — turn-on game, feature flag overhaul, session tracking, song status)
 
 ---
 
@@ -26,7 +26,13 @@ A romantic web experience ("100 prghs for eeshah") featuring living companion ch
 | `photo-gallery.html` | Photo gallery |
 | `dream.html` | Dream page |
 | `make-her-sleep.html` | Chat/storyline page |
-| `admin.html` | Admin panel — 16 tabs: Dates, Songs, Secret, Gallery, Wishes, Requests, Reviews, Activity, Quiz, Events, Puzzles, Letters, Dynamic, Timeline, Sections, Settings, Access |
+| `guide.html` | Interactive site guide — accordion sections, music pairings, progress tracking |
+| `promises.html` | 100 promises with bookmarkable hearts, Promise of the Day, Surprise Me |
+| `turn-on.html` | 38-step intimate narrative game, branching paths, Firebase session tracking |
+| `turnon-history.html` | Session history viewer for turn-on game playthroughs |
+| `timeline.html` | Relationship timeline page |
+| `story.html` | Storyline page with quizzes |
+| `admin.html` | Admin panel — 18 tabs: Dates, Songs, Secret, Gallery, Wishes, Requests, Reviews, Activity, Quiz, Events, Puzzles, Letters, Dynamic, Timeline, Sections, Settings, Access, TurnOn |
 | `stats.html` | Usage statistics viewer |
 | `activity.html` | Auto-recorded user activity feed — page visits, navigation, time spent |
 | `404.html` | Error page |
@@ -40,19 +46,27 @@ A romantic web experience ("100 prghs for eeshah") featuring living companion ch
 
 | File | Purpose |
 |------|---------|
-| `fb-db.js` | Firebase Realtime DB helper (CRUD, blob encode). **Localhost:** localStorage-backed mock. **Remote:** Firebase RTDB |
-| `content-common.js` | IntersectionObserver for section tracking, streak counter, parallax, voice controls, review tracking |
-| `quiz.js` | Per-section quiz buttons (`addSectionQuizBtn`, `addQuizButtons`). 10 questions each for sections 0-1 on both 100-organs and love. Submits scores to `quizHistory` in Firebase |
-| `activity-tracker.js` | Auto-records `page-visit`, `section-view`, `image-view` to `activity` in Firebase |
+| `fb-db.js` | Firebase Realtime DB helper (CRUD, blob encode/decode). **Localhost:** localStorage-backed mock. **Remote:** Firebase RTDB |
+| `content-common.js` | Section tracking, parallax, voice controls, love letter generator, wallpaper download. Uses `FeatureFlags.get()` directly (no `onReady`) |
+| `quiz.js` | Per-section quiz buttons for all sections of love.html and 100-organs.html. Questions now match actual section content. Saves individual answer details to `quizHistory/all` in Firebase |
+| `section-lock.js` | Date-gated section access, reads unlock config from Firebase |
+| `lock.js` | Section unlock request buttons, Firebase listener for admin approvals |
+| `activity-tracker.js` | Records `page-visit`, `section-view`, `image-view` to `activity` in Firebase. Skips admin via `ash-admin-passkey` |
 | `events.js` | Seasonal event engine — reads `config/events`, matches today's date, applies sky/theme/popup |
 | `puzzle-hunt.js` | Treasure hunt puzzles — floating panel with multi-step puzzles from `config/puzzles` |
 | `letters.js` | "Write a Letter" modal — stores letters in `letters` store in Firebase |
 | `dynamic-content.js` | Reads `config/dynamicContent`, renders "Extra Letters" accordion at page bottom |
-| `feature-flags.js` | Feature flag system — reads from Firebase `config/featureFlags`, localhost defaults |
+| `feature-flags.js` | 48 feature flags (was 54), localStorage + Firebase backed. `set()` now auto-calls `save()` for immediate sync. 6 unused section flags removed |
 | `track.js` | IndexedDB visit counters |
-| `sw.js` | Service worker — offline cache (**ash-v36**) |
+| `secret-letters.js` | 30 enhanced hidden letters unlocked by achievements, with narrative text |
+| `world-progress.js` | World progress dashboard — hidden until all 5 sections read |
+| `global-interactions.js` | Balloons, feathers, coffee, lucky star, puzzle fragments, achievements |
+| `global-easter-eggs.js` | Keyboard shortcuts (dream, sleep, matrix, lanterns) |
+| `motion-masterpiece.js` | Cinematic animations — hero entrance, accordion stagger, aurora |
+| `adaptive-text.js` | Text animation effects |
+| `sw.js` | Service worker — offline cache (**ash-v36**)
 
-## Companion scripts (girl, boy, dragon), skies, music, easter eggs — see v4 section below
+## Companion, skies, music scripts — companions are sprite-sheet or procedurally drawn, skies use a 150+ definition rendering engine, music uses Web Audio API crossfade jukebox
 
 ---
 
@@ -80,6 +94,7 @@ A romantic web experience ("100 prghs for eeshah") featuring living companion ch
 | Letters | `letters/{id}` | letters.js + admin | `{id, subject, body, createdAt, read}` |
 | Storyline | `config/texts` | Admin (💎 Project) | `{id: 'story', body, title}` — OBSOLETE, use `project-texts/list` |
 | Feature flags | `config/featureFlags` | feature-flags.js | `{id: 'featureFlags', flags: {key: true/false}}` |
+| Turn-on sessions | `turnOn/sessions_data` | turn-on.html, turnon-history.html | Array of session objects `{{timestamp, steps: [{step, choice, sceneText}], totalSteps, path}` |
 
 ### localStorage Keys
 
@@ -88,6 +103,7 @@ A romantic web experience ("100 prghs for eeshah") featuring living companion ch
 | `ash-fb-store` | fb-db.js | Entire Firebase mock data (localhost only) |
 | `ash-fb-seq` | fb-db.js | Sequence counter for mock IDs |
 | `ash-admin-passkey` | admin.html | Base64-encoded admin password |
+| `ash-turnon-last-push` | turn-on.html | Timestamp of last session push (5-min dedup cooldown) |
 | `ash-unlocked-group-{page}` | 100-organs.html, love.html | Current unlocked section index (0-based) |
 | `ash-daily-{page}` | 100-organs.html, love.html | `{date, count}` — daily section request counter (2 max) |
 | `ash-streak` | content-common.js | Daily visit streak count |
@@ -162,19 +178,26 @@ A romantic web experience ("100 prghs for eeshah") featuring living companion ch
 
 ---
 
-## Recent Changes (v5 — Gated Content + Interactive Features)
+## Recent Changes (v6 — Turn-On Game, Feature Flag Overhaul, Session Tracking)
 
 | Change | Detail |
 |--------|--------|
-| **Section unlock flow** | 100-organs and love: groups hidden by default, request button at boundary, admin approval, daily cap 2/page/day |
-| **Quiz buttons** | Per-section quiz (10 Qs) for sections 0-1 on both pages. `quiz.js` must load before inline init script |
-| **Story quiz data collection** | Story page (story.html) loads quiz.json inline with save to Firebase |
-| **Seasonal events fix** | Cross-year boundary annual events now work. Multiple overlapping events apply (removed `break`) |
-| **Admin layout fix** | Activity and Quiz tabs moved inside `admin-content` div (were floating outside) |
-| **Wish grant fix** | Fixed `result.data` → `result` (FB.get returns object directly). Fixed `new (w.releasedAt)` → `new Date(w.releasedAt)` |
-| **SW bumped** | ash-v35 → ash-v36 |
-| **quiz.json fixed** | Was two separate JSON values (invalid). Merged into single valid object with all 105 questions |
-| **Inline quiz data** | quiz.json embedded as `<script id="quizJsonData">` in index.html for localhost fallback |
+| **Feature flag auto-save** | `FeatureFlags.set()` now calls `save()` — every admin toggle immediately syncs to Firebase (was localStorage-only) |
+| **onReady race fixed** | Love letter generator and wallpaper switched from `onReady` to synchronous check, matching all other features |
+| **6 unused flags removed** | `section-100-organs`, `section-love`, `section-fantasies`, `section-sky-observatory`, `section-photo-gallery`, `globe` removed. Down from 54 to 48 |
+| **Turn-on game (38 steps)** | `turn-on.html`: full narrative game with branching paths, two-column layout, Firebase session push on completion |
+| **Turn-on session tracking** | `pushSession()` reads existing `turnOn/sessions_data`, appends new session, writes back. 5-min dedup via `ash-turnon-last-push`. Admin passkey skip |
+| **Admin TurnOn tab** | Fixed `turnOnStatus` element missing bug. Added session history viewer below step editor — loads from Firebase, shows each playthrough |
+| **turnon-history.html** | New page: loads sessions from Firebase, newest-first, collapsible cards with all choices. Admin passkey skip |
+| **Song upload status** | Each song card shows audio status (✓ file / ✓ audio / ! no audio / no file). Save progress ("Saving songs... X/Y"). `audioValid` flag set on save and load |
+| **Admin error badge** | Red badge next to "Admin Dashboard" title showing `window.globalErrors` count. Click opens modal with full error details |
+| **Quiz rewrite** | All quiz questions rewritten to match actual section content. Quiz IDs changed to descriptive names. Individual answer details saved to `quizHistory/all` |
+| **Guide page** | `guide.html`: interactive accordion with music pairings from real project songs, progress path, Easter egg hints |
+| **Promises page** | `promises.html`: 100 promises with bookmarkable hearts, Promise of the Day, Surprise Me, Write Your Own |
+| **Secret letters enhanced** | All 30 letters now have narrative text and progress tracking |
+| **Dream copy enhanced** | Flowing poetic narrative throughout |
+| **Section access config** | Admin writes unlock config to `FB.set('config/access', ...)`, section-lock.js reads Firebase first with localStorage fallback |
+| **Activity tab** | 4-card stats bar and top 3 pages listing |
 
 ---
 

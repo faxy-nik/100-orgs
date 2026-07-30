@@ -194,9 +194,10 @@ var FB = (function () {
     for (var k in item) {
       if (k.indexOf('_Base64') > 0) {
         var prefix = k.slice(0, -7);
+        var fieldName = prefix.replace(/^_/, '');
         var typeKey = prefix + 'Type';
         try {
-          item[prefix + 'Blob'] = base64ToBlob(item[k], item[typeKey]);
+          item[fieldName + 'Blob'] = base64ToBlob(item[k], item[typeKey]);
         } catch(e) { /* ponytail: blob decode failure non-fatal */ }
         delete item[k];
         if (item[typeKey]) delete item[typeKey];
@@ -238,4 +239,62 @@ var FB = (function () {
     toArray: toArray,
     esc: esc
   };
+})();
+
+/* ---- User data sync (localStorage ↔ Firebase) ---- */
+(function() {
+  var KEYS = [
+    'ash-firefly-count', 'ash-butterflies', 'ash-lanterns-released',
+    'ash-wish-journal', 'ash-sky-visited', 'ash-sky-journal',
+    'ash-sky-eggs', 'ash-favorites', 'ash-tree-of-memories',
+    'ash-secret-letters', 'ash-obs', 'ash-gallery', 'ash-user-gallery',
+    'ash-user-parallax', 'ash-dream', 'ash-section-viewed',
+    'ash-sky-current-constellation', 'ash-theme', 'ash-streak',
+    'ash-first-visit', 'ash-section-access', 'ash-events-seen',
+    'ash-viewed-dream', 'ash-viewed-make_her_sleep', 'ash-dragon-met'
+  ];
+
+  try { if (localStorage.getItem('ash-admin-passkey')) return; } catch(e) { return; }
+
+  var lastSnapshot = '';
+
+  function loadFromFirebase() {
+    if (typeof FB === 'undefined' || !FB.get) return;
+    FB.get('userData', 'snapshot').then(function(data) {
+      if (!data || !data.data) return;
+      for (var i = 0; i < KEYS.length; i++) {
+        var key = KEYS[i];
+        try {
+          if (data.data[key] !== undefined && localStorage.getItem(key) === null) {
+            localStorage.setItem(key, data.data[key]);
+          }
+        } catch(e) {}
+      }
+    }).catch(function() {});
+  }
+
+  function saveToFirebase() {
+    if (typeof FB === 'undefined' || !FB.put) return;
+    var data = {};
+    for (var i = 0; i < KEYS.length; i++) {
+      var key = KEYS[i];
+      try {
+        var val = localStorage.getItem(key);
+        if (val !== null) data[key] = val;
+      } catch(e) {}
+    }
+    var snapshot = JSON.stringify(data);
+    if (snapshot === lastSnapshot) return;
+    lastSnapshot = snapshot;
+    FB.put('userData', { id: 'snapshot', data: data }).catch(function() {});
+  }
+
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(loadFromFirebase, 500);
+  } else {
+    document.addEventListener('DOMContentLoaded', function() { setTimeout(loadFromFirebase, 500); });
+  }
+
+  setInterval(saveToFirebase, 30000);
+  window.addEventListener('beforeunload', saveToFirebase);
 })();
