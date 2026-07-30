@@ -281,7 +281,7 @@ body {
   <!-- Start -->
   <div id="startScreen">
     <h1>Turn Yourself On</h1>
-    <p>An exploration of desire, one choice at a time. Every decision stays. Nothing is taken back. Only more is added.</p>
+    <p>An exploration of desire, one choice at a time. 35 steps from the first breath to the quiet after. Every decision stays. Nothing is taken back. Only more is added.</p>
     <button class="start-btn" id="startBtn">&#x2665; Begin</button>
   </div>
 
@@ -302,191 +302,334 @@ body {
 
   <!-- End -->
   <div id="endScreen">
-    <h2>&#x2728; You reached the end</h2>
-    <p>For now. More steps can always be added.</p>
+    <h2>&#x2728; You let go completely</h2>
+    <p>Every step brought you deeper. This is only the beginning. The body remembers what the heart commands.</p>
     <button class="reset-btn" id="endResetBtn" style="color:var(--ember);border-color:var(--ember);">&#x21BA; Begin Again</button>
   </div>
 
 </div>
 
 <script>
-FB.init();
-
 var state = { stepId: null, history: [] };
-var STEPS = [];
 var LEVEL_NAMES = ['Awakening', 'Teasing', 'Touching', 'Yearning', 'Surrender', 'Pleasure', 'Ecstasy', 'Intimacy', 'Vulnerability', 'Union'];
-
-function loadSteps() {
-  FB.get('turnOn', 'steps').then(function (d) {
-    if (d && d.list) STEPS = d.list;
-    else {
-      STEPS = getDefaultSteps();
-      FB.put('turnOn', { id: 'steps', list: STEPS }).catch(function () {});
-    }
-    initGame();
-  }).catch(function () {
-    STEPS = getDefaultSteps();
-    initGame();
-  });
-}
+var STEPS = getDefaultSteps();
 
 function getDefaultSteps() {
   return [
+    // ═══ LEVEL 0 — Awakening (steps 1-3) ═══
     {
       id: 1, level: 0,
-      prompt: 'Do you want to be touched right now?',
+      prompt: 'Lie back and close your eyes. Imagine my breath on your skin. Do you want this?',
       options: [
-        { text: 'Yes, touch me', next: 2 },
-        { text: 'I want to feel your hands on me', next: 2 }
+        { text: 'Yes — I want every second of it', next: 2 },
+        { text: 'Yes — I have been waiting for this', next: 2 }
       ]
     },
     {
-      id: 2, level: 1,
-      prompt: 'Where do you want my hands first?',
+      id: 2, level: 0,
+      prompt: 'I am not touching you yet. I want you to feel my presence. Tell me: what do you need most right now?',
       options: [
-        { text: 'On my waist, pulling me closer', next: 3 },
-        { text: 'On my thighs, squeezing softly', next: 3 }
+        { text: 'I need to be wanted — make me feel it', next: 3 },
+        { text: 'I need to be claimed — take me', next: 3 },
+        { text: 'I need to be worshipped — every inch', next: 3 }
       ]
     },
     {
-      id: 3, level: 1,
-      prompt: 'How should I touch you there?',
+      id: 3, level: 0,
+      prompt: 'I am leaning in. My lips are a hair\'s breadth from yours. I can feel your breath quicken. Say my name before I kiss you.',
       options: [
-        { text: 'Slowly, teasingly — fingertips first', next: 4 },
-        { text: 'Firmly, like you mean it', next: 4 }
+        { text: 'I whisper it — and you take my mouth with yours', next: 4 },
+        { text: 'I breathe it — and you pull me against you', next: 4 }
+      ]
+    },
+
+    // ═══ LEVEL 1 — Teasing (steps 4-7) ═══
+    {
+      id: 4, level: 1,
+      prompt: 'You feel my hands slide down your body over your clothes. I trace your curves without rushing. Where do you most want my palms to settle?',
+      options: [
+        { text: 'Over your breasts — squeeze them through your shirt', next: 5 },
+        { text: 'Between your thighs — press hard through the fabric', next: 5 },
+        { text: 'Along your ribs — firm, pulling you into me', next: 5 }
       ]
     },
     {
-      id: 4, level: 2,
-      prompt: 'Do you want me to kiss you?',
+      id: 5, level: 1,
+      prompt: 'I grind against you slowly, letting you feel what I am holding back. You can feel the heat building. What do you want me to say to you?',
       options: [
-        { text: 'Kiss my neck — leave marks', next: 5 },
-        { text: 'Kiss my lips, deep and slow', next: 5 },
-        { text: 'Kiss my collarbone and work your way down', next: 5 }
+        { text: 'Tell me how wet I am making you', next: 6 },
+        { text: 'Tell me what you are going to do to me tonight', next: 6 },
+        { text: 'Tell me I am yours', next: 6 }
       ]
     },
     {
-      id: 5, level: 2,
-      prompt: 'How rough do you want it?',
+      id: 6, level: 1,
+      prompt: '"You have no idea what you do to me," I growl against your ear. My hand slides up your thigh. Part your legs for me. How wide?',
       options: [
-        { text: 'Gentle — I want to feel cherished', next: 6 },
-        { text: 'Rough — I want to feel claimed', next: 6 },
-        { text: 'A mix — start gentle, then take control', next: 6 }
+        { text: 'Just enough — let me feel the tension', next: 7 },
+        { text: 'Wide open — I want you to have full access', next: 7 }
       ]
     },
     {
-      id: 6, level: 3,
-      prompt: 'Where do you want my mouth next?',
+      id: 7, level: 1,
+      prompt: 'I feel the heat through your clothes and press the heel of my palm against you. You moan softly. Do you want me to stop teasing and touch you properly?',
       options: [
-        { text: 'On your chest — I want to feel your breath on my skin', next: 7 },
-        { text: 'Lower — I want your lips on my stomach', next: 7 },
-        { text: 'Between my thighs', next: 7 }
+        { text: 'Yes — I need your fingers inside me now', next: 8 },
+        { text: 'No — keep teasing, make me beg first', next: 12 }
+      ]
+    },
+
+    // ═══ LEVEL 2 — Touching (steps 8-11) ═══
+    {
+      id: 8, level: 2,
+      prompt: 'I slide my hand under your clothes. My fingers find your bare skin. You arch into my touch. How do you want my hand to move?',
+      options: [
+        { text: 'Slow circles — every nerve awake', next: 9 },
+        { text: 'Firm, deliberate pressure — I want to feel owned', next: 9 },
+        { text: 'Slide one finger inside me — slowly', next: 11 }
       ]
     },
     {
-      id: 7, level: 3,
-      prompt: 'Do you want me to undress you?',
+      id: 9, level: 2,
+      prompt: 'I tease the waistband of your underwear, dipping my fingers just below it. Your hips shift, chasing my hand. Do you want me to take them off?',
       options: [
-        { text: 'Slowly — one button at a time', next: 8 },
-        { text: 'Quickly — I need to feel your skin now', next: 8 }
+        { text: 'Yes — pull them down and look at me', next: 10 },
+        { text: 'No — leave them on and touch me over the fabric, drive me crazy', next: 10 }
       ]
     },
     {
-      id: 8, level: 4,
-      prompt: 'What do you want me to do when your clothes are off?',
+      id: 10, level: 2,
+      prompt: 'My fingers trace the shape of you through the fabric. I can feel how wet you are. I lean down and bite your bottom lip. "Is this what you wanted?"',
       options: [
-        { text: 'Look at you — take you in completely', next: 9 },
-        { text: 'Touch you everywhere at once', next: 9 },
-        { text: 'Put my mouth on you immediately', next: 9 }
+        { text: 'Yes — but I want more. Give me more.', next: 11 },
+        { text: 'I nod and pull you closer, unable to speak', next: 11 }
       ]
     },
     {
-      id: 9, level: 4,
-      prompt: 'How do you want my hands between your legs?',
+      id: 11, level: 2,
+      prompt: 'I push your underwear aside and slide a finger inside you. You gasp. I watch your face. "You are so tight. So warm." How many fingers?',
       options: [
-        { text: 'Soft circles — build it slowly', next: 10 },
-        { text: 'Firm pressure — I want to feel your fingers inside me', next: 10 }
+        { text: 'One — slowly, let me feel every inch', next: 13 },
+        { text: 'Two — I want to stretch around you', next: 13 },
+        { text: 'Three — fill me completely, I can take it', next: 13 }
+      ]
+    },
+
+    // ═══ LEVEL 3 — Yearning (steps 12-15) ═══
+    {
+      id: 12, level: 3,
+      prompt: 'You chose to beg. I pull back and wait. Your body aches. I look at you with dark eyes. "Beg for it. Out loud. Tell me what you want."',
+      options: [
+        { text: '"Please — I need your hands on me. I am burning."
+I am so needy. Do not make me wait."', next: 8 },
+        { text: '"I want to feel your fingers inside me. Please.
+
+I am begging. Take me."', next: 8 }
       ]
     },
     {
-      id: 10, level: 5,
-      prompt: 'Do you want to hear what I would do to you?',
+      id: 13, level: 3,
+      prompt: 'I curl my fingers inside you, finding that spot that makes your vision blur. Your mouth falls open. I want to taste your moan. Do you want my mouth on yours?',
       options: [
-        { text: 'Yes — whisper it in my ear', next: 11 },
-        { text: 'Yes — describe every detail', next: 11 }
+        { text: 'Yes — kiss me while you finger me', next: 14 },
+        { text: 'No — I want to watch you. I want to see how far I can push you.', next: 14 }
       ]
     },
     {
-      id: 11, level: 5,
-      prompt: 'I would lay you down and part your legs slowly. I would kiss the inside of your thigh first. Would you be wet already?',
+      id: 14, level: 3,
+      prompt: 'I know your body is trembling. I press my palm against your clit while my fingers pump inside you. "Look at me. I want to see you come undone." Can you hold it?',
       options: [
-        { text: 'Soaking — just from your voice', next: 12 },
-        { text: 'Getting there — keep going', next: 12 }
+        { text: 'I try but my hips are moving on their own', next: 15 },
+        { text: 'Not if you keep doing that — do not stop', next: 15 }
       ]
     },
     {
-      id: 12, level: 6,
-      prompt: 'I would not rush. I would tease you until you beg. Do you want to beg?',
+      id: 15, level: 3,
+      prompt: 'I feel you tightening around my fingers. You are close. I slow down to a maddening pace, keeping you on the edge. "Ask me nicely and I will let you come."',
       options: [
-        { text: 'Yes — make me beg for it', next: 13 },
-        { text: 'I might be too proud — break me', next: 13 }
+        { text: '"Please let me come — I need it so badly"', next: 16 },
+        { text: '"Stop teasing me and make me come already"', next: 16 }
+      ]
+    },
+
+    // ═══ LEVEL 4 — Surrender (steps 16-19) ═══
+    {
+      id: 16, level: 4,
+      prompt: 'I let you come. Hard. My fingers never stop as your body convulses. I watch every second of it. When you finally open your eyes, I am still looking at you. "Good girl." Now — do you want my mouth?',
+      options: [
+        { text: 'Yes — put your mouth on me. I want to taste myself on your lips.', next: 17 },
+        { text: 'Yes — kiss me deeply first. Then go down.', next: 17 }
       ]
     },
     {
-      id: 13, level: 6,
-      prompt: 'I would put my mouth on you and not stop until you forget your own name. Would you pull my hair?',
+      id: 17, level: 4,
+      prompt: 'I kiss my way down your body. I pause at your nipples, circling one with my tongue while my thumb teases the other. Your back arches. Bite or suck?',
       options: [
-        { text: 'I would grip it and not let go', next: 14 },
-        { text: 'I would tangle my fingers in it and hold you there', next: 14 }
+        { text: 'Suck — softly, then harder until I gasp', next: 18 },
+        { text: 'Bite — just enough to leave a mark I will feel tomorrow', next: 18 }
       ]
     },
     {
-      id: 14, level: 7,
-      prompt: 'I would make you come once, then again, then again. How many times do you want?',
+      id: 18, level: 4,
+      prompt: 'I move lower, kissing your stomach, your hips. I look up at you from between your thighs. Your chest is heaving. "Do not look away. Watch me." How do you want my tongue?',
       options: [
-        { text: 'As many as you can give me', next: 15 },
-        { text: 'Until I cannot move', next: 15 }
+        { text: 'Flat and broad — long strokes that cover everything', next: 19 },
+        { text: 'Pointed and precise — focus on my clit', next: 19 },
+        { text: 'Start soft, then devour me', next: 19 }
       ]
     },
     {
-      id: 15, level: 7,
-      prompt: 'After I have made you fall apart, what do you want next?',
+      id: 19, level: 4,
+      prompt: 'I put my mouth on you and I do not hold back. My tongue works you relentlessly. Your hands tangle in my hair. Your moans fill the room. I slide two fingers inside you while I suck your clit. How long can you last?',
       options: [
-        { text: 'I want you inside me — slowly at first', next: 16 },
-        { text: 'I want to touch you too — let me return the favour', next: 16 }
+        { text: 'Not long — I am already climbing', next: 20 },
+        { text: 'I want to hold out but you are making it impossible', next: 20 }
+      ]
+    },
+
+    // ═══ LEVEL 5 — Pleasure (steps 20-24) ═══
+    {
+      id: 20, level: 5,
+      prompt: 'I bring you to the edge again, then stop. You whimper. I smile against your thigh. "Not yet. I want you desperate." I kiss my way back up your body. Now I am above you, hard against your hip. "Do you want me inside you?"',
+      options: [
+        { text: 'Yes — I have never needed anything more', next: 21 },
+        { text: 'Look at me and say "yes" without breaking eye contact', next: 21 },
+        { text: 'Not yet — I want to touch you first. I want to taste you.', next: 22 }
       ]
     },
     {
-      id: 16, level: 8,
-      prompt: 'How do you want to feel me inside you?',
+      id: 21, level: 5,
+      prompt: 'I position myself at your entrance. I push in just the tip. The feeling of you — wet, warm, tight — makes me groan. "Look at me." I hold your gaze and push deeper. Do you want it slow or hard?',
       options: [
-        { text: 'Deep and still — let me feel you pulse around me', next: 17 },
-        { text: 'Hard and fast — I want to lose control with you', next: 17 }
+        { text: 'Slow — I want to feel every inch stretch me', next: 23 },
+        { text: 'Hard — I want to feel claimed. Take me.', next: 24 }
       ]
     },
     {
-      id: 17, level: 8,
-      prompt: 'I would watch your face as you fall apart beneath me. Would you look me in the eyes?',
+      id: 22, level: 5,
+      prompt: 'You push me onto my back. Now you are above me. You take me in your hand and guide me inside you, lowering yourself slowly. Your head falls back. "Like this?" You set the pace. Who is in control?',
       options: [
-        { text: 'Yes — I want to see you watching me', next: 18 },
-        { text: 'I might close them — it is too intense not to', next: 18 }
+        { text: 'I am — I ride you slow and deep, watching your face', next: 23 },
+        { text: 'You are — grab my hips and take control', next: 24 }
       ]
     },
     {
-      id: 18, level: 9,
-      prompt: 'When we are both breathless and finished, how would you want me to hold you?',
+      id: 23, level: 5,
+      prompt: 'Slow and deep. I fill you completely and stay there, letting you adjust, letting you feel how perfectly we fit. My thumb finds your clit and draws circles. "You feel like heaven." I begin to move — long, deep strokes. What do you want me to say?',
       options: [
-        { text: 'Spooned — your chest against my back, your arm around my waist', next: 19 },
-        { text: 'Facing me — I want to see your face as I fall asleep', next: 19 }
+        { text: 'Tell me how good I feel — whisper it', next: 25 },
+        { text: 'Tell me I belong to you', next: 25 },
+        { text: 'Do not speak — just show me with every thrust', next: 25 }
       ]
     },
     {
-      id: 19, level: 9,
-      prompt: 'What would you whisper to me in the quiet after?',
+      id: 24, level: 5,
+      prompt: 'Hard and fast. I grip your hips and pound into you. The sound of our bodies colliding fills the room. You cry out. I wrap my hand around your throat — not squeezing, just holding. "You are mine." Do you want to come with me inside you?',
       options: [
-        { text: 'That was perfect. Do not let go.', next: -1 },
-        { text: 'I love what you do to me. Stay.', next: -1 },
-        { text: 'Again. But give me a minute first.', next: -1 }
+        { text: 'Yes — make me come around your cock', next: 25 },
+        { text: 'Yes — hold my throat and fuck me through it', next: 25 }
+      ]
+    },
+
+    // ═══ LEVEL 6 — Ecstasy (steps 25-28) ═══
+    {
+      id: 25, level: 6,
+      prompt: 'I feel you tightening around me. I change the angle and hit that spot that makes you see stars. Your legs wrap around me, pulling me deeper. "Come for me. Now."',
+      options: [
+        { text: 'I let go and shatter around you, crying out your name', next: 26 },
+        { text: 'I am close — keep going, do not stop, please', next: 26 }
+      ]
+    },
+    {
+      id: 26, level: 6,
+      prompt: 'I feel you come undone beneath me — your body clenching, your back arching. I slow down but do not stop, riding you through every wave. When you finally catch your breath, I am still hard inside you. "Round two?"',
+      options: [
+        { text: 'Yes — give me a minute but do not pull out', next: 27 },
+        { text: 'Not yet — I want to taste myself on you', next: 27 },
+        { text: 'Flip me over — I want you from behind', next: 28 }
+      ]
+    },
+    {
+      id: 27, level: 6,
+      prompt: 'I collapse beside you, pulling you into me. I kiss your shoulder, your neck. Your hand finds me, stroking me slowly. I am still sensitive from watching you come. "Your turn," you whisper. I want you inside me again. But this time — look at me. Do not look away.',
+      options: [
+        { text: 'I roll on top and enter you again, never breaking eye contact', next: 28 },
+        { text: 'I lie back and let you take control — you guide me inside you', next: 28 }
+      ]
+    },
+    {
+      id: 28, level: 6,
+      prompt: 'I enter you from behind. The new angle makes us both gasp. I grab a handful of your hair — not hard, just enough to tilt your head back. I bite your shoulder as I thrust. "You take me so well." The room is filled with the sound of skin on skin. How fast?',
+      options: [
+        { text: 'Fast and relentless — I want to lose control', next: 29 },
+        { text: 'Deep and measured — make me feel every inch', next: 29 }
+      ]
+    },
+
+    // ═══ LEVEL 7 — Intimacy (steps 29-31) ═══
+    {
+      id: 29, level: 7,
+      prompt: 'We find a rhythm. I reach around and press two fingers against your clit while I thrust into you from behind. You moan into the pillow. "I am going to fill you so full." Do you want me to come inside you?',
+      options: [
+        { text: 'Yes — fill me. I want to feel it dripping out of me.', next: 30 },
+        { text: 'Yes — I want every drop. Do not pull out.', next: 30 }
+      ]
+    },
+    {
+      id: 30, level: 7,
+      prompt: 'I feel my own release building. I pull you closer, deeper. I am lost in the feeling of you. "Where do you want me?"',
+      options: [
+        { text: 'Inside me — do not stop, I want to feel you come apart inside me', next: 31 },
+        { text: 'On my chest — I want to watch you let go', next: 31 },
+        { text: 'In my mouth — look me in the eyes when you finish', next: 31 }
+      ]
+    },
+    {
+      id: 31, level: 7,
+      prompt: 'I surrender to it. I grab you and hold you tight as I come, groaning your name. I feel you clench around me one more time. We are both trembling. I collapse onto you, breathless, buried deep. Neither of us speaks. The only sound is our breathing. What do you do first?',
+      options: [
+        { text: 'I pull you closer and kiss your forehead', next: 32 },
+        { text: 'I stroke your hair and whisper "I love you"', next: 32 },
+        { text: 'I stay inside you and hold you as tight as I can', next: 32 }
+      ]
+    },
+
+    // ═══ LEVEL 8 — Vulnerability (steps 32-33) ═══
+    {
+      id: 32, level: 8,
+      prompt: 'The silence stretches beautifully. I am still inside you, softening, and neither of us moves. Your fingers trace patterns on my arm. "That was not just sex," you say quietly. I kiss your shoulder. "No. It was not." What do you need from me right now?',
+      options: [
+        { text: 'Tell me what you are feeling. I want to hear your voice.', next: 33 },
+        { text: 'Do not say anything. Just hold me. Let me feel safe.', next: 33 },
+        { text: 'Kiss me — deeply, slowly, like we have all night', next: 33 }
+      ]
+    },
+    {
+      id: 33, level: 8,
+      prompt: 'I pull out gently and turn you to face me. Your eyes are heavy, your lips swollen. I wipe a strand of hair from your face. "I could stay inside you forever." You smile. I trace your jaw with my thumb. What are you thinking?',
+      options: [
+        { text: '"I was thinking about how good it feels when you take control"', next: 34 },
+        { text: '"I was thinking about how safe I feel in your arms"', next: 34 },
+        { text: '"I was thinking about what I want you to do to me next time"', next: 34 }
+      ]
+    },
+
+    // ═══ LEVEL 9 — Union (steps 34-35) ═══
+    {
+      id: 34, level: 9,
+      prompt: 'We talk in the dark. Your head is on my chest. My hand traces your spine. Every touch is tender now. "Would you do that all over again?" you ask. I kiss your hair. "Right now, if you asked nicely." What do you whisper before you fall asleep?',
+      options: [
+        { text: '"I am so yours. All of me. Always."', next: 35 },
+        { text: '"I want to wake up like this every day."', next: 35 },
+        { text: '"That was the most intimate I have ever felt. Do not ever let me go."', next: 35 }
+      ]
+    },
+    {
+      id: 35, level: 9,
+      prompt: 'You fall asleep in my arms. Your breathing evens out. I watch you for a long moment — the rise and fall of your chest, the soft curve of your lips. I press a kiss to your forehead. "Goodnight, my love." I hold you close. There is nowhere else I would rather be.',
+      options: [
+        { text: 'I sleep soundly, wrapped in you, utterly spent and utterly safe', next: -1 },
+        { text: 'I dream of you, of us, of doing it all again tomorrow', next: -1 }
       ]
     }
   ];
@@ -617,7 +760,7 @@ document.getElementById('startBtn').addEventListener('click', startGame);
 document.getElementById('resetBtn').addEventListener('click', resetGame);
 document.getElementById('endResetBtn').addEventListener('click', resetGame);
 
-loadSteps();
+initGame();
 </script>
 </body>
 </html>
