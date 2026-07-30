@@ -240,17 +240,18 @@ body {
   flex: 0 0 260px;
   position: sticky;
   top: 2rem;
+  border-left: 1px solid var(--ink-line);
+  padding-left: 1.5rem;
 }
 .game-right {
   flex: 1;
   min-width: 0;
 }
 
-/* History (left sidebar) */
+/* History sidebar */
 .history {
   max-height: 80vh;
   overflow-y: auto;
-  padding-right: 0.5rem;
 }
 .history .title {
   font-family: var(--font-display);
@@ -290,7 +291,7 @@ body {
   color: var(--ember);
 }
 
-/* Accumulated narrative (right side) */
+/* Accumulated narrative (collapsible) */
 .narrative-box {
   margin-top: 2rem;
   padding: 0 0.5rem;
@@ -301,9 +302,30 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: var(--ash);
-  margin-bottom: 0.75rem;
   text-align: center;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.3s;
 }
+.narrative-box .title:hover { color: var(--ember); }
+.narrative-box .title .arrow {
+  display: inline-block;
+  transition: transform 0.3s;
+  margin-left: 4px;
+}
+.narrative-box .title .arrow.open { transform: rotate(90deg); }
+.narrative-scroll {
+  max-height: 0;
+  overflow-y: auto;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+  opacity: 0;
+}
+.narrative-scroll.open {
+  max-height: 300px;
+  opacity: 1;
+}
+.narrative-scroll::-webkit-scrollbar { width: 4px; }
+.narrative-scroll::-webkit-scrollbar-thumb { background: var(--ink-line); border-radius: 2px; }
 .narrative-step {
   margin-bottom: 0.75rem;
   padding: 0.6rem 0.75rem;
@@ -400,6 +422,54 @@ body {
   grid-column: span 2;
 }
 
+/* End screen recap */
+.recap-btn {
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid var(--ink-line);
+  color: var(--ash);
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-bottom: 1rem;
+}
+.recap-btn:hover {
+  border-color: var(--ember);
+  color: var(--ember);
+}
+.recap-box {
+  display: none;
+  max-height: 300px;
+  overflow-y: auto;
+  text-align: left;
+  max-width: 480px;
+  margin: 0 auto 1.5rem;
+  padding: 0 0.5rem;
+}
+.recap-box.open { display: block; }
+.recap-box::-webkit-scrollbar { width: 4px; }
+.recap-box::-webkit-scrollbar-thumb { background: var(--ink-line); border-radius: 2px; }
+.recap-step {
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  background: rgba(255, 220, 160, 0.03);
+  font-size: 0.82rem;
+  color: var(--parchment-dim);
+  line-height: 1.6;
+  border-left: 2px solid var(--ember);
+}
+.recap-step .level-tag {
+  font-size: 0.6rem;
+  color: var(--ash);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.2rem;
+}
+
 /* Loading */
 .loading {
   color: var(--ash);
@@ -409,7 +479,7 @@ body {
 
 @media (max-width: 700px) {
   .game-layout { flex-direction: column; }
-  .game-left { flex: none; width: 100%; position: static; max-height: 200px; }
+  .game-left { flex: none; width: 100%; position: static; max-height: 200px; border-left: none; padding-left: 0; }
 }
 </style>
 </head>
@@ -436,8 +506,8 @@ body {
         <div class="transition-box" id="transitionBox"></div>
         <div class="options" id="optionsContainer"></div>
         <div class="narrative-box" id="narrativeBox">
-          <div class="title">&#x2661; The Story So Far</div>
-          <div id="narrativeList"></div>
+          <div class="title" id="narrativeToggle">&#x2661; The Story So Far <span class="arrow" id="narrativeArrow">&#x25B6;</span></div>
+          <div class="narrative-scroll" id="narrativeScroll"><div id="narrativeList"></div></div>
         </div>
       </div>
       <div class="game-left">
@@ -452,6 +522,8 @@ body {
     <h2>&#x2728; You let go completely</h2>
     <p>Every step brought you deeper. This is only the beginning. The body remembers what the heart commands.</p>
     <div class="stats-grid" id="statsGrid"></div>
+    <button class="recap-btn" id="endRecapBtn">&#x2661; Read Full Story</button>
+    <div class="recap-box" id="endRecapBox"></div>
     <button class="reset-btn" id="endResetBtn" style="color:var(--ember);border-color:var(--ember);">&#x21BA; Begin Again</button>
   </div>
 
@@ -979,6 +1051,13 @@ function renderNarrative() {
   document.getElementById('narrativeList').innerHTML = html;
 }
 
+function toggleNarrative() {
+  var scroll = document.getElementById('narrativeScroll');
+  var arrow = document.getElementById('narrativeArrow');
+  scroll.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+
 function showEnd() {
   document.getElementById('startScreen').style.display = 'none';
   document.getElementById('gameScreen').style.display = 'none';
@@ -1001,6 +1080,21 @@ function showEnd() {
     '<div class="stat-card"><div class="num">' + totalChoices + '</div><div class="label">Choices Made</div></div>' +
     '<div class="stat-card"><div class="num">' + (highestLevel + 1) + '</div><div class="label">Levels Explored</div></div>' +
     '<div class="stat-card path"><div class="num">' + (isRough ? 'Rough' : 'Tender') + '</div><div class="label">Path</div></div>';
+
+  // Full story recap
+  var recapHtml = '';
+  state.narrative.forEach(function (n, i) {
+    recapHtml += '<div class="recap-step"><div class="level-tag">' +
+      LEVEL_NAMES[n.level] + '</div>' + esc(n.text) + '</div>';
+  });
+  document.getElementById('endRecapBox').innerHTML = recapHtml;
+}
+
+function toggleRecap() {
+  var box = document.getElementById('endRecapBox');
+  var btn = document.getElementById('endRecapBtn');
+  box.classList.toggle('open');
+  btn.textContent = box.classList.contains('open') ? '\u2661 Hide Story' : '\u2661 Read Full Story';
 }
 
 function saveState() {
@@ -1020,6 +1114,8 @@ function esc(s) {
 document.getElementById('startBtn').addEventListener('click', startGame);
 document.getElementById('resetBtn').addEventListener('click', resetGame);
 document.getElementById('endResetBtn').addEventListener('click', resetGame);
+document.getElementById('narrativeToggle').addEventListener('click', toggleNarrative);
+document.getElementById('endRecapBtn').addEventListener('click', toggleRecap);
 
 initGame();
 </script>
