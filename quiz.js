@@ -6,212 +6,212 @@
 
   function getDefaultQuizzes() {
     return [
-      // 100-organs section 0
+      // 100-organs section 0 — The Beginning
       {
-        id: '100-organs-0', page: '100-organs', sectionIdx: 0, title: 'Section 1 Quiz',
+        id: '100-organs-the-beginning', page: '100-organs', sectionIdx: 0, title: 'The Beginning',
         questions: [
-          { question: 'What organ did you first fall in love with?', options: ['The brain', 'The heart', 'The eyes', 'The voice'], answer: 1 },
-          { question: 'How many chambers does the heart have?', options: ['2', '3', '4', '5'], answer: 2 },
-          { question: 'What is the largest organ in the human body?', options: ['Liver', 'Skin', 'Brain', 'Lungs'], answer: 1 },
-          { question: 'Which part of the body never stops growing?', options: ['Heart', 'Ears and nose', 'Brain', 'Feet'], answer: 1 },
-          { question: 'A smile uses how many muscles?', options: ['12', '17', '22', '32'], answer: 1 },
-          { question: 'What color is blood inside your body?', options: ['Blue', 'Red', 'Purple', 'Dark red'], answer: 3 },
-          { question: 'Where is the smallest bone in the body?', options: ['Hand', 'Foot', 'Ear', 'Nose'], answer: 2 },
-          { question: 'How many senses do humans have?', options: ['3', '5', '7', '9'], answer: 1 },
-          { question: 'What organ pumps blood?', options: ['Brain', 'Lungs', 'Heart', 'Liver'], answer: 2 },
-          { question: 'Our body produces how many new cells per day?', options: ['50 billion', '100 billion', '330 billion', '500 billion'], answer: 2 }
+          { question: 'What time was it when the author started writing Entry 1?', options: ['2:15 AM', '3:27 AM', '4:00 AM', '1:30 AM'], answer: 1 },
+          { question: 'What did the author send along with his message in Entry 1?', options: ['A photo', 'A cuddling voice note', 'A song', 'A poem'], answer: 1 },
+          { question: 'According to Entry 2, what does Eeshah spend too much time doing?', options: ['Working too hard', 'Searching for flaws in herself', 'Overthinking the future', 'Worrying about others'], answer: 1 },
+          { question: 'What color do Eeshah\'s eyes become in the sun rays?', options: ['Green', 'Blue', 'Golden', 'Hazel'], answer: 2 },
+          { question: 'What does the author hope Eeshah stops trying to become?', options: ['More confident', 'Someone prettier', 'More successful', 'Perfect'], answer: 1 },
+          { question: 'How does the author describe the person Eeshah already is?', options: ['Beautiful', 'Talented', 'Enough', 'Strong'], answer: 2 },
+          { question: 'In Entry 4, what specific video of Eeshah\'s face is mentioned?', options: ['The birthday video', 'The red night suit video', 'The morning selfie', 'The laugh video'], answer: 1 },
+          { question: 'What happens to Eeshah\'s pupils when she sees the author?', options: ['They contract', 'They dilate', 'They change color', 'They water'], answer: 1 },
+          { question: 'What did Eeshah do after receiving the author\'s message in Entry 1?', options: ['She replied instantly', 'She smiled and fell asleep', 'She called him', 'She sent a photo'], answer: 1 },
+          { question: 'What does the author call these entries in Entry 1?', options: ['A collection of memories', 'One hundred little love letters', 'A diary of us', 'My thoughts about you'], answer: 1 }
         ]
       },
-      // 100-organs section 1
+      // 100-organs section 1 — Face & Expressions
       {
-        id: '100-organs-1', page: '100-organs', sectionIdx: 1, title: 'Section 2 Quiz',
+        id: '100-organs-face-expressions', page: '100-organs', sectionIdx: 1, title: 'Face & Expressions',
         questions: [
-          { question: 'What triggers a feeling of love in the brain?', options: ['Adrenaline', 'Dopamine', 'Cortisol', 'Serotonin'], answer: 1 },
-          { question: 'How long does it take to form a habit?', options: ['7 days', '21 days', '66 days', '100 days'], answer: 2 },
-          { question: 'What is the most sensitive part of the body?', options: ['Lips', 'Fingertips', 'Skin', 'Tongue'], answer: 2 },
-          { question: 'What percent of the body is water?', options: ['40%', '50%', '60%', '70%'], answer: 2 },
-          { question: 'Which organ can regenerate itself?', options: ['Heart', 'Liver', 'Kidney', 'Stomach'], answer: 1 },
-          { question: 'How many taste buds does the tongue have?', options: ['2,000', '5,000', '10,000', '20,000'], answer: 2 },
-          { question: 'What strengthens with exercise?', options: ['The heart', 'The bones', 'Both', 'Neither'], answer: 2 },
-          { question: 'Human hair can support how much weight?', options: ['100g', '500g', '1kg', '2kg'], answer: 2 },
-          { question: 'How often does the body replace its cells?', options: ['Every day', 'Every week', 'Every 7 years', 'Every 10 years'], answer: 2 },
-          { question: 'What does kissing release in the brain?', options: ['Cortisol', 'Oxytocin', 'Adrenaline', 'Histamine'], answer: 1 }
+          { question: 'What does the left eyebrow do according to the text?', options: ['Furrows when angry', 'Lifts to reveal thoughts', 'Stays perfectly still', 'Twitches when nervous'], answer: 1 },
+          { question: 'What is the tear duct described as?', options: ['The window to the soul', 'The safety valve of a heart that feels everything', 'A tiny fountain of emotion', 'The source of all tears'], answer: 1 },
+          { question: 'What part of the ear is described as "delicate architecture" with a "tiny seashell"?', options: ['The earlobe', 'The cochlea/inner ear', 'The eardrum', 'The outer ear'], answer: 1 },
+          { question: 'What does the author want to do to Eeshah\'s cheeks (kuchupuchu)?', options: ['Kiss them gently', 'Bite them and hold them while asking questions', 'Caress them softly', 'Pinch them playfully'], answer: 1 },
+          { question: 'What happens to Eeshah\'s lips when she is horny?', options: ['She pouts them', 'She bites them', 'She licks them', 'She smiles'], answer: 1 },
+          { question: 'How many types of smiles does the author describe?', options: ['One — genuine', 'Two — admired vs remembered', 'Three — polite, happy, joyful', 'Four — each unique'], answer: 1 },
+          { question: 'What are sinuses described as?', options: ['Empty spaces in the skull', 'Secret rooms designed for making you sound the way you do', 'Air filters for breathing', 'Bone cavities'], answer: 1 },
+          { question: 'What does Eeshah do with her teeth according to the text?', options: ['She shows them when smiling', 'She tries to hide them subconsciously', 'She grinds them at night', 'She bites her nails'], answer: 1 },
+          { question: 'What does the author say about eyelashes in Entry 14?', options: ['They are naturally curled', 'There is a specific reference to "the wallpaper pic" with lashes', 'They are long and dark', 'They frame her eyes perfectly'], answer: 1 },
+          { question: 'What does the tongue do first according to Entry 42?', options: ['Whispers secrets', 'Touches his when they kiss', 'Tastes food', 'Says "I love you"'], answer: 1 }
         ]
       },
-      // love section 0
+      // 100-organs section 2 — Upper Body
       {
-        id: 'love-0', page: 'love', sectionIdx: 0, title: 'Section 1 Quiz',
+        id: '100-organs-upper-body', page: '100-organs', sectionIdx: 2, title: 'Upper Body',
         questions: [
-          { question: 'What color symbolizes love most?', options: ['White', 'Red', 'Pink', 'Purple'], answer: 1 },
-          { question: 'Where does love blossom first?', options: ['In the eyes', 'In the heart', 'In the mind', 'In the soul'], answer: 2 },
-          { question: 'How long does infatuation typically last?', options: ['3 months', '6 months', '12 months', '2 years'], answer: 0 },
-          { question: 'What keeps love alive?', options: ['Gifts', 'Words', 'Attention', 'Trust'], answer: 3 },
-          { question: 'Which language is called the language of love?', options: ['Italian', 'French', 'Spanish', 'Portuguese'], answer: 1 },
-          { question: 'What element is associated with the heart?', options: ['Fire', 'Water', 'Air', 'Earth'], answer: 0 },
-          { question: 'Which flower means true love?', options: ['Tulip', 'Rose', 'Orchid', 'Lily'], answer: 1 },
-          { question: 'What bond outlasts all others?', options: ['Friendship', 'Romance', 'Family', 'Shared memories'], answer: 3 },
-          { question: 'What moon phase is tied to romance?', options: ['New moon', 'Full moon', 'Crescent', 'Blue moon'], answer: 1 },
-          { question: 'Where do lovers meet in eternity?', options: ['In heaven', 'In dreams', 'In memory', 'In the stars'], answer: 2 }
+          { question: 'How is Eeshah\'s jawline described?', options: ['Sharp and defined', 'Gently curved, not sharp', 'Square and strong', 'Soft and round'], answer: 1 },
+          { question: 'Where was the specific neck kiss mentioned?', options: ['In the park', 'In the electrical department', 'At her house', 'In a restaurant'], answer: 1 },
+          { question: 'What does the author imagine while thinking about her neck and showering?', options: ['Water drenching over her neck', 'Kissing her neck in the rain', 'Touching her neck while she sleeps', 'Watching her dry her hair'], answer: 0 },
+          { question: 'What are collarbones described as?', options: ['Elegant arches', 'Turn-on points', 'Delicate bones', 'Beautiful curves'], answer: 1 },
+          { question: 'What does the author say about elbows?', options: ['They are bony and sharp', 'They never ask to be noticed', 'They are cute', 'They are always bruised'], answer: 1 },
+          { question: 'Which part has the most tender skin with faint blue veins?', options: ['The neck', 'The inner wrist', 'The collarbone', 'The shoulder'], answer: 1 },
+          { question: 'What does hugging her feel like according to the shoulders entry?', options: ['Warm and safe', 'The noise of the world becomes quieter', 'Like coming home', 'Like flying'], answer: 1 },
+          { question: 'What is the nape of her neck associated with?', options: ['Kissing her there while she is far away', 'Touching it gently', 'Breathing on it', 'All of the above'], answer: 0 },
+          { question: 'What are her armpits described as?', options: ['Ticklish', 'The most honest version of her', 'Sensitive', 'Soft'], answer: 1 },
+          { question: 'What do her hands tell according to the hands entry?', options: ['Her age', 'The story of her heart', 'Her profession', 'Her habits'], answer: 1 }
         ]
       },
-      // love section 1
+      // 100-organs section 3 — Torso & Core
       {
-        id: 'love-1', page: 'love', sectionIdx: 1, title: 'Section 2 Quiz',
+        id: '100-organs-torso-core', page: '100-organs', sectionIdx: 3, title: 'Torso & Core',
         questions: [
-          { question: 'What ancient god represents love?', options: ['Zeus', 'Eros', 'Apollo', 'Hermes'], answer: 1 },
-          { question: 'What is said to break a heart?', options: ['Time', 'Distance', 'Silence', 'Hate'], answer: 2 },
-          { question: 'Which star is called the love star?', options: ['Sirius', 'Venus', 'Mars', 'Polaris'], answer: 1 },
-          { question: 'What makes a memory unforgettable?', options: ['Time', 'Emotion', 'Place', 'Sound'], answer: 1 },
-          { question: 'How many love languages are there?', options: ['3', '5', '7', '10'], answer: 1 },
-          { question: 'What sustains long-distance love?', options: ['Hope', 'Memory', 'Letters', 'Patience'], answer: 2 },
-          { question: 'What music genre is most romantic?', options: ['Jazz', 'Classical', 'Ballads', 'Bossa nova'], answer: 2 },
-          { question: 'What is a promise called in love?', options: ['A vow', 'A wish', 'A dream', 'A hope'], answer: 0 },
-          { question: 'What bridges two hearts?', options: ['Time', 'Distance', 'Words', 'Silence'], answer: 2 },
-          { question: 'What is love\'s greatest gift?', options: ['Passion', 'Understanding', 'Devotion', 'Freedom'], answer: 1 }
+          { question: 'What specific abdominal muscles are named?', options: ['Traps and lats', 'Rectus abdominis and obliques', 'Pectorals and deltoids', 'Glutes and hamstrings'], answer: 1 },
+          { question: 'What oil does the author mention for massages?', options: ['Olive oil', 'Coconut oil', 'Almond oil', 'Baby oil'], answer: 1 },
+          { question: 'What body part is described as the "most sacred part"?', options: ['The heart', 'The vagina', 'The breasts', 'The lips'], answer: 1 },
+          { question: 'Where is the specific mole mentioned?', options: ['On her cheek', 'On her breast that only the author knows about', 'On her back', 'On her shoulder'], answer: 1 },
+          { question: 'How is the belly button described?', options: ['A tiny scar', 'Part of the story of how every human begins', 'A cute little indent', 'The center of the body'], answer: 1 },
+          { question: 'What happens when she laughs that deep belly laugh?', options: ['She snorts', 'Her whole torso shakes', 'She cries', 'She claps her hands'], answer: 1 },
+          { question: 'What does the author want to do while kissing her waist?', options: ['Hold her tightly', 'Oil it up with coconut oil and massage', 'Trace circles on it', 'Lift her up'], answer: 1 },
+          { question: 'What does he say about her breasts?', options: ['They are beautiful', 'Absolute perfection — a specific pic turned him on', 'They are soft', 'He dreams about them'], answer: 1 },
+          { question: 'What happens to her nipples when she is turned on?', options: ['They become hard', 'They get sensitive and beautifully sore', 'They change color', 'They tingle'], answer: 1 },
+          { question: 'How does she react when he puts fingers inside her?', options: ['She moans', 'She gets wet and her body tightens around his fingers', 'She cries', 'She laughs'], answer: 1 }
         ]
       },
-      // 100-organs section 2
+      // 100-organs section 4 — Skin, Skeleton & Organs
       {
-        id: '100-organs-2', page: '100-organs', sectionIdx: 2, title: 'Section 3 Quiz',
+        id: '100-organs-skin-skeleton-organs', page: '100-organs', sectionIdx: 4, title: 'Skin, Skeleton & Organs',
         questions: [
-          { question: 'What do your shoulders carry when you are strong?', options: ['The world', 'My hopes', 'Your weight', 'My fears'], answer: 1 },
-          { question: 'What do arms do best?', options: ['Lift', 'Reach', 'Hold', 'Stretch'], answer: 2 },
-          { question: 'How many bones are in the human hand?', options: ['19', '27', '33', '14'], answer: 1 },
-          { question: 'What does a handshake represent?', options: ['Power', 'Trust', 'Goodbye', 'Friendship'], answer: 1 },
-          { question: 'What makes fingertips so sensitive?', options: ['Blood flow', 'Nerve endings', 'Thin skin', 'Muscle memory'], answer: 1 },
-          { question: 'Which finger has the most nerve endings?', options: ['Thumb', 'Index', 'Ring', 'Little'], answer: 1 },
-          { question: 'What percentage of hugs reduce stress?', options: ['30%', '50%', '70%', '90%'], answer: 1 },
-          { question: 'What do crossed arms often mean?', options: ['Confidence', 'Defensiveness', 'Comfort', 'Thinking'], answer: 1 },
-          { question: 'How many muscles are in the human back?', options: ['20', '40', '60', '80'], answer: 1 },
-          { question: 'What makes a hug last just long enough?', options: ['3 seconds', '7 seconds', '20 seconds', 'Until they let go'], answer: 2 }
+          { question: 'What are pores described as?', options: ['Tiny holes in the skin', 'Millions of tiny openings like a secret map', 'Breathing points', 'Oil producers'], answer: 1 },
+          { question: 'What are the two types of sweat glands mentioned?', options: ['Wet and dry', 'Eccrine and apocrine', 'Hot and cold', 'Surface and deep'], answer: 1 },
+          { question: 'What are freckles compared to?', options: ['Little dots of sunshine', 'Little memories scattered across skin', 'Tiny stars', 'Kisses from the sun'], answer: 1 },
+          { question: 'What are scars described as?', options: ['Imperfections', 'Chapters — proof healing is possible', 'Marks of the past', 'Battle wounds'], answer: 1 },
+          { question: 'Where does the author hear happiness according to the laugh entry?', options: ['In her singing', 'In her laugh — "If someone asked me what happiness sounds like, it sounds like you"', 'In her voice', 'In her whisper'], answer: 1 },
+          { question: 'What are sebaceous glands described as?', options: ['Oil producers', 'Tiny oil factories attached to each hair follicle', 'Sweat producers', 'Skin cells'], answer: 1 },
+          { question: 'What do nerve endings do?', options: ['Send pain signals', 'Bridge between touch and feeling', 'Regulate temperature', 'Control movement'], answer: 1 },
+          { question: 'What does the author say about her skeleton?', options: ['It is fragile', 'Quiet invisible architecture that held her upright when everything was collapsing', 'It is strong', 'It is delicate'], answer: 1 },
+          { question: 'What is the ribcage described as?', options: ['A cage', 'A bony cage protecting heart and lungs — a fortress of her life', 'A shield', 'A frame'], answer: 1 },
+          { question: 'What causes her to blush?', options: ['Embarrassment', 'Something she cannot choose — appears before her words do', 'The cold', 'Compliments'], answer: 1 }
         ]
       },
-      // 100-organs section 3
+      // 100-organs section 5 — Soul & Emotions
       {
-        id: '100-organs-3', page: '100-organs', sectionIdx: 3, title: 'Section 4 Quiz',
+        id: '100-organs-soul-emotions', page: '100-organs', sectionIdx: 5, title: 'Soul & Emotions',
         questions: [
-          { question: 'What does a relaxed belly indicate?', options: ['Fullness', 'Trust', 'Sleepiness', 'Weakness'], answer: 1 },
-          { question: 'What is the waist often called?', options: ['The bridge', 'The curve', 'The middle', 'The hinge'], answer: 1 },
-          { question: 'How many muscles make up the core?', options: ['15', '29', '35', '42'], answer: 2 },
-          { question: 'What does the navel connect us to?', options: ['The past', 'Our mother', 'The earth', 'Our center'], answer: 0 },
-          { question: 'What does a strong core improve?', options: ['Balance', 'Posture', 'Both', 'Neither'], answer: 2 },
-          { question: 'What does a belly laugh release?', options: ['Air', 'Endorphins', 'Tears', 'Sound'], answer: 1 },
-          { question: 'What part of the torso holds the most tension?', options: ['Chest', 'Stomach', 'Shoulders', 'Lower back'], answer: 3 },
-          { question: 'How many ribs protect the human heart?', options: ['12 pairs', '8 pairs', '10 pairs', '6 pairs'], answer: 0 },
-          { question: 'What does the diaphragm do?', options: ['Pumps blood', 'Helps breathe', 'Digests food', 'Filters air'], answer: 1 },
-          { question: 'What is the softest part of the belly?', options: ['The center', 'The sides', 'Below the navel', 'Above the hips'], answer: 2 }
+          { question: 'What is her warmth compared to?', options: ['A warm blanket', 'First light of morning — stays quietly, patiently, constantly', 'A cozy fire', 'The sun'], answer: 1 },
+          { question: 'What does her presence do to a room?', options: ['Makes it louder', 'Makes it more complete — not louder or brighter, just more', 'Makes it brighter', 'Makes it warmer'], answer: 1 },
+          { question: 'What has her heart carried?', options: ['Only joy', 'Dreams that kept her awake and fears she never spoke about', 'Only love', 'Everything'], answer: 1 },
+          { question: 'How does the author describe her mind?', options: ['Overactive and chaotic', 'The most beautiful place — endlessly fascinating because it is never still', 'Brilliant and sharp', 'Quiet and deep'], answer: 1 },
+          { question: 'What is the soul described as?', options: ['The essence of a person', 'The quietest and most beautiful part of her — why every beautiful thing exists', 'The eternal part of us', 'The spark of life'], answer: 1 },
+          { question: 'What does she notice that others walk past?', options: ['Beautiful scenery', 'Little things', 'People\'s feelings', 'Her own beauty'], answer: 1 },
+          { question: 'What does the author wish she could see about her own mind?', options: ['How brilliant it is', 'Not as something that overthinks but as something that loves understanding', 'How creative it is', 'How peaceful it can be'], answer: 1 },
+          { question: 'What choice does her heart still make despite everything?', options: ['To love', 'To choose softness over bitterness', 'To hope', 'To stay'], answer: 1 },
+          { question: 'What does finding shade after standing in the sun too long represent?', options: ['Her comfort', 'Her presence', 'Her love', 'Her peace'], answer: 1 },
+          { question: 'What does the soul speak through according to the text?', options: ['Words', 'Everything she does', 'Her eyes', 'Her touch'], answer: 1 }
         ]
       },
-      // 100-organs section 4
+      // 100-organs section 6 — Intimacy & Desire
       {
-        id: '100-organs-4', page: '100-organs', sectionIdx: 4, title: 'Section 5 Quiz',
+        id: '100-organs-intimacy-desire', page: '100-organs', sectionIdx: 6, title: 'Intimacy & Desire',
         questions: [
-          { question: 'What is the largest organ in the body?', options: ['Liver', 'Skin', 'Brain', 'Lungs'], answer: 1 },
-          { question: 'How many bones are in the adult human body?', options: ['206', '300', '150', '250'], answer: 0 },
-          { question: 'What is bone marrow responsible for?', options: ['Strength', 'Blood cell production', 'Calcium storage', 'Protection'], answer: 1 },
-          { question: 'Which organ never rests?', options: ['Lungs', 'Brain', 'Heart', 'Liver'], answer: 2 },
-          { question: 'How fast does skin regenerate?', options: ['Every 7 days', 'Every 14 days', 'Every 28 days', 'Every 60 days'], answer: 2 },
-          { question: 'What is the strongest bone in the body?', options: ['Femur', 'Skull', 'Pelvis', 'Spine'], answer: 0 },
-          { question: 'Which organ filters toxins?', options: ['Kidneys', 'Liver', 'Lungs', 'Spleen'], answer: 1 },
-          { question: 'How many litres of blood does the heart pump daily?', options: ['About 7,500 litres', 'About 5,000 litres', 'About 10,000 litres', 'About 2,500 litres'], answer: 0 },
-          { question: 'What are taste buds replaced every?', options: ['3 days', '10 days', '2 weeks', '30 days'], answer: 1 },
-          { question: 'What percentage of your body is made of water?', options: ['40-50%', '50-60%', '60-70%', '70-80%'], answer: 2 }
+          { question: 'How is foreplay described?', options: ['The beginning of sex', 'Its own universe — not a beginning', 'A prelude', 'Teasing'], answer: 1 },
+          { question: 'What are "the three dots" referring to in the sexting entry?', options: ['Three dots in a row', 'The three dots appearing and disappearing while she types back', 'A specific emoji', 'A code word'], answer: 1 },
+          { question: 'What body parts does he use for non-penetrative intimacy?', options: ['His lips and tongue', 'His fingers, mouth, and hands', 'His whole body', 'His voice and hands'], answer: 1 },
+          { question: 'Where are the pulse points mentioned?', options: ['On her neck', 'Feeling her heartbeat against his lips', 'On her wrists', 'On her chest'], answer: 1 },
+          { question: 'What happens to her body temperature when she is aroused?', options: ['It drops', 'It runs warmer — flush across chest, neck glows', 'It stays the same', 'It becomes cold'], answer: 1 },
+          { question: 'What does the inner thighs represent?', options: ['Sensitive skin', '"Where everything changes"', 'A ticklish spot', 'A turn-on point'], answer: 1 },
+          { question: 'What is behind her ears described as?', options: ['A ticklish spot', 'A "small devastating place"', 'A sensitive area', 'A secret spot'], answer: 1 },
+          { question: 'How does she say his name differently?', options: ['In different languages', 'Depending on what she needs — one version is "barely a whisper, breathless"', 'Loudly when excited', 'Softly when sleepy'], answer: 1 },
+          { question: 'What does he want to do during foreplay?', options: ['Rush to the end', 'Take her apart piece by piece, slow and deliberate', 'Be rough', 'Talk dirty'], answer: 1 },
+          { question: 'What does the lower belly area represent?', options: ['The most sensitive part', 'The soft curve below her navel — not shown to everyone', 'Where he rests his hand', 'The center of desire'], answer: 1 }
         ]
       },
-      // 100-organs section 5
+      // 100-organs section 7 — Moments & Scenarios
       {
-        id: '100-organs-5', page: '100-organs', sectionIdx: 5, title: 'Section 6 Quiz',
+        id: '100-organs-moments-scenarios', page: '100-organs', sectionIdx: 7, title: 'Moments & Scenarios',
         questions: [
-          { question: 'Where does emotion live in the body?', options: ['In the brain', 'In the heart', 'Everywhere', 'In the gut'], answer: 2 },
-          { question: 'What is the soul often compared to?', options: ['A flame', 'A feather', 'A river', 'A star'], answer: 0 },
-          { question: 'What produces the feeling of butterflies?', options: ['Love', 'Anxiety', 'Adrenaline', 'All of the above'], answer: 3 },
-          { question: 'What connects the mind and the heart?', options: ['Thought', 'Feeling', 'Intuition', 'Memory'], answer: 2 },
-          { question: 'What is the body\'s natural painkiller?', options: ['Adrenaline', 'Dopamine', 'Endorphins', 'Serotonin'], answer: 2 },
-          { question: 'What does crying release from the body?', options: ['Water', 'Salt', 'Stress hormones', 'Heat'], answer: 2 },
-          { question: 'Which emotion is stored in the shoulders?', options: ['Anger', 'Burden', 'Fear', 'Joy'], answer: 1 },
-          { question: 'How long does an emotion typically last?', options: ['Seconds', 'Minutes', 'Hours', 'Days'], answer: 0 },
-          { question: 'What synchronises when two people connect deeply?', options: ['Breathing', 'Heartbeats', 'Brain waves', 'All of the above'], answer: 3 },
-          { question: 'What is the most powerful human emotion?', options: ['Fear', 'Joy', 'Love', 'Hope'], answer: 2 }
+          { question: 'When does she ambush him according to Entry 195?', options: ['When he is sleeping', 'At the most ordinary times', 'When he is working', 'When he is sad'], answer: 1 },
+          { question: 'What would he do first if they were together right now?', options: ['Kiss her', 'Pull her close and press his lips to her forehead', 'Hold her hand', 'Say I love you'], answer: 1 },
+          { question: 'What would happen to his brain the first time he sees her?', options: ['It would race', 'It would go completely quiet', 'It would explode with thoughts', 'It would forget everything'], answer: 1 },
+          { question: 'What does he say about her scent?', options: ['It is pleasant', 'It is embedded in him — he could find her in a dark room', 'It reminds him of flowers', 'It is intoxicating'], answer: 1 },
+          { question: 'What does he imagine doing on a rooftop?', options: ['Dancing', 'Watching the sunset and looking at her instead of the sky', 'Talking', 'Singing'], answer: 1 },
+          { question: 'What happens after sex in the quiet moments?', options: ['They talk', 'Sacred silence — her breathing evening out', 'They fall asleep', 'They laugh'], answer: 1 },
+          { question: 'What is the weight of her in his arms described as?', options: ['Light and fragile', 'The specific irreplaceable weight of a person who trusts you to rest', 'Heavy and comforting', 'Perfect'], answer: 1 },
+          { question: 'What does he imagine doing on an abandoned mountain?', options: ['Camping', 'Making out under the moon — cold air makes her press against him', 'Hiking', 'Talking'], answer: 1 },
+          { question: 'What does she do in the first time she completely lets go?', options: ['Cries', 'Stops holding anything back — eyes closed', 'Moans loudly', 'Whispers his name'], answer: 1 },
+          { question: 'What scenario does he describe for making out on a mountain?', options: ['Late night, full moon, cold air making her press into him', 'Sunset, warm breeze', 'Sunrise after a long night', 'Rainy afternoon'], answer: 0 }
         ]
       },
-      // 100-organs section 6
+      // love section 0 — Body Details
       {
-        id: '100-organs-6', page: '100-organs', sectionIdx: 6, title: 'Section 7 Quiz',
+        id: 'love-body-details', page: 'love', sectionIdx: 0, title: 'Body Details',
         questions: [
-          { question: 'What hormone is called the love hormone?', options: ['Dopamine', 'Oxytocin', 'Serotonin', 'Adrenaline'], answer: 1 },
-          { question: 'What part of the body responds first to touch?', options: ['Hands', 'Skin', 'Lips', 'Neck'], answer: 1 },
-          { question: 'How many nerve endings are in the average human body?', options: ['1 million', '45 million', '100 million', '500 million'], answer: 1 },
-          { question: 'What does pupil dilation indicate?', options: ['Fear', 'Interest', 'Anger', 'Tiredness'], answer: 1 },
-          { question: 'What is the most erogenous zone?', options: ['Lips', 'Neck', 'Ears', 'It varies per person'], answer: 3 },
-          { question: 'What does skin-to-skin contact release?', options: ['Heat', 'Oxytocin', 'Sweat', 'Electricity'], answer: 1 },
-          { question: 'How long does a kiss burn on average calories?', options: ['2 calories', '6 calories', '12 calories', '20 calories'], answer: 1 },
-          { question: 'What determines sexual attraction most?', options: ['Looks', 'Scent', 'Personality', 'Voice'], answer: 2 },
-          { question: 'What deepens intimacy over time?', options: ['Time spent', 'Vulnerability', 'Shared experiences', 'All of the above'], answer: 3 },
-          { question: 'What is the most sensitive part of a lover\'s body?', options: ['The neck', 'The inner wrist', 'The lower back', 'The spot only they know'], answer: 3 }
+          { question: 'Where does he press his thumbs when the world has been too loud?', options: ['Her shoulders', 'Her temples', 'Her forehead', 'Her neck'], answer: 1 },
+          { question: 'Where are the places where her heartbeat becomes visible?', options: ['Chest and arms', 'Wrists, neck, and behind ears', 'Temples and chest', 'Palms and neck'], answer: 1 },
+          { question: 'What are her shoulder blades described as?', options: ['Two delicate bones', 'Two wings beneath her skin she never learned to use', 'The hinges of her back', 'Beautiful curves'], answer: 1 },
+          { question: 'What does the author say about her belly button?', options: ['It is cute', 'The first home she ever had', 'A tiny scar', 'The centre of her body'], answer: 1 },
+          { question: 'What does the author say about her footsteps?', options: ['They are light', 'He knows the sound of her approaching before he sees her', 'They are quick', 'They are heavy'], answer: 1 },
+          { question: 'What does the author say about her collarbone?', options: ['It is elegant — first place he wants to kiss when she is wearing something nice', 'It is delicate', 'It is sexy', 'It is sharp'], answer: 0 },
+          { question: 'What are her birthmarks described as?', options: ['Imperfections', 'Unique constellations scattered across skin that he has memorized', 'Little dots', 'Moles'], answer: 1 },
+          { question: 'Where does his hand find its natural resting place?', options: ['On her waist', 'In the curve that fits perfectly into his palm (the hollow he holds)', 'On her back', 'On her hip'], answer: 1 },
+          { question: 'What does her posture say when she is tired?', options: ['She slumps', 'Slightly curved', 'She lies down', 'She stretches'], answer: 1 },
+          { question: 'How does she move through a room?', options: ['Quietly', 'She does not enter a space so much as change it — people look up', 'Elegantly', 'Quickly'], answer: 1 }
         ]
       },
-      // 100-organs section 7
+      // love section 1 — Voice, Habits & Daily Life
       {
-        id: '100-organs-7', page: '100-organs', sectionIdx: 7, title: 'Section 8 Quiz',
+        id: 'love-voice-habits', page: 'love', sectionIdx: 1, title: 'Voice, Habits & Daily Life',
         questions: [
-          { question: 'What makes a moment unforgettable?', options: ['The place', 'The person', 'The feeling', 'The timing'], answer: 2 },
-          { question: 'How long does a memory last?', options: ['A day', 'A year', 'A lifetime', 'Forever'], answer: 2 },
-          { question: 'What anchors a moment in time?', options: ['A photo', 'A scent', 'A song', 'A touch'], answer: 3 },
-          { question: 'What defines a shared moment?', options: ['Being together', 'Saying something', 'Feeling the same', 'Looking at each other'], answer: 2 },
-          { question: 'How many moments make a relationship?', options: ['The big ones', 'The small ones', 'Both', 'The first one'], answer: 2 },
-          { question: 'What makes a goodbye memorable?', options: ['The words', 'The hug', 'The promise to return', 'The silence'], answer: 2 },
-          { question: 'What turns a moment into a memory?', options: ['Repetition', 'Emotion', 'Time', 'Storytelling'], answer: 1 },
-          { question: 'What is the best kind of silence between two people?', options: ['Awkward silence', 'Comfortable silence', 'Angry silence', 'Silence from distance'], answer: 1 },
-          { question: 'What makes a future feel real?', options: ['Dreaming together', 'Planning together', 'Building together', 'All of the above'], answer: 3 },
-          { question: 'What does every great love story need?', options: ['A happy ending', 'A challenge', 'Many chapters', 'A beginning that feels like fate'], answer: 2 }
+          { question: 'How is her morning voice described?', options: ['Soft and high', 'Raspy, warm, lower, slower, more honest', 'Quiet and gentle', 'Deep and sleepy'], answer: 1 },
+          { question: 'What does her real laugh make her do?', options: ['Clap her hands', 'Snort, double over, eyes water', 'Slap her knee', 'Cover her mouth'], answer: 1 },
+          { question: 'How does she wake up?', options: ['Abruptly with an alarm', 'Slow, soft, stretches like a cat', 'Immediately alert', 'Grumpy'], answer: 1 },
+          { question: 'What does she do when dancing when no one is watching?', options: ['Moves choreographed steps', 'Pure expression, not choreographed — in the kitchen, living room, car', 'Sways gently', 'Bops her head'], answer: 1 },
+          { question: 'What does she do with her hands when nervous?', options: ['Clasps them together', 'Fidgets with sleeves, twists hair, taps against thigh', 'Hides them in pockets', 'Wrings them'], answer: 1 },
+          { question: 'What does she do when she tidies?', options: ['Sweeps everything under the rug', 'Smooths, folds, arranges — fluffs pillows, aligns coasters', 'Puts things in boxes', 'Quickly picks up'], answer: 1 },
+          { question: 'How does she eat according to the comfort food entry?', options: ['Slowly and carefully', 'Sometimes savours every bite, sometimes devours', 'Always fast', 'Always politely'], answer: 1 },
+          { question: 'What does her sigh mean?', options: ['Only sadness', 'Relief, exhaustion, settling into peace', 'Boredom', 'Frustration'], answer: 1 },
+          { question: 'How does she drift to sleep?', options: ['Immediately', 'Fights sleep sometimes — curls into him or turns away', 'Takes hours', 'Watches videos first'], answer: 1 },
+          { question: 'What does her handwriting reveal?', options: ['Her mood', 'It is as unique as her fingerprint', 'Her education', 'Her personality'], answer: 1 }
         ]
       },
-      // love section 2
+      // love section 2 — Personality & Inner World
       {
-        id: 'love-2', page: 'love', sectionIdx: 2, title: 'Section 3 Quiz',
+        id: 'love-personality-inner-world', page: 'love', sectionIdx: 2, title: 'Personality & Inner World',
         questions: [
-          { question: 'What defines a person\'s inner world?', options: ['Their thoughts', 'Their dreams', 'Their fears', 'All of the above'], answer: 3 },
-          { question: 'What is the foundation of personality?', options: ['Genes', 'Upbringing', 'Experiences', 'A mix of all'], answer: 3 },
-          { question: 'What draws people together beyond looks?', options: ['Conversation', 'Vulnerability', 'Shared values', 'Timing'], answer: 2 },
-          { question: 'How long does it take to truly know someone?', options: ['Months', 'Years', 'A lifetime', 'A single moment'], answer: 2 },
-          { question: 'What makes someone unforgettable?', options: ['Their face', 'Their voice', 'How they made you feel', 'What they said'], answer: 2 },
-          { question: 'What is the most attractive quality in a person?', options: ['Confidence', 'Kindness', 'Humor', 'Intelligence'], answer: 1 },
-          { question: 'What does a person\'s room say about them?', options: ['Their taste', 'Their state of mind', 'Their habits', 'All of the above'], answer: 3 },
-          { question: 'What is the quietest form of love?', options: ['Understanding', 'Acceptance', 'Patience', 'Attention'], answer: 1 },
-          { question: 'What builds a person\'s character?', options: ['Success', 'Struggle', 'Love', 'Time'], answer: 1 },
-          { question: 'What makes someone feel truly seen?', options: ['Being noticed', 'Being remembered', 'Being understood', 'Being loved'], answer: 2 }
+          { question: 'What does the author say about her solitude?', options: ['She hates being alone', 'She is different alone — more herself, and he respects it', 'She gets lonely', 'She needs company'], answer: 1 },
+          { question: 'What does her inner child do?', options: ['Comes out when she is tired', 'Gets excited about small things, believes in magic, wants to be held when scared', 'Makes her playful', 'Makes her childish'], answer: 1 },
+          { question: 'How does he describe her intuition?', options: ['She is lucky', 'She knows things before being told — feels the mood of a room', 'She is psychic', 'She is observant'], answer: 1 },
+          { question: 'What is her anger described as?', options: ['Something to be afraid of', 'Her spirit refusing to stay silent — fire that rises when something is unfair', 'Dangerous', 'Scary'], answer: 1 },
+          { question: 'What does her joy look like?', options: ['Loud and energetic', 'When she forgets to guard herself — pure, contagious', 'Quiet and content', 'Bubbly'], answer: 1 },
+          { question: 'What is her loyalty described as?', options: ['Fierce', 'When she loves, she loves completely — does not keep one foot out the door', 'Unshakeable', 'Devoted'], answer: 1 },
+          { question: 'What does her humility mean?', options: ['She is shy', 'She does not need to be the centre of attention — has no idea how remarkable she is', 'She is modest', 'She downplays herself'], answer: 1 },
+          { question: 'How does she bend without breaking?', options: ['She is rigid', 'Soft enough to bend and strong enough to spring back', 'She breaks sometimes', 'She stands firm'], answer: 1 },
+          { question: 'What is her forgiveness described as?', options: ['Hard to earn', 'She finds a way to let go — does not hold grudges or keep score', 'Slow to give', 'Reluctant'], answer: 1 },
+          { question: 'What does her creative side show in?', options: ['Her art', 'How she decorates, writes, solves problems', 'Her cooking', 'Her style'], answer: 1 }
         ]
       },
-      // love section 3
+      // love section 3 — Relationships & World
       {
-        id: 'love-3', page: 'love', sectionIdx: 3, title: 'Section 4 Quiz',
+        id: 'love-relationships-world', page: 'love', sectionIdx: 3, title: 'Relationships & World',
         questions: [
-          { question: 'What is the foundation of a strong relationship?', options: ['Passion', 'Trust', 'Communication', 'Time'], answer: 1 },
-          { question: 'How often should couples communicate deeply?', options: ['Daily', 'Weekly', 'When needed', 'Always'], answer: 3 },
-          { question: 'What destroys relationships most often?', options: ['Distance', 'Misunderstanding', 'Boredom', 'Pride'], answer: 3 },
-          { question: 'What makes a relationship last?', options: ['Love', 'Effort', 'Compatibility', 'All of the above'], answer: 3 },
-          { question: 'What is the healthiest form of conflict?', options: ['Arguing loudly', 'Silent treatment', 'Honest discussion', 'Walking away'], answer: 2 },
-          { question: 'How much time should partners spend together?', options: ['24/7', 'Quality over quantity', 'Separate lives', 'Only weekends'], answer: 1 },
-          { question: 'What strengthens a bond most?', options: ['Shared joy', 'Shared struggle', 'Shared growth', 'All of the above'], answer: 3 },
-          { question: 'What is the role of family in a relationship?', options: ['Everything', 'Support', 'Boundaries', 'Background'], answer: 2 },
-          { question: 'What does a healthy relationship feel like?', options: ['Exciting', 'Safe', 'Effortless', 'Home'], answer: 3 },
-          { question: 'What is the most important thing in a partnership?', options: ['Love', 'Respect', 'Laughter', 'Commitment'], answer: 1 }
+          { question: 'What is the weight of her trust described as?', options: ['A gift', 'The most precious thing she gives — she does not trust easily', 'A responsibility', 'An honour'], answer: 1 },
+          { question: 'How does she apologize?', options: ['Quickly and moves on', 'Does not apologize just to end conflict — explains perspective without excuses', 'Rarely', 'With gifts'], answer: 1 },
+          { question: 'What is her relationship with the mirror?', options: ['She loves her reflection', 'She focuses on flaws — the mirror lies to her', 'She avoids it', 'She checks it often'], answer: 1 },
+          { question: 'How does she introduce the author?', options: ['Casually', 'Tone shifts, face softens — introduces him as someone important', 'Quietly', 'Excitedly'], answer: 1 },
+          { question: 'What is her energy in a crowd?', options: ['Loud and social', 'More aware, more observant — reads the room, finds his eyes', 'Shy and quiet', 'Anxious'], answer: 1 },
+          { question: 'What does she do with the things she collects?', options: ['Displays them', 'Keeps pieces of him — ticket stubs, dried flowers, stones from beaches', 'Throws them away', 'Forgets about them'], answer: 1 },
+          { question: 'What is her relationship with music?', options: ['She likes it', 'A language, a time machine, a friend — he knows which songs make her dance/cry/sing', 'Just background noise', 'She sings along'], answer: 1 },
+          { question: 'What is her favorite season about?', options: ['The weather', 'The time of year that speaks to her soul — brings out a version of her only then', 'The holidays', 'The fashion'], answer: 1 },
+          { question: 'What does she do when she has had a long day?', options: ['Complains about it', 'The quiet unravel — bra off, smile relaxes, shoulders drop', 'Goes straight to bed', 'Takes a shower'], answer: 1 },
+          { question: 'What does she do with the stories she repeats?', options: ['Tells them to everyone', 'Memories she returns to — he listens every time even when he has heard it before', 'Forgets them', 'Writes them down'], answer: 1 }
         ]
       },
-      // love section 4
+      // love section 4 — Our Story & Future
       {
-        id: 'love-4', page: 'love', sectionIdx: 4, title: 'Section 5 Quiz',
+        id: 'love-our-story-future', page: 'love', sectionIdx: 4, title: 'Our Story & Future',
         questions: [
-          { question: 'What does a shared future begin with?', options: ['A plan', 'A dream', 'A promise', 'A date'], answer: 1 },
-          { question: 'How do you build a life together?', options: ['One day at a time', 'With a blueprint', 'By following fate', 'By not planning'], answer: 0 },
-          { question: 'What makes a love story beautiful?', options: ['The ending', 'The journey', 'The struggles', 'The luck'], answer: 1 },
-          { question: 'What should every couple build together?', options: ['A home', 'A business', 'A family', 'A world of their own'], answer: 3 },
-          { question: 'What sustains love through hard times?', options: ['Hope', 'Faith in each other', 'Shared purpose', 'All of the above'], answer: 3 },
-          { question: 'What is the most romantic promise?', options: ['I will love you forever', 'I will always come back', 'I choose you every day', 'I will never leave'], answer: 2 },
-          { question: 'How do you keep a story alive?', options: ['Keep writing it', 'Keep reading it', 'Keep telling it', 'Keep living it'], answer: 3 },
-          { question: 'What is better than a perfect ending?', options: ['A new beginning', 'No ending at all', 'A shared one', 'A surprise'], answer: 1 },
-          { question: 'What makes a journey together meaningful?', options: ['The destination', 'The company', 'The distance', 'The pace'], answer: 1 },
-          { question: 'What is the final secret to a lasting love?', options: ['Never give up', 'Never stop growing', 'Never stop choosing each other', 'All of the above'], answer: 3 }
+          { question: 'What does he remember about the first time he saw her?', options: ['What she was wearing', 'The rest of the world dimmed — his soul knew hers long before his mind caught up', 'Where they were', 'The date'], answer: 1 },
+          { question: 'How does he describe the first kiss?', options: ['Perfect like a movie kiss', 'Not perfect in the way movie kisses are — better because it was real', 'Awkward but sweet', 'Magical'], answer: 1 },
+          { question: 'What does he say about their arguments?', options: ['They never argue', 'Raised voices, slammed doors, words they wish they could take back — but they always come back', 'They are calm', 'They take breaks'], answer: 1 },
+          { question: 'How does she say goodbye?', options: ['Quickly', 'Lingers — one more hug, one more kiss, turns back for one last look, waves once', 'Sadly', 'With a smile'], answer: 1 },
+          { question: 'What future does he see with her?', options: ['A big house and cars', 'Slow mornings with coffee, arguments about dishes that end in laughter, growing old together', 'Travel and adventure', 'A quiet life'], answer: 1 },
+          { question: 'How does she introduce him to others?', options: ['By his name', 'Tone shifts, face softens — the version of him she describes is someone he wants to become', 'Proudly', 'Casually'], answer: 1 },
+          { question: 'What does she do when she comes back after distance?', options: ['Apologizes', 'Every return reminds him their connection is stronger than space', 'Acts like nothing happened', 'Explains why'], answer: 1 },
+          { question: 'What is her favorite version of them?', options: ['When they travel', 'Communicating without fighting, laughing until they cannot breathe — it is her north star', ['When they first met', 'When they are intimate'], answer: 1 },
+          { question: 'What does he say about the home they will build?', options: ['It will be big', 'Not just a house — filled with shared memories, inside jokes, favorite things', 'It will be perfect', 'It will be cosy'], answer: 1 },
+          { question: 'What does he say about the version of him she brings out?', options: ['She made him better', 'Before her, he did not know he could be this soft, this patient — she just believed it was possible', 'She inspires him', 'She completes him'], answer: 1 }
         ]
       }
     ];
