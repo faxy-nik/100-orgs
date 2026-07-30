@@ -7,6 +7,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="fb-db.js"></script>
 <style>
 :root {
   --ink: #17130f;
@@ -491,6 +494,7 @@ body {
     <h1>Turn Yourself On</h1>
     <p>An exploration of desire, one choice at a time. 38 steps from the first breath to the quiet after. Every decision stays. Nothing is taken back. Only more is added.</p>
     <button class="start-btn" id="startBtn">&#x2665; Begin</button>
+    <p style="margin-top:1.5rem;font-size:.75rem;"><a href="turnon-history.html" style="color:var(--ash);">&#x2661; Session History</a></p>
   </div>
 
   <!-- Game -->
@@ -1058,10 +1062,33 @@ function toggleNarrative() {
   arrow.classList.toggle('open');
 }
 
+function pushSession() {
+  if (typeof FB === 'undefined' || typeof FB.get !== 'function') return;
+  try { if (localStorage.getItem('ash-admin-passkey')) return; } catch(e) {}
+  var now = Date.now();
+  try {
+    var lastPush = parseInt(localStorage.getItem('ash-turnon-last-push') || '0');
+    if (now - lastPush < 300000) return;
+  } catch(e) {}
+  try { localStorage.setItem('ash-turnon-last-push', now); } catch(e) {}
+  var session = {
+    timestamp: now,
+    label: new Date().toLocaleString(),
+    history: JSON.parse(JSON.stringify(state.history)),
+    narrative: JSON.parse(JSON.stringify(state.narrative))
+  };
+  FB.get('turnOn', 'sessions_data').then(function (d) {
+    var list = (d && d.sessions) ? d.sessions : [];
+    list.push(session);
+    return FB.put('turnOn', { id: 'sessions_data', sessions: list });
+  }).catch(function(){});
+}
+
 function showEnd() {
   document.getElementById('startScreen').style.display = 'none';
   document.getElementById('gameScreen').style.display = 'none';
   document.getElementById('endScreen').style.display = 'block';
+  pushSession();
 
   // Stats
   var h = state.history;

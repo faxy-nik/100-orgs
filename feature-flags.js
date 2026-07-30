@@ -4,18 +4,12 @@
   var FB_PATH = 'config/features';
 
   var ALL_FEATURES = [
-    { id:'section-100-organs', label:'100 Organs', cat:'Sections', desc:'The main tribute', auto:'section dates' },
-    { id:'section-love', label:'Love', cat:'Sections', desc:'Love-themed content', auto:'section dates' },
-    { id:'section-fantasies', label:'Fantasies', cat:'Sections', desc:'Fantasies & comforts', auto:'section dates' },
-    { id:'section-sky-observatory', label:'Sky Observatory', cat:'Sections', desc:'Sky gallery & features', auto:'section dates' },
-    { id:'section-photo-gallery', label:'Photo Gallery', cat:'Sections', desc:'Photo & video gallery', auto:'section dates' },
     { id:'balloons', label:'Balloons', cat:'Interactive', desc:'Floating balloons across pages', auto:'' },
     { id:'feathers', label:'Feathers', cat:'Interactive', desc:'Drifting feathers', auto:'' },
     { id:'coffee', label:'Coffee Break', cat:'Interactive', desc:'Coffee reminder after 20min', auto:'20 minutes after page load' },
     { id:'lucky-star', label:'Lucky Star', cat:'Interactive', desc:'Special star in sky observatory', auto:'on certain skies' },
     { id:'fragments', label:'Puzzle Fragments', cat:'Interactive', desc:'Hidden collectible fragments', auto:'' },
     { id:'firefly-jar', label:'Firefly Jar', cat:'Features', desc:'Firefly catch counter UI', auto:'after first firefly caught' },
-    { id:'globe', label:'Globe', cat:'Features', desc:'World progress globe', auto:'after all 5 sections read' },
     { id:'favorites', label:'Favorites Button', cat:'Features', desc:'Favorite/save toggle on content', auto:'after first favorite' },
     { id:'music', label:'Music Player', cat:'Features', desc:'Jukebox audio player', auto:'' },
     { id:'wish-journal', label:'Wish Journal', cat:'Features', desc:'Submitted wishes viewer', auto:'after first wish' },
@@ -99,6 +93,7 @@
     set: function (id, val) {
       flags[id] = !!val;
       try { localStorage.setItem(KEY, JSON.stringify(flags)); } catch(e) {}
+      this.save();
     },
     toggle: function (id) { this.set(id, !this.get(id)); return this.get(id); },
     list: function () { return ALL_FEATURES; },
