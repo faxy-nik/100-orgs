@@ -1272,6 +1272,11 @@
     });
   }
 
+  window.toggleHist = function (id) {
+    var el = document.getElementById(id);
+    if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  };
+
   function renderQuizHistory() {
     FB.get('quizHistory', 'all').then(function (d) {
       var history = d && d.items ? d.items : [];
@@ -1281,11 +1286,29 @@
       var html = '';
       for (var i = history.length - 1; i >= 0; i--) {
         var h = history[i];
-        html += '<div style="padding:.4rem .6rem;margin-bottom:4px;border-radius:4px;background:rgba(255,220,160,.02);font-size:.8rem;">' +
-          '<span style="color:#ffebd2;">' + esc(h.quizId || '?') + '</span>' +
+        var id = 'qhist-' + i;
+        html += '<div style="margin-bottom:4px;border-radius:4px;background:rgba(255,220,160,.02);font-size:.8rem;">' +
+          '<div onclick="toggleHist(\'' + id + '\')" style="padding:.4rem .6rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">' +
+          '<div><span style="color:#ffebd2;">' + esc(h.quizId || '?') + '</span>' +
           ' <span style="color:#6b5f52;">|</span> <span style="color:#6fcf93;">' + (h.score || 0) + '/' + (h.total || 0) + '</span>' +
           ' <span style="color:' + (h.passed ? '#6fcf93' : '#e85d3a') + ';">' + (h.passed ? 'PASS' : 'FAIL') + '</span>' +
-          ' <span style="color:#6b5f52;font-size:.7rem;">' + (h.timestamp ? new Date(h.timestamp).toLocaleString() : '') + '</span></div>';
+          ' <span style="color:#6b5f52;font-size:.7rem;">' + (h.timestamp ? new Date(h.timestamp).toLocaleString() : '') + '</span></div>' +
+          '<span style="color:#6b5f52;">\u25BC</span></div>' +
+          '<div id="' + id + '" style="display:none;padding:.3rem .6rem .6rem;border-top:1px solid rgba(255,255,255,0.04);">';
+        if (h.answers && h.answers.length) {
+          h.answers.forEach(function (a) {
+            var icon = a.isCorrect ? '\u2705' : '\u274C';
+            var aColor = a.isCorrect ? '#6fcf93' : '#e85d3a';
+            html += '<div style="padding:.3rem 0;font-size:.75rem;line-height:1.4;border-bottom:1px solid rgba(255,255,255,0.02);">' +
+              '<div style="color:#c7b8a1;">' + esc(a.question) + '</div>' +
+              '<div style="color:' + aColor + ';">' + icon + ' ' + esc(a.chosen) + '</div>';
+            if (!a.isCorrect) html += '<div style="color:#6fcf93;">\u2705 ' + esc(a.correct) + '</div>';
+            html += '</div>';
+          });
+        } else {
+          html += '<div style="color:#6b5f52;font-size:.75rem;">No answer details recorded.</div>';
+        }
+        html += '</div></div>';
       }
       container.innerHTML = html;
     }).catch(function () {});
