@@ -353,6 +353,7 @@
       <button class="tab" data-tab="sectionRequests">&#x1F4CB; Sections</button>
       <button class="tab" data-tab="settings">&#x2699; Settings</button>
       <button class="tab" data-tab="dreams">&#x1F30C; Dreams</button>
+      <button class="tab" data-tab="turnon">&#x2665; Turn On</button>
       <button class="tab" data-tab="project">&#x1F48E; Project</button>
       <button class="tab" data-tab="access">&#x1F510; Access</button>
     </div>
@@ -566,6 +567,19 @@
       </div>
     </div>
     <div class="song-list" id="dreamList"></div>
+  </div>
+
+  <!-- Tab: Turn On -->
+  <div class="tab-content" id="tabTurnon">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Manage the Turn Yourself On journey steps. Each step has a prompt and 2-3 options that lead to the next step.
+    </p>
+    <div style="display:flex;gap:.5rem;margin-bottom:1rem;">
+      <button id="addTurnOnStepBtn" style="padding:.45rem 1.1rem;border-radius:6px;cursor:pointer;font-family:'Fraunces',Georgia,serif;font-size:.8rem;background:rgba(111,207,147,.1);border:1px solid rgba(111,207,147,.3);color:#6fcf93;">+ Add Step</button>
+      <button id="saveTurnOnBtn" style="padding:.45rem 1.1rem;border-radius:6px;cursor:pointer;font-family:'Fraunces',Georgia,serif;font-size:.8rem;background:rgba(255,230,128,.1);border:1px solid var(--gold);color:var(--gold);">Save to Firebase</button>
+    </div>
+    <p id="turnOnToast" style="font-size:.75rem;color:var(--ash);margin:0 0 .5rem;"></p>
+    <div id="turnOnStepsList"></div>
   </div>
 
   <!-- Tab: Project (permanent data — survives cold start & reset) -->
@@ -2581,6 +2595,116 @@
     });
   }
 
+  /* ---- Turn On ---- */
+  var turnOnSteps = [];
+  var turnOnIdCounter = 100;
+
+  function renderTurnOnSteps() {
+    FB.get('turnOn', 'steps').then(function (d) {
+      turnOnSteps = (d && d.list) ? JSON.parse(JSON.stringify(d.list)) : [];
+      turnOnIdCounter = 100;
+      turnOnSteps.forEach(function (s) { if (s.id >= turnOnIdCounter) turnOnIdCounter = s.id + 1; });
+      renderTurnOnList();
+    }).catch(function () {
+      turnOnSteps = [];
+      renderTurnOnList();
+    });
+  }
+
+  function renderTurnOnList() {
+    var container = document.getElementById('turnOnStepsList');
+    if (!container) return;
+    if (!turnOnSteps.length) {
+      container.innerHTML = '<div class="empty-state"><div class="icon">&#x2665;</div><p>No steps yet. Add your first one.</p></div>';
+      return;
+    }
+    var html = '';
+    turnOnSteps.forEach(function (step, i) {
+      html += '<div style="background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);border-radius:10px;padding:1rem;margin-bottom:.75rem;">';
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;">';
+      html += '<span style="font-family:\'Fraunces\',Georgia,serif;font-size:.85rem;color:var(--gold);">Step #' + step.id + ' <span style="color:var(--ash);font-size:.7rem;">(Level ' + (step.level + 1) + ')</span></span>';
+      html += '<div style="display:flex;gap:.4rem;">';
+      html += '<button class="del-btn" data-to-idx="' + i + '" style="font-size:.7rem;">Delete</button>';
+      html += '</div></div>';
+      html += '<div class="field"><label>Prompt</label>';
+      html += '<input type="text" class="to-prompt" value="' + esc(step.prompt) + '" data-idx="' + i + '" style="width:100%;"></div>';
+      html += '<div style="display:flex;gap:1rem;margin-bottom:.5rem;">';
+      html += '<div class="field" style="flex:1;"><label>Level (0-9)</label>';
+      html += '<input type="number" class="to-level" value="' + step.level + '" min="0" max="9" data-idx="' + i + '" style="width:100%;"></div>';
+      html += '</div>';
+      html += '<div style="font-size:.7rem;color:var(--ash);margin-bottom:.4rem;">Options:</div>';
+      step.options.forEach(function (opt, oi) {
+        html += '<div style="display:flex;gap:.4rem;margin-bottom:.3rem;align-items:center;">';
+        html += '<input type="text" class="to-opt-text" value="' + esc(opt.text) + '" placeholder="Option text" data-idx="' + i + '" data-oi="' + oi + '" style="flex:1;padding:.35rem .5rem;border-radius:4px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-size:.8rem;outline:none;">';
+        html += '<input type="number" class="to-opt-next" value="' + opt.next + '" placeholder="Next step ID" data-idx="' + i + '" data-oi="' + oi + '" style="width:70px;padding:.35rem .5rem;border-radius:4px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-size:.8rem;outline:none;">';
+        html += '<span style="color:var(--ash);font-size:.7rem;">(-1 = end)</span>';
+        html += '</div>';
+      });
+      html += '</div>';
+    });
+    container.innerHTML = html;
+
+    // Bind changes
+    container.querySelectorAll('.to-prompt').forEach(function (el) {
+      el.addEventListener('input', function () {
+        turnOnSteps[parseInt(this.dataset.idx)].prompt = this.value;
+      });
+    });
+    container.querySelectorAll('.to-level').forEach(function (el) {
+      el.addEventListener('input', function () {
+        turnOnSteps[parseInt(this.dataset.idx)].level = parseInt(this.value) || 0;
+      });
+    });
+    container.querySelectorAll('.to-opt-text').forEach(function (el) {
+      el.addEventListener('input', function () {
+        var i = parseInt(this.dataset.idx);
+        var oi = parseInt(this.dataset.oi);
+        turnOnSteps[i].options[oi].text = this.value;
+      });
+    });
+    container.querySelectorAll('.to-opt-next').forEach(function (el) {
+      el.addEventListener('input', function () {
+        var i = parseInt(this.dataset.idx);
+        var oi = parseInt(this.dataset.oi);
+        turnOnSteps[i].options[oi].next = parseInt(this.value) || -1;
+      });
+    });
+    container.querySelectorAll('.del-btn[data-to-idx]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var idx = parseInt(this.dataset.toIdx);
+        turnOnSteps.splice(idx, 1);
+        renderTurnOnList();
+        toast('Step deleted.');
+      });
+    });
+
+    document.getElementById('turnOnStatus').textContent = turnOnSteps.length + ' step(s)';
+  }
+
+  document.getElementById('addTurnOnStepBtn').addEventListener('click', function () {
+    var newId = turnOnIdCounter++;
+    var lastLevel = turnOnSteps.length > 0 ? turnOnSteps[turnOnSteps.length - 1].level : 0;
+    turnOnSteps.push({
+      id: newId,
+      level: Math.min(lastLevel + (turnOnSteps.length > 0 ? 1 : 0), 9),
+      prompt: 'New prompt...',
+      options: [
+        { text: 'Option 1', next: newId + 1 },
+        { text: 'Option 2', next: newId + 1 }
+      ]
+    });
+    renderTurnOnList();
+    toast('Step added.');
+  });
+
+  document.getElementById('saveTurnOnBtn').addEventListener('click', function () {
+    FB.put('turnOn', { id: 'steps', list: turnOnSteps }).then(function () {
+      toast('Turn On steps saved to Firebase.');
+    }).catch(function () {
+      toast('Failed to save.');
+    });
+  });
+
   /* ---- Secret Song ---- */
   function loadSecretForm() {
     dbGet('config', 'secretSong').then(function (data) {
@@ -2849,6 +2973,7 @@
         if (this.dataset.tab === 'dynamic') renderDynamicContent();
         if (this.dataset.tab === 'timeline') renderTimeline();
         if (this.dataset.tab === 'dreams') renderDreams();
+        if (this.dataset.tab === 'turnon') renderTurnOnSteps();
         if (this.dataset.tab === 'activity') loadActivity();
         if (this.dataset.tab === 'project') { renderProjectPuzzles(); renderProjectEvents(); renderStoryline(); }
       });

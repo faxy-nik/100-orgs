@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>turn on &mdash; 100 prghs for eeshah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="fb-db.js"></script>
+<style>
+:root {
+  --ink: #17130f;
+  --ink-soft: #1e1811;
+  --ink-line: #33291e;
+  --parchment: #ffebd2;
+  --parchment-dim: #c7b8a1;
+  --ash: #6b5f52;
+  --gold: #ffe680;
+  --ember: #e85d3a;
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-body: "Lora", Georgia, "Times New Roman", serif;
+  --measure: 560px;
+  --pad-inline: clamp(1.25rem, 6vw, 2.25rem);
+  --glass: rgba(255, 220, 160, .08);
+  --glassBorder: rgba(255, 210, 150, .35);
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #181214;
+  color: var(--parchment);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(160, 60, 60, 0.12), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(130, 40, 60, 0.08), transparent 60%);
+}
+.page {
+  max-width: calc(var(--measure) + var(--pad-inline) * 2);
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--pad-inline);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Start screen */
+#startScreen {
+  text-align: center;
+  animation: fadeIn 1s ease;
+}
+#startScreen h1 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  color: var(--parchment);
+  margin: 0 0 0.75rem;
+  line-height: 1.3;
+}
+#startScreen p {
+  color: var(--parchment-dim);
+  font-size: clamp(0.9rem, 2vw, 1rem);
+  max-width: 400px;
+  margin: 0 auto 2rem;
+}
+.start-btn {
+  padding: 1rem 2.5rem;
+  border-radius: 50px;
+  background: linear-gradient(135deg, rgba(232, 93, 58, 0.2), rgba(200, 60, 80, 0.15));
+  border: 1px solid var(--ember);
+  color: var(--ember);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.4s;
+  letter-spacing: 0.04em;
+}
+.start-btn:hover {
+  background: var(--ember);
+  color: var(--parchment);
+  transform: scale(1.05);
+  box-shadow: 0 0 40px rgba(232, 93, 58, 0.3);
+}
+
+/* Game screen */
+#gameScreen {
+  width: 100%;
+  display: none;
+  animation: fadeIn 0.6s ease;
+}
+
+/* Level indicator */
+.level-bar {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin-bottom: 2rem;
+  width: 100%;
+  max-width: 300px;
+}
+.level-dot {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--ink-line);
+  transition: background 0.5s;
+}
+.level-dot.lit { background: var(--ember); }
+.level-dot.current { background: var(--gold); }
+
+/* Prompt */
+.prompt {
+  text-align: center;
+  margin-bottom: 2rem;
+  position: relative;
+}
+.prompt .label {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--ash);
+  margin-bottom: 0.5rem;
+}
+.prompt .text {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 3.5vw, 1.6rem);
+  color: var(--parchment);
+  line-height: 1.5;
+  font-weight: 500;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* Options */
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto 2rem;
+}
+.opt-btn {
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  background: var(--glass);
+  border: 1px solid var(--glassBorder);
+  color: var(--parchment-dim);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-align: center;
+  line-height: 1.4;
+}
+.opt-btn:hover {
+  border-color: var(--ember);
+  color: var(--parchment);
+  background: rgba(232, 93, 58, 0.08);
+  transform: translateY(-2px);
+}
+
+/* History */
+.history {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+.history .title {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ash);
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  background: rgba(255, 220, 160, 0.03);
+  margin-bottom: 4px;
+  font-size: 0.8rem;
+  color: var(--parchment-dim);
+  animation: slideIn 0.3s ease;
+}
+.history-item .num {
+  font-family: var(--font-display);
+  color: var(--ash);
+  font-size: 0.7rem;
+  min-width: 1.2rem;
+  text-align: right;
+}
+.history-item .choice-prompt {
+  color: var(--ash);
+  font-style: italic;
+  font-size: 0.75rem;
+}
+.history-item .choice-text {
+  color: var(--ember);
+}
+
+/* Reset */
+.reset-btn {
+  display: block;
+  margin: 2rem auto 0;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid var(--ink-line);
+  color: var(--ash);
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.reset-btn:hover {
+  border-color: var(--ember);
+  color: var(--ember);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* End screen */
+#endScreen {
+  display: none;
+  text-align: center;
+  animation: fadeIn 0.6s ease;
+}
+#endScreen h2 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.3rem, 4vw, 1.8rem);
+  color: var(--ember);
+  margin: 0 0 0.5rem;
+}
+#endScreen p {
+  color: var(--parchment-dim);
+  font-size: 0.95rem;
+  margin: 0 auto 1.5rem;
+  max-width: 400px;
+}
+
+/* Loading */
+.loading {
+  color: var(--ash);
+  font-style: italic;
+  font-size: 0.9rem;
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Start -->
+  <div id="startScreen">
+    <h1>Turn Yourself On</h1>
+    <p>An exploration of desire, one choice at a time. Every decision stays. Nothing is taken back. Only more is added.</p>
+    <button class="start-btn" id="startBtn">&#x2665; Begin</button>
+  </div>
+
+  <!-- Game -->
+  <div id="gameScreen">
+    <div class="level-bar" id="levelBar"></div>
+    <div class="prompt">
+      <div class="label" id="levelLabel">Level 1</div>
+      <div class="text" id="promptText"></div>
+    </div>
+    <div class="options" id="optionsContainer"></div>
+    <div class="history">
+      <div class="title">&#x2661; Your Path</div>
+      <div id="historyList"></div>
+    </div>
+    <button class="reset-btn" id="resetBtn">&#x21BA; Start Over</button>
+  </div>
+
+  <!-- End -->
+  <div id="endScreen">
+    <h2>&#x2728; You reached the end</h2>
+    <p>For now. More steps can always be added.</p>
+    <button class="reset-btn" id="endResetBtn" style="color:var(--ember);border-color:var(--ember);">&#x21BA; Begin Again</button>
+  </div>
+
+</div>
+
+<script>
+FB.init();
+
+var state = { stepId: null, history: [] };
+var STEPS = [];
+var LEVEL_NAMES = ['Awakening', 'Teasing', 'Touching', 'Yearning', 'Surrender', 'Pleasure', 'Ecstasy', 'Intimacy', 'Vulnerability', 'Union'];
+
+function loadSteps() {
+  FB.get('turnOn', 'steps').then(function (d) {
+    if (d && d.list) STEPS = d.list;
+    else {
+      STEPS = getDefaultSteps();
+      FB.put('turnOn', { id: 'steps', list: STEPS }).catch(function () {});
+    }
+    initGame();
+  }).catch(function () {
+    STEPS = getDefaultSteps();
+    initGame();
+  });
+}
+
+function getDefaultSteps() {
+  return [
+    {
+      id: 1, level: 0,
+      prompt: 'Do you want to be touched right now?',
+      options: [
+        { text: 'Yes, touch me', next: 2 },
+        { text: 'I want to feel your hands on me', next: 2 }
+      ]
+    },
+    {
+      id: 2, level: 1,
+      prompt: 'Where do you want my hands first?',
+      options: [
+        { text: 'On my waist, pulling me closer', next: 3 },
+        { text: 'On my thighs, squeezing softly', next: 3 }
+      ]
+    },
+    {
+      id: 3, level: 1,
+      prompt: 'How should I touch you there?',
+      options: [
+        { text: 'Slowly, teasingly — fingertips first', next: 4 },
+        { text: 'Firmly, like you mean it', next: 4 }
+      ]
+    },
+    {
+      id: 4, level: 2,
+      prompt: 'Do you want me to kiss you?',
+      options: [
+        { text: 'Kiss my neck — leave marks', next: 5 },
+        { text: 'Kiss my lips, deep and slow', next: 5 },
+        { text: 'Kiss my collarbone and work your way down', next: 5 }
+      ]
+    },
+    {
+      id: 5, level: 2,
+      prompt: 'How rough do you want it?',
+      options: [
+        { text: 'Gentle — I want to feel cherished', next: 6 },
+        { text: 'Rough — I want to feel claimed', next: 6 },
+        { text: 'A mix — start gentle, then take control', next: 6 }
+      ]
+    },
+    {
+      id: 6, level: 3,
+      prompt: 'Where do you want my mouth next?',
+      options: [
+        { text: 'On your chest — I want to feel your breath on my skin', next: 7 },
+        { text: 'Lower — I want your lips on my stomach', next: 7 },
+        { text: 'Between my thighs', next: 7 }
+      ]
+    },
+    {
+      id: 7, level: 3,
+      prompt: 'Do you want me to undress you?',
+      options: [
+        { text: 'Slowly — one button at a time', next: 8 },
+        { text: 'Quickly — I need to feel your skin now', next: 8 }
+      ]
+    },
+    {
+      id: 8, level: 4,
+      prompt: 'What do you want me to do when your clothes are off?',
+      options: [
+        { text: 'Look at you — take you in completely', next: 9 },
+        { text: 'Touch you everywhere at once', next: 9 },
+        { text: 'Put my mouth on you immediately', next: 9 }
+      ]
+    },
+    {
+      id: 9, level: 4,
+      prompt: 'How do you want my hands between your legs?',
+      options: [
+        { text: 'Soft circles — build it slowly', next: 10 },
+        { text: 'Firm pressure — I want to feel your fingers inside me', next: 10 }
+      ]
+    },
+    {
+      id: 10, level: 5,
+      prompt: 'Do you want to hear what I would do to you?',
+      options: [
+        { text: 'Yes — whisper it in my ear', next: 11 },
+        { text: 'Yes — describe every detail', next: 11 }
+      ]
+    },
+    {
+      id: 11, level: 5,
+      prompt: 'I would lay you down and part your legs slowly. I would kiss the inside of your thigh first. Would you be wet already?',
+      options: [
+        { text: 'Soaking — just from your voice', next: 12 },
+        { text: 'Getting there — keep going', next: 12 }
+      ]
+    },
+    {
+      id: 12, level: 6,
+      prompt: 'I would not rush. I would tease you until you beg. Do you want to beg?',
+      options: [
+        { text: 'Yes — make me beg for it', next: 13 },
+        { text: 'I might be too proud — break me', next: 13 }
+      ]
+    },
+    {
+      id: 13, level: 6,
+      prompt: 'I would put my mouth on you and not stop until you forget your own name. Would you pull my hair?',
+      options: [
+        { text: 'I would grip it and not let go', next: 14 },
+        { text: 'I would tangle my fingers in it and hold you there', next: 14 }
+      ]
+    },
+    {
+      id: 14, level: 7,
+      prompt: 'I would make you come once, then again, then again. How many times do you want?',
+      options: [
+        { text: 'As many as you can give me', next: 15 },
+        { text: 'Until I cannot move', next: 15 }
+      ]
+    },
+    {
+      id: 15, level: 7,
+      prompt: 'After I have made you fall apart, what do you want next?',
+      options: [
+        { text: 'I want you inside me — slowly at first', next: 16 },
+        { text: 'I want to touch you too — let me return the favour', next: 16 }
+      ]
+    },
+    {
+      id: 16, level: 8,
+      prompt: 'How do you want to feel me inside you?',
+      options: [
+        { text: 'Deep and still — let me feel you pulse around me', next: 17 },
+        { text: 'Hard and fast — I want to lose control with you', next: 17 }
+      ]
+    },
+    {
+      id: 17, level: 8,
+      prompt: 'I would watch your face as you fall apart beneath me. Would you look me in the eyes?',
+      options: [
+        { text: 'Yes — I want to see you watching me', next: 18 },
+        { text: 'I might close them — it is too intense not to', next: 18 }
+      ]
+    },
+    {
+      id: 18, level: 9,
+      prompt: 'When we are both breathless and finished, how would you want me to hold you?',
+      options: [
+        { text: 'Spooned — your chest against my back, your arm around my waist', next: 19 },
+        { text: 'Facing me — I want to see your face as I fall asleep', next: 19 }
+      ]
+    },
+    {
+      id: 19, level: 9,
+      prompt: 'What would you whisper to me in the quiet after?',
+      options: [
+        { text: 'That was perfect. Do not let go.', next: -1 },
+        { text: 'I love what you do to me. Stay.', next: -1 },
+        { text: 'Again. But give me a minute first.', next: -1 }
+      ]
+    }
+  ];
+}
+
+function initGame() {
+  var saved = localStorage.getItem('turn-on-state');
+  if (saved) {
+    try {
+      state = JSON.parse(saved);
+      if (state.stepId) {
+        renderGame();
+        return;
+      }
+    } catch (e) {}
+  }
+  showStart();
+}
+
+function showStart() {
+  document.getElementById('startScreen').style.display = '';
+  document.getElementById('gameScreen').style.display = 'none';
+  document.getElementById('endScreen').style.display = 'none';
+}
+
+function startGame() {
+  state = { stepId: 1, history: [] };
+  saveState();
+  renderGame();
+}
+
+function getStep(id) {
+  for (var i = 0; i < STEPS.length; i++) {
+    if (STEPS[i].id === id) return STEPS[i];
+  }
+  return null;
+}
+
+function renderGame() {
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('gameScreen').style.display = '';
+  document.getElementById('endScreen').style.display = 'none';
+
+  var step = getStep(state.stepId);
+  if (!step) {
+    showEnd();
+    return;
+  }
+
+  // Level bar
+  var totalLevels = 10;
+  var levelHtml = '';
+  for (var i = 0; i < totalLevels; i++) {
+    var cls = 'level-dot';
+    if (i < step.level) cls += ' lit';
+    else if (i === step.level) cls += ' current';
+    levelHtml += '<div class="' + cls + '"></div>';
+  }
+  document.getElementById('levelBar').innerHTML = levelHtml;
+
+  // Label
+  document.getElementById('levelLabel').textContent = 'Level ' + (step.level + 1) + ' \u2014 ' + (LEVEL_NAMES[step.level] || '');
+
+  // Prompt
+  document.getElementById('promptText').textContent = step.prompt;
+
+  // Options
+  var optHtml = '';
+  step.options.forEach(function (opt, oi) {
+    optHtml += '<button class="opt-btn" data-next="' + opt.next + '">' + esc(opt.text) + '</button>';
+  });
+  document.getElementById('optionsContainer').innerHTML = optHtml;
+
+  // Bind options
+  document.querySelectorAll('.opt-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var next = parseInt(this.dataset.next);
+      var text = this.textContent;
+      state.history.push({ prompt: step.prompt, choice: text, stepId: state.stepId });
+      if (next === -1) {
+        state.stepId = null;
+        saveState();
+        showEnd();
+      } else {
+        state.stepId = next;
+        saveState();
+        renderGame();
+      }
+    });
+  });
+
+  // History
+  renderHistory();
+}
+
+function renderHistory() {
+  var html = '';
+  state.history.forEach(function (h, i) {
+    html += '<div class="history-item">' +
+      '<span class="num">' + (i + 1) + '.</span>' +
+      '<div><div class="choice-prompt">' + esc(h.prompt) + '</div><div class="choice-text">' + esc(h.choice) + '</div></div>' +
+      '</div>';
+  });
+  document.getElementById('historyList').innerHTML = html;
+}
+
+function showEnd() {
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('gameScreen').style.display = 'none';
+  document.getElementById('endScreen').style.display = '';
+}
+
+function saveState() {
+  localStorage.setItem('turn-on-state', JSON.stringify(state));
+}
+
+function resetGame() {
+  localStorage.removeItem('turn-on-state');
+  state = { stepId: null, history: [] };
+  showStart();
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+document.getElementById('startBtn').addEventListener('click', startGame);
+document.getElementById('resetBtn').addEventListener('click', resetGame);
+document.getElementById('endResetBtn').addEventListener('click', resetGame);
+
+loadSteps();
+</script>
+</body>
+</html>
