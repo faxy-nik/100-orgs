@@ -7,9 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="fb-db.js"></script>
 <style>
 :root {
   --ink: #17130f;
@@ -213,6 +210,24 @@ body {
   transform: translateY(0) scale(0.98);
 }
 
+/* Transition text */
+.transition-box {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto 1.5rem;
+  padding: 1.25rem;
+  border-radius: 10px;
+  background: rgba(232, 93, 58, 0.1);
+  border: 1px solid var(--ember);
+  color: var(--parchment);
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  text-align: center;
+  animation: fadeIn 0.4s ease;
+  display: none;
+}
+
 /* History */
 .history {
   width: 100%;
@@ -226,8 +241,29 @@ body {
   letter-spacing: 0.12em;
   color: var(--ash);
   text-align: center;
-  margin-bottom: 0.75rem;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.3s;
 }
+.history .title:hover { color: var(--ember); }
+.history .title .arrow {
+  display: inline-block;
+  transition: transform 0.3s;
+  margin-left: 4px;
+}
+.history .title .arrow.open { transform: rotate(90deg); }
+.history-scroll {
+  max-height: 0;
+  overflow-y: auto;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+  opacity: 0;
+}
+.history-scroll.open {
+  max-height: 200px;
+  opacity: 1;
+}
+.history-scroll::-webkit-scrollbar { width: 4px; }
+.history-scroll::-webkit-scrollbar-thumb { background: var(--ink-line); border-radius: 2px; }
 .history-item {
   display: flex;
   align-items: center;
@@ -303,6 +339,35 @@ body {
   margin: 0 auto 1.5rem;
   max-width: 400px;
 }
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  max-width: 340px;
+  margin: 0 auto 1.5rem;
+}
+.stat-card {
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: var(--glass);
+  border: 1px solid var(--glassBorder);
+}
+.stat-card .num {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--ember);
+  font-weight: 600;
+}
+.stat-card .label {
+  font-size: 0.7rem;
+  color: var(--ash);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 2px;
+}
+.stat-card.path {
+  grid-column: span 2;
+}
 
 /* Loading */
 .loading {
@@ -318,7 +383,7 @@ body {
   <!-- Start -->
   <div id="startScreen">
     <h1>Turn Yourself On</h1>
-    <p>An exploration of desire, one choice at a time. 35 steps from the first breath to the quiet after. Every decision stays. Nothing is taken back. Only more is added.</p>
+    <p>An exploration of desire, one choice at a time. 38 steps from the first breath to the quiet after. Every decision stays. Nothing is taken back. Only more is added.</p>
     <button class="start-btn" id="startBtn">&#x2665; Begin</button>
   </div>
 
@@ -330,18 +395,20 @@ body {
       <div class="text" id="promptText"></div>
     </div>
     <div class="scene-box" id="sceneBox"></div>
+    <div class="transition-box" id="transitionBox"></div>
     <div class="options" id="optionsContainer"></div>
     <div class="history">
-      <div class="title">&#x2661; Your Path</div>
-      <div id="historyList"></div>
+      <div class="title" id="historyToggle">&#x2661; Your Path <span class="arrow" id="historyArrow">&#x25B6;</span></div>
+      <div class="history-scroll" id="historyScroll"><div id="historyList"></div></div>
     </div>
     <button class="reset-btn" id="resetBtn">&#x21BA; Start Over</button>
   </div>
 
   <!-- End -->
-  <div id="endScreen">
+    <div id="endScreen">
     <h2>&#x2728; You let go completely</h2>
     <p>Every step brought you deeper. This is only the beginning. The body remembers what the heart commands.</p>
+    <div class="stats-grid" id="statsGrid"></div>
     <button class="reset-btn" id="endResetBtn" style="color:var(--ember);border-color:var(--ember);">&#x21BA; Begin Again</button>
   </div>
 
@@ -349,6 +416,8 @@ body {
 
 <script>
 var state = { stepId: null, history: [] };
+var historyOpen = false;
+var TRANSITION_DELAY = 1800;
 var LEVEL_NAMES = ['Awakening', 'Teasing', 'Touching', 'Yearning', 'Surrender', 'Pleasure', 'Ecstasy', 'Intimacy', 'Vulnerability', 'Union'];
 var STEPS = getDefaultSteps();
 
@@ -357,349 +426,376 @@ function getDefaultSteps() {
     // ═══ LEVEL 0 — Awakening (steps 1-3) ═══
     {
       id: 1, level: 0,
-      scene: 'The room is dim and quiet. You are lying on soft sheets, your body relaxed but your mind racing. I am beside you, propped on one elbow, looking down at you. The air feels thick with everything unsaid.',
-      prompt: 'Lie back and close your eyes. Imagine my breath on your skin. Do you want this?',
+      scene: 'The room is dark and quiet. You are lying on soft sheets. I am beside you, propped on one elbow, looking down at you. The air is thick with everything unsaid. Your body waits.',
+      prompt: 'Lie back. Close your eyes. Imagine my breath on your skin. Do you want this?',
       options: [
-        { text: 'Yes \u2014 I want every second of it', next: 2 },
-        { text: 'Yes \u2014 I have been waiting for this', next: 2 }
+        { text: 'Yes \u2014 I want every second of it', next: 2, transition: 'A soft yes escapes your lips. I lean closer, my breath warming your cheek.' },
+        { text: 'Yes \u2014 I have been waiting for this', next: 2, transition: 'You whisper yes and pull me closer. My body settles against yours.' }
       ]
     },
     {
       id: 2, level: 0,
-      scene: 'I am kneeling beside you, my face close to yours. My hands rest on the bed on either side of your hips. I am not touching you yet. The anticipation is unbearable. Your skin tingles where my gaze falls.',
+      scene: 'I am kneeling over you, my face inches from yours. My hands rest on the bed beside your hips. I am not touching you yet. The anticipation coils in your stomach.',
       prompt: 'I am not touching you yet. I want you to feel my presence. Tell me: what do you need most right now?',
       options: [
-        { text: 'I need to be wanted \u2014 make me feel it', next: 3 },
-        { text: 'I need to be claimed \u2014 take me', next: 3 },
-        { text: 'I need to be worshipped \u2014 every inch', next: 3 }
+        { text: 'I need to be wanted \u2014 make me feel it', next: 3, transition: '"I want you," I breathe against your lips. My hand finally touches your skin.' },
+        { text: 'I need to be claimed \u2014 take me', next: 3, transition: 'A possessive growl rumbles in my chest. "You are mine." My hand cups your face.' },
+        { text: 'I need to be worshipped \u2014 every inch', next: 3, transition: 'I kiss your forehead. "Every inch. I promise." My lips begin their journey.' }
       ]
     },
     {
       id: 3, level: 0,
-      scene: 'My lips hover over yours. I can feel your breath on my skin. My hand cups your jaw, my thumb tracing your cheekbone. The world has stopped. There is nothing but this moment, this closeness.',
-      prompt: 'I am leaning in. My lips are a hair\'s breadth from yours. I can feel your breath quicken. Say my name before I kiss you.',
+      scene: 'My lips hover over yours. I can feel your breath quicken against my mouth. My hand cups your jaw, thumb tracing your cheekbone. The world has stopped.',
+      prompt: 'I am leaning in. My lips are a hair\'s breadth from yours. Your breath quickens. Say my name before I kiss you.',
       options: [
-        { text: 'I whisper it \u2014 and you take my mouth with yours', next: 4 },
-        { text: 'I breathe it \u2014 and you pull me against you', next: 4 }
+        { text: 'I whisper it \u2014 and you take my mouth with yours', next: 4, transition: 'My name on your lips breaks the dam. I crush my mouth against yours, hungry.' },
+        { text: 'I breathe it \u2014 and you pull me against you', next: 4, transition: 'You breathe my name and I feel it everywhere. I kiss you like I own you.' }
       ]
     },
 
     // ═══ LEVEL 1 — Teasing (steps 4-7) ═══
     {
       id: 4, level: 1,
-      scene: 'We are standing now, pressed close. My hands slide down your back, over your hips, tracing the shape of you through your clothes. Your body responds to every touch, arching slightly toward me.',
-      prompt: 'You feel my hands slide down your body over your clothes. I trace your curves without rushing. Where do you most want my palms to settle?',
+      scene: 'We are standing now, pressed together. My hands slide down your back, over the curve of your ass, gripping through your clothes. Your body responds, arching into me.',
+      prompt: 'My hands slide down your body over your clothes. I trace your curves without rushing. Where do you most want my palms to settle?',
       options: [
-        { text: 'Over your breasts \u2014 squeeze them through your shirt', next: 5 },
-        { text: 'Between your thighs \u2014 press hard through the fabric', next: 5 },
-        { text: 'Along your ribs \u2014 firm, pulling you into me', next: 5 }
+        { text: 'Over your breasts \u2014 squeeze them hard', next: 5, transition: 'I cup your tits through your shirt, squeezing. You moan against my mouth.' },
+        { text: 'Between your thighs \u2014 press hard through the fabric', next: 5, transition: 'My palm presses against your cunt through your jeans. You grind into my hand.' },
+        { text: 'Along your ribs \u2014 firm, pulling you into me', next: 5, transition: 'I grip your ribs and pull you flush against me. You feel how hard I am.' }
       ]
     },
     {
       id: 5, level: 1,
-      scene: 'I pull you against me, letting you feel exactly what I am holding back. My hands roam your body with deliberate slowness. Your breathing has changed \u2014 quicker, shallower. I can feel your heart racing through your chest.',
-      prompt: 'I grind against you slowly, letting you feel what I am holding back. You can feel the heat building. What do you want me to say to you?',
+      scene: 'I pull you tight against me, grinding slowly. You can feel exactly what I am holding back. My hands roam your body with deliberate ownership. Your breathing is ragged.',
+      prompt: 'I grind against you slowly, letting you feel what I am holding back. The heat builds. What do you want me to say to you?',
       options: [
-        { text: 'Tell me how wet I am making you', next: 6 },
-        { text: 'Tell me what you are going to do to me tonight', next: 6 },
-        { text: 'Tell me I am yours', next: 6 }
+        { text: 'Tell me how wet I am making you', next: 6, transition: '"You are soaked, aren\'t you? I can feel it." I press my thigh between your legs.' },
+        { text: 'Tell me what you are going to do to me tonight', next: 6, transition: 'I whisper exactly what I want to do to you. Every dirty detail. Your knees weaken.' },
+        { text: 'Tell me I am yours', next: 6, transition: '"You are fucking mine." I bite your neck. "Say it back."' }
       ]
     },
     {
       id: 6, level: 1,
-      scene: 'My mouth is against your ear, my breath hot on your neck. My hand slides up your bare thigh under your clothes, fingers grazing the sensitive skin. You shiver and press closer.',
+      scene: 'My mouth is against your ear, my breath hot. My hand slides up your bare thigh under your clothes, fingers grazing your sensitive skin. You shiver and press closer.',
       prompt: '"You have no idea what you do to me," I growl against your ear. My hand slides up your thigh. Part your legs for me. How wide?',
       options: [
-        { text: 'Just enough \u2014 let me feel the tension', next: 7 },
-        { text: 'Wide open \u2014 I want you to have full access', next: 7 }
+        { text: 'Just enough \u2014 let me feel the tension', next: 7, transition: 'You part your legs slightly. My hand settles on your inner thigh, squeezing.' },
+        { text: 'Wide open \u2014 I want you to have full access', next: 7, transition: 'You spread your legs for me. I groan. "Good girl." My hand moves higher.' }
       ]
     },
     {
       id: 7, level: 1,
-      scene: 'I press the heel of my palm against you through your clothes. Even through the fabric, I can feel the heat radiating from you. A soft moan escapes your lips. Your head tilts back, exposing your neck.',
-      prompt: 'I feel the heat through your clothes and press the heel of my palm against you. You moan softly. Do you want me to stop teasing and touch you properly?',
+      scene: 'I press the heel of my palm against your cunt through your clothes. Even through the fabric, I can feel the heat. A soft moan escapes your lips. Your head tilts back, exposing your neck.',
+      prompt: 'I press my palm against you through your clothes. You moan softly. Do you want me to stop teasing and touch you properly?',
       options: [
-        { text: 'Yes \u2014 I need your fingers inside me now', next: 8 },
-        { text: 'No \u2014 keep teasing, make me beg first', next: 12 }
+        { text: 'Yes \u2014 I need your fingers inside me now', next: 8, transition: '"Please," you beg. I slide my hand under your clothes. Your skin is burning.' },
+        { text: 'No \u2014 keep teasing, make me beg first', next: 12, transition: 'I pull my hand back. You whimper. I smile. "You want more? Then beg."' }
       ]
     },
 
     // ═══ LEVEL 2 — Touching (steps 8-11) ═══
     {
       id: 8, level: 2,
-      scene: 'Your skin is warm beneath my fingers. I slide my hand under your shirt, feeling your stomach muscles contract at my touch. You gasp softly. Your eyes are dark, watching me watch you.',
+      scene: 'Your skin is hot beneath my fingers. I slide my hand under your shirt, feeling your stomach muscles clench. You gasp. Your eyes are dark with want, watching me.',
       prompt: 'I slide my hand under your clothes. My fingers find your bare skin. You arch into my touch. How do you want my hand to move?',
       options: [
-        { text: 'Slow circles \u2014 every nerve awake', next: 9 },
-        { text: 'Firm, deliberate pressure \u2014 I want to feel owned', next: 9 },
-        { text: 'Slide one finger inside me \u2014 slowly', next: 11 }
+        { text: 'Slow circles \u2014 make me ache', next: 9, transition: 'I trace slow circles on your belly, moving lower. You tremble under my touch.' },
+        { text: 'Firm and rough \u2014 I want to feel owned', next: 9, transition: 'I press my palm flat and firm against your stomach. "Mine." You moan.' },
+        { text: 'Slide one finger inside me \u2014 slowly', next: 11, transition: 'I bypass your underwear and slide one finger into your wet heat. You cry out.' }
       ]
     },
     {
       id: 9, level: 2,
-      scene: 'My fingers dip below the waistband of your underwear, teasing the edge. Your hips lift instinctively, chasing my hand. I smile against your neck. You are so responsive, so beautiful like this.',
+      scene: 'My fingers dip below the waistband of your underwear, teasing the edge. Your hips lift, chasing my hand. I can smell your arousal. I smile against your neck.',
       prompt: 'I tease the waistband of your underwear, dipping my fingers just below it. Your hips shift, chasing my hand. Do you want me to take them off?',
       options: [
-        { text: 'Yes \u2014 pull them down and look at me', next: 10 },
-        { text: 'No \u2014 leave them on and touch me over the fabric, drive me crazy', next: 10 }
+        { text: 'Yes \u2014 pull them down and look at me', next: 10, transition: 'I pull your underwear down slowly. I look at your naked body. "Beautiful."' },
+        { text: 'No \u2014 leave them on and touch me over the fabric', next: 10, transition: 'I press my fingers against you through the wet fabric. You buck into my hand.' }
       ]
     },
     {
       id: 10, level: 2,
-      scene: 'I trace the lines of your body through the thin fabric. You are already wet \u2014 I can feel it. I bite your bottom lip gently, tugging. Your hands grip my arms. The room is warm and full of the sound of our breathing.',
-      prompt: 'My fingers trace the shape of you through the fabric. I can feel how wet you are. I lean down and bite your bottom lip. "Is this what you wanted?"',
+      scene: 'I trace the shape of you through the thin, soaked fabric. You are already dripping \u2014 I can feel it. I bite your bottom lip, tugging. Your hands grip my arms.',
+      prompt: 'My fingers trace the shape of you through the fabric. I can feel how wet you are. I bite your bottom lip. "Is this what you wanted?"',
       options: [
-        { text: 'Yes \u2014 but I want more. Give me more.', next: 11 },
-        { text: 'I nod and pull you closer, unable to speak', next: 11 }
+        { text: 'Yes \u2014 but I want more. Give me everything.', next: 11, transition: 'I push the fabric aside. My fingers find your bare cunt. "So wet for me."' },
+        { text: 'I nod and pull you closer, unable to speak', next: 11, transition: 'Your silence says everything. I slide my fingers inside you. You gasp.' }
       ]
     },
     {
       id: 11, level: 2,
-      scene: 'I push the fabric aside. My fingers find you \u2014 wet, warm, ready. I slide one finger inside you slowly, watching your face transform. Your mouth falls open. A sound escapes you that makes me want to give you everything.',
-      prompt: 'I push your underwear aside and slide a finger inside you. You gasp. I watch your face. "You are so tight. So warm." How many fingers?',
+      scene: 'I push the fabric aside. My fingers find your bare cunt \u2014 wet, warm, dripping. I slide one finger inside you slowly, watching your face transform. Your mouth falls open.',
+      prompt: 'I push your underwear aside and slide a finger inside you. You gasp. "So tight. So wet." How many fingers?',
       options: [
-        { text: 'One \u2014 slowly, let me feel every inch', next: 13 },
-        { text: 'Two \u2014 I want to stretch around you', next: 13 },
-        { text: 'Three \u2014 fill me completely, I can take it', next: 13 }
+        { text: 'One \u2014 slowly, feel every inch of me', next: 13, transition: 'One finger, slow and deep. You clench around me. I curl my finger inside you.' },
+        { text: 'Two \u2014 stretch me open', next: 13, transition: 'I add a second finger. You gasp at the stretch. "That\u2019s it. Take it."' },
+        { text: 'Three \u2014 fill me completely, I can take it', next: 36, transition: 'Three fingers stretch you wide. You cry out. I push deeper. "Good fucking girl."' }
       ]
     },
 
-    // ═══ LEVEL 3 — Yearning (steps 12-15) ═══
+    // ═══ LEVEL 3 — Yearning (steps 12-15 + 36) ═══
     {
       id: 12, level: 3,
-      scene: 'I pull my hand away and sit back. You whimper at the loss. I look at you with dark, patient eyes. Your body is trembling with need. I wait. The silence is louder than any sound you could make.',
-      prompt: 'You chose to beg. I pull back and wait. Your body aches. I look at you with dark eyes. "Beg for it. Out loud. Tell me what you want."',
+      scene: 'I pull my hand away and sit back. You whimper at the loss. I look at you with dark, patient eyes. Your body trembles with need. I wait. The silence is a whip.',
+      prompt: 'You chose to beg. I pull back and wait. Your body aches. "Beg for it. Out loud. Tell me what you want."',
       options: [
-        { text: '"Please \u2014 I need your hands on me. I am burning. I am so needy. Do not make me wait."', next: 8 },
-        { text: '"I want to feel your fingers inside me. Please. I am begging. Take me."', next: 8 }
+        { text: '"Please \u2014 I need your hands on me. I am burning."', next: 8, transition: 'Your begging breaks me. I grab you and shove my fingers inside you without warning.' },
+        { text: '"Fucking touch me. I need to feel you inside me."', next: 8, transition: 'The desperation in your voice makes me hard. I give you what you need.' }
+      ]
+    },
+    {
+      id: 36, level: 3,
+      scene: 'Three fingers stretch your cunt wide open. I push them deep, feeling you struggle to take it. Your face is pure need. Sweat glistens on your chest.',
+      prompt: 'Three fingers stretch you wide. I push deeper, watching your face contort. "Too much?" You shake your head. "More." I fuck you harder with my hand.',
+      options: [
+        { text: 'Take it \u2014 I can handle anything you give me', next: 13, transition: 'You take all three fingers. I fuck you rough and deep. You love every second.' },
+        { text: 'Deeper \u2014 I want to feel you in my throat', next: 13, transition: 'I drive my fingers deeper, curling against your g-spot. You see stars.' }
       ]
     },
     {
       id: 13, level: 3,
-      scene: 'My fingers curl inside you, searching, finding that spot that makes your whole body shudder. I watch your face contort with pleasure. You are so beautiful when you let go. I want to taste every sound you make.',
-      prompt: 'I curl my fingers inside you, finding that spot that makes your vision blur. Your mouth falls open. I want to taste your moan. Do you want my mouth on yours?',
+      scene: 'My fingers curl inside you, finding that spot that makes your whole body shudder. I watch your face contort with pleasure. I want to taste every sound you make.',
+      prompt: 'I curl my fingers inside you, hitting that spot that makes your vision blur. "I want to taste your moan." Do you want my mouth on yours?',
       options: [
-        { text: 'Yes \u2014 kiss me while you finger me', next: 14 },
-        { text: 'No \u2014 I want to watch you. I want to see how far I can push you.', next: 14 }
+        { text: 'Yes \u2014 kiss me while you finger me', next: 14, transition: 'I kiss you hard, swallowing your moans while my fingers work inside you.' },
+        { text: 'No \u2014 I want to watch you fall apart', next: 14, transition: 'I watch your face as I finger-fuck you. "You are so beautiful like this."' }
       ]
     },
     {
       id: 14, level: 3,
-      scene: 'My fingers pump inside you while my thumb circles your clit. Your hips roll against my hand. I hold your gaze, refusing to let you look away. Sweat glistens on your skin. You are losing control and I am here for every second of it.',
-      prompt: 'I know your body is trembling. I press my palm against your clit while my fingers pump inside you. "Look at me. I want to see you come undone." Can you hold it?',
+      scene: 'My fingers pump inside you while my thumb circles your clit. Your hips roll against my hand. I hold your gaze. Sweat glistens on your skin. You are losing control.',
+      prompt: 'My fingers pump inside you while my thumb works your clit. "Look at me. I want to see you come undone." Can you hold it?',
       options: [
-        { text: 'I try but my hips are moving on their own', next: 15 },
-        { text: 'Not if you keep doing that \u2014 do not stop', next: 15 }
+        { text: 'I try but my hips are moving on their own', next: 15, transition: 'You try to hold back but your body betrays you. I speed up. "That\u2019s it."' },
+        { text: 'Not if you keep doing that \u2014 do not stop', next: 15, transition: '"Then don\u2019t hold back." I curl my fingers harder. You moan loudly.' }
       ]
     },
     {
       id: 15, level: 3,
-      scene: 'I feel you tightening around my fingers. You are so close I can see it in your eyes \u2014 that desperate, beautiful look. I slow down to a maddening pace. You groan in frustration. I love this. I love you like this.',
-      prompt: 'I feel you tightening around my fingers. You are close. I slow down to a maddening pace, keeping you on the edge. "Ask me nicely and I will let you come."',
+      scene: 'I feel you tightening around my fingers. You are so close I can see it in your eyes \u2014 that desperate, beautiful look. I slow to a maddening pace. You groan.',
+      prompt: 'I feel you tightening around my fingers. You are close. I slow down, keeping you on the edge. "Ask me nicely and I will let you come."',
       options: [
-        { text: '"Please let me come \u2014 I need it so badly"', next: 16 },
-        { text: '"Stop teasing me and make me come already"', next: 16 }
+        { text: '"Please let me come \u2014 I need it so badly"', next: 16, transition: '"Good girl." I press my thumb against your clit. "Come for me."' },
+        { text: '"Stop teasing and fucking make me come already"', next: 16, transition: '"Bossy." I slam my fingers into you. "Then come. Now."' }
       ]
     },
 
     // ═══ LEVEL 4 — Surrender (steps 16-19) ═══
     {
       id: 16, level: 4,
-      scene: 'I let you fall apart. My fingers never stop moving as your body convulses around them. I watch every second \u2014 the way your back arches, the way your breath catches, the way you cry out. When you come back to yourself, I am still here, gazing at you like you are the centre of the universe.',
-      prompt: 'I let you come. Hard. My fingers never stop as your body convulses. I watch every second of it. When you finally open your eyes, I am still looking at you. "Good girl." Now \u2014 do you want my mouth?',
+      scene: 'I let you fall apart. My fingers never stop moving as your body convulses around them. I watch every second \u2014 your back arching, your breath catching, your cry. When you come back, I am still here.',
+      prompt: 'I let you come. Hard. My fingers never stop as your body convulses. I watch every second. When you open your eyes, I am still looking. "Good girl." Now \u2014 do you want my mouth?',
       options: [
-        { text: 'Yes \u2014 put your mouth on me. I want to taste myself on your lips.', next: 17 },
-        { text: 'Yes \u2014 kiss me deeply first. Then go down.', next: 17 }
+        { text: 'Yes \u2014 put your mouth on me. I want to taste myself on your lips.', next: 17, transition: 'I kiss you deep, letting you taste yourself. Then I start moving down your body.' },
+        { text: 'Yes \u2014 kiss me first. Then go down and eat my cunt.', next: 17, transition: 'I kiss you slowly, then slide down your body. My tongue traces your skin.' }
       ]
     },
     {
       id: 17, level: 4,
-      scene: 'I kiss my way down your body slowly, reverently. Your skin tastes like salt and warmth. I pause at your breasts, taking my time. Your nipples are hard. I flick one with my tongue and feel you shudder beneath me.',
-      prompt: 'I kiss my way down your body. I pause at your nipples, circling one with my tongue while my thumb teases the other. Your back arches. Bite or suck?',
+      scene: 'I kiss my way down your body. Your skin tastes like salt and sweat. I pause at your breasts, taking my time. Your nipples are hard. I circle one with my tongue.',
+      prompt: 'I kiss down your body. I pause at your nipples, circling one with my tongue while my thumb teases the other. Your back arches. Bite or suck?',
       options: [
-        { text: 'Suck \u2014 softly, then harder until I gasp', next: 18 },
-        { text: 'Bite \u2014 just enough to leave a mark I will feel tomorrow', next: 18 }
+        { text: 'Suck \u2014 hard, until I gasp', next: 18, transition: 'I suck your nipple hard. You cry out. I switch to the other, giving it the same.' },
+        { text: 'Bite \u2014 leave a mark I will feel tomorrow', next: 18, transition: 'I bite down gently, then harder. You moan. "That will bruise beautifully."' }
       ]
     },
     {
       id: 18, level: 4,
-      scene: 'I continue lower, kissing your stomach, the dip of your hips. I settle between your thighs and look up at you. Your chest rises and falls rapidly. Your hand reaches down and tangles in my hair. I smile against your skin.',
-      prompt: 'I move lower, kissing your stomach, your hips. I look up at you from between your thighs. Your chest is heaving. "Do not look away. Watch me." How do you want my tongue?',
+      scene: 'I move lower, kissing your stomach, your hips. I settle between your thighs and look up at you. Your chest heaves. Your hand tangles in my hair. I smile against your skin.',
+      prompt: 'I move lower, between your thighs. I look up at you. "Do not look away. Watch me." How do you want my tongue?',
       options: [
-        { text: 'Flat and broad \u2014 long strokes that cover everything', next: 19 },
-        { text: 'Pointed and precise \u2014 focus on my clit', next: 19 },
-        { text: 'Start soft, then devour me', next: 19 }
+        { text: 'Flat and broad \u2014 cover my whole cunt', next: 19, transition: 'I drag my tongue flat across your slit. You moan and grip my hair tighter.' },
+        { text: 'Pointed and precise \u2014 focus on my clit', next: 19, transition: 'I flick your clit with the tip of my tongue. Your hips buck. "Right there."' },
+        { text: 'Devour me like you are starving', next: 19, transition: 'I bury my face in your cunt and eat you like I have been starving for years.' }
       ]
     },
     {
       id: 19, level: 4,
-      scene: 'I put my mouth on you and the world disappears. Your taste floods my senses. I slide two fingers inside you while my tongue works your clit. Your hands grip my hair, pulling, guiding. Your moans fill the room. I have never wanted anything more than I want you in this moment.',
-      prompt: 'I put my mouth on you and I do not hold back. My tongue works you relentlessly. Your hands tangle in my hair. Your moans fill the room. I slide two fingers inside you while I suck your clit. How long can you last?',
+      scene: 'I put my mouth on you and the world disappears. Your taste floods my senses. I slide two fingers inside you while my tongue works your clit. Your hands grip my hair, pulling.',
+      prompt: 'I put my mouth on you and do not hold back. My tongue works your clit. I slide two fingers inside you. How long can you last?',
       options: [
-        { text: 'Not long \u2014 I am already climbing', next: 20 },
-        { text: 'I want to hold out but you are making it impossible', next: 20 }
+        { text: 'Not long \u2014 I am already climbing', next: 20, transition: 'I feel you getting close. I suck your clit harder. "Come in my mouth."' },
+        { text: 'I want to hold out but you are making it impossible', next: 20, transition: 'You try to hold back. I curl my fingers inside you. You lose the fight.' }
       ]
     },
 
-    // ═══ LEVEL 5 — Pleasure (steps 20-24) ═══
+    // ═══ LEVEL 5 — Pleasure (steps 20-24 + 37) ═══
     {
       id: 20, level: 5,
-      scene: 'I bring you right to the edge and then stop. You cry out in frustration. I smile and kiss your thigh, then crawl back up your body. You can feel how hard I am pressing against your hip. My eyes are dark with wanting you.',
-      prompt: 'I bring you to the edge again, then stop. You whimper. I smile against your thigh. "Not yet. I want you desperate." I kiss my way back up your body. Now I am above you, hard against your hip. "Do you want me inside you?"',
+      scene: 'I bring you right to the edge and stop. You cry out in frustration. I smile and kiss my way back up your body. You can feel how hard I am against your hip.',
+      prompt: 'I bring you to the edge again, then stop. "Not yet. I want you desperate." I kiss back up your body. I am hard against your hip. "Do you want me inside you?"',
       options: [
-        { text: 'Yes \u2014 I have never needed anything more', next: 21 },
-        { text: 'Look at me and say "yes" without breaking eye contact', next: 21 },
-        { text: 'Not yet \u2014 I want to touch you first. I want to taste you.', next: 22 }
+        { text: 'Yes \u2014 I have never needed anything more', next: 21, transition: '"Please," you beg. I position myself at your entrance. We both hold our breath.' },
+        { text: 'Look at me and say "yes" without breaking eye contact', next: 21, transition: 'You look me in the eye and say yes. I push in just the tip. Neither of us blinks.' },
+        { text: 'Not yet \u2014 I want to touch you first. I want to taste you.', next: 22, transition: 'You push me onto my back. You take me in your hand. Now you are in control.' }
       ]
     },
     {
       id: 21, level: 5,
-      scene: 'I position myself at your entrance. The tip of me presses against you. We both hold our breath. I push in just the slightest bit and the feeling of you \u2014 wet, warm, tight \u2014 makes me groan. I hold your gaze as I push deeper.',
-      prompt: 'I position myself at your entrance. I push in just the tip. The feeling of you \u2014 wet, warm, tight \u2014 makes me groan. "Look at me." I hold your gaze and push deeper. Do you want it slow or hard?',
+      scene: 'I position myself at your entrance. The tip of my cock presses against you. We both hold our breath. I push in just slightly and the feeling of you makes me groan.',
+      prompt: 'I push in just the tip. The feeling of you \u2014 wet, warm, tight \u2014 makes me groan. "Look at me." I hold your gaze. Do you want it slow or hard?',
       options: [
-        { text: 'Slow \u2014 I want to feel every inch stretch me', next: 23 },
-        { text: 'Hard \u2014 I want to feel claimed. Take me.', next: 24 }
+        { text: 'Slow \u2014 I want to feel every inch stretch me', next: 23, transition: 'I push in slowly, inch by inch. You feel every ridge, every vein. "Fuck."' },
+        { text: 'Hard \u2014 I want to feel claimed. Fuck me.', next: 37, transition: 'I slam into you in one brutal thrust. You scream. I do it again.' }
       ]
     },
     {
       id: 22, level: 5,
-      scene: 'You flip me onto my back. Now you are above me, in control. You take me in your hand and guide me to your entrance. You lower yourself slowly, inch by inch. Your head falls back. You look like a goddess taking what belongs to her.',
-      prompt: 'You push me onto my back. Now you are above me. You take me in your hand and guide me inside you, lowering yourself slowly. Your head falls back. "Like this?" You set the pace. Who is in control?',
+      scene: 'You flip me onto my back. Now you are above me, in control. You take me in your hand and guide me to your entrance. You lower yourself slowly. Your head falls back.',
+      prompt: 'You take me in your hand and guide me inside you, lowering yourself slowly. Your head falls back. "Like this?" Who is in control?',
       options: [
-        { text: 'I am \u2014 I ride you slow and deep, watching your face', next: 23 },
-        { text: 'You are \u2014 grab my hips and take control', next: 24 }
+        { text: 'I am \u2014 I ride you slow and deep', next: 23, transition: 'You ride me slow, watching your body disappear onto mine. You set the rhythm.' },
+        { text: 'You are \u2014 grab my hips and take control', next: 37, transition: 'I grab your hips and slam up into you. You cry out. I fuck you from below.' }
+      ]
+    },
+    {
+      id: 37, level: 5,
+      scene: 'I fuck you hard and fast. The bed shakes. Your tits bounce with every thrust. I grab your throat and squeeze lightly. "You like being fucked like this, don\'t you?"',
+      prompt: 'I pound into you without mercy. Your moans are incoherent. "You like being fucked like a whore?" I slap your ass hard. The sound echoes.',
+      options: [
+        { text: 'Yes \u2014 fuck me like I am yours', next: 25, transition: 'You are mine. I prove it with every brutal thrust. You take it all.' },
+        { text: 'Harder \u2014 I can take more', next: 25, transition: 'I give you harder. Faster. Deeper. You scream my name. I own every sound.' }
       ]
     },
     {
       id: 23, level: 5,
-      scene: 'I fill you completely and then I stop, buried deep inside you. We are connected in a way that goes beyond the physical. My thumb finds your clit and draws slow circles. You tremble around me. I begin to move \u2014 long, deep strokes that make us both gasp.',
-      prompt: 'Slow and deep. I fill you completely and stay there, letting you adjust, letting you feel how perfectly we fit. My thumb finds your clit and draws circles. "You feel like heaven." I begin to move \u2014 long, deep strokes. What do you want me to say?',
+      scene: 'I fill you completely and stop, buried deep. We are connected. My thumb finds your clit and draws slow circles. You tremble around me. I begin to move \u2014 long, deep strokes.',
+      prompt: 'Slow and deep. I fill you completely. My thumb finds your clit. "You feel like heaven." I begin to move \u2014 long, deep strokes. What do you want me to say?',
       options: [
-        { text: 'Tell me how good I feel \u2014 whisper it', next: 25 },
-        { text: 'Tell me I belong to you', next: 25 },
-        { text: 'Do not speak \u2014 just show me with every thrust', next: 25 }
+        { text: 'Tell me how good I feel \u2014 whisper it in my ear', next: 25, transition: 'I whisper how tight you are, how wet, how perfect. You moan with every word.' },
+        { text: 'Tell me I belong to you', next: 25, transition: '"You are mine. Every inch of you. Say it." You say it between moans.' },
+        { text: 'Do not speak \u2014 just fuck me', next: 25, transition: 'I shut up and fuck you deep and slow. Every thrust says what words cannot.' }
       ]
     },
     {
       id: 24, level: 5,
-      scene: 'I grip your hips and drive into you hard. The sound of our bodies colliding fills the room. You cry out with each thrust. I wrap my hand around your throat \u2014 not squeezing, just resting there, a reminder of who you belong to. Your eyes roll back.',
-      prompt: 'Hard and fast. I grip your hips and pound into you. The sound of our bodies colliding fills the room. You cry out. I wrap my hand around your throat \u2014 not squeezing, just holding. "You are mine." Do you want to come with me inside you?',
+      scene: 'I grip your hips and drive into you hard. The sound of our bodies colliding fills the room. I wrap my hand around your throat. "You are mine."',
+      prompt: 'I pound into you hard. You cry out with every thrust. I wrap my hand around your throat. "You are mine." Do you want to come with me inside you?',
       options: [
-        { text: 'Yes \u2014 make me come around your cock', next: 25 },
-        { text: 'Yes \u2014 hold my throat and fuck me through it', next: 25 }
+        { text: 'Yes \u2014 make me come around your cock', next: 25, transition: '"Come for me." I fuck you through it. You clench around me, wave after wave.' },
+        { text: 'Yes \u2014 hold my throat and fuck me through it', next: 25, transition: 'I hold your throat and keep fucking you. You come hard, vision blurring.' }
       ]
     },
 
-    // ═══ LEVEL 6 — Ecstasy (steps 25-28) ═══
+    // ═══ LEVEL 6 — Ecstasy (steps 25-28 + 38) ═══
     {
       id: 25, level: 6,
-      scene: 'I feel you tightening around me. I change the angle slightly and hit that spot \u2014 the one that makes your eyes fly open and your mouth form a perfect O. Your legs wrap around me, pulling me impossibly deeper. I feel your climax building like a wave about to crash.',
-      prompt: 'I feel you tightening around me. I change the angle and hit that spot that makes you see stars. Your legs wrap around me, pulling me deeper. "Come for me. Now."',
+      scene: 'I feel you tightening around me. I change the angle and hit that spot \u2014 the one that makes your eyes fly open. Your legs wrap around me, pulling me deeper.',
+      prompt: 'I change the angle and hit that spot. Your legs wrap around me. "Come for me. Now."',
       options: [
-        { text: 'I let go and shatter around you, crying out your name', next: 26 },
-        { text: 'I am close \u2014 keep going, do not stop, please', next: 26 }
+        { text: 'I let go and shatter around you, crying out', next: 26, transition: 'You shatter around me. I feel every pulse. You are never more beautiful.' },
+        { text: 'I am close \u2014 keep going, do not stop', next: 26, transition: '"Look at me." You do. I keep hitting that spot. You fall apart in my arms.' }
       ]
     },
     {
       id: 26, level: 6,
-      scene: 'You come undone beneath me \u2014 your body clenching, your back arching, your nails digging into my skin. I slow my pace but stay deep inside you, riding you through every wave of your release. When you finally open your eyes, I am still hard inside you. I kiss your forehead. "Again?"',
-      prompt: 'I feel you come undone beneath me \u2014 your body clenching, your back arching. I slow down but do not stop, riding you through every wave. When you finally catch your breath, I am still hard inside you. "Round two?"',
+      scene: 'You come undone \u2014 body clenching, back arching, nails digging into my skin. I slow but stay deep, riding you through every wave. When you open your eyes, I am still hard inside you.',
+      prompt: 'You come undone. I stay inside you. "Round two?"',
       options: [
-        { text: 'Yes \u2014 give me a minute but do not pull out', next: 27 },
-        { text: 'Not yet \u2014 I want to taste myself on you', next: 27 },
-        { text: 'Flip me over \u2014 I want you from behind', next: 28 }
+        { text: 'Yes \u2014 give me a minute but do not pull out', next: 27, transition: 'We stay connected. I kiss your neck. Your hand strokes me while I am still inside.' },
+        { text: 'Not yet \u2014 I want to taste myself on you', next: 27, transition: 'You push me onto my back and take me in your mouth, tasting yourself.' },
+        { text: 'Flip me over \u2014 I want you from behind', next: 28, transition: 'I flip you onto your stomach and enter you from behind. The new angle is devastating.' }
       ]
     },
     {
       id: 27, level: 6,
-      scene: 'We lie tangled together, catching our breath. Your hand strokes me slowly. I kiss your shoulder, your neck, the curve of your ear. "Your turn," you whisper. You roll on top of me, guiding me back inside you. This time you make me look at you. You do not let me look away.',
-      prompt: 'I collapse beside you, pulling you into me. I kiss your shoulder, your neck. Your hand finds me, stroking me slowly. I am still sensitive from watching you come. "Your turn," you whisper. I want you inside me again. But this time \u2014 look at me. Do not look away.',
+      scene: 'We lie tangled. Your hand strokes me slowly. I kiss your neck. "Your turn," you whisper. You roll on top, guiding me back inside. This time you do not let me look away.',
+      prompt: '"Your turn." You guide me inside you again. "Look at me. Do not look away."',
       options: [
-        { text: 'I roll on top and enter you again, never breaking eye contact', next: 28 },
-        { text: 'I lie back and let you take control \u2014 you guide me inside you', next: 28 }
+        { text: 'I hold your gaze and slide into you slowly', next: 28, transition: 'I enter you again, never breaking eye contact. You are everything.' },
+        { text: 'I let you take control \u2014 you set the pace', next: 28, transition: 'You ride me slow. Your eyes never leave mine. I am completely yours.' }
       ]
     },
     {
       id: 28, level: 6,
-      scene: 'I enter you from behind and the new angle makes us both gasp. I grab a handful of your hair, tilting your head back. I bite your shoulder as I thrust. You push back against me, matching my rhythm. The room is filled with the sound of skin on skin, of breathless moans.',
-      prompt: 'I enter you from behind. The new angle makes us both gasp. I grab a handful of your hair \u2014 not hard, just enough to tilt your head back. I bite your shoulder as I thrust. "You take me so well." The room is filled with the sound of skin on skin. How fast?',
+      scene: 'I enter you from behind. The new angle makes us both gasp. I grab your hair and pull your head back. I bite your shoulder as I thrust. You push back against me.',
+      prompt: 'I enter you from behind. I grab your hair, pull your head back. "You take me so well." How fast?',
       options: [
-        { text: 'Fast and relentless \u2014 I want to lose control', next: 29 },
-        { text: 'Deep and measured \u2014 make me feel every inch', next: 29 }
+        { text: 'Fast and relentless \u2014 fuck me until I break', next: 38, transition: 'I fuck you hard and fast. You moan into the pillow. I do not slow down.' },
+        { text: 'Deep and measured \u2014 make me feel every inch', next: 29, transition: 'I push into you deep and slow. You feel every inch. We move together.' }
+      ]
+    },
+    {
+      id: 38, level: 6,
+      scene: 'I fuck you without mercy. The bed creaks. You scream into the pillow. I grab your hips and pull you back onto me, over and over, relentless.',
+      prompt: 'I fuck you relentlessly from behind. You can barely breathe. "You wanted it hard. Take it." I slap your ass. The sound cracks through the room.',
+      options: [
+        { text: 'I take it \u2014 I can handle anything you give', next: 29, transition: 'You take every brutal thrust. I am rough. You love it.' },
+        { text: 'Harder \u2014 do not hold back', next: 29, transition: 'I give you everything. Harder. Faster. We are both lost in it.' }
       ]
     },
 
     // ═══ LEVEL 7 — Intimacy (steps 29-31) ═══
     {
       id: 29, level: 7,
-      scene: 'We find our rhythm together. I reach around and press two fingers against your clit while I thrust into you from behind. You moan into the pillow. Your body is completely open to me. "I am going to fill you so full," I whisper. You clench around me in response.',
-      prompt: 'We find a rhythm. I reach around and press two fingers against your clit while I thrust into you from behind. You moan into the pillow. "I am going to fill you so full." Do you want me to come inside you?',
+      scene: 'We find a rhythm. I reach around and press two fingers against your clit while I thrust into you. You moan. "I am going to fill you so full." You clench around me.',
+      prompt: 'I press two fingers against your clit while I thrust into you. "I am going to fill you so full." Do you want me to come inside you?',
       options: [
-        { text: 'Yes \u2014 fill me. I want to feel it dripping out of me.', next: 30 },
-        { text: 'Yes \u2014 I want every drop. Do not pull out.', next: 30 }
+        { text: 'Yes \u2014 fill me. I want to feel it dripping out of me.', next: 30, transition: '"I am going to fucking fill you." I feel my own release building.' },
+        { text: 'Yes \u2014 I want every drop inside me', next: 30, transition: 'I pull you closer. I need to be as deep inside you as possible.' }
       ]
     },
     {
       id: 30, level: 7,
-      scene: 'I feel my release building, coiling tight at the base of my spine. I pull you closer, deeper, trying to merge us into one body. My breathing is ragged. I am lost in the feeling of you. "Where do you want me?" I ask, because I would give you anything.',
-      prompt: 'I feel my own release building. I pull you closer, deeper. I am lost in the feeling of you. "Where do you want me?"',
+      scene: 'I feel my release building, coiling at the base of my spine. I pull you closer, deeper. My breathing is ragged. "Where do you want me?" I ask, because I would give you anything.',
+      prompt: 'I feel my release building. "Where do you want me?"',
       options: [
-        { text: 'Inside me \u2014 do not stop, I want to feel you come apart inside me', next: 31 },
-        { text: 'On my chest \u2014 I want to watch you let go', next: 31 },
-        { text: 'In my mouth \u2014 look me in the eyes when you finish', next: 31 }
+        { text: 'Inside me \u2014 I want to feel you come apart inside me', next: 31, transition: 'I bury myself deep and let go. You feel me pulse inside you. "Fuck."' },
+        { text: 'On my chest \u2014 I want to watch you let go', next: 31, transition: 'I pull out and stroke myself over you. I come on your chest, watching your face.' },
+        { text: 'In my mouth \u2014 look me in the eyes', next: 31, transition: 'I kneel over your face. You take me in your mouth. I come looking into your eyes.' }
       ]
     },
     {
       id: 31, level: 7,
-      scene: 'I surrender completely. I grab you and hold you tight as I come, groaning your name like a prayer. I feel you clench around me one final time \u2014 a perfect, shared release. We collapse together, breathless, sweating, my face buried in your neck. Neither of us speaks. There are no words for this.',
-      prompt: 'I surrender to it. I grab you and hold you tight as I come, groaning your name. I feel you clench around me one more time. We are both trembling. I collapse onto you, breathless, buried deep. Neither of us speaks. The only sound is our breathing. What do you do first?',
+      scene: 'I surrender completely. I grab you and hold you tight as I come, groaning your name. We collapse together, breathless, my face buried in your neck. Neither of us speaks.',
+      prompt: 'I surrender. I come, groaning your name. We collapse together, trembling. What do you do first?',
       options: [
-        { text: 'I pull you closer and kiss your forehead', next: 32 },
-        { text: 'I stroke your hair and whisper "I love you"', next: 32 },
-        { text: 'I stay inside you and hold you as tight as I can', next: 32 }
+        { text: 'I pull you closer and kiss your forehead', next: 32, transition: 'I kiss your forehead. You smile. I hold you like you are made of glass.' },
+        { text: 'I whisper "I love you" against your skin', next: 32, transition: 'The words slip out. You look at me. I mean it more than anything.' },
+        { text: 'I stay inside you and hold you as tight as I can', next: 32, transition: 'I stay inside you, softening, unwilling to let go. You hold me just as tight.' }
       ]
     },
 
     // ═══ LEVEL 8 — Vulnerability (steps 32-33) ═══
     {
       id: 32, level: 8,
-      scene: 'The silence is full. I am still inside you, softening, and neither of us wants to move. Your fingers trace lazy patterns on my arm. Your skin is warm and damp against mine. I can feel your heartbeat slowing. "That was not just sex," you say. I kiss your shoulder. "No. It was not."',
-      prompt: 'The silence stretches beautifully. I am still inside you, softening, and neither of us moves. Your fingers trace patterns on my arm. "That was not just sex," you say quietly. I kiss your shoulder. "No. It was not." What do you need from me right now?',
+      scene: 'The silence is full. I am still inside you, softening. Your fingers trace lazy patterns on my arm. Your skin is warm and damp. "That was not just sex," you say. "No. It was not."',
+      prompt: '"That was not just sex." What do you need from me right now?',
       options: [
-        { text: 'Tell me what you are feeling. I want to hear your voice.', next: 33 },
-        { text: 'Do not say anything. Just hold me. Let me feel safe.', next: 33 },
-        { text: 'Kiss me \u2014 deeply, slowly, like we have all night', next: 33 }
+        { text: 'Tell me what you are feeling. I want your voice.', next: 33, transition: 'I tell you everything. How you make me feel. What it means. No holding back.' },
+        { text: 'Do not say anything. Just hold me. Let me feel safe.', next: 33, transition: 'I hold you tighter. I kiss your hair. We lie in perfect silence.' },
+        { text: 'Kiss me \u2014 deeply, slowly, like we have all night', next: 33, transition: 'I kiss you slowly, deeply. There is no rush. We have all night.' }
       ]
     },
     {
       id: 33, level: 8,
-      scene: 'I pull out gently and turn you to face me. Your eyes are heavy-lidded, your lips swollen, your hair a beautiful mess. I wipe a strand of hair from your face and tuck it behind your ear. "I could stay inside you forever," I say. You smile, and it reaches your eyes.',
-      prompt: 'I pull out gently and turn you to face me. Your eyes are heavy, your lips swollen. I wipe a strand of hair from your face. "I could stay inside you forever." You smile. I trace your jaw with my thumb. What are you thinking?',
+      scene: 'I pull out gently and turn you to face me. Your eyes are heavy, your lips swollen. I wipe a strand of hair from your face. "I could stay inside you forever."',
+      prompt: 'I turn you to face me. "I could stay inside you forever." What are you thinking?',
       options: [
-        { text: '"I was thinking about how good it feels when you take control"', next: 34 },
-        { text: '"I was thinking about how safe I feel in your arms"', next: 34 },
-        { text: '"I was thinking about what I want you to do to me next time"', next: 34 }
+        { text: '"How good it feels when you take control"', next: 34, transition: '"I love watching you take what you want." I kiss your forehead.' },
+        { text: '"How safe I feel in your arms"', next: 34, transition: '"You are safe. Always." I pull you closer. You bury your face in my chest.' },
+        { text: '"What I want you to do to me next time"', next: 34, transition: 'You whisper what you want next time. I am already hard again.' }
       ]
     },
 
     // ═══ LEVEL 9 — Union (steps 34-35) ═══
     {
       id: 34, level: 9,
-      scene: 'We lie in the dark, tangled in each other and the sheets. Your head rests on my chest. My hand moves slowly up and down your spine. The room is cool now, but we are warm. "Would you do that all over again?" you ask. I kiss your hair. "Right now, if you asked nicely."',
-      prompt: 'We talk in the dark. Your head is on my chest. My hand traces your spine. Every touch is tender now. "Would you do that all over again?" you ask. I kiss your hair. "Right now, if you asked nicely." What do you whisper before you fall asleep?',
+      scene: 'We lie in the dark, tangled in each other and the sheets. Your head rests on my chest. My hand moves up and down your spine. The room is cool but we are warm.',
+      prompt: '"Would you do that all over again?" What do you whisper before you fall asleep?',
       options: [
-        { text: '"I am so yours. All of me. Always."', next: 35 },
-        { text: '"I want to wake up like this every day."', next: 35 },
-        { text: '"That was the most intimate I have ever felt. Do not ever let me go."', next: 35 }
+        { text: '"I am so yours. All of me. Always."', next: 35, transition: 'I kiss your hair. "And I am yours. Always." You smile against my skin.' },
+        { text: '"I want to wake up like this every day."', next: 35, transition: '"Then we will." I hold you tighter. The future feels wide open.' },
+        { text: '"That was everything. Do not ever let me go."', next: 35, transition: '"Never." I press a kiss to your forehead. "Never."' }
       ]
     },
     {
       id: 35, level: 9,
-      scene: 'Your breathing evens out. Your body relaxes completely against mine. I watch you for a long moment \u2014 the rise and fall of your chest, the soft curve of your lips, the way your hand rests on my heart even in sleep. I press a kiss to your forehead. "Goodnight, my love." I hold you close. There is nowhere else I would rather be.',
-      prompt: 'You fall asleep in my arms. Your breathing evens out. I watch you for a long moment \u2014 the rise and fall of your chest, the soft curve of your lips. I press a kiss to your forehead. "Goodnight, my love." I hold you close. There is nowhere else I would rather be.',
+      scene: 'Your breathing evens out. Your body relaxes completely against mine. I watch you sleep \u2014 the rise and fall of your chest, the soft curve of your lips. I kiss your forehead. There is nowhere else I would rather be.',
+      prompt: 'You fall asleep in my arms. I hold you close. There is nowhere else I would rather be.',
       options: [
-        { text: 'I sleep soundly, wrapped in you, utterly spent and utterly safe', next: -1 },
-        { text: 'I dream of you, of us, of doing it all again tomorrow', next: -1 }
+        { text: 'I sleep soundly, wrapped in you, utterly spent and safe', next: -1, transition: 'You sleep deeply, wrapped in my arms. I watch you for a moment, then follow.' },
+        { text: 'I dream of doing it all again tomorrow', next: -1, transition: 'I fall asleep dreaming of you, of us, of doing it all again tomorrow.' }
       ]
     }
   ];
@@ -769,26 +865,44 @@ function renderGame() {
   // Scene
   document.getElementById('sceneBox').textContent = step.scene || '';
 
+  // Hide transition box
+  document.getElementById('transitionBox').style.display = 'none';
+
   // Options
   var optHtml = '';
   step.options.forEach(function (opt, oi) {
-    optHtml += '<button class="opt-btn" data-next="' + opt.next + '">' + esc(opt.text) + '</button>';
+    optHtml += '<button class="opt-btn" data-next="' + opt.next + '" data-transition="' + esc(opt.transition || '') + '">' + esc(opt.text) + '</button>';
   });
   document.getElementById('optionsContainer').innerHTML = optHtml;
+  document.getElementById('optionsContainer').style.display = 'flex';
 
   // Bind options
   document.querySelectorAll('.opt-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
       var next = parseInt(this.dataset.next);
       var text = this.textContent;
+      var transition = this.dataset.transition;
+
       state.history.push({ prompt: step.prompt, choice: text, stepId: state.stepId });
+
       if (next === -1) {
         state.stepId = null;
         saveState();
         showEnd();
+        return;
+      }
+
+      // Show transition text
+      state.stepId = next;
+      saveState();
+      if (transition) {
+        document.getElementById('optionsContainer').style.display = 'none';
+        document.getElementById('transitionBox').textContent = transition;
+        document.getElementById('transitionBox').style.display = 'block';
+        setTimeout(function () {
+          renderGame();
+        }, TRANSITION_DELAY);
       } else {
-        state.stepId = next;
-        saveState();
         renderGame();
       }
     });
@@ -809,10 +923,36 @@ function renderHistory() {
   document.getElementById('historyList').innerHTML = html;
 }
 
+function toggleHistory() {
+  historyOpen = !historyOpen;
+  var scroll = document.getElementById('historyScroll');
+  var arrow = document.getElementById('historyArrow');
+  scroll.classList.toggle('open', historyOpen);
+  arrow.classList.toggle('open', historyOpen);
+}
+
 function showEnd() {
   document.getElementById('startScreen').style.display = 'none';
   document.getElementById('gameScreen').style.display = 'none';
   document.getElementById('endScreen').style.display = 'block';
+
+  // Stats
+  var h = state.history;
+  var totalChoices = h.length;
+  var highestLevel = 0;
+  var isRough = false;
+  h.forEach(function (item) {
+    var s = getStep(item.stepId);
+    if (s && s.level > highestLevel) highestLevel = s.level;
+    var c = item.choice.toLowerCase();
+    if (c.indexOf('rough') !== -1 || c.indexOf('hard') !== -1 || c.indexOf('harder') !== -1 || c.indexOf('fuck') !== -1 || c.indexOf('brutal') !== -1) {
+      isRough = true;
+    }
+  });
+  document.getElementById('statsGrid').innerHTML =
+    '<div class="stat-card"><div class="num">' + totalChoices + '</div><div class="label">Choices Made</div></div>' +
+    '<div class="stat-card"><div class="num">' + (highestLevel + 1) + '</div><div class="label">Levels Explored</div></div>' +
+    '<div class="stat-card path"><div class="num">' + (isRough ? 'Rough' : 'Tender') + '</div><div class="label">Path</div></div>';
 }
 
 function saveState() {
@@ -826,12 +966,13 @@ function resetGame() {
 }
 
 function esc(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 
 document.getElementById('startBtn').addEventListener('click', startGame);
 document.getElementById('resetBtn').addEventListener('click', resetGame);
 document.getElementById('endResetBtn').addEventListener('click', resetGame);
+document.getElementById('historyToggle').addEventListener('click', toggleHistory);
 
 initGame();
 </script>
