@@ -2677,15 +2677,32 @@
       html += '<input type="text" class="to-prompt" value="' + esc(step.prompt) + '" data-idx="' + i + '" style="width:100%;"></div>';
       html += '<div class="field"><label>Scene (narrative description)</label>';
       html += '<textarea class="to-scene" data-idx="' + i + '" rows="2" style="width:100%;padding:.45rem .6rem;border-radius:4px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-size:.8rem;outline:none;font-family:\'Lora\',Georgia,serif;">' + esc(step.scene || '') + '</textarea></div>';
-      html += '<div style="display:flex;gap:1rem;margin-bottom:.5rem;">';
-      html += '<div class="field" style="flex:1;"><label>Level (0-9)</label>';
+      html += '<div style="display:flex;gap:1rem;margin-bottom:.5rem;flex-wrap:wrap;">';
+      html += '<div class="field" style="flex:1;min-width:80px;"><label>Level (0-9)</label>';
       html += '<input type="number" class="to-level" value="' + step.level + '" min="0" max="9" data-idx="' + i + '" style="width:100%;"></div>';
+      html += '<div class="field" style="flex:1;min-width:100px;"><label>Mood</label>';
+      html += '<select class="to-mood" data-idx="' + i + '" style="width:100%;padding:.35rem .5rem;border-radius:4px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-size:.8rem;outline:none;">' +
+        '<option value="tender"' + (step.mood === 'tender' ? ' selected' : '') + '>Tender</option>' +
+        '<option value="teasing"' + (step.mood === 'teasing' ? ' selected' : '') + '>Teasing</option>' +
+        '<option value="intense"' + (step.mood === 'intense' ? ' selected' : '') + '>Intense</option>' +
+        '<option value="vulnerable"' + (step.mood === 'vulnerable' ? ' selected' : '') + '>Vulnerable</option>' +
+        '<option value="ecstasy"' + (step.mood === 'ecstasy' ? ' selected' : '') + '>Ecstasy</option>' +
+      '</select></div>';
+      html += '<div class="field" style="width:60px;"><label>Symbol</label>';
+      html += '<input type="text" class="to-symbol" value="' + esc(step.symbol || '') + '" maxlength="2" data-idx="' + i + '" style="width:100%;text-align:center;padding:.35rem .2rem;border-radius:4px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-size:.9rem;outline:none;"></div>';
+      html += '<div class="field" style="width:80px;"><label>Pause (ms)</label>';
+      html += '<input type="number" class="to-pause" value="' + (step.pause || 400) + '" min="0" max="5000" step="100" data-idx="' + i + '" style="width:100%;padding:.35rem .4rem;border-radius:4px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-size:.8rem;outline:none;"></div>';
       html += '</div>';
       html += '<div style="font-size:.7rem;color:var(--ash);margin-bottom:.4rem;">Options:</div>';
       step.options.forEach(function (opt, oi) {
         html += '<div style="display:flex;gap:.4rem;margin-bottom:.3rem;align-items:center;">';
         html += '<input type="text" class="to-opt-text" value="' + esc(opt.text) + '" placeholder="Option text" data-idx="' + i + '" data-oi="' + oi + '" style="flex:1;padding:.35rem .5rem;border-radius:4px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-size:.8rem;outline:none;">';
         html += '<input type="text" class="to-opt-trans" value="' + esc(opt.transition || '') + '" placeholder="Transition text" data-idx="' + i + '" data-oi="' + oi + '" style="flex:1;padding:.35rem .5rem;border-radius:4px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-size:.8rem;outline:none;">';
+        html += '<select class="to-opt-energy" data-idx="' + i + '" data-oi="' + oi + '" style="padding:.35rem .3rem;border-radius:4px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-size:.72rem;outline:none;">' +
+          '<option value="1"' + (opt.energy === 1 ? ' selected' : '') + '>Soft</option>' +
+          '<option value="2"' + (opt.energy === 2 ? ' selected' : '') + '>Medium</option>' +
+          '<option value="3"' + (opt.energy === 3 ? ' selected' : '') + '>Intense</option>' +
+        '</select>';
         html += '<input type="number" class="to-opt-next" value="' + opt.next + '" placeholder="Next step ID" data-idx="' + i + '" data-oi="' + oi + '" style="width:70px;padding:.35rem .5rem;border-radius:4px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-size:.8rem;outline:none;">';
         html += '<span style="color:var(--ash);font-size:.7rem;">(-1 = end)</span>';
         html += '</div>';
@@ -2710,6 +2727,21 @@
         turnOnSteps[parseInt(this.dataset.idx)].scene = this.value;
       });
     });
+    container.querySelectorAll('.to-mood').forEach(function (el) {
+      el.addEventListener('change', function () {
+        turnOnSteps[parseInt(this.dataset.idx)].mood = this.value;
+      });
+    });
+    container.querySelectorAll('.to-symbol').forEach(function (el) {
+      el.addEventListener('input', function () {
+        turnOnSteps[parseInt(this.dataset.idx)].symbol = this.value;
+      });
+    });
+    container.querySelectorAll('.to-pause').forEach(function (el) {
+      el.addEventListener('input', function () {
+        turnOnSteps[parseInt(this.dataset.idx)].pause = parseInt(this.value) || 400;
+      });
+    });
     container.querySelectorAll('.to-opt-text').forEach(function (el) {
       el.addEventListener('input', function () {
         var i = parseInt(this.dataset.idx);
@@ -2722,6 +2754,13 @@
         var i = parseInt(this.dataset.idx);
         var oi = parseInt(this.dataset.oi);
         turnOnSteps[i].options[oi].transition = this.value;
+      });
+    });
+    container.querySelectorAll('.to-opt-energy').forEach(function (el) {
+      el.addEventListener('change', function () {
+        var i = parseInt(this.dataset.idx);
+        var oi = parseInt(this.dataset.oi);
+        turnOnSteps[i].options[oi].energy = parseInt(this.value);
       });
     });
     container.querySelectorAll('.to-opt-next').forEach(function (el) {
@@ -2749,11 +2788,14 @@
     turnOnSteps.push({
       id: newId,
       level: Math.min(lastLevel + (turnOnSteps.length > 0 ? 1 : 0), 9),
+      mood: 'tender',
+      symbol: '♡',
+      pause: 600,
       scene: 'A quiet moment in the dark...',
       prompt: 'What do you do?',
       options: [
-        { text: 'Option 1', next: newId + 1, transition: 'You choose option 1...' },
-        { text: 'Option 2', next: newId + 1, transition: 'You choose option 2...' }
+        { text: 'Option 1', next: newId + 1, transition: 'You choose option 1...', energy: 1 },
+        { text: 'Option 2', next: newId + 1, transition: 'You choose option 2...', energy: 2 }
       ]
     });
     renderTurnOnList();

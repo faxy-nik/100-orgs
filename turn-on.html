@@ -153,6 +153,14 @@ body {
   font-family: var(--font-display);
   line-height: 1;
 }
+.scene-box.mood-teasing { border-color: var(--gold); background: rgba(255,230,128,0.06); box-shadow: 0 0 20px rgba(255,230,128,0.06); }
+.scene-box.mood-teasing::before { color: var(--gold); }
+.scene-box.mood-intense { border-color: #e85d3a; background: rgba(232,93,58,0.1); box-shadow: 0 0 25px rgba(232,93,58,0.1); }
+.scene-box.mood-intense::before { color: #e85d3a; }
+.scene-box.mood-vulnerable { border-color: #d4708a; background: rgba(212,112,138,0.06); box-shadow: 0 0 20px rgba(212,112,138,0.05); }
+.scene-box.mood-vulnerable::before { color: #d4708a; }
+.scene-box.mood-ecstasy { border-color: #e8a0b0; background: rgba(232,160,176,0.08); box-shadow: 0 0 30px rgba(232,160,176,0.1); }
+.scene-box.mood-ecstasy::before { color: #e8a0b0; }
 
 /* Prompt */
 .prompt {
@@ -219,8 +227,20 @@ body {
 .opt-1:hover { background: rgba(255,230,128,0.15) !important; border-color: var(--gold) !important; color: var(--parchment) !important; }
 .opt-2 { border-color: #d4708a !important; color: #e8a0b0 !important; }
 .opt-2:hover { background: rgba(212,112,138,0.2) !important; border-color: #d4708a !important; color: var(--parchment) !important; }
+.opt-energy-2 { font-weight: 400 !important; border-width: 1.5px !important; }
+.opt-energy-3 { font-weight: 700 !important; border-width: 2.5px !important; box-shadow: 0 0 15px rgba(232,93,58,0.15) !important; letter-spacing: 0.04em !important; }
+.opt-energy-3:hover { box-shadow: 0 0 30px rgba(232,93,58,0.25) !important; }
 
-/* Transition text */
+/* Heat meter */
+.heat-meter { width: 100%; max-width: 300px; margin: 0 auto 1.25rem; }
+.heat-meter .track { height: 4px; border-radius: 2px; background: var(--ink-line); overflow: hidden; }
+.heat-meter .fill { height: 100%; width: 0%; border-radius: 2px; background: linear-gradient(90deg, var(--ember), var(--gold), #e8a0b0); transition: width 0.8s ease; }
+.heat-meter .labels { display: flex; justify-content: space-between; font-size: .6rem; color: var(--ash); text-transform: uppercase; letter-spacing: .08em; margin-top: 4px; }
+.heat-meter .labels .heat-label { transition: color 0.5s; }
+.heat-meter .labels .heat-label.active { color: var(--ember); }
+
+/* Step symbol */
+.step-symbol { font-size: 1.6rem; text-align: center; margin-bottom: .75rem; animation: fadeIn 0.5s ease; }
 .transition-box {
   width: 100%;
   max-width: 480px;
@@ -508,10 +528,20 @@ body {
     <div class="game-layout">
       <div class="game-right">
         <div class="level-bar" id="levelBar"></div>
+        <div class="heat-meter" id="heatMeter">
+          <div class="track"><div class="fill" id="heatFill"></div></div>
+          <div class="labels">
+            <span class="heat-label" data-idx="0">Cool</span>
+            <span class="heat-label" data-idx="1">Warm</span>
+            <span class="heat-label" data-idx="2">Hot</span>
+            <span class="heat-label" data-idx="3">Burning</span>
+          </div>
+        </div>
         <div class="prompt">
           <div class="label" id="levelLabel">Level 1</div>
           <div class="text" id="promptText"></div>
         </div>
+        <div class="step-symbol" id="stepSymbol"></div>
         <div class="scene-box" id="sceneBox"></div>
         <div class="transition-box" id="transitionBox"></div>
         <div class="options" id="optionsContainer"></div>
@@ -996,31 +1026,54 @@ function renderGame() {
   // Level label
   document.getElementById('levelLabel').textContent = 'Level ' + (step.level + 1) + ' \u2014 ' + (LEVEL_NAMES[step.level] || '');
 
+  // Heat meter
+  updateHeatMeter(step.level);
+
+  // Mood on scene box
+  var sceneBox = document.getElementById('sceneBox');
+  sceneBox.className = 'scene-box' + (step.mood ? ' mood-' + step.mood : '');
+
+  // Symbol
+  var symEl = document.getElementById('stepSymbol');
+  symEl.textContent = step.symbol || '';
+
   // Clear prompt & scene & hide options
   document.getElementById('promptText').textContent = '';
-  document.getElementById('sceneBox').textContent = '';
+  sceneBox.textContent = '';
   document.getElementById('transitionBox').style.display = 'none';
   document.getElementById('optionsContainer').innerHTML = '';
   document.getElementById('optionsContainer').style.display = 'none';
 
-  // Type scene, then show prompt, then show options
+  // Type scene, then pause, then prompt, then options
+  var pause = step.pause || 600;
   if (step.scene) {
-    typeText(document.getElementById('sceneBox'), step.scene, 18, function() {
-      // after scene: type prompt
-      typeText(document.getElementById('promptText'), step.prompt, 14, function() {
-        // after prompt: show options with stagger
-        showOptions(step);
-      });
+    typeText(sceneBox, step.scene, 18, function() {
+      setTimeout(function() {
+        typeText(document.getElementById('promptText'), step.prompt, 14, function() {
+          showOptions(step);
+        });
+      }, pause);
     });
   } else {
-    typeText(document.getElementById('promptText'), step.prompt, 14, function() {
-      showOptions(step);
-    });
+    setTimeout(function() {
+      typeText(document.getElementById('promptText'), step.prompt, 14, function() {
+        showOptions(step);
+      });
+    }, pause);
   }
 
   // History + narrative (immediate)
   renderHistory();
   renderNarrative();
+}
+
+function updateHeatMeter(level) {
+  var pct = Math.min((level + 1) / 10 * 100, 100);
+  document.getElementById('heatFill').style.width = pct + '%';
+  var idx = level < 3 ? 0 : level < 6 ? 1 : level < 9 ? 2 : 3;
+  document.querySelectorAll('.heat-label').forEach(function(el) {
+    el.classList.toggle('active', parseInt(el.dataset.idx) <= idx);
+  });
 }
 
 var _optLock = false;
@@ -1032,8 +1085,10 @@ function showOptions(step) {
   container.style.display = 'flex';
   var optHtml = '';
   var icons = ['\u2776', '\u2777', '\u2778'];
+  var energyLabels = ['', 'opt-energy-2', 'opt-energy-3'];
   step.options.forEach(function (opt, oi) {
-    optHtml += '<button class="opt-btn opt-' + oi + '" data-next="' + opt.next + '" data-transition="' + esc(opt.transition || '') + '" data-oi="' + oi + '" style="opacity:0;transform:translateY(12px);transition:all 0.4s ease ' + (oi * 0.15) + 's;">' + (icons[oi] || '') + ' ' + esc(opt.text) + '</button>';
+    var eClass = energyLabels[(opt.energy || 1) - 1] || '';
+    optHtml += '<button class="opt-btn opt-' + oi + ' ' + eClass + '" data-next="' + opt.next + '" data-transition="' + esc(opt.transition || '') + '" data-oi="' + oi + '" style="opacity:0;transform:translateY(12px);transition:all 0.4s ease ' + (oi * 0.15) + 's;">' + (icons[oi] || '') + ' ' + esc(opt.text) + '</button>';
   });
   container.innerHTML = optHtml;
 
