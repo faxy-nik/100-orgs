@@ -1,0 +1,40 @@
+{
+  "rules": {
+    ".read": true,
+
+    "songs": { ".write": "auth != null && auth.uid === 'ADMIN_UID_REPLACE_ME'" },
+    "sectionUnlock": { ".write": "auth != null && auth.uid === ADMIN_UID_REPLACE_ME" },
+    "rareLinks": { ".write": "auth != null && auth.uid === ADMIN_UID_REPLACE_ME" },
+    "project-puzzles": { ".write": "auth != null && auth.uid === ADMIN_UID_REPLACE_ME" },
+    "project-events": { ".write": "auth != null && auth.uid === ADMIN_UID_REPLACE_ME" },
+    "project-texts": { ".write": "auth != null && auth.uid === ADMIN_UID_REPLACE_ME" },
+
+    "turnOn": {
+      "steps": { ".write": "auth != null && auth.uid === ADMIN_UID_REPLACE_ME" },
+      "sessions_data": { ".write": "auth != null" }
+    },
+
+    "config": {
+      "gallery": { ".write": "auth != null" },
+      "features": { ".write": "auth != null" },
+      ".write": "auth != null && auth.uid === ADMIN_UID_REPLACE_ME"
+    },
+
+    "activity": { ".write": "auth != null" },
+    "wishes": { ".write": "auth != null" },
+    "songRequests": { ".write": "auth != null" },
+    "reviews": { ".write": "auth != null" },
+    "sectionRequests": { ".write": "auth != null" },
+    "letters": { ".write": "auth != null" },
+    "quizHistory": { ".write": "auth != null" },
+    "memories": { ".write": "auth != null" },
+    "selfLetters": { ".write": "auth != null" },
+    "dreams": { ".write": "auth != null" },
+    "lanterns": { ".write": "auth != null" },
+    "ourStoryAnswers": { ".write": "auth != null" },
+    "stats": { ".write": "auth != null" },
+    "userData": { ".write": "auth != null" },
+
+    "$other": { ".write": false }
+  }
+}

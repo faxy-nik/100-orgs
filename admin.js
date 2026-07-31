@@ -2517,24 +2517,74 @@
   });
 
   /* ---- Init ---- */
+  var ADMIN_UID = 'ADMIN_UID_REPLACE_ME'; // set to the Firebase admin user's uid (see database.rules.json)
+
+  function fbAuthAvailable() {
+    return typeof firebase !== 'undefined' && typeof firebase.auth === 'function';
+  }
+
+  function isAdminUser() {
+    if (!fbAuthAvailable()) return false;
+    var u = firebase.auth().currentUser;
+    return !!(u && u.uid === ADMIN_UID);
+  }
+
+  function unlockApp() {
+    localStorage.setItem('ash-admin-auth', '1');
+    document.getElementById('loginGate').classList.add('hidden');
+    document.getElementById('app').classList.add('show');
+    loadAll().then(function () { renderSections(); renderSongs(); });
+  }
+
+  function lockApp() {
+    localStorage.removeItem('ash-admin-auth');
+    document.getElementById('app').classList.remove('show');
+    document.getElementById('loginGate').classList.remove('hidden');
+    document.getElementById('loginEmail').value = '';
+    document.getElementById('loginPass').value = '';
+    document.getElementById('loginErr').classList.remove('show');
+  }
+
   async function init() {
-    if (localStorage.getItem('ash-admin-auth') === '1') {
-      document.getElementById('loginGate').classList.add('hidden');
-      document.getElementById('app').classList.add('show');
-      await loadAll();
-      renderSections();
-      renderSongs();
+    // Auto-restore: Firebase session persists across reloads
+    if (fbAuthAvailable()) {
+      firebase.auth().onAuthStateChanged(function (u) {
+        if (u && u.uid === ADMIN_UID) { unlockApp(); }
+      });
+    }
+
+    // Localhost/offline fallback (no Firebase): keep the old passkey behavior
+    if (localStorage.getItem('ash-admin-auth') === '1' && !fbAuthAvailable()) {
+      unlockApp();
     }
 
     document.getElementById('loginBtn').addEventListener('click', function () {
-      if (document.getElementById('loginPass').value === PASSKEY) {
-        localStorage.setItem('ash-admin-auth', '1');
-        document.getElementById('loginGate').classList.add('hidden');
-        document.getElementById('app').classList.add('show');
-        loadAll().then(function () { renderSections(); renderSongs(); });
+      var email = document.getElementById('loginEmail').value.trim();
+      var pass = document.getElementById('loginPass').value;
+      document.getElementById('loginErr').classList.remove('show');
+      if (fbAuthAvailable()) {
+        firebase.auth().signInWithEmailAndPassword(email, pass).then(function () {
+          if (isAdminUser()) {
+            unlockApp();
+          } else {
+            firebase.auth().signOut();
+            document.getElementById('loginErr').textContent = 'Not the admin account';
+            document.getElementById('loginErr').classList.add('show');
+          }
+        }).catch(function () {
+          document.getElementById('loginErr').textContent = 'Login failed';
+          document.getElementById('loginErr').classList.add('show');
+        });
+      } else if (pass === PASSKEY) {
+        unlockApp();
       } else {
+        document.getElementById('loginErr').textContent = 'Incorrect passkey';
         document.getElementById('loginErr').classList.add('show');
       }
+    });
+
+    document.getElementById('loginEmail').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') document.getElementById('loginPass').focus();
     });
 
     document.getElementById('loginPass').addEventListener('keydown', function (e) {
@@ -2542,11 +2592,8 @@
     });
 
     document.getElementById('logoutBtn').addEventListener('click', function () {
-      localStorage.removeItem('ash-admin-auth');
-      document.getElementById('app').classList.remove('show');
-      document.getElementById('loginGate').classList.remove('hidden');
-      document.getElementById('loginPass').value = '';
-      document.getElementById('loginErr').classList.remove('show');
+      if (fbAuthAvailable() && firebase.auth().currentUser) firebase.auth().signOut();
+      lockApp();
     });
 
     document.getElementById('addBtn').addEventListener('click', function () { openSongModal(-1); });
@@ -2701,7 +2748,7 @@
         if (this.dataset.tab === 'wishes') { loadWishes(); }
         if (this.dataset.tab === 'requests') renderRequests();
         if (this.dataset.tab === 'reviews') renderReviews();
-        if (this.dataset.tab === 'settings') { renderSettings(); document.getElementById('currentPassDisplay').textContent = PASSKEY; document.getElementById('newPassInput').value = ''; }
+        if (this.dataset.tab === 'settings') { renderSettings(); document.getElementById('currentPassDisplay').textContent = fbAuthAvailable() && firebase.auth().currentUser ? firebase.auth().currentUser.email : PASSKEY; document.getElementById('newPassInput').value = ''; }
         if (this.dataset.tab === 'access') renderAccess();
         if (this.dataset.tab === 'sectionRequests') renderSectionRequests();
         if (this.dataset.tab === 'events') renderEvents();
@@ -2763,12 +2810,20 @@
     document.getElementById('changePassBtn').addEventListener('click', function () {
       var newPass = document.getElementById('newPassInput').value.trim();
       if (!newPass) { toast('Enter a new password'); return; }
-      if (newPass.length < 3) { toast('Password must be at least 3 characters'); return; }
-      PASSKEY = newPass;
-      localStorage.setItem('ash-admin-passkey', btoa(PASSKEY));
-      document.getElementById('currentPassDisplay').textContent = PASSKEY;
-      document.getElementById('newPassInput').value = '';
-      toast('Password changed');
+      if (newPass.length < 6) { toast('Password must be at least 6 characters'); return; }
+      if (fbAuthAvailable() && firebase.auth().currentUser) {
+        firebase.auth().currentUser.updatePassword(newPass).then(function () {
+          document.getElementById('newPassInput').value = '';
+          toast('Password changed');
+        }).catch(function (e) { toast('Error: ' + e.message); });
+      } else {
+        // localhost/offline fallback: local-only passkey
+        PASSKEY = newPass;
+        localStorage.setItem('ash-admin-passkey', btoa(PASSKEY));
+        document.getElementById('currentPassDisplay').textContent = PASSKEY;
+        document.getElementById('newPassInput').value = '';
+        toast('Password changed (local only)');
+      }
     });
 
     document.getElementById('coldRestartBtn').addEventListener('click', function () {

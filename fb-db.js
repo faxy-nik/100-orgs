@@ -108,6 +108,8 @@ var FB = (function () {
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     db = firebase.database();
     initialized = true;
+    // Anonymous sign-in so DB rules can distinguish site users from strangers.
+    try { if (typeof firebase.auth === 'function' && !firebase.auth().currentUser) firebase.auth().signInAnonymously().catch(function () {}); } catch (e) {}
   }
 
   function ref(store) { init(); return db.ref(store); }

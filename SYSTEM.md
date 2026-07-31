@@ -238,6 +238,15 @@ Note: `ash` has a 1.8s typing window between keys; the others are plain substrin
 
 ---
 
+## Recent Changes (v10 — Firebase Auth + Locked DB Rules)
+
+| Change | Details |
+|---|---|
+| **DB rules deployed** | `database.rules.json` — read open; user stores (activity, wishes, letters, memories, selfLetters, dreams, quizHistory, songRequests, reviews, sectionRequests, lanterns, ourStoryAnswers, stats, userData, turnOn/sessions_data, config/gallery, config/features) writable only with auth; admin stores (`songs`, `sectionUnlock`, `rareLinks`, `project-*`, `turnOn/steps`, `config/*` except gallery+features) locked to admin uid. Deploy: `firebase deploy --only database` |
+| **Anonymous auth** | fb-db.js `init()` signs in anonymously (if auth SDK present) — distinguishes site users from strangers at the rules level |
+| **Admin login → email/password** | admin.html login gate now does Firebase `signInWithEmailAndPassword`; `ADMIN_UID` constant in admin.js must match rules; localhost fallback keeps old passkey behavior |
+| **firebase-auth-compat.js** | Added to all 17 pages loading firebase |
+
 ## Recent Changes (v9 — Byte-Identical Extractions)
 
 | Change | Details |
