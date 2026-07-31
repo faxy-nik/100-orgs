@@ -58,6 +58,9 @@ const missingJsRefs = [...jsFiles].forEach(f => {
     const r = m[1].toLowerCase();
     if (/^(?:https?:|data:)/.test(r)) continue;
     if (!/(?:\.\.|\/)/.test(r) && !htmlNames.has(r) && !fs.existsSync(d + r)) {
+      // skip download filenames (e.g. downloadFile(x, 'wishes-export.json', ...))
+      const before = s.slice(Math.max(0, m.index - 60), m.index);
+      if (/download/i.test(before)) continue;
       bad++; console.log('JS REF ' + r + ' in ' + f);
     }
   }

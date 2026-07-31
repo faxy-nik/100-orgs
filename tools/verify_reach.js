@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const src = fs.readFileSync(path.resolve(__dirname, '..', 'turn-on.html'), 'utf8');
+const src = fs.readFileSync(path.resolve(__dirname, '..', 'turn-on-steps.js'), 'utf8');
 const stepRe = /\{\s*id:\s*(\d+)([\s\S]*?)\n\s*\}/g;
 let m, steps = [];
 while ((m = stepRe.exec(src))) {

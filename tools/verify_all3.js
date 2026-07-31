@@ -8,9 +8,8 @@ const a = src.indexOf('<script>'), b = src.lastIndexOf('</script>');
 try { new Function(src.substring(a + 8, b)); console.log('1. syntax OK'); }
 catch (e) { console.log('1. SYNTAX ERROR:', e.message); process.exit(1); }
 
-const s = src.indexOf('function getDefaultSteps()');
-const end = src.indexOf('];', src.indexOf('function loadSteps'));
-const block = src.substring(s, end + 2);
+const stepsFile = root + 'turn-on-steps.js';
+const block = fs.readFileSync(stepsFile, 'utf8');
 const stepRe = /\{\s*id:\s*(\d+)([\s\S]*?)\n\s*\}/g;
 let m, steps = new Map();
 while ((m = stepRe.exec(block))) {

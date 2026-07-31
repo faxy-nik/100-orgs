@@ -70,7 +70,9 @@ Access = link/card on another page, trigger word (type anywhere, see Secret Word
 | `motion-masterpiece.js` | Cinematic animations — hero entrance, accordion stagger, aurora |
 | `adaptive-text.js` | Text animation effects |
 | `install-prompt.js` | "Add to Home Screen" banner — offered once per device (`ash_install_offered`), browser install prompt on Android/desktop, manual instructions (Share → Add to Home Screen) on iOS. Suppressed if `ash_installed` set or already running standalone |
-| `sw.js` | Service worker — offline cache (**ash-v46**)
+| `admin.js` | Admin panel logic (extracted from admin.html inline script — byte-identical move) |
+| `turn-on-steps.js` | 360-step turn-on game data (`getDefaultSteps()` — extracted from turn-on.html inline script, byte-identical move) |
+| `sw.js` | Service worker — offline cache (**ash-v47**)
 
 ## Companion, skies, music scripts — companions are sprite-sheet or procedurally drawn, skies use a 150+ definition rendering engine, music uses Web Audio API crossfade jukebox
 
@@ -236,6 +238,14 @@ Note: `ash` has a 1.8s typing window between keys; the others are plain substrin
 
 ---
 
+## Recent Changes (v9 — Byte-Identical Extractions)
+
+| Change | Details |
+|---|---|
+| **admin.js extracted** | 155KB inline script from admin.html → `admin.js` (byte-identical, verified by sha256), loaded via `<script src>` at same position |
+| **turn-on-steps.js extracted** | 245KB `getDefaultSteps()` from turn-on.html → `turn-on-steps.js` (byte-identical, verified by sha256), loaded before main script; verify tools now read the extracted file |
+| **SW cache v47** | admin.js + turn-on-steps.js added to cache; version bumped |
+
 ## Recent Changes (v8 — Rare Links, Install Prompt, Date-Seeded Picks, Docs Access Map)
 
 | Change | Detail |
@@ -282,7 +292,7 @@ Note: `ash` has a 1.8s typing window between keys; the others are plain substrin
 
 ## Service Worker
 
-**File:** `sw.js` — cache name `ash-v46`
+**File:** `sw.js` — cache name `ash-v47`
 
 **Cached assets:** All pages, all scripts (companion + core + quiz + activity-tracker + events + etc.), companion assets, CSS, manifest.
 

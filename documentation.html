@@ -231,12 +231,14 @@ var CONTENT = [
     '<tr><td>motion-masterpiece.js</td><td>Cinematic visuals &#x2014; hero entrance, accordion stagger, end reveal, aurora</td></tr>' +
     '<tr><td>adaptive-text.js</td><td>Text animations</td></tr>' +
     '<tr><td>install-prompt.js</td><td>&quot;Add to Home Screen&quot; banner &#x2014; offered once per device, native prompt where available, manual instructions on iOS</td></tr>' +
+    '<tr><td>admin.js</td><td>Admin panel logic (extracted from admin.html inline script, byte-identical)</td></tr>' +
+    '<tr><td>turn-on-steps.js</td><td>360-step turn-on game data, <code>getDefaultSteps()</code> (extracted from turn-on.html inline script, byte-identical)</td></tr>' +
     '<tr><td>fb-db.js</td><td>Firebase Realtime DB helper &#x2014; blob/base64 conversion, CRUD</td></tr>' +
     '<tr><td>feature-flags.js</td><td>48 feature flags across 5 categories, localStorage + Firebase backed, toggleable from admin</td></tr>' +
     '<tr><td>section-lock.js</td><td>Date-gated section access, reads unlock config from Firebase</td></tr>' +
     '<tr><td>lock.js</td><td>Section unlock request buttons and Firebase listener</td></tr>' +
     '<tr><td>style.css</td><td>All styling + masterpiece enhancements</td></tr>' +
-    '<tr><td>sw.js</td><td>Service worker &#x2014; offline cache (<code>ash-v46</code>)</td></tr>' +
+    '<tr><td>sw.js</td><td>Service worker &#x2014; offline cache (<code>ash-v47</code>)</td></tr>' +
     '<tr><td>tree-of-memories.js</td><td>Fractal tree, hidden until dream + sleep visited</td></tr>' +
     '<tr><td>random-constellations.js</td><td>Mini canvas constellation viewer</td></tr>' +
     '<tr><td>butterfly-collection.js</td><td>24 butterfly species collection</td></tr>' +
@@ -471,7 +473,7 @@ var CONTENT = [
   }},
   { id:'service-worker', cat:'Technical', label:'Service Worker', html:function(){
     return     '<h3 id="service-worker">Service Worker</h3>' +
-    '<p><code>sw.js</code> &#x2014; cache <code>ash-v46</code>. 60+ cached assets. Cache-first, network fallback strategy.</p>';
+    '<p><code>sw.js</code> &#x2014; cache <code>ash-v47</code>. 60+ cached assets. Cache-first, network fallback strategy.</p>';
   }},
   { id:'data', cat:'Technical', label:'Data & Sync', html:function(){
     return '<h3 id="data">Data & Sync</h3>' +

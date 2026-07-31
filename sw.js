@@ -1,4 +1,4 @@
-var CACHE = 'ash-v46'; // ponytail: bump version when adding/renaming cached files
+var CACHE = 'ash-v47'; // ponytail: bump version when adding/renaming cached files
 var urlsToCache = [
   '/',
   '/index.html',
@@ -8,6 +8,8 @@ var urlsToCache = [
   '/sky-observatory.html',
   '/photo-gallery.html',
   '/admin.html',
+  '/admin.js',
+  '/turn-on-steps.js',
   '/stats.html',
   '/404.html',
   '/dream.html',
