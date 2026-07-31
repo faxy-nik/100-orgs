@@ -358,6 +358,7 @@
       <button class="tab" data-tab="access">&#x1F510; Access</button>
       <button class="tab" data-tab="memories">&#x1F338; Remember</button>
       <button class="tab" data-tab="selfletters">&#x270D; Self Letters</button>
+      <button class="tab" data-tab="rare">&#x1F48E; Rare Links</button>
     </div>
     <div class="admin-content">
 
@@ -556,6 +557,15 @@
     </p>
     <div id="selfLettersList"></div>
     <button class="add-btn" id="addSelfLetterBtn">+ Add Letter</button>
+  </div>
+
+  <!-- Tab: Rare Links -->
+  <div class="tab-content" id="tabRare">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Rare treats for the For Tonight page. On ~10% of days, a bonus video plays under the daily gift — date-seeded, so the same video shows all day. YouTube links get embedded and play right on the page.
+    </p>
+    <div id="rareList"></div>
+    <button class="add-btn" id="addRareBtn">+ Add Rare Link</button>
   </div>
 
   <!-- Tab: Letters -->
@@ -1661,7 +1671,7 @@
     var list = document.getElementById('selfLettersList');
     if (!list) return;
     FB.getAll('selfLetters').then(function (letters) {
-      allSelfLetters = letters || [];
+      allSelfLetters = (letters && letters.length) ? letters : (window.SEED_CONTENT ? window.SEED_CONTENT.letters : []);
       if (!allSelfLetters.length) {
         list.innerHTML = '<div class="empty-state"><div class="icon">&#x270D;</div><p>No self-writing letters yet.</p></div>';
         return;
@@ -1768,7 +1778,7 @@
     var list = document.getElementById('memoriesList');
     if (!list) return;
     FB.getAll('memories').then(function (memories) {
-      allMemories = memories || [];
+      allMemories = (memories && memories.length) ? memories : (window.SEED_CONTENT ? window.SEED_CONTENT.memories : []);
       if (!allMemories.length) {
         list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F338;</div><p>No memories yet. Add the first tiny thing you remember.</p></div>';
         return;
@@ -1842,6 +1852,79 @@
 
   document.getElementById('addMemoryBtn') && document.getElementById('addMemoryBtn').addEventListener('click', function () {
     openMemoryModal(-1, allMemories);
+  });
+
+  /* ---- Rare Links (For Tonight bonus videos) ---- */
+  var allRare = [];
+
+  function renderRare() {
+    var list = document.getElementById('rareList');
+    if (!list) return;
+    FB.getAll('rareLinks').then(function (rare) {
+      allRare = rare || [];
+      if (!allRare.length) {
+        list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F48E;</div><p>No rare links yet. Add a YouTube link and it will occasionally play under the nightly gift.</p></div>';
+        return;
+      }
+      var html = '';
+      for (var i = allRare.length - 1; i >= 0; i--) {
+        var r = allRare[i];
+        html +=
+          '<div class="song-card">' +
+            '<div class="info">' +
+              '<div class="stitle">' + esc(r.title || 'rare link') + (r.on === false ? ' <span style="color:#6b5f52;font-size:.7rem;">[off]</span>' : '') + '</div>' +
+              '<div style="font-size:.82rem;color:#d4c5b2;margin-top:2px;font-style:italic;">' + esc(r.url || '') + '</div>' +
+            '</div>' +
+            '<div class="actions">' +
+              '<button class="btn-small" data-edit="' + i + '">Edit</button>' +
+              '<button class="btn-small btn-danger" data-del="' + i + '">Delete</button>' +
+            '</div>' +
+          '</div>';
+      }
+      list.innerHTML = html;
+      list.querySelectorAll('[data-edit]').forEach(function (b) {
+        b.addEventListener('click', function () { openRareModal(parseInt(b.dataset.edit, 10), allRare); });
+      });
+      list.querySelectorAll('[data-del]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          if (!confirm('Delete this rare link?')) return;
+          FB.delete('rareLinks', allRare[parseInt(b.dataset.del, 10)].id).then(function () { renderRare(); toast('Rare link deleted.'); });
+        });
+      });
+    });
+  }
+
+  function openRareModal(idx, rare) {
+    var r = idx >= 0 && idx < rare.length ? rare[idx] : {};
+    var isNew = !(idx >= 0 && idx < rare.length);
+    document.getElementById('modalContent').innerHTML =
+      '<h2>' + (isNew ? 'Add Rare Link' : 'Edit Rare Link') + '</h2>' +
+      '<div class="field"><label>Title</label><input type="text" id="fRareTitle" value="' + esc(r.title || '') + '" placeholder="the song for rare nights"></div>' +
+      '<div class="field"><label>Link (YouTube or direct video URL)</label><input type="text" id="fRareUrl" value="' + esc(r.url || '') + '" placeholder="https://www.youtube.com/watch?v=..."></div>' +
+      '<div class="field" style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#d4c5b2;margin-top:.6rem;"><label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" id="fRareOn"' + (r.on === false ? '' : ' checked') + '> enabled</label></div>' +
+      '<p style="color:#6b5f52;font-size:.75rem;font-style:italic;margin:.6rem 0 0;">YouTube links embed and autoplay-able; direct links (mp4/webm) use the built-in player.</p>' +
+      '<div class="modal-actions">' +
+        '<button class="btn-cancel" id="modalCancel">Cancel</button>' +
+        '<button class="btn-save" id="modalRareSave">' + (isNew ? 'Add' : 'Save') + '</button>' +
+      '</div>';
+    document.getElementById('modalOverlay').classList.add('open');
+    document.getElementById('modalCancel').addEventListener('click', closeModal);
+    document.getElementById('modalRareSave').addEventListener('click', function () {
+      var url = document.getElementById('fRareUrl').value.trim();
+      if (!url) { toast('Add the link first.'); return; }
+      var entry = {
+        title: document.getElementById('fRareTitle').value.trim(),
+        url: url,
+        on: !!document.getElementById('fRareOn').checked,
+        createdAt: r.createdAt || Date.now()
+      };
+      if (!isNew) entry.id = rare[idx].id;
+      FB.put('rareLinks', entry).then(function () { closeModal(); renderRare(); toast('Rare link saved.'); });
+    });
+  }
+
+  document.getElementById('addRareBtn') && document.getElementById('addRareBtn').addEventListener('click', function () {
+    openRareModal(-1, allRare);
   });
 
 
@@ -3341,6 +3424,7 @@
         if (this.dataset.tab === 'timeline') renderTimeline();
         if (this.dataset.tab === 'memories') renderMemories();
         if (this.dataset.tab === 'selfletters') renderSelfLetters();
+        if (this.dataset.tab === 'rare') renderRare();
         if (this.dataset.tab === 'dreams') renderDreams();
         if (this.dataset.tab === 'turnon') renderTurnOnSteps();
         if (this.dataset.tab === 'activity') loadActivity();
@@ -3480,6 +3564,7 @@
   <script src="motion-masterpiece.js"></script>
   <script src="adaptive-text.js"></script>
   <script src="matrix-rain.js"></script>
+<script src="seed-content.js"></script>
 <script src="global-easter-eggs.js"></script>
 
 

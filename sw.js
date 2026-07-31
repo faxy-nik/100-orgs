@@ -1,4 +1,4 @@
-var CACHE = 'ash-v44'; // ponytail: bump version when adding/renaming cached files
+var CACHE = 'ash-v46'; // ponytail: bump version when adding/renaming cached files
 var urlsToCache = [
   '/',
   '/index.html',
@@ -115,7 +115,18 @@ var urlsToCache = [
   '/lock.js',
   '/quiz.js',
   '/story.html',
-  '/story-text.js'
+  '/story-text.js',
+  '/quiz.json',
+  '/for-tonight.html',
+  '/i-remember.html',
+  '/letter-that-writes-itself.html',
+  '/seed-content.js',
+  '/turn-on.html',
+  '/turnon-history.html',
+  '/guide.html',
+  '/promises.html',
+  '/timeline.html',
+  '/install-prompt.js'
 ];
 
 self.addEventListener('install', function (e) {

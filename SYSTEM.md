@@ -1,6 +1,6 @@
 # SYSTEM.md — 100 prghs for eeshah
 
-Last updated: 2026-07-31 (v6 — turn-on game, feature flag overhaul, session tracking, song status)
+Last updated: 2026-08-01 (v7 — secret triggers, I Remember, self-writing letters, seed content, fingering drive)
 
 ---
 
@@ -16,29 +16,33 @@ A romantic web experience ("100 prghs for eeshah") featuring living companion ch
 
 ## Pages
 
-| File | Purpose |
-|------|---------|
-| `index.html` | Landing page — section cards with countdown, song request, milestone stats, Our Story link |
-| `100-organs.html` | 8 accordion groups, gated content with daily section requests (2/day), per-section quiz buttons |
-| `love.html` | 5 accordion groups, same gating + quiz system as 100-organs |
-| `fantasies.html` | Content page |
-| `sky-observatory.html` | Sky gallery — sky switching, wish jar, star map, moon, fireflies, fragments |
-| `photo-gallery.html` | Photo gallery |
-| `dream.html` | Dream page |
-| `make-her-sleep.html` | Chat/storyline page |
-| `guide.html` | Interactive site guide — accordion sections, music pairings, progress tracking |
-| `promises.html` | 100 promises with bookmarkable hearts, Promise of the Day, Surprise Me |
-| `turn-on.html` | 38-step intimate narrative game, branching paths, Firebase session tracking |
-| `turnon-history.html` | Session history viewer for turn-on game playthroughs |
-| `timeline.html` | Relationship timeline page |
-| `story.html` | Storyline page with quizzes |
-| `admin.html` | Admin panel — 18 tabs: Dates, Songs, Secret, Gallery, Wishes, Requests, Reviews, Activity, Quiz, Events, Puzzles, Letters, Dynamic, Timeline, Sections, Settings, Access, TurnOn |
-| `stats.html` | Usage statistics viewer |
-| `activity.html` | Auto-recorded user activity feed — page visits, navigation, time spent |
-| `404.html` | Error page |
-| `cold-restart.html` | Clears all `ash-*` localStorage keys |
-| `sky-generator.html` | Procedural sky generator |
-| `sky-generator-living.html` | Living sky generator |
+Access = link/card on another page, trigger word (type anywhere, see Secret Word Triggers), or **direct URL** (page with no link/trigger is reached by typing the file name after the site address, e.g. `.../404.html`).
+
+| File | Purpose | Access |
+|------|---------|--------|
+| `index.html` | Landing page — section cards with countdown, song request, milestone stats, Our Story link | Home — start here |
+| `100-organs.html` | 8 accordion groups, gated content with daily section requests (2/day), per-section quiz buttons | Home card (date-gated) |
+| `love.html` | 5 accordion groups, same gating + quiz system as 100-organs | Home card (date-gated) |
+| `fantasies.html` | Content page | Home card (date-gated) |
+| `sky-observatory.html` | Sky gallery — sky switching, wish jar, star map, moon, fireflies, fragments | Home card (date-gated) |
+| `photo-gallery.html` | Photo gallery | Home card (date-gated) |
+| `dream.html` | Dream page | Trigger: type `dream`; `?lanterns` for lantern world |
+| `make-her-sleep.html` | Chat/storyline page | Trigger: type `sleep` |
+| `guide.html` | Interactive site guide — accordion sections, music pairings, progress tracking | Direct URL: `.../guide.html` |
+| `promises.html` | 100 promises with bookmarkable hearts, Promise of the Day, Surprise Me | Link inside guide.html |
+| `turn-on.html` | 360-step intimate narrative game, branching paths, Firebase session tracking | Direct URL: `.../turn-on.html` |
+| `turnon-history.html` | Session history viewer for turn-on game playthroughs | Link at bottom of turn-on.html |
+| `timeline.html` | Relationship timeline page | Direct URL: `.../timeline.html` |
+| `story.html` | Storyline page with quizzes | Our Story link on home |
+| `admin.html` | Admin panel — 21 tabs: Dates, Songs, Secret, Gallery, Wishes, Requests, Reviews, Activity, Quiz, Events, Puzzles, Letters, Dynamic, Timeline, Sections, Settings, Access, TurnOn, Remember, Self Letters, Rare Links | Admin link (passkey) on home + photo-gallery |
+| `stats.html` | Usage statistics viewer | Stats link on home + content pages |
+| `activity.html` | Auto-recorded user activity feed — page visits, navigation, time spent | Link on home |
+| `404.html` | Error page | Direct URL: `.../404.html` |
+| `sky-generator.html` | Procedural sky generator | Direct URL: `.../sky-generator.html` |
+| `sky-generator-living.html` | Living sky generator | Direct URL: `.../sky-generator-living.html` |
+| `for-tonight.html` | Secret daily gift page — reached by typing `ash` anywhere; date-seeded pick from letters/timeline/gallery/wishes/dreams/songs | Trigger: type `ash` |
+| `i-remember.html` | "I remember" memory page — reached by typing `remember` anywhere; reads `memories` store (seeded 20) | Trigger: type `remember` |
+| `letter-that-writes-itself.html` | Self-writing letter page — reached by typing `letter` anywhere (secret mode); reads `selfLetters` store (seeded 13) | Trigger: type `letter` |
 
 ---
 
@@ -61,10 +65,12 @@ A romantic web experience ("100 prghs for eeshah") featuring living companion ch
 | `secret-letters.js` | 30 enhanced hidden letters unlocked by achievements, with narrative text |
 | `world-progress.js` | World progress dashboard — hidden until all 5 sections read |
 | `global-interactions.js` | Balloons, feathers, coffee, lucky star, puzzle fragments, achievements |
-| `global-easter-eggs.js` | Keyboard shortcuts (dream, sleep, matrix, lanterns) |
+| `global-easter-eggs.js` | Secret word triggers (ash/remember/letter/dream/sleep/lanterns) + fallback letters |
+| `seed-content.js` | Seeded starter data — 20 memories + 13 self-letters (10 normal, 3 secret). Seeds once per device (`ash_seed_done`) into `memories` + `selfLetters` stores. Pattern copied from dream.html's `SEEDED_FAXY_DREAM` |
 | `motion-masterpiece.js` | Cinematic animations — hero entrance, accordion stagger, aurora |
 | `adaptive-text.js` | Text animation effects |
-| `sw.js` | Service worker — offline cache (**ash-v36**)
+| `install-prompt.js` | "Add to Home Screen" banner — offered once per device (`ash_install_offered`), browser install prompt on Android/desktop, manual instructions (Share → Add to Home Screen) on iOS. Suppressed if `ash_installed` set or already running standalone |
+| `sw.js` | Service worker — offline cache (**ash-v46**)
 
 ## Companion, skies, music scripts — companions are sprite-sheet or procedurally drawn, skies use a 150+ definition rendering engine, music uses Web Audio API crossfade jukebox
 
@@ -92,7 +98,10 @@ A romantic web experience ("100 prghs for eeshah") featuring living companion ch
 | Reviews | `reviews/{id}` | content-common.js + admin | `{id, page, section, text, audioBlob, type, date}` |
 | Activity | `activity/{id}` | activity-tracker.js + admin | `{id, type, page, timestamp, sectionIdx, file}` |
 | Letters | `letters/{id}` | letters.js + admin | `{id, subject, body, createdAt, read}` |
-| Storyline | `config/texts` | Admin (💎 Project) | `{id: 'story', body, title}` — OBSOLETE, use `project-texts/list` |
+| Memories | `memories/{id}` | i-remember.html + admin (🌸 Remember) | `{id, cat, text, rare, once, on, createdAt}` — rare = shown rarely (0.15 weight), once = shown exactly once ever |
+| Self letters | `selfLetters/{id}` | letter-that-writes-itself.html + admin (✍ Self Letters) | `{id, title, recipient, body, signature, scheduledDate, music, priority, enabled, secret, createdAt}` — secret = only via hidden path (`?secret`) |
+| Rare links | `rareLinks/{id}` | for-tonight.html + admin (💎 Rare Links) | `{id, title, url, on, createdAt}` — played on ~10% of nights as a bonus under the daily gift |
+| Storyline | `config/texts` | Admin (👑 Project) | `{id: 'story', body, title}` — OBSOLETE, use `project-texts/list` |
 | Feature flags | `config/featureFlags` | feature-flags.js | `{id: 'featureFlags', flags: {key: true/false}}` |
 | Turn-on sessions | `turnOn/sessions_data` | turn-on.html, turnon-history.html | Array of session objects `{{timestamp, steps: [{step, choice, sceneText}], totalSteps, path}` |
 
@@ -104,6 +113,13 @@ A romantic web experience ("100 prghs for eeshah") featuring living companion ch
 | `ash-fb-seq` | fb-db.js | Sequence counter for mock IDs |
 | `ash-admin-passkey` | admin.html | Base64-encoded admin password |
 | `ash-turnon-last-push` | turn-on.html | Timestamp of last session push (5-min dedup cooldown) |
+| `ash-for-tonight` | for-tonight.html | Cached daily gift pick per date |
+| `ash_memory_history` | i-remember.html | Recent memory ids shown (cap 40, avoids repeats) |
+| `ash_memory_once` | i-remember.html | Ids of once-only memories already shown |
+| `ash_selfletter_hist` | letter-that-writes-itself.html | Recent letter ids shown (cap 20, avoids repeats) |
+| `ash_seed_done` | seed-content.js | '1' once seeds are written — prevents re-adding deleted seeds |
+| `ash_install_offered` | install-prompt.js | '1' once the home-screen banner was shown — no nagging |
+| `ash_installed` | install-prompt.js | '1' after user accepts install — banner never shows again |
 | `ash-unlocked-group-{page}` | 100-organs.html, love.html | Current unlocked section index (0-based) |
 | `ash-daily-{page}` | 100-organs.html, love.html | `{date, count}` — daily section request counter (2 max) |
 | `ash-streak` | content-common.js | Daily visit streak count |
@@ -116,9 +132,25 @@ A romantic web experience ("100 prghs for eeshah") featuring living companion ch
 
 ## Feature Triggers & Behavior
 
+### Secret Word Triggers (global-easter-eggs.js — on every page)
+
+Type the word anywhere (exact lowercase, not inside inputs, not while Ctrl/Alt/Meta held). Words are case-sensitive:
+`ash` needs exact lowercase; others match as typed (only lowercase is captured). Fires once per page load.
+
+| Type this | What happens | Where you land |
+|-----------|--------------|----------------|
+| `ash` | Star overlay "Something for tonight..." (1.7s) — navigate | `for-tonight.html` — daily gift |
+| `remember` | Immediate navigate | `i-remember.html` — memory page |
+| `letter` | Immediate navigate | `letter-that-writes-itself.html?secret` — hidden letter mode |
+| `dream` | Immediate navigate | `dream.html` |
+| `sleep` | Immediate navigate | `make-her-sleep.html` |
+| `lanterns` | Opens lantern world | current page overlay |
+
+Note: `ash` has a 1.8s typing window between keys; the others are plain substring matches on the last 20 keystrokes.
+
 ### Section Unlock Flow (100-organs.html, love.html)
 
-1. **Initial state:** `getUnlockedIdx()` returns 0 → only group 0 visible
+1. **Initial state:** `getUnlockedIdx()` returns 0 — only group 0 visible
 2. **Request button:** Appears at end of current unlock boundary group. Text shows remaining daily requests (2/page/day)
 3. **Daily cap:** `ash-daily-{page}` tracks requests per calendar day via `dailyRemaining()`/`markDailyRequest()`
 4. **On click:** Creates entry in Firebase `sectionRequests` with `status: 'pending'`
@@ -131,7 +163,7 @@ A romantic web experience ("100 prghs for eeshah") featuring living companion ch
 - `addSectionQuizBtn(content, page, sectionIdx)` called from `applyLockState()` for each visible group
 - Only sections 0 and 1 on each page (sectionIdx > 1 returns early)
 - 10 multiple-choice questions each, stored hardcoded in `getDefaultQuizzes()`
-- Quiz opens modal → submit → score calculated → stored in `quizHistory`
+- Quiz opens modal — submit — score calculated — stored in `quizHistory`
 - No unlock effect — purely engagement
 - **Script ordering:** `quiz.js` must load **before** the inline init script (fixed v5)
 
@@ -165,6 +197,32 @@ A romantic web experience ("100 prghs for eeshah") featuring living companion ch
 - Stores `{subject, body, createdAt, read: false}` in `letters` store
 - Admin polls `letters` every 15s, shows badge with unread count on sidebar tab
 
+### For Tonight (for-tonight.html)
+
+- Reads `letters`, `config/timeline`, `config/gallery`, `wishes`, `dreams`, `songs/list.json`, `rareLinks` from Firebase
+- Deterministic date-seeded pick (mulberry32) — same gift all day, new each day
+- Cached in `ash-for-tonight`; falls back to a NOTES pool of 8 if everything fails
+- Songs support audio + video; photos support Blob URLs
+- **Rare Links bonus:** on ~10% of days (date-seeded, separate rnd stream `seed+7`) a bonus card "one more thing, only on rare nights..." appears under the gift, playing a video from the `rareLinks` store — YouTube links (watch/youtu.be/shorts/live) embed via `www.youtube-nocookie.com/embed/`; direct mp4/webm URLs use the built-in `<video>` player; only `on !== false` links with a `url` are eligible, picked date-seeded via `pickIndex`
+- Managed from admin `💎 Rare Links` tab: `{title, url, on, createdAt}`
+
+### I Remember (i-remember.html)
+
+- `pickMemory()` pure function: skips `on:false` and already-shown `once` items; avoids last 15 shown (`ash_memory_history` cap 40); rare items get 0.15 weight; after 7 shown this session, 10% chance of a quiet final moment instead
+- Falls back to `SEED_CONTENT.memories` when Firebase is empty/offline
+
+### Self-Writing Letter (letter-that-writes-itself.html)
+
+- `pickLetter()`: scheduledDate === today wins (first match); `secret:true` only in `?secret` mode; `enabled:false` skipped; avoids recent via `ash_selfletter_hist` (cap 20); sorted by priority then createdAt
+- Typewriter renders body with punctuation-aware pauses: comma ~260ms, `.!?` ~440ms, `;:—` ~320ms, space ~28ms, newline ~40ms, +300ms after consecutive sentences; tap to pause/resume; "Read it now" reveals all
+- Falls back to `SEED_CONTENT.letters` when Firebase is empty/offline
+
+### Seeding (seed-content.js)
+
+- Included by i-remember.html, letter-that-writes-itself.html, admin.html
+- `seedAll()` writes 20 memories + 13 letters (10 normal, 3 secret) to Firebase once per device (`ash_seed_done`); admin deletes stick afterwards
+- Admin renderers use seeds as fallback when store is empty
+
 ---
 
 ## Firebase Data Format Notes
@@ -174,7 +232,28 @@ A romantic web experience ("100 prghs for eeshah") featuring living companion ch
 - `FB.getAll(store)` returns an array of items with `.id` set to the Firebase key
 - `FB.delete(store, key)` removes the item
 - `FB.clear(store)` removes all items in the store
-- Config items stored as `{id: 'sections', data: [...]}` pattern → read back as same structure, access `.data` for the array
+- Config items stored as `{id: 'sections', data: [...]}` pattern — read back as same structure, access `.data` for the array
+
+---
+
+## Recent Changes (v8 — Rare Links, Install Prompt, Date-Seeded Picks, Docs Access Map)
+
+| Change | Detail |
+|--------|--------|
+| **Turn-on fingering drive** | 28 new steps (ids 800—829: slow/fast/tease branches, climax, afterglow) + new hub option "Fingering drive — I talk you to pieces, my fingers inside you". Game now 360 steps / 752 options, 100% reachable, no cycles |
+| **Secret word triggers** | `global-easter-eggs.js` rewritten as pure state machine (`ASH_SECRET.step`) + word buffer. `ash` — for-tonight (star overlay), `remember` — i-remember, `letter` — self-writing letter `?secret`. Old single-key shortcuts (d/s/m/l) removed — words replace them |
+| **I Remember page** | `i-remember.html`: quiet dark memory page; `pickMemory()` with rare/once flags, history avoidance, rare weight 0.15, final-moment chance. Admin 🌸 Remember tab (CRUD on `memories`) |
+| **Self-writing letter** | `letter-that-writes-itself.html`: candle-glow theme, punctuation-aware typewriter, tap pause/skip, quiet endings; `?secret` mode for `secret:true` letters. Admin ✍ Self Letters tab (CRUD on `selfLetters`, preview modal) |
+| **Seed content** | `seed-content.js`: 20 memories + 10 normal + 3 secret letters, seeded once per device (`ash_seed_done`) into Firebase; fallback for pages and admin when stores are empty |
+| **Fingering drive verified** | `tools/verify_all3.js` (syntax, step/option counts, voice rule) + `tools/verify_reach.js` (reachability, cycles) both green |
+| **Bug fixes** | quiz.js line 212 malformed options array (killed all quiz buttons) fixed; secret-letters.js 3 bare apostrophes (`don't`, `didn't`) in single-quoted strings fixed (whole file was dead); `quiz.json` restored (105 questions) so story.html quiz works |
+| **Rare Links** | New admin 💎 Rare Links tab (CRUD on `rareLinks` store); For Tonight plays a bonus video on ~10% of nights — YouTube embeds or direct video files |
+| **Add to Home Screen** | `install-prompt.js`: one-time banner, native install prompt where available, manual instructions on iOS (`ash_install_offered` / `ash_installed`) |
+| **"when you can't sleep" link** | Added under For Tonight's gift links, pointing to make-her-sleep.html |
+| **Date-seeded picks** | i-remember's first memory of the day and the self-writing letter rotate by date (mulberry32), like For Tonight |
+| **Soft rain on sleep page** | make-her-sleep.html gets a bottom-right "soft rain" toggle — synthesized rain (brown noise through lowpass), no audio files |
+| **Docs: access info for every page** | Pages table now has a "How to access" column (link / trigger word / direct URL); URL-only pages documented as `.../file.html`; new Sky Generators section |
+| **SW cache v46** | New pages/scripts cached (install-prompt.js); version bumped |
 
 ---
 
@@ -189,7 +268,7 @@ A romantic web experience ("100 prghs for eeshah") featuring living companion ch
 | **Turn-on session tracking** | `pushSession()` reads existing `turnOn/sessions_data`, appends new session, writes back. 5-min dedup via `ash-turnon-last-push`. Admin passkey skip |
 | **Admin TurnOn tab** | Fixed `turnOnStatus` element missing bug. Added session history viewer below step editor — loads from Firebase, shows each playthrough |
 | **turnon-history.html** | New page: loads sessions from Firebase, newest-first, collapsible cards with all choices. Admin passkey skip |
-| **Song upload status** | Each song card shows audio status (✓ file / ✓ audio / ! no audio / no file). Save progress ("Saving songs... X/Y"). `audioValid` flag set on save and load |
+| **Song upload status** | Each song card shows audio status (— file / — audio / ! no audio / no file). Save progress ("Saving songs... X/Y"). `audioValid` flag set on save and load |
 | **Admin error badge** | Red badge next to "Admin Dashboard" title showing `window.globalErrors` count. Click opens modal with full error details |
 | **Quiz rewrite** | All quiz questions rewritten to match actual section content. Quiz IDs changed to descriptive names. Individual answer details saved to `quizHistory/all` |
 | **Guide page** | `guide.html`: interactive accordion with music pairings from real project songs, progress path, Easter egg hints |
@@ -203,7 +282,7 @@ A romantic web experience ("100 prghs for eeshah") featuring living companion ch
 
 ## Service Worker
 
-**File:** `sw.js` — cache name `ash-v36`
+**File:** `sw.js` — cache name `ash-v46`
 
 **Cached assets:** All pages, all scripts (companion + core + quiz + activity-tracker + events + etc.), companion assets, CSS, manifest.
 
@@ -228,6 +307,6 @@ python3 -m http.server 8000
 
 ## Known Limitations
 
-1. **quiz.json fetch fails on file://** — mitigated by inline `<script id="quizJsonData">` in index.html
+1. **Seed-once flag** — `ash_seed_done` prevents re-seeding after admin deletes; a fresh device gets seeds, an existing device does not re-add them (by design)
 2. **Annual events** use MM-DD string comparison — works for standard ranges, cross-year handled
 3. **Section unlock** relies on localStorage for localhost — works but resets on cache clear

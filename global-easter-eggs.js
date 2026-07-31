@@ -91,6 +91,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = ASH_SECRET
     if (buf.indexOf('lanterns') !== -1) {
       buf = '';
       if (typeof window._openLanternWorld === 'function') window._openLanternWorld();
+      else if (window.location.href.indexOf('dream.html') === -1) window.location.href = 'dream.html?lanterns';
     }
   });
 })();

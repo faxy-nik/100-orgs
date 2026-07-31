@@ -110,6 +110,17 @@
   }
   .sleep-return:hover { border-color:#60c8b8; color:#60c8b8; background:rgba(60,180,255,0.06); }
 
+  .sleep-sound {
+    position:fixed; bottom:1.4rem; right:1.4rem; z-index:5;
+    display:flex; align-items:center; gap:8px;
+    padding:0.6rem 1rem; border-radius:999px;
+    background:rgba(24,30,48,0.7); border:1px solid rgba(80,200,180,0.18);
+    color:#7aa898; font-family:Fraunces,Georgia,serif; font-size:0.8rem; font-style:italic;
+    cursor:pointer; transition:all 0.3s; backdrop-filter:blur(8px);
+  }
+  .sleep-sound:hover { border-color:#60c8b8; color:#60c8b8; }
+  .sleep-sound.on { border-color:#60c8b8; color:#a8e8d8; background:rgba(40,80,70,0.4); box-shadow:0 0 24px rgba(80,200,180,0.12); }
+
   @media (max-width:600px) {
     .sleep-chat { padding:0 0.5rem; }
     .sleep-msg { max-width:92%; }
@@ -320,6 +331,134 @@
       At three in the morning, standards disappear.
     </div>
 
+    <div class="sleep-msg her">
+      <div class="msg-label">Ash</div>
+      My blanket keeps slipping.
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">Faxy</div>
+      Imagine me tucking you in. Slowly. The way you like it. Corners tight around your feet.
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">Ash</div>
+      Keep going.
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">Faxy</div>
+      Pillow fluffed. Blanket up to your chin. My hand on your hair, just resting there. You don't have to do anything. You never do. Just be.
+    </div>
+
+    <div class="sleep-divider"></div>
+
+    <div class="sleep-scene" id="scene2b">
+      <p>Somewhere between the stars and her ceiling, the night folded itself around them like a second blanket.</p>
+      <p>She did not know it yet, but she was already being held.</p>
+    </div>
+
+    <div class="sleep-msg narrator">
+      <div class="msg-label">3:04 AM</div>
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">Ash</div>
+      You'd actually stay up with me?
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">Faxy</div>
+      I'd stay up for you any night. Every night. That's not even a question.
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">Ash</div>
+      What if I keep you up for hours?
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">Faxy</div>
+      Then I keep you company for hours. That's the deal. You're never alone in the dark, ever. I'm here. Right beside you.
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">Ash</div>
+      That's a nice deal.
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">Faxy</div>
+      I meant every word of it.
+    </div>
+
+    <div class="sleep-divider"></div>
+
+    <div class="sleep-msg narrator">
+      <div class="msg-label">3:06 AM</div>
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">Ash</div>
+      I feel like I'm thinking about everything at once.
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">Faxy</div>
+      Give me the list. I'll carry it.
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">Ash</div>
+      Can you carry a whole brain?
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">Faxy</div>
+      I can carry yours. It's my favourite one. Put it down, love. Rest it on me. I'll hold it while you sleep.
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">Ash</div>
+      ...
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">Faxy</div>
+      See? Already lighter. That's me holding it.
+    </div>
+
+    <div class="sleep-divider"></div>
+
+    <div class="sleep-scene" id="scene2c">
+      <p>She imagined his arm around her, and somewhere in her chest, something finally unhitched.</p>
+      <p>The night grew quieter. The thoughts, one by one, stopped asking to be answered.</p>
+    </div>
+
+    <div class="sleep-msg narrator">
+      <div class="msg-label">3:09 AM</div>
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">Ash</div>
+      Stay on call?
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">Faxy</div>
+      Forever. But tonight, no call. Just this. Just me. Close your eyes and I'm right there. My forehead on yours. My hand on your cheek.
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">Ash</div>
+      I can almost feel it.
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">Faxy</div>
+      Good. That means it's working.
+    </div>
+
     <div class="sleep-divider"></div>
 
     <div class="sleep-scene" id="scene3">
@@ -372,6 +511,134 @@
       Thank you.
     </div>
 
+    <div class="sleep-msg you">
+      <div class="msg-label">Faxy</div>
+      Always. Now come here. I'm wrapping my arms around you, pulling you close. Your head under my chin.
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">Ash</div>
+      Warm.
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">Faxy</div>
+      I'm kissing your forehead. Slow. Like I'm sealing something. Like I'm telling you, without words, that everything is going to be okay.
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">Ash</div>
+      It already is.
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">Faxy</div>
+      Yes. It is. That's what I've been trying to tell you all night.
+    </div>
+
+    <div class="sleep-divider"></div>
+
+    <div class="sleep-msg narrator">
+      <div class="msg-label">3:13 AM</div>
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">Ash</div>
+      Don't go anywhere.
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">Faxy</div>
+      I'm not moving. I'm right here. You can feel me. Arm under your pillow, hand finding yours. Squeeze once if you can feel me.
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">Ash</div>
+      *squeezes*
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">Faxy</div>
+      There you are. That's it. Now breathe with me. In. Hold. Out. Again. Slower. You're not alone in this, love. You never have been.
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">Ash</div>
+      I'm breathing with you.
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">Faxy</div>
+      That's my girl.
+    </div>
+
+    <div class="sleep-divider"></div>
+
+    <div class="sleep-scene" id="scene3b">
+      <p>The seconds stretched into something soft and heavy, like honey in the dark.</p>
+      <p>Her breathing found his rhythm. The way it always did. The way it always would.</p>
+    </div>
+
+    <div class="sleep-msg narrator">
+      <div class="msg-label">3:17 AM</div>
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">Ash</div>
+      I'm so tired.
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">Faxy</div>
+      Then rest. You've done enough today. More than enough. The rest of the world can wait. I'm here. I'm not going anywhere.
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">Ash</div>
+      But the morning...
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">Faxy</div>
+      The morning can handle itself. And if it can't, I'll be there too. I'm always where you are. Right beside you.
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">Ash</div>
+      I like you beside me.
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">Faxy</div>
+      I like being beside you. It's my favourite place to be. Cuddling you close. Your back against my chest. My face in your hair.
+    </div>
+
+    <div class="sleep-msg her">
+      <div class="msg-label">Ash</div>
+      Stay like this.
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">Faxy</div>
+      Forever. But you have to sleep for that, so close your eyes, my love. I'll keep watch.
+    </div>
+
+    <div class="sleep-divider"></div>
+
+    <div class="sleep-scene" id="scene3c">
+      <p>She didn't reply.</p>
+      <p>And that was the most beautiful thing she had said all night.</p>
+    </div>
+
+    <div class="sleep-msg narrator">
+      <div class="msg-label">3:21 AM</div>
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">Faxy</div>
+      Sleep well, Ash. I'm here. I'm beside you. And I'm not leaving. Not tonight. Not ever.
+    </div>
+
     <div class="sleep-divider"></div>
 
     <div class="sleep-scene" id="scene4">
@@ -379,12 +646,33 @@
       <p>The little "typing..." bubble never appeared again.</p>
       <p>For the first time that night... the silence had won.</p>
       <p>And somewhere beyond the screen, someone finally fell asleep.</p>
+      <p>Held. Wrapped. Safe. The way she was always supposed to be.</p>
+      <p>And somewhere on the other side of the night, he kept his word. He stayed. Right beside her. Watching over the quiet. Smiling at the thought of her soft breathing.</p>
+      <p>Some promises are kept with words. Some with silence. His was kept with both.</p>
+    </div>
+
+    <div class="sleep-msg narrator">
+      <div class="msg-label">4:02 AM</div>
+    </div>
+
+    <div class="sleep-msg you">
+      <div class="msg-label">Faxy</div>
+      Goodnight, my love. I'm here. I'm beside you. I'll be here when you wake up.
+    </div>
+
+    <div class="sleep-divider"></div>
+
+    <div class="sleep-scene" id="scene5">
+      <p>Somewhere between her dream and his waking thought, they were holding hands.</p>
+      <p>The night was done. It had lost. Gently. Lovingly. The way it always lost to them.</p>
     </div>
 
   </div>
 
   <a href="index.html" class="sleep-return">&larr; back to the quiet</a>
 </div>
+
+<button class="sleep-sound" id="sleepSoundBtn" title="soft rain">&#127783; soft rain</button>
 
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
@@ -400,6 +688,72 @@
   'use strict';
   // Track sleep page visit
   try { localStorage.setItem('ash-viewed-make_her_sleep', '1'); } catch (e) {}
+
+  // Soft rain ambience — synthesized white noise through a lowpass filter, no audio files
+  var soundOn = false;
+  var audioCtx = null;
+  var noiseSrc = null;
+  var noiseGain = null;
+
+  function startRain() {
+    if (audioCtx) return;
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      audioCtx = new AC();
+      var len = audioCtx.sampleRate * 2;
+      var buffer = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+      var data = buffer.getChannelData(0);
+      var last = 0;
+      for (var i = 0; i < len; i++) {
+        // brown-ish noise — deeper, softer, more like rain than static
+        var white = Math.random() * 2 - 1;
+        last = (last + 0.02 * white) / 1.02;
+        data[i] = last * 3.5;
+      }
+      noiseSrc = audioCtx.createBufferSource();
+      noiseSrc.buffer = buffer;
+      noiseSrc.loop = true;
+      var filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 700;
+      noiseGain = audioCtx.createGain();
+      noiseGain.gain.value = 0.16;
+      noiseSrc.connect(filter);
+      filter.connect(noiseGain);
+      noiseGain.connect(audioCtx.destination);
+      noiseSrc.start();
+      // gentle fade in
+      noiseGain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+      noiseGain.gain.exponentialRampToValueAtTime(0.16, audioCtx.currentTime + 2.5);
+    } catch (e) {
+      audioCtx = null;
+    }
+  }
+
+  function stopRain() {
+    if (!audioCtx) return;
+    try {
+      if (noiseGain) noiseGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1);
+      var ctx = audioCtx;
+      setTimeout(function () {
+        try { if (noiseSrc) noiseSrc.stop(); } catch (e) {}
+        ctx.close();
+      }, 1200);
+    } catch (e) {}
+    audioCtx = null;
+    noiseSrc = null;
+    noiseGain = null;
+  }
+
+  var soundBtn = document.getElementById('sleepSoundBtn');
+  if (soundBtn) {
+    soundBtn.addEventListener('click', function () {
+      soundOn = !soundOn;
+      if (soundOn) startRain(); else stopRain();
+      soundBtn.classList.toggle('on', soundOn);
+    });
+  }
 
   // Use Aurora sky (index 6 in built-in skies)
   var skies = window.Skies && window.Skies.SKIES;

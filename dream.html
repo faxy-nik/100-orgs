@@ -809,6 +809,15 @@
       }
     });
   }
+
+  // Auto-open lantern world when arriving via ?lanterns (from the global trigger on pages without interactive.js)
+  if (window.location.search.indexOf('lanterns') !== -1) {
+    var tryOpen = function () {
+      if (typeof window._openLanternWorld === 'function') { window._openLanternWorld(); }
+      else { setTimeout(tryOpen, 400); }
+    };
+    tryOpen();
+  }
 })();
 </script>
 <script>

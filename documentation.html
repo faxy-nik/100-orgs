@@ -185,28 +185,33 @@ var CONTENT = [
     '<p><strong>Stack:</strong> Static HTML/CSS/JS &#x2014; no build step. Firebase Realtime DB for data. IndexedDB for analytics. Service worker for offline caching.</p>';
   }},
   { id:'pages', cat:'Pages', label:'All Pages', html:function(){
-    return '<h2 id="pages">Pages</h2><table><thead><tr><th>File</th><th>Purpose</th></tr></thead><tbody>' +
-    '<tr><td>index.html</td><td>Landing page &#x2014; sky preview, links to content</td></tr>' +
-    '<tr><td>100-organs.html</td><td>Main content &#x2014; 213 tribute sections, 8 accordion groups</td></tr>' +
-    '<tr><td>love.html</td><td>Love-themed page &#x2014; 130 tribute divs, 5 accordion groups</td></tr>' +
-    '<tr><td>fantasies.html</td><td>Fantasies &amp; comforts content</td></tr>' +
-    '<tr><td>sky-observatory.html</td><td>Sky gallery &#x2014; sky switching, wish jar, star map, moon, fireflies</td></tr>' +
-    '<tr><td>photo-gallery.html</td><td>Photo gallery (ash/ images) &#x2014; includes sky observatory features</td></tr>' +
-    '<tr><td>dream.html</td><td>Dream page &#x2014; images, lanterns, wishes</td></tr>' +
-    '<tr><td>make-her-sleep.html</td><td>Chat/storyline page &#x2014; sleep trigger</td></tr>' +
-    '<tr><td>guide.html</td><td>Interactive site guide &#x2014; accordion tour, music pairings, progress path</td></tr>' +
-    '<tr><td>promises.html</td><td>100 promises &#x2014; bookmarkable hearts, Promise of the Day, write your own</td></tr>' +
-    '<tr><td>turn-on.html</td><td>Turn Yourself On &#x2014; 38-step intimate narrative game, branching paths, Firebase session tracking</td></tr>' +
-    '<tr><td>turnon-history.html</td><td>Turn-on session history &#x2014; browse all playthroughs, admin passkey skip</td></tr>' +
-    '<tr><td>admin.html</td><td>Admin panel &#x2014; wishes, songs, config, 48 feature flags, turn-on editor, session viewer, error badge</td></tr>' +
-    '<tr><td>stats.html</td><td>Usage statistics viewer</td></tr>' +
-    '<tr><td>activity.html</td><td>Activity log &#x2014; page visits, section views</td></tr>' +
-    '<tr><td>timeline.html</td><td>Memory timeline &#x2014; shared timeline entries</td></tr>' +
-    '<tr><td>story.html</td><td>Storyline page</td></tr>' +
-    '<tr><td>documentation.html</td><td>This page &#x2014; full project documentation</td></tr>' +
-    '<tr><td>sky-generator.html</td><td>Procedural sky generator</td></tr>' +
-    '<tr><td>sky-generator-living.html</td><td>Living sky generator (with animations)</td></tr>' +
-    '<tr><td>404.html</td><td>Error page</td></tr>' +
+    return '<h2 id="pages">Pages</h2>' +
+    '<p>Three ways in: <strong>links</strong> (buttons and cards), <strong>secret trigger words</strong> (type a word anywhere on any page), or <strong>direct URL</strong> &#x2014; a page with no link and no trigger is still there, just type the file name after the site address, e.g. <code>.../404.html</code>.</p>' +
+    '<table><thead><tr><th>File</th><th>Purpose</th><th>How to access</th></tr></thead><tbody>' +
+    '<tr><td>index.html</td><td>Landing page &#x2014; sky preview, links to content</td><td>Home &#x2014; start here</td></tr>' +
+    '<tr><td>100-organs.html</td><td>Main content &#x2014; 213 tribute sections, 8 accordion groups</td><td>Home card (unlocks by date)</td></tr>' +
+    '<tr><td>love.html</td><td>Love-themed page &#x2014; 130 tribute divs, 5 accordion groups</td><td>Home card (unlocks by date)</td></tr>' +
+    '<tr><td>fantasies.html</td><td>Fantasies &amp; comforts content</td><td>Home card (unlocks by date)</td></tr>' +
+    '<tr><td>sky-observatory.html</td><td>Sky gallery &#x2014; sky switching, wish jar, star map, moon, fireflies</td><td>Home card (unlocks by date)</td></tr>' +
+    '<tr><td>photo-gallery.html</td><td>Photo gallery (ash/ images) &#x2014; includes sky observatory features</td><td>Home card (unlocks by date)</td></tr>' +
+    '<tr><td>dream.html</td><td>Dream page &#x2014; images, lanterns, wishes</td><td>Trigger: type <code>dream</code> anywhere; add <code>?lanterns</code> for the lantern world</td></tr>' +
+    '<tr><td>make-her-sleep.html</td><td>Chat/storyline page &#x2014; sleep trigger</td><td>Trigger: type <code>sleep</code> anywhere</td></tr>' +
+    '<tr><td>guide.html</td><td>Interactive site guide &#x2014; accordion tour, music pairings, progress path</td><td>No link, no trigger &#x2014; direct URL: <code>.../guide.html</code></td></tr>' +
+    '<tr><td>promises.html</td><td>100 promises &#x2014; bookmarkable hearts, Promise of the Day, write your own</td><td>&quot;Read the 100 Promises&quot; link inside guide.html</td></tr>' +
+    '<tr><td>turn-on.html</td><td>Turn Yourself On &#x2014; 360-step intimate narrative game, branching paths, Firebase session tracking</td><td>No link, no trigger &#x2014; direct URL: <code>.../turn-on.html</code></td></tr>' +
+    '<tr><td>turnon-history.html</td><td>Turn-on session history &#x2014; browse all playthroughs, admin passkey skip</td><td>&quot;Session History&quot; link at the bottom of turn-on.html</td></tr>' +
+    '<tr><td>admin.html</td><td>Admin panel &#x2014; 21 tabs: wishes, songs, config, 48 feature flags, turn-on editor, session viewer, memories (🌸 Remember), self letters (&#x270D;), rare links (&#x1F48E;), error badge</td><td>Admin link (passkey) on home and photo-gallery; or direct URL: <code>.../admin.html</code></td></tr>' +
+    '<tr><td>stats.html</td><td>Usage statistics viewer</td><td>Stats link on home and every content page</td></tr>' +
+    '<tr><td>activity.html</td><td>Activity log &#x2014; page visits, section views</td><td>&quot;Timeline/Activity&quot; link on home</td></tr>' +
+    '<tr><td>timeline.html</td><td>Memory timeline &#x2014; shared timeline entries</td><td>No link, no trigger &#x2014; direct URL: <code>.../timeline.html</code></td></tr>' +
+    '<tr><td>story.html</td><td>Storyline page</td><td>&quot;Our Story&quot; link on home</td></tr>' +
+    '<tr><td>for-tonight.html</td><td>Secret daily gift &#x2014; reach by typing <code>ash</code> anywhere; date-seeded pick from letters, timeline, gallery, wishes, dreams, songs</td><td>Trigger: type <code>ash</code> anywhere</td></tr>' +
+    '<tr><td>i-remember.html</td><td>&quot;I remember&quot; memory page &#x2014; rare/once memory flags, quiet final moment</td><td>Trigger: type <code>remember</code> anywhere</td></tr>' +
+    '<tr><td>letter-that-writes-itself.html</td><td>Self-writing letter &#x2014; punctuation-aware typewriter; <code>?secret</code> shows secret letters only</td><td>Trigger: type <code>letter</code> anywhere; add <code>?secret</code> for secret letters</td></tr>' +
+    '<tr><td>documentation.html</td><td>This page &#x2014; full project documentation</td><td>Docs link on home</td></tr>' +
+    '<tr><td>sky-generator.html</td><td>Procedural sky generator</td><td>No link, no trigger &#x2014; direct URL: <code>.../sky-generator.html</code></td></tr>' +
+    '<tr><td>sky-generator-living.html</td><td>Living sky generator (with animations)</td><td>No link, no trigger &#x2014; direct URL: <code>.../sky-generator-living.html</code></td></tr>' +
+    '<tr><td>404.html</td><td>Error page</td><td>No link, no trigger &#x2014; direct URL: <code>.../404.html</code></td></tr>' +
     '</tbody></table>';
   }},
   { id:'scripts', cat:'Scripts', label:'Core Scripts', html:function(){
@@ -225,12 +230,13 @@ var CONTENT = [
     '<tr><td>anime.min.js</td><td>anime.js UMD bundle (118KB)</td></tr>' +
     '<tr><td>motion-masterpiece.js</td><td>Cinematic visuals &#x2014; hero entrance, accordion stagger, end reveal, aurora</td></tr>' +
     '<tr><td>adaptive-text.js</td><td>Text animations</td></tr>' +
+    '<tr><td>install-prompt.js</td><td>&quot;Add to Home Screen&quot; banner &#x2014; offered once per device, native prompt where available, manual instructions on iOS</td></tr>' +
     '<tr><td>fb-db.js</td><td>Firebase Realtime DB helper &#x2014; blob/base64 conversion, CRUD</td></tr>' +
     '<tr><td>feature-flags.js</td><td>48 feature flags across 5 categories, localStorage + Firebase backed, toggleable from admin</td></tr>' +
     '<tr><td>section-lock.js</td><td>Date-gated section access, reads unlock config from Firebase</td></tr>' +
     '<tr><td>lock.js</td><td>Section unlock request buttons and Firebase listener</td></tr>' +
     '<tr><td>style.css</td><td>All styling + masterpiece enhancements</td></tr>' +
-    '<tr><td>sw.js</td><td>Service worker &#x2014; offline cache (<code>ash-v30</code>)</td></tr>' +
+    '<tr><td>sw.js</td><td>Service worker &#x2014; offline cache (<code>ash-v46</code>)</td></tr>' +
     '<tr><td>tree-of-memories.js</td><td>Fractal tree, hidden until dream + sleep visited</td></tr>' +
     '<tr><td>random-constellations.js</td><td>Mini canvas constellation viewer</td></tr>' +
     '<tr><td>butterfly-collection.js</td><td>24 butterfly species collection</td></tr>' +
@@ -247,6 +253,7 @@ var CONTENT = [
     '<tr><td>dynamic-content.js</td><td>Extra Firebase-managed content appended to pages</td></tr>' +
     '<tr><td>puzzle-hunt.js</td><td>Treasure hunt overlay with progress</td></tr>' +
     '<tr><td>story-text.js</td><td>Storyline text data</td></tr>' +
+    '<tr><td>seed-content.js</td><td>Seeds starter data once per device into Firebase &#x2014; 20 memories + 10 normal + 3 secret self-letters. Fallback for pages and admin when stores are empty</td></tr>' +
     '</tbody></table>';
   }},
   { id:'feature-flags', cat:'Features', label:'Feature Flags', html:function(){
@@ -298,34 +305,86 @@ var CONTENT = [
   }},
   { id:'turn-on', cat:'Interactive', label:'Turn On Game', html:function(){
     return '<h2 id="turn-on">Turn Yourself On</h2>' +
-    '<p><strong>File:</strong> <code>turn-on.html</code></p>' +
-    '<p>38-step intimate narrative game with branching paths. Self-contained (no external dependencies). Two-column layout: game on left, history sidebar on right.</p>' +
+    '<p><strong>File:</strong> <code>turn-on.html</code> &nbsp; <strong>Access:</strong> no link, no trigger &#x2014; direct URL: <code>.../turn-on.html</code></p>' +
+    '<p>360-step intimate narrative game with branching paths. Self-contained (no external dependencies). Two-column layout: game on left, history sidebar on right.</p>' +
     '<table><thead><tr><th>Feature</th><th>Details</th></tr></thead><tbody>' +
-    '<tr><td>Steps</td><td>38 across 10 levels (Awakening &#x2192; Union)</td></tr>' +
-    '<tr><td>Branching</td><td>Steps 36/37/38 have multiple endings</td></tr>' +
+    '<tr><td>Steps</td><td>360 across 10 levels (Awakening &#x2192; Union) + fingering drive sub-game (800&#x2013;829)</td></tr>' +
+    '<tr><td>Branching</td><td>Multiple endings + option re-joins (backward refs are by design)</td></tr>' +
+    '<tr><td>Fingering drive</td><td>Hub option &#x2192; 28-step slow/fast/tease branches, chat woven through, climax + afterglow</td></tr>' +
     '<tr><td>Scene system</td><td>Atmospheric narrative text per step</td></tr>' +
     '<tr><td>Transitions</td><td>Animated transition text between steps</td></tr>' +
     '<tr><td>History</td><td>Collapsible sidebar showing every choice</td></tr>' +
     '<tr><td>Narrative recap</td><td>Accumulated scene text, collapsible on end screen</td></tr>' +
     '<tr><td>End stats</td><td>Choices made, levels explored, path (Rough/Tender)</td></tr>' +
     '<tr><td>Session tracking</td><td>On completion, pushes to Firebase under <code>turnOn/sessions_data</code>. 5-min dedup cooldown. Skips admin via <code>ash-admin-passkey</code>.</td></tr>' +
+    '<tr><td>Verification</td><td><code>tools/verify_all3.js</code> + <code>tools/verify_reach.js</code> &#x2014; syntax, voice rule, reachability, cycles</td></tr>' +
     '</tbody></table>';
   }},
   { id:'turnon-history', cat:'Interactive', label:'Turn On History', html:function(){
     return '<h2 id="turnon-history">Turn On History</h2>' +
-    '<p><strong>File:</strong> <code>turnon-history.html</code></p>' +
+    '<p><strong>File:</strong> <code>turnon-history.html</code> &nbsp; <strong>Access:</strong> &quot;Session History&quot; link at the bottom of turn-on.html, or direct URL: <code>.../turnon-history.html</code></p>' +
     '<p>Displays all completed playthrough sessions from the turn-on game. Loaded from Firebase <code>turnOn/sessions_data</code>. Each session is a collapsible card showing every choice made.</p>' +
     '<p><strong>Admin skip:</strong> If <code>ash-admin-passkey</code> exists in localStorage, shows "History hidden" instead of loading data.</p>';
   }},
   { id:'guide-page', cat:'Interactive', label:'Guide Page', html:function(){
     return '<h2 id="guide-page">Guide Page</h2>' +
-    '<p><strong>File:</strong> <code>guide.html</code></p>' +
-    '<p>Interactive site guide with accordion sections, teaser quotes from content pages, music pairings from real project songs (<code>songs/list.json</code>), progress path (localStorage), random recommendation button, Easter egg hints, scroll animations.</p>';
+    '<p><strong>File:</strong> <code>guide.html</code> &nbsp; <strong>Access:</strong> no link, no trigger &#x2014; direct URL: <code>.../guide.html</code></p>' +
+    '<p>Interactive site guide with accordion sections, teaser quotes from content pages, music pairings from real project songs (<code>songs/list.json</code>), progress path (localStorage), random recommendation button, Easter egg hints, scroll animations. Its &quot;Read the 100 Promises&quot; link is the only path to promises.html.</p>';
   }},
   { id:'promises-page', cat:'Interactive', label:'Promises Page', html:function(){
     return '<h2 id="promises-page">Promises Page</h2>' +
-    '<p><strong>File:</strong> <code>promises.html</code></p>' +
+    '<p><strong>File:</strong> <code>promises.html</code> &nbsp; <strong>Access:</strong> &quot;Read the 100 Promises&quot; link inside guide.html, or direct URL: <code>.../promises.html</code></p>' +
     '<p>100 promises with bookmarkable hearts (localStorage), Promise of the Day, Surprise Me button, scroll tracking ("X/100 read"), Write Your Own Promise section, "I Accept" button with confetti burst.</p>';
+  }},
+  { id:'sky-generators', cat:'Interactive', label:'Sky Generators', html:function(){
+    return '<h2 id="sky-generators">Sky Generators</h2>' +
+    '<p><strong>Files:</strong> <code>sky-generator.html</code> &nbsp; <strong>Access:</strong> no link, no trigger &#x2014; direct URL: <code>.../sky-generator.html</code> &nbsp; / &nbsp; <code>sky-generator-living.html</code> &#x2014; direct URL: <code>.../sky-generator-living.html</code></p>' +
+    '<p>Standalone sky preview demos for the sky engine. Both expose <code>window.Skies = { SKIES, apply, random, getCurrent, createButton }</code>.</p>' +
+    '<p><strong>sky-generator.html</strong> (Engine v2): cycle through preset skies with the &#x1F326;&#xFE0F; Change Sky button, or use <code>Skies.random()</code> in the console.</p>' +
+    '<p><strong>sky-generator-living.html</strong> (full demo): animated living skies &#x2014; &#x1F326;&#xFE0F; Random Sky button, &#x1F4AC; Test mood button, sky select dropdown, bottom-right journal button.</p>';
+  }},
+  { id:'for-tonight', cat:'Interactive', label:'For Tonight', html:function(){
+    return '<h2 id="for-tonight">For Tonight (Daily Gift)</h2>' +
+    '<p><strong>File:</strong> <code>for-tonight.html</code> &nbsp; <strong>Trigger:</strong> type <code>ash</code> anywhere</p>' +
+    '<p>Deterministic date-seeded pick (mulberry32) from Firebase data: <code>letters</code>, <code>config/timeline</code>, <code>config/gallery</code>, <code>wishes</code>, <code>dreams</code>, <code>songs/list.json</code>. Same gift all day, new gift each day. Cached in <code>ash-for-tonight</code>; falls back to a built-in pool of 8 notes if everything fails. Links at the bottom: i-remember, the self-writing letter, and &quot;when you can&#39;t sleep&quot; (make-her-sleep.html).</p>';
+  }},
+  { id:'i-remember-page', cat:'Interactive', label:'I Remember', html:function(){
+    return '<h2 id="i-remember-page">I Remember (Memories)</h2>' +
+    '<p><strong>File:</strong> <code>i-remember.html</code> &nbsp; <strong>Trigger:</strong> type <code>remember</code> anywhere</p>' +
+    '<p>Quiet dark page showing one memory at a time with an &quot;Another memory&quot; button. Memories come from Firebase <code>memories</code> store (seeded with 20), falling back to seeds offline.</p>' +
+    '<table><thead><tr><th>Field</th><th>Meaning</th></tr></thead><tbody>' +
+    '<tr><td><code>cat</code></td><td>Category shown above the memory (e.g. us / soft / fun)</td></tr>' +
+    '<tr><td><code>rare</code></td><td>Shown rarely &#x2014; 0.15 pick weight instead of 1</td></tr>' +
+    '<tr><td><code>once</code></td><td>Shown exactly once ever (tracked in <code>ash_memory_once</code>)</td></tr>' +
+    '<tr><td><code>on</code></td><td>false hides the memory</td></tr>' +
+    '</tbody></table>' +
+    '<p>Avoids the last 15 shown (history <code>ash_memory_history</code>, cap 40). After 7 memories this session, 10% chance of a quiet final moment instead.</p>' +
+    '<p><strong>Admin:</strong> 🌸 Remember tab &#x2014; full CRUD on <code>memories</code>.</p>';
+  }},
+  { id:'selfletter-page', cat:'Interactive', label:'Self-Writing Letter', html:function(){
+    return '<h2 id="selfletter-page">A Letter That Writes Itself</h2>' +
+    '<p><strong>File:</strong> <code>letter-that-writes-itself.html</code> &nbsp; <strong>Trigger:</strong> type <code>letter</code> anywhere (opens <code>?secret</code> mode)</p>' +
+    '<p>Candle-lit page where the letter types itself out. Letters come from Firebase <code>selfLetters</code> store (seeded with 10 normal + 3 secret), falling back to seeds offline.</p>' +
+    '<table><thead><tr><th>Field</th><th>Meaning</th></tr></thead><tbody>' +
+    '<tr><td><code>scheduledDate</code></td><td>YYYY-MM-DD &#x2014; letter only appears on that date (wins over everything else)</td></tr>' +
+    '<tr><td><code>secret</code></td><td>true = only in <code>?secret</code> mode</td></tr>' +
+    '<tr><td><code>enabled</code></td><td>false hides the letter</td></tr>' +
+    '<tr><td><code>priority</code></td><td>higher = picked first (after date/secret/enabled)</td></tr>' +
+    '<tr><td><code>music</code></td><td>filename inside <code>songs/</code> played while typing</td></tr>' +
+    '</tbody></table>' +
+    '<p>Typewriter pauses: comma ~260ms, <code>.!?</code> ~440ms, <code>;:&#x2014;</code> ~320ms, space ~28ms, newline ~40ms, +300ms after consecutive sentences. Tap letter to pause/resume, &quot;Read it now&quot; reveals all instantly. Quiet endings: &quot;I meant every word.&quot; / &quot;Keep this one.&quot; Avoids the last 20 shown (<code>ash_selfletter_hist</code>).</p>' +
+    '<p><strong>Admin:</strong> &#x270D; Self Letters tab &#x2014; full CRUD with preview modal.</p>';
+  }},
+  { id:'rare-links', cat:'Interactive', label:'Rare Links', html:function(){
+    return '<h2 id="rare-links">Rare Links (For Tonight bonus)</h2>' +
+    '<p><strong>Data:</strong> <code>rareLinks</code> store &nbsp; <strong>Admin:</strong> &#x1F48E; Rare Links tab &#x2014; full CRUD</p>' +
+    '<p>On ~10% of days (date-seeded, same day = same result), a bonus card &quot;one more thing, only on rare nights...&quot; appears under For Tonight&#39;s daily gift and plays a video.</p>' +
+    '<table><thead><tr><th>Field</th><th>Meaning</th></tr></thead><tbody>' +
+    '<tr><td><code>title</code></td><td>Shown above the player</td></tr>' +
+    '<tr><td><code>url</code></td><td>YouTube link (watch / youtu.be / shorts / live) or direct video file (mp4/webm)</td></tr>' +
+    '<tr><td><code>on</code></td><td>false excludes the link from rare nights</td></tr>' +
+    '</tbody></table>' +
+    '<p>YouTube links embed via <code>www.youtube-nocookie.com/embed/</code> and play right on the page; direct links use the built-in <code>&lt;video&gt;</code> player. The rare-day roll uses a separate rnd stream (<code>seed+7</code>) from the daily gift pick, so both can be rare independently.</p>';
   }},
   { id:'hidden-letters', cat:'Easter Eggs', label:'Hidden Letters (30)', html:function(){
     var letters = [
@@ -376,15 +435,18 @@ var CONTENT = [
     '<tr><td><strong>Invisible Ink</strong></td><td>Mouse still for 8+ seconds</td><td>Faint golden quote fades in (opacity 0.15)</td></tr>' +
     '</tbody></table>';
   }},
-  { id:'global-eggs', cat:'Easter Eggs', label:'Global Easter Eggs', html:function(){
-    return '<h2 id="global-eggs">Global Easter Eggs</h2>' +
-    '<p>Keyboard shortcuts in <code>global-easter-eggs.js</code>, available on all pages:</p>' +
-    '<table><thead><tr><th>Key</th><th>Action</th></tr></thead><tbody>' +
-    '<tr><td><code>d</code></td><td>Navigate to dream page</td></tr>' +
-    '<tr><td><code>s</code></td><td>Navigate to make-her-sleep page</td></tr>' +
-    '<tr><td><code>m</code></td><td>Toggle matrix rain</td></tr>' +
-    '<tr><td><code>l</code></td><td>Release lanterns</td></tr>' +
-    '</tbody></table>';
+  { id:'global-eggs', cat:'Easter Eggs', label:'Secret Triggers', html:function(){
+    return '<h2 id="global-eggs">Secret Word Triggers</h2>' +
+    '<p>Type a word <strong>anywhere on any page</strong> (not inside text inputs, not while holding Ctrl/Alt/Meta). All triggers live in <code>global-easter-eggs.js</code> and fire once per page load.</p>' +
+    '<table><thead><tr><th>Type this</th><th>What happens</th><th>Where you land</th></tr></thead><tbody>' +
+    '<tr><td><code>ash</code></td><td>Star overlay &quot;Something for tonight...&quot; for 1.7s, then navigate. Exact lowercase only, 1.8s window between keys</td><td><code>for-tonight.html</code> &#x2014; daily gift page</td></tr>' +
+    '<tr><td><code>remember</code></td><td>Navigate instantly</td><td><code>i-remember.html</code> &#x2014; memory page</td></tr>' +
+    '<tr><td><code>letter</code></td><td>Navigate instantly (secret mode)</td><td><code>letter-that-writes-itself.html?secret</code> &#x2014; secret letters only</td></tr>' +
+    '<tr><td><code>dream</code></td><td>Navigate instantly</td><td><code>dream.html</code></td></tr>' +
+    '<tr><td><code>sleep</code></td><td>Navigate instantly</td><td><code>make-her-sleep.html</code></td></tr>' +
+    '<tr><td><code>lanterns</code></td><td>Opens the lantern world overlay</td><td>stays on current page</td></tr>' +
+    '</tbody></table>' +
+    '<p><strong>Notes:</strong> <code>ash</code> is exact lowercase and checks keys as you type them (shift held = ignored). The others are plain substring matches on the last 20 keystrokes, so any word containing them also works (e.g. <code>remember</code> inside <code>remembering</code>). To open a non-secret letter from the letter page, drop the <code>?secret</code> from the URL.</p>';
   }},
   { id:'visibility', cat:'Recent Changes', label:'Visibility Gating', html:function(){
     return '<h2 id="visibility">Visibility Gating (v4)</h2>' +
@@ -408,8 +470,8 @@ var CONTENT = [
     '<p><code>motion-masterpiece.js</code> features: hero entrance stagger, accordion cascade, end section reveal, progress glow pulse, ambient aurora (3 layers), spark morph. Respects <code>prefers-reduced-motion</code>.</p>';
   }},
   { id:'service-worker', cat:'Technical', label:'Service Worker', html:function(){
-    return '<h3 id="service-worker">Service Worker</h3>' +
-    '<p><code>sw.js</code> &#x2014; cache <code>ash-v30</code>. 45+ cached assets. Cache-first, network fallback strategy.</p>';
+    return     '<h3 id="service-worker">Service Worker</h3>' +
+    '<p><code>sw.js</code> &#x2014; cache <code>ash-v46</code>. 60+ cached assets. Cache-first, network fallback strategy.</p>';
   }},
   { id:'data', cat:'Technical', label:'Data & Sync', html:function(){
     return '<h3 id="data">Data & Sync</h3>' +
@@ -434,6 +496,19 @@ var CONTENT = [
   { id:'recent', cat:'Changelog', label:'Recent Changes', html:function(){
     return '<h2 id="recent">Recent Changes</h2>' +
     '<table><thead><tr><th>Change</th><th>Details</th></tr></thead><tbody>' +
+    '<tr><td>Secret word triggers</td><td>Type <code>ash</code> / <code>remember</code> / <code>letter</code> / <code>dream</code> / <code>sleep</code> / <code>lanterns</code> anywhere to open pages. Replaces old single-key shortcuts (d/s/m/l)</td></tr>' +
+    '<tr><td>I Remember page</td><td>Memory page with rare/once flags + history avoidance; admin 🌸 Remember tab</td></tr>' +
+    '<tr><td>Self-writing letter</td><td>Typewriter letter page with scheduled/secret letters; admin &#x270D; Self Letters tab</td></tr>' +
+    '<tr><td>For Tonight</td><td>Daily date-seeded gift page reachable via <code>ash</code> trigger</td></tr>' +
+    '<tr><td>Seed content</td><td><code>seed-content.js</code> &#x2014; 20 memories + 13 letters seeded once per device; fallback when Firebase empty</td></tr>' +
+    '<tr><td>Docs: access info for every page</td><td>Pages table now has a &quot;How to access&quot; column (link / trigger word / direct URL); URL-only pages (guide, turn-on, timeline, sky generators, 404) documented as <code>.../file.html</code>; new Sky Generators section</td></tr>' +
+    '<tr><td>Date-seeded picks</td><td>i-remember first memory and self-writing letter both rotate by date (mulberry32), like For Tonight</td></tr>' +
+    '<tr><td>Soft rain on sleep page</td><td>make-her-sleep.html gets a bottom-right &quot;soft rain&quot; toggle &#x2014; synthesized rain sound, no audio files</td></tr>' +
+    '<tr><td>Rare Links</td><td>New admin &#x1F48E; Rare Links tab (CRUD on <code>rareLinks</code>); For Tonight plays a bonus video on ~10% of nights &#x2014; YouTube embeds or direct video files</td></tr>' +
+    '<tr><td>Add to Home Screen</td><td><code>install-prompt.js</code> &#x2014; one-time banner, native install prompt where available, manual instructions on iOS</td></tr>' +
+    '<tr><td>&quot;when you can&#39;t sleep&quot; link</td><td>Added under For Tonight&#39;s gift links, pointing to make-her-sleep.html</td></tr>' +
+    '<tr><td>Turn-on fingering drive</td><td>28 new steps (800&#x2013;829) + hub option; game now 360 steps, fully verified</td></tr>' +
+    '<tr><td>Bug fixes</td><td>quiz.js syntax error fixed (quiz buttons were dead); secret-letters.js apostrophes fixed (file was dead); quiz.json restored so story.html quiz works</td></tr>' +
     '<tr><td>Feature flag auto-save</td><td><code>FeatureFlags.set()</code> now calls <code>save()</code> to sync to Firebase immediately on toggle (was localStorage-only)</td></tr>' +
     '<tr><td>onReady race fixed</td><td>Love letter generator and wallpaper switched from <code>onReady</code> to synchronous check, matching all other features</td></tr>' +
     '<tr><td>6 unused flags removed</td><td>Section gating flags and globe removed from <code>ALL_FEATURES</code></td></tr>' +
