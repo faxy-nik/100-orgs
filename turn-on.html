@@ -602,14 +602,7 @@ var STEPS = [];
 var STEPS_VER = 5;
 function loadSteps() {
   STEPS = getDefaultSteps();
-  if (typeof FB !== 'undefined' && FB.get) {
-    FB.get('turnOn', 'steps').then(function (d) {
-      if (d && d.list && d.list.length && d.ver === STEPS_VER) STEPS = d.list;
-      initGame();
-    }).catch(function(){ initGame(); });
-  } else {
-    initGame();
-  }
+  initGame();
 }
 
 function getDefaultSteps() {
