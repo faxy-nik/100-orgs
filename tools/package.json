@@ -1,0 +1,11 @@
+{
+  "name": "100-prghs-tools",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Verification suite for 100 prghs for eeshah — syntax, refs, feature tests, turn-on game integrity",
+  "scripts": {
+    "test": "node final_check.js && node test_letter.js && node test_remember.js && node verify_all3.js && node verify_reach.js",
+    "check": "node final_check.js",
+    "verify-turnon": "node verify_all3.js && node verify_reach.js"
+  }
+}

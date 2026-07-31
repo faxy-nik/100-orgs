@@ -1,5 +1,7 @@
 const fs = require('fs');
-const file = 'turn-on.html';
+const path = require('path');
+const root = path.resolve(__dirname, '..') + path.sep;
+const file = root + 'turn-on.html';
 const src = fs.readFileSync(file, 'utf8');
 
 const a = src.indexOf('<script>'), b = src.lastIndexOf('</script>');
