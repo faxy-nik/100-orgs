@@ -2517,7 +2517,7 @@
   });
 
   /* ---- Init ---- */
-  var ADMIN_UID = 'ADMIN_UID_REPLACE_ME'; // set to the Firebase admin user's uid (see database.rules.json)
+  var ADMIN_UID = 'tNigpJD0iudxzcoP49DDmA4uDQK2'; // set to the Firebase admin user's uid (see database.rules.json)
 
   function fbAuthAvailable() {
     return typeof firebase !== 'undefined' && typeof firebase.auth === 'function';
