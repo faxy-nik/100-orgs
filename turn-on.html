@@ -4858,6 +4858,7 @@ function initGame() {
     try {
       state = JSON.parse(saved);
       if (!state.narrative) state.narrative = [];
+      if (state.ver !== STEPS_VER) throw new Error('stale state');
       if (state.stepId) {
         renderGame();
         return;
@@ -5117,6 +5118,7 @@ function toggleRecap() {
 }
 
 function saveState() {
+  state.ver = STEPS_VER;
   localStorage.setItem('turn-on-state', JSON.stringify(state));
 }
 
