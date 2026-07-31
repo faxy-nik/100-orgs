@@ -230,6 +230,23 @@ body {
 .opt-1:hover { background: rgba(255,230,128,0.15) !important; border-color: var(--gold) !important; color: var(--parchment) !important; }
 .opt-2 { border-color: #d4708a !important; color: #e8a0b0 !important; }
 .opt-2:hover { background: rgba(212,112,138,0.2) !important; border-color: #d4708a !important; color: var(--parchment) !important; }
+.opt-hub {
+  max-width: 520px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.35rem 1.8rem;
+  border-radius: 14px;
+  border-width: 2px;
+  font-size: 1.05rem;
+  letter-spacing: 0.03em;
+  background: linear-gradient(135deg, rgba(232,93,58,0.16), rgba(255,197,66,0.10));
+  box-shadow: 0 4px 18px rgba(0,0,0,0.35), inset 0 0 14px rgba(232,93,58,0.05);
+}
+.opt-hub:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 10px 30px rgba(232,93,58,0.28), inset 0 0 18px rgba(232,93,58,0.08);
+  background: linear-gradient(135deg, rgba(232,93,58,0.28), rgba(255,197,66,0.18));
+}
 .opt-energy-2 { font-weight: 400 !important; border-width: 1.5px !important; }
 .opt-energy-3 { font-weight: 700 !important; border-width: 2.5px !important; box-shadow: 0 0 15px rgba(232,93,58,0.15) !important; letter-spacing: 0.04em !important; }
 .opt-energy-3:hover { box-shadow: 0 0 30px rgba(232,93,58,0.25) !important; }
@@ -604,14 +621,15 @@ function getDefaultSteps() {
       energy: 1,
       symbol: '🔥',
       pause: 1200,
-      scene: 'The room is dark and quiet. You are lying on soft sheets. I am beside you, propped on one elbow, looking down at you. The air is thick with everything unsaid. Your body waits.',
-      prompt: 'I trace your collarbone with one finger. "Tell me what you want tonight. I will give you anything."',
+      hub: true,
+      scene: 'We are alone in the room. The lights are off. The only sound is our breathing. You are close enough that I can feel your warmth, and I want you to remember this before anything else: I am your man, and you are the one I want. But tonight — you choose. You tell me what you want to do.',
+      prompt: 'My voice comes low out of the dark. "It is just you and me here. Nobody else. Tell me — what do you want to do tonight? I will give you anything you ask for."',
       options: [
         { text: 'Fuck me — I want you inside me', next: 2, transition: 'A soft yes escapes your lips. I lean closer, my breath warming your cheek.', energy: 2 },
-        { text: 'Make me touch myself for you', next: 400, transition: 'I pull back and watch you. "Show me what you do when you are alone."', energy: 2 },
-        { text: 'Finger me — I need your hands', next: 500, transition: 'I slide my hand down your body. "My fingers. Yes. I will take you apart."', energy: 2 },
+        { text: 'Make me touch myself — I want you to watch', next: 400, transition: 'I pull back and watch you. "Show me what you do when you are alone."', energy: 2 },
+        { text: 'Finger me — I need your hands on me', next: 500, transition: 'I slide my hand down your body. "My fingers. Yes. I will take you apart."', energy: 2 },
         { text: 'Just foreplay — tease me until I beg', next: 600, transition: 'I smile slowly. "You want to beg? I will make sure you do."', energy: 1 },
-        { text: 'Put your mouth on me', next: 700, transition: 'I kiss down your body, slow and deliberate. "I am going to devour you."', energy: 2 }
+        { text: 'Put your mouth on me — I want to feel you everywhere', next: 700, transition: 'I kiss down your body, slow and deliberate. "I am going to devour you."', energy: 2 }
       ]
     },
     {
@@ -4972,9 +4990,10 @@ function showOptions(step) {
   var optHtml = '';
   var icons = ['\u2776', '\u2777', '\u2778', '\u2779', '\u277A'];
   var energyLabels = ['', 'opt-energy-2', 'opt-energy-3'];
+  var isHub = step.hub === true;
   step.options.forEach(function (opt, oi) {
     var eClass = energyLabels[(opt.energy || 1) - 1] || '';
-    optHtml += '<button class="opt-btn opt-' + oi + ' ' + eClass + '" data-next="' + opt.next + '" data-transition="' + esc(opt.transition || '') + '" data-oi="' + oi + '" style="opacity:0;transform:translateY(12px);transition:all 0.4s ease ' + (oi * 0.15) + 's;">' + (icons[oi] || '') + ' ' + esc(opt.text) + '</button>';
+    optHtml += '<button class="opt-btn' + (isHub ? ' opt-hub' : '') + ' opt-' + oi + ' ' + eClass + '" data-next="' + opt.next + '" data-transition="' + esc(opt.transition || '') + '" data-oi="' + oi + '" style="opacity:0;transform:translateY(12px);transition:all 0.4s ease ' + (oi * 0.15) + 's;">' + (icons[oi] || '') + ' ' + esc(opt.text) + '</button>';
   });
   container.innerHTML = optHtml;
 
@@ -4993,7 +5012,7 @@ function showOptions(step) {
       if (this.disabled) return;
       this.disabled = true;
       var next = parseInt(this.dataset.next);
-      var text = btn.querySelector('.opt-text') ? btn.querySelector('.opt-text').textContent : this.textContent.replace(/^[\u2776-\u2778]\s*/, '');
+      var text = btn.querySelector('.opt-text') ? btn.querySelector('.opt-text').textContent : this.textContent.replace(/^[\u2776-\u277A]\s*/, '');
       var transition = this.dataset.transition;
 
       state.history.push({ prompt: step.prompt, choice: text, stepId: state.stepId });
