@@ -2803,7 +2803,7 @@
   });
 
   document.getElementById('saveTurnOnBtn').addEventListener('click', function () {
-    FB.put('turnOn', { id: 'steps', list: turnOnSteps }).then(function () {
+    FB.put('turnOn', { id: 'steps', list: turnOnSteps, ver: 4 }).then(function () {
       toast('Turn On steps saved to Firebase.');
     }).catch(function () {
       toast('Failed to save.');
