@@ -213,6 +213,12 @@ body {
 .opt-btn:active {
   transform: translateY(0) scale(0.98);
 }
+.opt-0 { border-color: var(--ember) !important; color: #f08a7a !important; }
+.opt-0:hover { background: rgba(232,93,58,0.2) !important; border-color: var(--ember) !important; color: var(--parchment) !important; }
+.opt-1 { border-color: var(--gold) !important; color: #ffe68a !important; }
+.opt-1:hover { background: rgba(255,230,128,0.15) !important; border-color: var(--gold) !important; color: var(--parchment) !important; }
+.opt-2 { border-color: #d4708a !important; color: #e8a0b0 !important; }
+.opt-2:hover { background: rgba(212,112,138,0.2) !important; border-color: #d4708a !important; color: var(--parchment) !important; }
 
 /* Transition text */
 .transition-box {
@@ -221,15 +227,15 @@ body {
   margin: 0 auto 1.5rem;
   padding: 1.25rem;
   border-radius: 10px;
-  background: rgba(232, 93, 58, 0.1);
+  background: rgba(232, 93, 58, 0.12);
   border: 1px solid var(--ember);
   color: var(--parchment);
   font-family: var(--font-display);
   font-size: 1.05rem;
   line-height: 1.6;
   text-align: center;
-  animation: fadeIn 0.4s ease;
   display: none;
+  box-shadow: 0 0 30px rgba(232,93,58,0.08);
 }
 
 /* Game layout */
@@ -535,9 +541,21 @@ body {
 
 <script>
 var state = { stepId: null, history: [], narrative: [] };
-var TRANSITION_DELAY = 1800;
+var TRANSITION_DELAY = 2800;
 var LEVEL_NAMES = ['Awakening', 'Teasing', 'Touching', 'Yearning', 'Surrender', 'Pleasure', 'Ecstasy', 'Intimacy', 'Vulnerability', 'Union'];
-var STEPS = getDefaultSteps();
+var STEPS = [];
+
+function loadSteps() {
+  STEPS = getDefaultSteps();
+  if (typeof FB !== 'undefined' && FB.get) {
+    FB.get('turnOn', 'steps').then(function (d) {
+      if (d && d.list && d.list.length) STEPS = d.list;
+      initGame();
+    }).catch(function(){ initGame(); });
+  } else {
+    initGame();
+  }
+}
 
 function getDefaultSteps() {
   return [
@@ -975,34 +993,68 @@ function renderGame() {
   }
   document.getElementById('levelBar').innerHTML = levelHtml;
 
-  // Label
+  // Level label
   document.getElementById('levelLabel').textContent = 'Level ' + (step.level + 1) + ' \u2014 ' + (LEVEL_NAMES[step.level] || '');
 
-  // Prompt
-  document.getElementById('promptText').textContent = step.prompt;
-
-  // Scene
-  document.getElementById('sceneBox').textContent = step.scene || '';
-
-  // Hide transition box
+  // Clear prompt & scene & hide options
+  document.getElementById('promptText').textContent = '';
+  document.getElementById('sceneBox').textContent = '';
   document.getElementById('transitionBox').style.display = 'none';
+  document.getElementById('optionsContainer').innerHTML = '';
+  document.getElementById('optionsContainer').style.display = 'none';
 
-  // Options
+  // Type scene, then show prompt, then show options
+  if (step.scene) {
+    typeText(document.getElementById('sceneBox'), step.scene, 18, function() {
+      // after scene: type prompt
+      typeText(document.getElementById('promptText'), step.prompt, 14, function() {
+        // after prompt: show options with stagger
+        showOptions(step);
+      });
+    });
+  } else {
+    typeText(document.getElementById('promptText'), step.prompt, 14, function() {
+      showOptions(step);
+    });
+  }
+
+  // History + narrative (immediate)
+  renderHistory();
+  renderNarrative();
+}
+
+var _optLock = false;
+
+function showOptions(step) {
+  if (_optLock) return;
+  _optLock = true;
+  var container = document.getElementById('optionsContainer');
+  container.style.display = 'flex';
   var optHtml = '';
+  var icons = ['\u2776', '\u2777', '\u2778'];
   step.options.forEach(function (opt, oi) {
-    optHtml += '<button class="opt-btn" data-next="' + opt.next + '" data-transition="' + esc(opt.transition || '') + '">' + esc(opt.text) + '</button>';
+    optHtml += '<button class="opt-btn opt-' + oi + '" data-next="' + opt.next + '" data-transition="' + esc(opt.transition || '') + '" data-oi="' + oi + '" style="opacity:0;transform:translateY(12px);transition:all 0.4s ease ' + (oi * 0.15) + 's;">' + (icons[oi] || '') + ' ' + esc(opt.text) + '</button>';
   });
-  document.getElementById('optionsContainer').innerHTML = optHtml;
-  document.getElementById('optionsContainer').style.display = 'flex';
+  container.innerHTML = optHtml;
+
+  // Stagger in
+  setTimeout(function() {
+    container.querySelectorAll('.opt-btn').forEach(function(btn) {
+      btn.style.opacity = '1';
+      btn.style.transform = 'translateY(0)';
+    });
+  }, 80);
+  _optLock = false;
 
   // Bind options
-  document.querySelectorAll('.opt-btn').forEach(function (btn) {
+  container.querySelectorAll('.opt-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
+      if (this.disabled) return;
+      this.disabled = true;
       var next = parseInt(this.dataset.next);
-      var text = this.textContent;
+      var text = btn.querySelector('.opt-text') ? btn.querySelector('.opt-text').textContent : this.textContent.replace(/^[\u2776-\u2778]\s*/, '');
       var transition = this.dataset.transition;
 
-      // Save this step's scene to narrative before moving on
       state.history.push({ prompt: step.prompt, choice: text, stepId: state.stepId });
       if (step.scene) state.narrative.push({ level: step.level, text: step.scene });
 
@@ -1017,9 +1069,13 @@ function renderGame() {
       saveState();
 
       if (transition) {
-        document.getElementById('optionsContainer').style.display = 'none';
-        document.getElementById('transitionBox').textContent = transition;
-        document.getElementById('transitionBox').style.display = 'block';
+        container.style.display = 'none';
+        var tb = document.getElementById('transitionBox');
+        tb.textContent = transition;
+        tb.style.display = 'block';
+        tb.style.opacity = '0';
+        tb.style.transform = 'translateY(8px)';
+        setTimeout(function() { tb.style.opacity = '1'; tb.style.transform = 'translateY(0)'; tb.style.transition = 'all 0.4s ease'; }, 30);
         setTimeout(function () {
           renderGame();
         }, TRANSITION_DELAY);
@@ -1028,10 +1084,6 @@ function renderGame() {
       }
     });
   });
-
-  // History + narrative
-  renderHistory();
-  renderNarrative();
 }
 
 function renderHistory() {
@@ -1134,17 +1186,30 @@ function resetGame() {
   showStart();
 }
 
+function typeText(el, text, speed, cb) {
+  el.textContent = '';
+  var i = 0;
+  function tick() {
+    if (i < text.length) {
+      el.textContent += text.charAt(i);
+      i++;
+      setTimeout(tick, speed);
+    } else if (cb) { cb(); }
+  }
+  tick();
+}
+
 function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 
-document.getElementById('startBtn').addEventListener('click', startGame);
+document.getElementById('startBtn').addEventListener('click', function(){ startGame(); });
 document.getElementById('resetBtn').addEventListener('click', resetGame);
 document.getElementById('endResetBtn').addEventListener('click', resetGame);
 document.getElementById('narrativeToggle').addEventListener('click', toggleNarrative);
 document.getElementById('endRecapBtn').addEventListener('click', toggleRecap);
 
-initGame();
+loadSteps();
 </script>
 </body>
 </html>
