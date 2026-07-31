@@ -209,7 +209,7 @@
           { question: 'What future does he see with her?', options: ['A big house and cars', 'Slow mornings with coffee, arguments about dishes that end in laughter, growing old together', 'Travel and adventure', 'A quiet life'], answer: 1 },
           { question: 'How does she introduce him to others?', options: ['By his name', 'Tone shifts, face softens — the version of him she describes is someone he wants to become', 'Proudly', 'Casually'], answer: 1 },
           { question: 'What does she do when she comes back after distance?', options: ['Apologizes', 'Every return reminds him their connection is stronger than space', 'Acts like nothing happened', 'Explains why'], answer: 1 },
-          { question: 'What is her favorite version of them?', options: ['When they travel', 'Communicating without fighting, laughing until they cannot breathe — it is her north star', ['When they first met', 'When they are intimate'], answer: 1 },
+          { question: 'What is her favorite version of them?', options: ['When they travel', 'Communicating without fighting, laughing until they cannot breathe — it is her north star', 'When they first met', 'When they are intimate'], answer: 1 },
           { question: 'What does he say about the home they will build?', options: ['It will be big', 'Not just a house — filled with shared memories, inside jokes, favorite things', 'It will be perfect', 'It will be cosy'], answer: 1 },
           { question: 'What does he say about the version of him she brings out?', options: ['She made him better', 'Before her, he did not know he could be this soft, this patient — she just believed it was possible', 'She inspires him', 'She completes him'], answer: 1 }
         ]

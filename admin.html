@@ -356,6 +356,8 @@
       <button class="tab" data-tab="turnon">&#x2665; Turn On</button>
       <button class="tab" data-tab="project">&#x1F48E; Project</button>
       <button class="tab" data-tab="access">&#x1F510; Access</button>
+      <button class="tab" data-tab="memories">&#x1F338; Remember</button>
+      <button class="tab" data-tab="selfletters">&#x270D; Self Letters</button>
     </div>
     <div class="admin-content">
 
@@ -536,6 +538,24 @@
     </p>
     <div id="timelineList"></div>
     <button class="add-btn" id="addTimelineBtn">+ Add Memory</button>
+  </div>
+
+  <!-- Tab: I Remember -->
+  <div class="tab-content" id="tabMemories">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      The tiny things you notice. Specific, not generic. Rare ones show less often; "once" ones show a single time.
+    </p>
+    <div id="memoriesList"></div>
+    <button class="add-btn" id="addMemoryBtn">+ Add Memory</button>
+  </div>
+
+  <!-- Tab: Self Letters -->
+  <div class="tab-content" id="tabSelfletters">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Letters for "a letter that writes itself". Scheduled letters appear on their date; secret letters only through the hidden path; music = filename inside songs/.
+    </p>
+    <div id="selfLettersList"></div>
+    <button class="add-btn" id="addSelfLetterBtn">+ Add Letter</button>
   </div>
 
   <!-- Tab: Letters -->
@@ -1633,6 +1653,197 @@
       FB.put('project-texts', { id: 'list', list: items }).then(function () { closeModal(); renderStoryline(); toast('Chapter saved.'); });
     });
   }
+
+  /* ---- Self Letters (letter that writes itself) ---- */
+  var allSelfLetters = [];
+
+  function renderSelfLetters() {
+    var list = document.getElementById('selfLettersList');
+    if (!list) return;
+    FB.getAll('selfLetters').then(function (letters) {
+      allSelfLetters = letters || [];
+      if (!allSelfLetters.length) {
+        list.innerHTML = '<div class="empty-state"><div class="icon">&#x270D;</div><p>No self-writing letters yet.</p></div>';
+        return;
+      }
+      var html = '';
+      for (var i = allSelfLetters.length - 1; i >= 0; i--) {
+        var l = allSelfLetters[i];
+        var flags = [];
+        if (l.enabled === false) flags.push('off');
+        if (l.scheduledDate) flags.push('scheduled ' + l.scheduledDate);
+        if (l.secret) flags.push('secret');
+        if (l.music) flags.push('music');
+        html +=
+          '<div class="song-card">' +
+            '<div class="info">' +
+              '<div class="stitle">' + esc(l.title || 'Untitled') + (flags.length ? ' <span style="color:#6b5f52;font-size:.7rem;">[' + flags.join(' · ') + ']</span>' : '') + '</div>' +
+              '<div style="font-size:.82rem;color:#d4c5b2;margin-top:2px;font-style:italic;">' + esc((l.body || '').slice(0, 120)) + ((l.body || '').length > 120 ? '…' : '') + '</div>' +
+            '</div>' +
+            '<div class="actions">' +
+              '<button class="btn-small" data-edit="' + i + '">Edit</button>' +
+              '<button class="btn-small" data-prev="' + i + '">Preview</button>' +
+              '<button class="btn-small btn-danger" data-del="' + i + '">Delete</button>' +
+            '</div>' +
+          '</div>';
+      }
+      list.innerHTML = html;
+      list.querySelectorAll('[data-edit]').forEach(function (b) {
+        b.addEventListener('click', function () { openSelfLetterModal(parseInt(b.dataset.edit, 10), allSelfLetters); });
+      });
+      list.querySelectorAll('[data-prev]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var l = allSelfLetters[parseInt(b.dataset.prev, 10)];
+          openModal(
+            '<h2>' + esc(l.title || 'Untitled') + '</h2>' +
+            '<p style="font-style:italic;color:#d4c5b2;white-space:pre-wrap;">' + esc(l.recipient || 'Dear Ash') + ',<br><br>' + esc(l.body || '') + '<br><br>' + esc(l.signature || 'Faxy') + '</p>'
+          );
+        });
+      });
+      list.querySelectorAll('[data-del]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          if (!confirm('Delete this letter?')) return;
+          FB.delete('selfLetters', allSelfLetters[parseInt(b.dataset.del, 10)].id).then(function () { renderSelfLetters(); toast('Letter deleted.'); });
+        });
+      });
+    });
+  }
+
+  function openSelfLetterModal(idx, letters) {
+    var l = idx >= 0 && idx < letters.length ? letters[idx] : {};
+    var isNew = !(idx >= 0 && idx < letters.length);
+    document.getElementById('modalContent').innerHTML =
+      '<h2>' + (isNew ? 'Add Letter' : 'Edit Letter') + '</h2>' +
+      '<div class="field-row">' +
+        '<div class="field"><label>Title</label><input type="text" id="fSlTitle" value="' + esc(l.title || '') + '"></div>' +
+        '<div class="field"><label>Recipient</label><input type="text" id="fSlTo" value="' + esc(l.recipient || 'Dear Ash') + '"></div>' +
+      '</div>' +
+      '<div class="field"><label>Body (blank line = new paragraph)</label><textarea id="fSlBody" rows="10" style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:\'Lora\',Georgia,serif;font-size:.85rem;outline:none;resize:vertical;">' + esc(l.body || '') + '</textarea></div>' +
+      '<div class="field-row">' +
+        '<div class="field"><label>Signature</label><input type="text" id="fSlSig" value="' + esc(l.signature || 'Faxy') + '"></div>' +
+        '<div class="field"><label>Schedule date (YYYY-MM-DD)</label><input type="text" id="fSlDate" value="' + esc(l.scheduledDate || '') + '" placeholder="2026-08-02"></div>' +
+      '</div>' +
+      '<div class="field-row">' +
+        '<div class="field"><label>Music file (in songs/)</label><input type="text" id="fSlMusic" value="' + esc(l.music || '') + '" placeholder="Ed Sheeran - Perfect.mp4"></div>' +
+        '<div class="field"><label>Priority</label><input type="number" id="fSlPriority" value="' + esc(l.priority || 0) + '"></div>' +
+      '</div>' +
+      '<div class="field" style="display:flex;gap:1.4rem;flex-wrap:wrap;margin-top:.6rem;">' +
+        '<label style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#d4c5b2;"><input type="checkbox" id="fSlOn"' + (l.enabled === false ? '' : ' checked') + '> enabled</label>' +
+        '<label style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#d4c5b2;"><input type="checkbox" id="fSlSecret"' + (l.secret ? ' checked' : '') + '> secret (hidden path only)</label>' +
+      '</div>' +
+      '<div class="modal-actions">' +
+        '<button class="btn-cancel" id="modalCancel">Cancel</button>' +
+        '<button class="btn-save" id="modalSlSave">' + (isNew ? 'Add' : 'Save') + '</button>' +
+      '</div>';
+    document.getElementById('modalOverlay').classList.add('open');
+    document.getElementById('modalCancel').addEventListener('click', closeModal);
+    document.getElementById('modalSlSave').addEventListener('click', function () {
+      var body = document.getElementById('fSlBody').value.trim();
+      if (!body) { toast('Write the letter first.'); return; }
+      var entry = {
+        title: document.getElementById('fSlTitle').value.trim(),
+        recipient: document.getElementById('fSlTo').value.trim() || 'Dear Ash',
+        body: body,
+        signature: document.getElementById('fSlSig').value.trim() || 'Faxy',
+        scheduledDate: document.getElementById('fSlDate').value.trim(),
+        music: document.getElementById('fSlMusic').value.trim(),
+        priority: parseInt(document.getElementById('fSlPriority').value, 10) || 0,
+        enabled: !!document.getElementById('fSlOn').checked,
+        secret: !!document.getElementById('fSlSecret').checked,
+        createdAt: l.createdAt || Date.now()
+      };
+      if (!isNew) entry.id = letters[idx].id;
+      FB.put('selfLetters', entry).then(function () { closeModal(); renderSelfLetters(); toast('Letter saved.'); });
+    });
+  }
+
+  document.getElementById('addSelfLetterBtn') && document.getElementById('addSelfLetterBtn').addEventListener('click', function () {
+    openSelfLetterModal(-1, allSelfLetters);
+  });
+
+  /* ---- I Remember (memories) ---- */
+  var allMemories = [];
+
+  function renderMemories() {
+    var list = document.getElementById('memoriesList');
+    if (!list) return;
+    FB.getAll('memories').then(function (memories) {
+      allMemories = memories || [];
+      if (!allMemories.length) {
+        list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F338;</div><p>No memories yet. Add the first tiny thing you remember.</p></div>';
+        return;
+      }
+      var html = '';
+      for (var i = allMemories.length - 1; i >= 0; i--) {
+        var m = allMemories[i];
+        var flags = [];
+        if (m.on === false) flags.push('off');
+        if (m.rare) flags.push('rare');
+        if (m.once) flags.push('once');
+        html +=
+          '<div class="song-card">' +
+            '<div class="info">' +
+              '<div class="stitle">' + esc(m.cat ? m.cat : 'little thing') + (flags.length ? ' <span style="color:#6b5f52;font-size:.7rem;">[' + flags.join(' · ') + ']</span>' : '') + '</div>' +
+              '<div style="font-size:.82rem;color:#d4c5b2;margin-top:2px;font-style:italic;">' + esc(m.text || '').slice(0, 140) + (m.text && m.text.length > 140 ? '…' : '') + '</div>' +
+            '</div>' +
+            '<div class="actions">' +
+              '<button class="btn-small" data-edit="' + i + '">Edit</button>' +
+              '<button class="btn-small btn-danger" data-del="' + i + '">Delete</button>' +
+            '</div>' +
+          '</div>';
+      }
+      list.innerHTML = html;
+      list.querySelectorAll('[data-edit]').forEach(function (b) {
+        b.addEventListener('click', function () { openMemoryModal(parseInt(b.dataset.edit, 10), allMemories); });
+      });
+      list.querySelectorAll('[data-del]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          if (!confirm('Delete this memory?')) return;
+          FB.delete('memories', allMemories[parseInt(b.dataset.del, 10)].id).then(function () { renderMemories(); toast('Memory deleted.'); });
+        });
+      });
+    });
+  }
+
+  function openMemoryModal(idx, memories) {
+    var m = idx >= 0 && idx < memories.length ? memories[idx] : {};
+    var isNew = !(idx >= 0 && idx < memories.length);
+    document.getElementById('modalContent').innerHTML =
+      '<h2>' + (isNew ? 'Add Memory' : 'Edit Memory') + '</h2>' +
+      '<div class="field"><label>Category</label><input type="text" id="fMemCat" value="' + esc(m.cat || '') + '" placeholder="Little Things / Things You Do / Moments..."></div>' +
+      '<div class="field"><label>Memory</label><textarea id="fMemText" rows="4" style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:\'Lora\',Georgia,serif;font-size:.85rem;outline:none;resize:vertical;" placeholder="I remember the way you...">' + esc(m.text || '') + '</textarea></div>' +
+      '<div class="field" style="display:flex;gap:1.4rem;flex-wrap:wrap;margin-top:.6rem;">' +
+        '<label style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#d4c5b2;"><input type="checkbox" id="fMemRare"' + (m.rare ? ' checked' : '') + '> rare</label>' +
+        '<label style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#d4c5b2;"><input type="checkbox" id="fMemOnce"' + (m.once ? ' checked' : '') + '> once</label>' +
+        '<label style="display:flex;align-items:center;gap:6px;font-size:.82rem;color:#d4c5b2;"><input type="checkbox" id="fMemOn"' + (m.on === false ? '' : ' checked') + '> enabled</label>' +
+      '</div>' +
+      '<p style="color:#6b5f52;font-size:.75rem;font-style:italic;margin:.6rem 0 0;">Specific over generic: "I remember how your messages get longer when you\'re excited" — not "you\'re beautiful".</p>' +
+      '<div class="modal-actions">' +
+        '<button class="btn-cancel" id="modalCancel">Cancel</button>' +
+        '<button class="btn-save" id="modalMemSave">' + (isNew ? 'Add' : 'Save') + '</button>' +
+      '</div>';
+    document.getElementById('modalOverlay').classList.add('open');
+    document.getElementById('modalCancel').addEventListener('click', closeModal);
+    document.getElementById('modalMemSave').addEventListener('click', function () {
+      var text = document.getElementById('fMemText').value.trim();
+      if (!text) { toast('Write the memory first.'); return; }
+      var entry = {
+        cat: document.getElementById('fMemCat').value.trim(),
+        text: text,
+        rare: !!document.getElementById('fMemRare').checked,
+        once: !!document.getElementById('fMemOnce').checked,
+        on: !!document.getElementById('fMemOn').checked,
+        createdAt: m.createdAt || Date.now()
+      };
+      if (!isNew) entry.id = memories[idx].id;
+      FB.put('memories', entry).then(function () { closeModal(); renderMemories(); toast('Memory saved.'); });
+    });
+  }
+
+  document.getElementById('addMemoryBtn') && document.getElementById('addMemoryBtn').addEventListener('click', function () {
+    openMemoryModal(-1, allMemories);
+  });
+
 
   function renderLetters() {
     var list = document.getElementById('lettersList');
@@ -3128,6 +3339,8 @@
         if (this.dataset.tab === 'letters') renderLetters();
         if (this.dataset.tab === 'dynamic') renderDynamicContent();
         if (this.dataset.tab === 'timeline') renderTimeline();
+        if (this.dataset.tab === 'memories') renderMemories();
+        if (this.dataset.tab === 'selfletters') renderSelfLetters();
         if (this.dataset.tab === 'dreams') renderDreams();
         if (this.dataset.tab === 'turnon') renderTurnOnSteps();
         if (this.dataset.tab === 'activity') loadActivity();

@@ -76,6 +76,18 @@ if (typeof module !== 'undefined' && module.exports) module.exports = ASH_SECRET
       if (window.location.href.indexOf('make-her-sleep.html') === -1) window.location.href = 'make-her-sleep.html';
     }
 
+    if (buf.indexOf('remember') !== -1) {
+      buf = '';
+      if (window.location.href.indexOf('i-remember.html') === -1) window.location.href = 'i-remember.html';
+    }
+
+    if (buf.indexOf('letter') !== -1) {
+      buf = '';
+      if (window.location.href.indexOf('letter-that-writes-itself.html') === -1) {
+        window.location.href = 'letter-that-writes-itself.html?secret';
+      }
+    }
+
     if (buf.indexOf('lanterns') !== -1) {
       buf = '';
       if (typeof window._openLanternWorld === 'function') window._openLanternWorld();
