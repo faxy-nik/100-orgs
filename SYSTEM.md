@@ -62,7 +62,7 @@ Access = link/card on another page, trigger word (type anywhere, see Secret Word
 | `dynamic-content.js` | Reads `config/dynamicContent`, renders "Extra Letters" accordion at page bottom |
 | `feature-flags.js` | 48 feature flags (was 54), localStorage + Firebase backed. `set()` now auto-calls `save()` for immediate sync. 6 unused section flags removed |
 | `track.js` | IndexedDB visit counters |
-| `secret-letters.js` | 30 enhanced hidden letters unlocked by achievements, with narrative text |
+| `secret-letters.js` | 30 enhanced hidden letters unlocked by achievements, with narrative text. Exposes `window.SecretLetters` (list/isEnabled/setEnabled/check/openCollection/count/total). Found state in `userData/secretLetters`; per-letter on/off toggles in `config/secretLetters` (default on; admin Achievements tab). Script's feature-flag guard is skipped on admin.html so the API always loads there |
 | `world-progress.js` | World progress dashboard — hidden until all 5 sections read |
 | `global-interactions.js` | Balloons, feathers, coffee, lucky star, puzzle fragments, achievements |
 | `global-easter-eggs.js` | Secret word triggers (ash/remember/letter/dream/sleep/lanterns) + fallback letters |
@@ -237,6 +237,16 @@ Note: `ash` has a 1.8s typing window between keys; the others are plain substrin
 - Config items stored as `{id: 'sections', data: [...]}` pattern — read back as same structure, access `.data` for the array
 
 ---
+
+## Recent Changes (v11 — Achievements Admin Tab, Localhost Auth Fix, Cleanup)
+
+| Change | Details |
+|---|---|
+| **Achievements admin tab** | admin.html gains a `Achievements` tab (`renderAchievements()` in admin.js, container `achievementsList`). Lists all 30 secret letters with opened/unopened state (from `userData/secretLetters`), reason hint for unopened, and per-letter on/off toggle (writes `config/secretLetters` via `SecretLetters.setEnabled`). Requires `secret-letters.js` loaded on admin.html (it is, after feature-flags.js) |
+| **Secret letter toggles** | `secret-letters.js` listens to `FB.on('config','secretLetters')`; disabled letters are skipped by discovery checks and hint sparkles but stay visible once found. Default = enabled; only explicit `false` disables |
+| **Localhost auth fix** | fb-db.js now defines `firebaseConfig` + `firebase.initializeApp` BEFORE the `isLocal` early-return (lines ~75-88), so `firebase.auth()` works on 127.0.0.1 too. Admin email/password login verified working locally and on deployed site |
+| **cat-animation.png** | Restored into project root (2.1MB) — referenced by `sky-observatory.js` spawnCat() (line ~546) for the walking cat sprite; was missing from project folder |
+| **Parent-folder cleanup** | `D:\fahad\100` reduced to just the project + opencode config: deleted debug scripts, old backups, stray logs, unused images, `companion/`, `new parallax images/`, root node_modules, and unrelated projects under `D:\fahad` (cache, fairwell, faxy-nik-a-life-observed, etc.) |
 
 ## Recent Changes (v10 — Firebase Auth + Locked DB Rules)
 
