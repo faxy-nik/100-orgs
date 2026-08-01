@@ -84,4 +84,16 @@
 
   var page = window.location.pathname.split('/').pop() || 'index.html';
   incrementCounter('visit_' + page);
+
+  // ponytail: record visit days (YYYY-MM-DD set) for streak/year-in-review stats
+  var DAYS_KEY = 'ash-visit-days';
+  try {
+    var days = JSON.parse(localStorage.getItem(DAYS_KEY)) || [];
+    var td = new Date();
+    var tKey = td.getFullYear() + '-' + String(td.getMonth() + 1).padStart(2, '0') + '-' + String(td.getDate()).padStart(2, '0');
+    if (days.indexOf(tKey) === -1) {
+      days.push(tKey);
+      localStorage.setItem(DAYS_KEY, JSON.stringify(days));
+    }
+  } catch (e) {}
 })();

@@ -81,13 +81,8 @@
   function loadEvents() {
     if (typeof FB === 'undefined' || !FB.init) return;
     FB.init();
-    Promise.all([
-      FB.get('config', 'events'),
-      FB.get('project-events', 'list')
-    ]).then(function (results) {
-      var all = [];
-      if (results[0] && results[0].list) all = all.concat(results[0].list);
-      all = all.concat(toArray(results[1]));
+    FB.get('config', 'events').then(function (data) {
+      var all = data && data.list ? data.list : [];
       for (var i = 0; i < all.length; i++) {
         if (isActive(all[i])) applyEvent(all[i]);
       }

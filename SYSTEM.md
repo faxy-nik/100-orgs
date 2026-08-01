@@ -1,6 +1,6 @@
 # SYSTEM.md — 100 prghs for eeshah
 
-Last updated: 2026-08-01 (v7 — secret triggers, I Remember, self-writing letters, seed content, fingering drive)
+Last updated: 2026-08-02 (v12 — user uploads, events merge, streak, today's tribute, goodnight routine, year in review)
 
 ---
 
@@ -97,6 +97,7 @@ Access = link/card on another page, trigger word (type anywhere, see Secret Word
 | Gallery | `config/gallery` | admin | `{id: 'gallery', items: [{type, label, note, file, fileBlob}]}` |
 | Wishes | `wishes/{id}` | sky pages + admin | `{id, text, createdAt, source, granted, ...}` |
 | Song requests | `songRequests/{id}` | index.html + admin | `{id, song, date}` |
+| User songs | `userSongs/{id}` | music.js (user uploads) | `{title, artist, duration, audioBlob, audioType, hasFile}` — write: `auth != null` |
 | Reviews | `reviews/{id}` | content-common.js + admin | `{id, page, section, text, audioBlob, type, date}` |
 | Activity | `activity/{id}` | activity-tracker.js + admin | `{id, type, page, timestamp, sectionIdx, file}` |
 | Letters | `letters/{id}` | letters.js + admin | `{id, subject, body, createdAt, read}` |
@@ -124,7 +125,10 @@ Access = link/card on another page, trigger word (type anywhere, see Secret Word
 | `ash_installed` | install-prompt.js | '1' after user accepts install — banner never shows again |
 | `ash-unlocked-group-{page}` | 100-organs.html, love.html | Current unlocked section index (0-based) |
 | `ash-daily-{page}` | 100-organs.html, love.html | `{date, count}` — daily section request counter (2 max) |
-| `ash-streak` | content-common.js | Daily visit streak count |
+| `ash-streak` | index.html | Daily visit streak count |
+| `ash-last-visit` | index.html | Last visit date key (YYYY-MM-DD) for streak math |
+| `ash-visit-days` | track.js | Array of visited date keys (YYYY-MM-DD) — powers stats.html year-in-review |
+| `ash-today-tribute` | content-common.js | Date key — "Today's page" card shows once per day |
 | `ash-first-visit` | index.html | First visit timestamp for milestone days-since |
 | `ash-section-access` | index.html | Section access config `{sectionId: {adminLocked, quizPassed, questions}}` |
 | `ash-events-seen` | events.js | `{eventId: timestamp}` — tracks which event popups have been shown |
@@ -238,7 +242,22 @@ Note: `ash` has a 1.8s typing window between keys; the others are plain substrin
 
 ---
 
-## Recent Changes (v11 — Achievements Admin Tab, Localhost Auth Fix, Cleanup)
+## Recent Changes (v12 — User Uploads, Events Merge, Simplicity Pass, New User Features)
+
+| Change | Details |
+|---|---|
+| **User photo upload → gallery** | photo-gallery.html "Add Photo" button: uploads go to the localStorage parallax pool (`ash-user-parallax`) AND Firebase `config/gallery` (same store as admin, merged not clobbered). Single uploads prompt for a memory caption (`note`) shown on hover |
+| **User song upload → jukebox** | music.js "+ Add" button in the playlist: audio persisted to new `userSongs` store (base64 via fbPut Blob path, rules: `auth != null` write), merged into the playlist on every visit, plays immediately |
+| **Parallax gallery mix** | content-common.js `applyParallaxToAll` now mixes every photo from `config/gallery` onto random eligible tributes (up to 50%, AI keeps the rest, intimate/skipped sections untouched) via `__registerParallaxEl` |
+| **Admin: Events merged** | Two event systems merged into one — `project-events` store retired. `renderEvents()` runs a one-time migration (merge `project-events/list` into `config/events`, then clears the old store). `renderProjectEvents`/`openProjectEventModal` deleted; Project Events group removed from admin.html Project tab; events.js reads only `config/events` |
+| **Admin: anime.min.js dropped** | admin.html no longer loads anime.min.js (115KB) or motion-masterpiece.js — no animated targets exist there |
+| **Day streak widget** | index.html milestone row gains "Day Streak" (`milestoneStreak`): consecutive-day counter via `ash-streak`/`ash-last-visit`, resets if a day is skipped |
+| **Today's tribute card** | content-common.js: one tribute picked by day-of-year, shown once per day (bottom-left dismissible card, `ash-today-tribute`), links to 100-organs.html. Gated by `floating-quotes` flag |
+| **Goodnight routine** | make-her-sleep.html now has 4 full chat versions (one per night, rotates by date — including one tender intimacy night) ending with "Tonight's ritual" (3 exact-moment scenes, one per night) + firefly jar + jukebox + visit tracking (firefly-jar.js, music.js, track.js loaded) |
+| **Year in review** | stats.html adds a "YYYY, in Numbers" section: days visited, current + longest streak (from `ash-visit-days`), days together, most-visited page, most-played song |
+| **DB rules** | `userSongs` store added with `auth != null` write (deployed) |
+
+
 
 | Change | Details |
 |---|---|

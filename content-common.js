@@ -680,6 +680,46 @@ console.error = function () {
     } catch (e) { logError('FLOATING_QUOTES', e); }
   })();
 
+  /*======= TODAY'S TRIBUTE =======*/
+  // ponytail: one tribute picked by day-of-year, shown once per day as a
+  // dismissible card. Reuses the .tribute DOM already on the page.
+  (function () {
+    if (window.FeatureFlags && !window.FeatureFlags.get('floating-quotes')) return;
+    try {
+      var tqKey = 'ash-today-tribute';
+      var tqDay = (function () {
+        var d = new Date();
+        return d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
+      })();
+      var tqSeen = '';
+      try { tqSeen = localStorage.getItem(tqKey) || ''; } catch (e) {}
+      if (tqSeen === tqDay) return;
+      var tributes = document.querySelectorAll('.tribute');
+      if (!tributes.length) return;
+      var idx = (parseInt(tqDay.split('-')[2], 10) + parseInt(tqDay.split('-')[1], 10) * 31) % tributes.length;
+      var tq = tributes[idx];
+      var lead = tq.querySelector('.tribute-lead');
+      var title = lead ? lead.textContent.trim().replace(/\s+/g, ' ') : '';
+      var body = tq.querySelector('.tribute-body');
+      var text = body ? body.textContent.trim().replace(/\s+/g, ' ').slice(0, 220) : '';
+      if (!title) return;
+      try { localStorage.setItem(tqKey, tqDay); } catch (e) {}
+      var card = document.createElement('div');
+      card.style.cssText = 'position:fixed;left:1rem;bottom:1rem;z-index:9999;max-width:320px;background:rgba(23,19,15,.96);border:1px solid rgba(255,230,128,.18);border-radius:14px;padding:1rem 1.1rem;box-shadow:0 8px 40px rgba(0,0,0,.5);font-family:inherit;opacity:0;transform:translateY(12px);transition:opacity .6s ease,transform .6s ease;';
+      card.innerHTML =
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem;">' +
+          '<span style="font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;color:#ffd36a;opacity:.7;">Today\u2019s page</span>' +
+          '<span id="tqClose" style="cursor:pointer;color:#6b5f52;font-size:.9rem;padding:0 .2rem;">\u2715</span>' +
+        '</div>' +
+        '<div style="font-size:.95rem;color:#ffebd2;line-height:1.5;">' + title + '</div>' +
+        (text ? '<div style="font-size:.78rem;color:#b5a68e;line-height:1.55;margin-top:.35rem;font-style:italic;">' + text + '</div>' : '') +
+        '<a href="100-organs.html" style="display:inline-block;margin-top:.6rem;font-size:.75rem;color:#ffd36a;text-decoration:none;">read it \u2192</a>';
+      document.body.appendChild(card);
+      setTimeout(function () { card.style.opacity = '1'; card.style.transform = 'translateY(0)'; }, 6000);
+      card.querySelector('#tqClose').addEventListener('click', function () { card.remove(); });
+    } catch (e) { logError('TODAY_TRIBUTE', e); }
+  })();
+
   /*======= CURSOR SPARKLES =======*/
   (function () {
     try {

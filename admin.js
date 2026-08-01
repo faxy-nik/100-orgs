@@ -465,7 +465,18 @@
   function renderEvents() {
     var list = document.getElementById('eventsList');
     if (!list) return;
+    // ponytail: one-time migration — project-events merged into config/events, old store cleared
     FB.get('config', 'events').then(function (data) {
+      return FB.get('project-events', 'list').then(function (oldData) {
+        var old = Array.isArray(oldData) ? oldData : (oldData && oldData.list ? oldData.list : []);
+        if (!old.length) return data;
+        var merged = (data && data.list ? data.list : []).concat(old);
+        return FB.put('config', { id: 'events', list: merged }).then(function () {
+          FB.clear('project-events').catch(function () {});
+          return { list: merged };
+        });
+      });
+    }).then(function (data) {
       var events = data && data.list ? data.list : [];
       if (!events.length) {
         list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F3C4;&#x200D;&#x2640;&#xFE0F;</div><p>No events. Add one to trigger seasonal changes.</p></div>';
@@ -797,94 +808,7 @@
     });
   }
 
-  /* ───── Project Events ───── */
-  function renderProjectEvents() {
-    var list = document.getElementById('projectEventsList');
-    if (!list) return;
-    FB.get('project-events', 'list').then(function (data) {
-      var events = getProjectPuzzles(data);
-      if (!events.length) {
-        list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F382;</div><p>No project events yet.</p></div>';
-        return;
-      }
-      var html = '';
-      for (var i = 0; i < events.length; i++) {
-        var e = events[i];
-        html +=
-          '<div class="song-card">' +
-            '<div class="info">' +
-              '<div class="stitle">' + esc(e.label || '') + '</div>' +
-              '<div class="smeta">' + (e.startDate || '') + (e.endDate ? ' \u2192 ' + e.endDate : '') + ' | ' + (e.type || 'annual') + (e.sky ? ' | Sky: ' + esc(e.sky) : '') + '</div>' +
-            '</div>' +
-            '<div class="actions">' +
-              '<button class="edit-btn" data-idx="' + i + '" style="background:rgba(255,230,128,.08);border:1px solid rgba(255,230,128,.2);color:#ffe680;padding:.3rem .6rem;border-radius:6px;cursor:pointer;font-size:.75rem;">Edit</button>' +
-              '<button class="del-btn" data-idx="' + i + '">Delete</button>' +
-            '</div>' +
-          '</div>';
-      }
-      list.innerHTML = html;
-      var pData = data;
-      list.querySelectorAll('.edit-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () { openProjectEventModal(parseInt(this.dataset.idx, 10), events, pData); });
-      });
-      list.querySelectorAll('.del-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          if (!confirm('Delete this event?')) return;
-          var idx = parseInt(this.dataset.idx, 10);
-          events.splice(idx, 1);
-          FB.put('project-events', { id: 'list', list: events }).then(function () { renderProjectEvents(); toast('Event deleted.'); });
-        });
-      });
-    }).catch(function () { list.innerHTML = '<div class="empty-state"><div class="icon">&#x26A0;&#xFE0F;</div><p>Error loading events</p></div>'; });
-  }
-
-  function openProjectEventModal(idx, events, data) {
-    var e = idx >= 0 ? events[idx] : {};
-    var isNew = idx < 0 || idx >= events.length;
-    document.getElementById('modalContent').innerHTML =
-      '<h2>' + (isNew ? 'Add Project Event' : 'Edit Project Event') + '</h2>' +
-      '<div class="field"><label>Label</label><input type="text" id="fEvLabel" value="' + esc(e.label || '') + '"></div>' +
-      '<div class="field-row">' +
-        '<div class="field"><label>Type</label><select id="fEvType" style="width:100%;padding:.55rem .75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.85rem;outline:none;">' +
-          '<option value="annual"' + (e.type === 'annual' ? ' selected' : '') + '>Annual (repeats)</option>' +
-          '<option value="one-time"' + (e.type === 'one-time' ? ' selected' : '') + '>One-time</option>' +
-        '</select></div>' +
-        '<div class="field"><label>Start (MM-DD)</label><input type="text" id="fEvStart" value="' + esc(e.startDate || '') + '" placeholder="07-20"></div>' +
-        '<div class="field"><label>End (MM-DD)</label><input type="text" id="fEvEnd" value="' + esc(e.endDate || '') + '" placeholder="07-27 (leave blank for 1 day)"></div>' +
-      '</div>' +
-      '<div class="field"><label>Sky tag</label><input type="text" id="fEvSky" value="' + esc(e.sky || '') + '" placeholder="e.g. Sunset Bliss, Starry Night"></div>' +
-      '<div class="field"><label>Accent color</label><input type="text" id="fEvColor" value="' + esc(e.accentColor || '') + '" placeholder="#ff6b6b"></div>' +
-      '<div class="field"><label>Icon (emoji)</label><input type="text" id="fEvIcon" value="' + esc(e.icon || '') + '" placeholder="&#x1F389;"></div>' +
-      '<div class="field"><label>Popup message</label><textarea id="fEvMsg" rows="2" placeholder="Happy birthday!">' + esc(e.message || '') + '</textarea></div>' +
-      '<div class="field"><label>Custom CSS</label><textarea id="fEvCss" rows="2" placeholder="body { filter: sepia(0.3); }">' + esc(e.css || '') + '</textarea></div>' +
-      '<div class="modal-actions">' +
-        '<button class="btn-cancel" id="modalCancel">Cancel</button>' +
-        '<button class="btn-save" id="modalEvSave">' + (isNew ? 'Add' : 'Save') + '</button>' +
-      '</div>';
-    document.getElementById('modalOverlay').classList.add('open');
-    document.getElementById('modalCancel').addEventListener('click', closeModal);
-    document.getElementById('modalEvSave').addEventListener('click', function () {
-      var ev = {
-        label: document.getElementById('fEvLabel').value.trim(),
-        type: document.getElementById('fEvType').value,
-        startDate: document.getElementById('fEvStart').value.trim(),
-        endDate: document.getElementById('fEvEnd').value.trim() || '',
-        sky: document.getElementById('fEvSky').value.trim(),
-        accentColor: document.getElementById('fEvColor').value.trim(),
-        icon: document.getElementById('fEvIcon').value.trim(),
-        message: document.getElementById('fEvMsg').value.trim(),
-        css: document.getElementById('fEvCss').value.trim()
-      };
-      if (ev.type === 'one-time') ev.year = new Date().getFullYear();
-      if (!ev.label || !ev.startDate) { toast('Label and start date required.'); return; }
-      events = getProjectPuzzles(data);
-      if (isNew) events.push(ev);
-      else events[idx] = ev;
-      FB.put('project-events', { id: 'list', list: events }).then(function () { closeModal(); renderProjectEvents(); toast('Project event saved.'); });
-    });
-  }
-
-  /* ───── Storyline (project-texts — multi-chapter) ───── */
+  /* ───── Quiz Admin ───── */
   function renderStoryline() {
     var list = document.getElementById('storylineList');
     if (!list) return;
@@ -2689,9 +2613,6 @@
     document.getElementById('addProjectPuzzleBtn') && document.getElementById('addProjectPuzzleBtn').addEventListener('click', function () {
       FB.get('project-puzzles', 'list').then(function (data) { openProjectPuzzleModal(-1, [], data); }).catch(function () { openProjectPuzzleModal(-1, [], null); });
     });
-    document.getElementById('addProjectEventBtn') && document.getElementById('addProjectEventBtn').addEventListener('click', function () {
-      FB.get('project-events', 'list').then(function (data) { openProjectEventModal(-1, [], data); }).catch(function () { openProjectEventModal(-1, [], null); });
-    });
     document.getElementById('addStorylineBtn') && document.getElementById('addStorylineBtn').addEventListener('click', function () {
       FB.get('project-texts', 'list').then(function (data) { openStorylineModal(-1, [], data); }).catch(function () { openStorylineModal(-1, [], null); });
     });
@@ -2810,7 +2731,7 @@
         if (this.dataset.tab === 'dreams') renderDreams();
         if (this.dataset.tab === 'turnon') renderTurnOnSteps();
         if (this.dataset.tab === 'activity') loadActivity();
-        if (this.dataset.tab === 'project') { renderProjectPuzzles(); renderProjectEvents(); renderStoryline(); }
+        if (this.dataset.tab === 'project') { renderProjectPuzzles(); renderStoryline(); }
       });
     });
 

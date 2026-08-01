@@ -10,6 +10,8 @@ A romantic, interactive multi-page gift website for one person ("Eeshah"). Vanil
 - No build step. Files run as-is; deploy = upload folder to Netlify (netlify.toml: `skip_processing=true`).
 - Firebase project `faxy-ash` (RTDB). Config lives in `fb-db.js`; on localhost it falls back to a localStorage mock. Admin login = email/password; `ADMIN_UID` in `admin.js` (~line 2520) must match `database.rules.json`.
 - Feature flags: `feature-flags.js` (48 flags, localStorage + Firebase `config/features`). Many scripts gate on `FeatureFlags.get(...)`.
+- User uploads: photos persist to `config/gallery` (same store as admin — merge, never replace), songs to `userSongs` (`auth != null` write rule, deployed).
+- Events: single store `config/events` (old `project-events` retired — admin.js migrates it on first render).
 - Service worker `sw.js` caches `ash-v47` — bump version when adding/renaming cached files.
 - The site is date-gated (`lock.js`/`section-lock.js`), full of secret triggers (type `ash`, `remember`, `letter`, `dream`, `sleep`), and has personal/admin data — never expose or log credentials, and never delete user-generated data from Firebase.
 

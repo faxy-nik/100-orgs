@@ -419,6 +419,7 @@
         <h3 style="font-family:var(--font-display);font-weight:400;color:var(--parchment);margin-bottom:1rem;">Our Journey</h3>
         <div id="milestoneDisplay" style="display:flex;flex-wrap:wrap;gap:1.5rem;justify-content:center;font-size:0.85rem;">
           <div><div style="font-size:1.5rem;color:var(--gold);font-weight:600;" id="milestoneDays">--</div><div style="color:var(--parchment-dim);">Days Since First Entry</div></div>
+<div><div style="font-size:1.5rem;color:var(--gold);font-weight:600;" id="milestoneStreak">--</div><div style="color:var(--parchment-dim);">Day Streak</div></div>
           <div><div style="font-size:1.5rem;color:var(--gold);font-weight:600;" id="milestoneUnlockDays">--</div><div style="color:var(--parchment-dim);">Days Until Next Unlock</div></div>
           <div><div style="font-size:1.5rem;color:var(--gold);font-weight:600;" id="milestoneSectionCount">--</div><div style="color:var(--parchment-dim);">Sections Unlocked</div></div>
         </div>
@@ -1087,6 +1088,31 @@
         var now = Date.now();
         var daysSince = Math.max(0, Math.floor((now - firstVisit) / 86400000));
         daysEl.textContent = daysSince || '0';
+
+        // Day streak — consecutive days visited (resets if a day is skipped)
+        var STREAK_KEY = 'ash-streak';
+        var LAST_KEY = 'ash-last-visit';
+        var streakEl = document.getElementById('milestoneStreak');
+        var todayKey = function () {
+          var d = new Date();
+          return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        };
+        var yesterdayKey = function () {
+          var d = new Date(Date.now() - 86400000);
+          return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        };
+        if (streakEl) {
+          var lastDay = localStorage.getItem(LAST_KEY) || '';
+          var streak = parseInt(localStorage.getItem(STREAK_KEY) || '0', 10) || 0;
+          if (lastDay !== todayKey()) {
+            streak = lastDay === yesterdayKey() ? streak + 1 : 1;
+            try {
+              localStorage.setItem(STREAK_KEY, String(streak));
+              localStorage.setItem(LAST_KEY, todayKey());
+            } catch (e) {}
+          }
+          streakEl.textContent = streak;
+        }
 
         // Days until next unlock
         var nextUnlock = Infinity;

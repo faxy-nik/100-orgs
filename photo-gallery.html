@@ -627,13 +627,15 @@
         var loaded = 0;
         var total = files.length;
         var added = [];
+        // ponytail: one caption prompt for a single upload; multi-uploads skip captions
+        var caption = files.length === 1 ? (window.prompt('A memory for this photo? (optional)') || '').trim() : '';
         for (var fi = 0; fi < files.length; fi++) {
           (function (file) {
             var reader = new FileReader();
             reader.onload = function (e) {
               var dataUrl = e.target.result;
               existing.push(dataUrl);
-              added.push({ type: 'image', file: '', fileData: dataUrl, fileType: file.type, label: 'User Upload', note: '' });
+              added.push({ type: 'image', file: '', fileData: dataUrl, fileType: file.type, label: 'User Upload', note: caption });
               loaded++;
               if (loaded === total) {
                 for (var mi = 0; mi < added.length; mi++) MEDIA.push(added[mi]);

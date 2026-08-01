@@ -193,9 +193,9 @@ var CONTENT = [
     '<tr><td>love.html</td><td>Love-themed page &#x2014; 130 tribute divs, 5 accordion groups</td><td>Home card (unlocks by date)</td></tr>' +
     '<tr><td>fantasies.html</td><td>Fantasies &amp; comforts content</td><td>Home card (unlocks by date)</td></tr>' +
     '<tr><td>sky-observatory.html</td><td>Sky gallery &#x2014; sky switching, wish jar, star map, moon, fireflies</td><td>Home card (unlocks by date)</td></tr>' +
-    '<tr><td>photo-gallery.html</td><td>Photo gallery (ash/ images) &#x2014; includes sky observatory features</td><td>Home card (unlocks by date)</td></tr>' +
+    '<tr><td>photo-gallery.html</td><td>Photo gallery (ash/ images) &#x2014; includes sky observatory features, user uploads with memory captions</td><td>Home card (unlocks by date)</td></tr>' +
     '<tr><td>dream.html</td><td>Dream page &#x2014; images, lanterns, wishes</td><td>Trigger: type <code>dream</code> anywhere; add <code>?lanterns</code> for the lantern world</td></tr>' +
-    '<tr><td>make-her-sleep.html</td><td>Chat/storyline page &#x2014; sleep trigger</td><td>Trigger: type <code>sleep</code> anywhere</td></tr>' +
+    '<tr><td>make-her-sleep.html</td><td>Chat/storyline page &#x2014; sleep trigger, soft rain, tonight&#39;s tribute, firefly jar, jukebox</td><td>Trigger: type <code>sleep</code> anywhere</td></tr>' +
     '<tr><td>guide.html</td><td>Interactive site guide &#x2014; accordion tour, music pairings, progress path</td><td>No link, no trigger &#x2014; direct URL: <code>.../guide.html</code></td></tr>' +
     '<tr><td>promises.html</td><td>100 promises &#x2014; bookmarkable hearts, Promise of the Day, write your own</td><td>&quot;Read the 100 Promises&quot; link inside guide.html</td></tr>' +
     '<tr><td>turn-on.html</td><td>Turn Yourself On &#x2014; 360-step intimate narrative game, branching paths, Firebase session tracking</td><td>No link, no trigger &#x2014; direct URL: <code>.../turn-on.html</code></td></tr>' +
@@ -498,6 +498,13 @@ var CONTENT = [
   { id:'recent', cat:'Changelog', label:'Recent Changes', html:function(){
     return '<h2 id="recent">Recent Changes</h2>' +
     '<table><thead><tr><th>Change</th><th>Details</th></tr></thead><tbody>' +
+    '<tr><td>User photo uploads</td><td>photo-gallery.html &quot;Add Photo&quot; &#x2014; photos join the gallery (Firebase <code>config/gallery</code>) and randomly appear in 100 Organs parallax backgrounds. Single uploads ask for a memory caption shown on hover</td></tr>' +
+    '<tr><td>User song uploads</td><td>Jukebox &quot;+ Add&quot; button &#x2014; audio saved to the <code>userSongs</code> store, plays immediately, persists across visits</td></tr>' +
+    '<tr><td>Parallax gallery mix</td><td>Every photo in the gallery gets a spot on a random tribute section (up to 50% of sections; AI images keep the rest)</td></tr>' +
+    '<tr><td>Events merged</td><td>Project Events retired &#x2014; one Events tab, one <code>config/events</code> store; existing project events migrate automatically on first view</td></tr>' +
+    '<tr><td>Day streak + year in review</td><td>Home milestone row shows a Day Streak; stats.html gains &quot;YYYY, in Numbers&quot; (days visited, streaks, days together, top page/song)</td></tr>' +
+    '<tr><td>Today&#39;s page card</td><td>One tribute picked per day shows as a dismissible card on content pages, linking to 100-organs.html</td></tr>' +
+    '<tr><td>Goodnight routine</td><td>make-her-sleep.html rotates 4 full chat versions (one per night, incl. a tender-intimacy night) and ends with &quot;Tonight&#39;s ritual&quot; &mdash; 3 exact-moment scenes (hug / behind you / skin to skin) plus firefly jar and jukebox</td></tr>' +
     '<tr><td>Secret word triggers</td><td>Type <code>ash</code> / <code>remember</code> / <code>letter</code> / <code>dream</code> / <code>sleep</code> / <code>lanterns</code> anywhere to open pages. Replaces old single-key shortcuts (d/s/m/l)</td></tr>' +
     '<tr><td>I Remember page</td><td>Memory page with rare/once flags + history avoidance; admin 🌸 Remember tab</td></tr>' +
     '<tr><td>Self-writing letter</td><td>Typewriter letter page with scheduled/secret letters; admin &#x270D; Self Letters tab</td></tr>' +

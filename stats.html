@@ -147,6 +147,49 @@
             '</div>';
         }
 
+        // Year in review — from local visit-day log + counters
+        var year = new Date().getFullYear();
+        var dayList = [];
+        try { dayList = JSON.parse(localStorage.getItem('ash-visit-days')) || []; } catch (e) {}
+        var yearDays = dayList.filter(function (k) { return k.indexOf(String(year)) === 0; });
+        yearDays.sort();
+        var curStreak = 0, longestStreak = 0, run = 0, prev = '';
+        for (var di = 0; di < yearDays.length; di++) {
+          var k = yearDays[di];
+          if (prev) {
+            var prevD = new Date(prev + 'T00:00:00'), curD = new Date(k + 'T00:00:00');
+            var gap = Math.round((curD - prevD) / 86400000);
+            run = gap === 1 ? run + 1 : 1;
+          } else {
+            run = 1;
+          }
+          prev = k;
+          if (run > longestStreak) longestStreak = run;
+        }
+        if (yearDays.length) {
+          var lastDay = new Date(yearDays[yearDays.length - 1] + 'T00:00:00');
+          var todayD = new Date(); todayD.setHours(0, 0, 0, 0);
+          var lastGap = Math.round((todayD - lastDay) / 86400000);
+          curStreak = lastGap <= 1 ? run : 0;
+        }
+        var firstVisitMs = 0;
+        try { firstVisitMs = parseInt(localStorage.getItem('ash-first-visit') || '0', 10) || 0; } catch (e) {}
+        var daysTogether = firstVisitMs ? Math.max(0, Math.floor((Date.now() - firstVisitMs) / 86400000)) : 0;
+        var topPage = '', topPageN = 0;
+        for (var pp in pageVisits) { if (pageVisits[pp] > topPageN) { topPageN = pageVisits[pp]; topPage = pp; } }
+        var topSong = '', topSongN = 0;
+        for (var sk in songPlays) { if (songPlays[sk] > topSongN) { topSongN = songPlays[sk]; topSong = sk; } }
+
+        html += '<div class="heart-divider">&#x2661;</div>';
+        html += '<h2 style="font-size:1.1rem;margin-bottom:.75rem;color:#ffebd2;">\uD83C\uDF19 ' + year + ', in Numbers</h2>';
+        html +=
+          '<div class="stat-card"><div class="label"><span class="icon">\uD83D\uDCC5</span>Days Visited This Year<span class="sub-label">of ' + year + '</span></div><div class="count">' + yearDays.length + '</div></div>' +
+          '<div class="stat-card"><div class="label"><span class="icon">\uD83D\uDD25</span>Current Streak<span class="sub-label">days in a row</span></div><div class="count">' + curStreak + '</div></div>' +
+          '<div class="stat-card"><div class="label"><span class="icon">\uD83C\uDFC6</span>Longest Streak<span class="sub-label">this year</span></div><div class="count">' + longestStreak + '</div></div>' +
+          '<div class="stat-card"><div class="label"><span class="icon">\uD83D\uDC97</span>Days Together<span class="sub-label">since first entry</span></div><div class="count">' + daysTogether + '</div></div>' +
+          (topPage ? '<div class="stat-card"><div class="label"><span class="icon">\uD83D\uDCD6</span>Most Visited Page<span class="sub-label">' + (PAGE_LABELS[topPage] || topPage) + '</span></div><div class="count">' + topPageN + '</div></div>' : '') +
+          (topSong ? '<div class="stat-card"><div class="label"><span class="icon">\uD83C\uDFB5</span>Most Played Song<span class="sub-label">' + topSong + '</span></div><div class="count">' + topSongN + '</div></div>' : '');
+
         container.innerHTML = html;
       }).catch(function () {
         container.innerHTML = '<div class="empty">Could not load stats.</div>';
