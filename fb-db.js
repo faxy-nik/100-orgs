@@ -72,6 +72,21 @@ var FB = (function () {
     return Promise.resolve();
   }
 
+  // 🔥 FILL IN YOUR FIREBASE CONFIG HERE (Firebase Console → Project Settings → General → Your apps → Web)
+  var firebaseConfig = {
+    apiKey: 'AIzaSyD30nS8GMLHvj1EunF141FAPAU4w9uVdBI',
+    authDomain: 'faxy-ash.firebaseapp.com',
+    databaseURL: 'https://faxy-ash-default-rtdb.firebaseio.com',
+    projectId: 'faxy-ash',
+    storageBucket: 'faxy-ash.firebasestorage.app',
+    messagingSenderId: '920825271894',
+    appId: '1:920825271894:web:f69a3d44dc350abe1f4df7',
+    measurementId: 'G-RR3WJ8KK1L'
+  };
+
+  // Initialize the app up-front so firebase.auth() works even where the DB is mocked (localhost).
+  try { if (typeof firebase !== 'undefined' && typeof firebase.initializeApp === 'function' && !firebase.apps.length) firebase.initializeApp(firebaseConfig); } catch (e) {}
+
   if (isLocal) {
     return {
       init: function () {},
@@ -84,18 +99,6 @@ var FB = (function () {
       base64ToBlob: function () { return null; }
     };
   }
-
-  // 🔥 FILL IN YOUR FIREBASE CONFIG HERE (Firebase Console → Project Settings → General → Your apps → Web)
-  var firebaseConfig = {
-    apiKey: 'AIzaSyD30nS8GMLHvj1EunF141FAPAU4w9uVdBI',
-    authDomain: 'faxy-ash.firebaseapp.com',
-    databaseURL: 'https://faxy-ash-default-rtdb.firebaseio.com',
-    projectId: 'faxy-ash',
-    storageBucket: 'faxy-ash.firebasestorage.app',
-    messagingSenderId: '920825271894',
-    appId: '1:920825271894:web:f69a3d44dc350abe1f4df7',
-    measurementId: 'G-RR3WJ8KK1L'
-  };
 
   var db, initialized = false;
 

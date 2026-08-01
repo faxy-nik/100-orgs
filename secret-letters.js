@@ -12,6 +12,19 @@
   function save() { try { localStorage.setItem(KEY, JSON.stringify(found)); } catch(e) {} }
   load();
 
+  var USE_FB = typeof FB !== 'undefined' && typeof FB.put === 'function' && typeof FB.on === 'function';
+  var toggles = {}; // per-letter enabled state, { id: true|false }, default true
+  if (USE_FB) {
+    FB.on('config', 'secretLetters', function (val) { toggles = val && typeof val === 'object' ? val : {}; });
+  }
+
+  function letterEnabled(id) { return toggles[id] !== false; }
+
+  function syncFoundToFirebase() {
+    if (!USE_FB) return;
+    FB.put('userData', { id: 'secretLetters', letters: found, updatedAt: Date.now() }).catch(function () {});
+  }
+
   var LETTERS = [
     { id:'l1', title:'The First Step', content:'The beginning of every journey is the hardest step. You took it. That alone is braver than most.\n\nI remember the day I started writing this — unsure if anyone would ever read it, unsure if the words would even make sense strung together. But here you are. You found this place. You opened the first door.\n\nEvery great story starts with someone willing to turn the page. Thank you for being that someone.', reason:'Visit any page to begin', cond:function(){ return true; } },
     { id:'l2', title:'Moonlight Whisper', content:'Under the same moon I think of you. Distance means nothing when two hearts share the same sky.\n\nThey say the moon is a messenger of lonely hearts, but I think it is something more. It is a reminder that no matter how far apart we are, we are both looking up at the same light.\n\nThree times you called to it. Three times it answered in silence. And somewhere in that silence, I hope you felt what I feel — that you are never truly alone under this sky.', reason:'Click the moon 3 times', cond:function(){ return getObs('moonClicks')>=3; } },
@@ -68,12 +81,13 @@
     var anyNew = false;
     LETTERS.forEach(function(L){
       if (found[L.id]) return;
+      if (!letterEnabled(L.id)) return;
       if (L.cond()) {
         found[L.id] = { foundAt: Date.now(), title: L.title };
         anyNew = true;
       }
     });
-    if (anyNew) { save(); showNotification(); }
+    if (anyNew) { save(); syncFoundToFirebase(); showNotification(); }
   }
 
   var notificationTimer = null;
@@ -145,7 +159,7 @@
 
   /* ---------- Hint sparkles on page ---------- */
   function spawnHints() {
-    var undiscoved = LETTERS.filter(function(L){ return !found[L.id] && L.cond(); });
+    var undiscoved = LETTERS.filter(function(L){ return !found[L.id] && letterEnabled(L.id) && L.cond(); });
     if (undiscoved.length === 0) return;
 
     // subtle indicator near left buttons
@@ -166,11 +180,12 @@
 
   /* ---------- Init ---------- */
   function init() {
-    if (/stats\.html$/i.test(window.location.pathname)) {
-      // Still expose API on stats page for collection viewing, but don't spawn anything
+    if (/stats\.html$|admin\.html$/i.test(window.location.pathname)) {
+      // Still expose API on stats/admin page for collection viewing, but don't spawn anything
       return;
     }
     checkNewLetters();
+    syncFoundToFirebase();
     spawnHints();
     // periodic check
     setInterval(checkNewLetters, 20000);
@@ -183,6 +198,13 @@
     check: checkNewLetters,
     openCollection: openCollection,
     count: function(){ return Object.keys(found).length; },
-    total: function(){ return LETTERS.length; }
+    total: function(){ return LETTERS.length; },
+    list: function () { return LETTERS.map(function (L) { return { id: L.id, title: L.title, reason: L.reason }; }); },
+    isEnabled: letterEnabled,
+    setEnabled: function (id, val) {
+      toggles[id] = !!val;
+      if (USE_FB) FB.set('config/secretLetters', JSON.parse(JSON.stringify(toggles))).catch(function () {});
+      return toggles[id];
+    }
   };
 })();

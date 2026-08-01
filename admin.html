@@ -14,6 +14,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="fb-db.js"></script>
   <script src="feature-flags.js"></script>
+  <script src="secret-letters.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -361,6 +362,7 @@
       <button class="tab" data-tab="memories">&#x1F338; Remember</button>
       <button class="tab" data-tab="selfletters">&#x270D; Self Letters</button>
       <button class="tab" data-tab="rare">&#x1F48E; Rare Links</button>
+      <button class="tab" data-tab="achievements">&#x1F3C6; Achievements</button>
     </div>
     <div class="admin-content">
 
@@ -568,6 +570,14 @@
     </p>
     <div id="rareList"></div>
     <button class="add-btn" id="addRareBtn">+ Add Rare Link</button>
+  </div>
+
+  <!-- Tab: Achievements -->
+  <div class="tab-content" id="tabAchievements">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Which secret letters she has opened. Toggle a letter off to stop it from being discoverable (already-opened letters stay visible).
+    </p>
+    <div class="section-dates" id="achievementsList"></div>
   </div>
 
   <!-- Tab: Letters -->

@@ -1995,6 +1995,53 @@
     });
   }
 
+  function renderAchievements() {
+    var list = document.getElementById('achievementsList');
+    if (!list) return;
+    var letters = window.SecretLetters ? window.SecretLetters.list() : [];
+    if (!letters.length) { list.innerHTML = '<div class="empty">No letter metadata. Load secret-letters.js first.</div>'; return; }
+    list.innerHTML = '<div class="empty">Loading…</div>';
+
+    Promise.all([
+      FB.get('userData', 'secretLetters'),
+      FB.get('config', 'secretLetters')
+    ]).then(function (res) {
+      var found = (res[0] && res[0].letters) || {};
+      var toggles = res[1] || {};
+      var html = '';
+      for (var i = 0; i < letters.length; i++) {
+        var L = letters[i];
+        var f = found[L.id];
+        var on = toggles[L.id] !== false;
+        html +=
+          '<div class="feature-card' + (on ? '' : ' disabled') + '" data-letter="' + L.id + '">' +
+            '<div class="f-label">' +
+              '<div class="f-name" data-state="' + (on ? 'ON' : 'OFF') + '">' + esc(L.title) + '</div>' +
+              '<div class="f-desc">' + (f
+                ? '\uD83D\uDD13 Opened ' + new Date(f.foundAt).toLocaleDateString()
+                : '\uD83D\uDD12 Not opened yet &mdash; ' + esc(L.reason)) + '</div>' +
+            '</div>' +
+            '<div class="ftoggle' + (on ? ' on' : '') + '" data-letter="' + L.id + '"></div>' +
+          '</div>';
+      }
+      list.innerHTML = html;
+      list.querySelectorAll('.ftoggle').forEach(function (el) {
+        el.addEventListener('click', function () {
+          var id = this.dataset.letter;
+          var card = this.closest('.feature-card');
+          var wasOn = !card.classList.contains('disabled');
+          window.SecretLetters.setEnabled(id, !wasOn);
+          card.classList.toggle('disabled', wasOn);
+          card.querySelector('.f-name').dataset.state = wasOn ? 'OFF' : 'ON';
+          this.classList.toggle('on', !wasOn);
+          toast((wasOn ? 'Disabled: ' : 'Enabled: ') + id);
+        });
+      });
+    }).catch(function () {
+      list.innerHTML = '<div class="empty">Could not load achievements.</div>';
+    });
+  }
+
   function esc(str) {
     if (typeof str !== 'string') return '';
     var d = document.createElement('div');
@@ -2759,6 +2806,7 @@
         if (this.dataset.tab === 'memories') renderMemories();
         if (this.dataset.tab === 'selfletters') renderSelfLetters();
         if (this.dataset.tab === 'rare') renderRare();
+        if (this.dataset.tab === 'achievements') renderAchievements();
         if (this.dataset.tab === 'dreams') renderDreams();
         if (this.dataset.tab === 'turnon') renderTurnOnSteps();
         if (this.dataset.tab === 'activity') loadActivity();
