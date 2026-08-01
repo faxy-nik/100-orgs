@@ -88,6 +88,37 @@
     });
   }
 
+  // ponytail: songs the user uploaded themselves (Firebase userSongs store)
+  function loadUserSongs() {
+    return dbGetAll('userSongs').then(function (records) {
+      if (!records || !records.length) return [];
+      var songObjs = [];
+      for (var i = 0; i < records.length; i++) {
+        var r = records[i];
+        if (!r.audioBlob) continue;
+        var audioUrl;
+        try {
+          audioUrl = URL.createObjectURL(r.audioBlob);
+          audioUrls.push(audioUrl);
+        } catch(e) { continue; }
+        songObjs.push({
+          title: r.title || 'Untitled',
+          artist: r.artist || 'Added by you',
+          cover: PLACEHOLDER_COVERS[i % PLACEHOLDER_COVERS.length],
+          src: audioUrl,
+          duration: r.duration || 180,
+          unlockDate: '',
+          autoUnlock: true,
+          hasFile: true,
+          userAdded: true
+        });
+      }
+      return songObjs;
+    }).catch(function () {
+      return [];
+    });
+  }
+
   function Jukebox(songs) {
     var self = this;
     this.songs = songs || [];
@@ -226,7 +257,7 @@
             '<span class="vol-icon">&#x1F509;</span>' +
             '<input type="range" class="volume-slider" min="0" max="100" value="' + (ctx.volume * 100) + '" aria-label="Volume">' +
           '</div>' +
-          '<div class="playlist-label">Playlist</div>' +
+          '<div class="playlist-label">Playlist <button class="user-add-song" aria-label="Add your own song">+ Add</button></div>' +
           '<div class="playlist" id="jukeboxPlaylist" role="listbox" aria-label="Song playlist"></div>' +
         '</div>';
       document.body.appendChild(el);
@@ -273,6 +304,54 @@
 
     this.buildPlaylist();
     if (done) done();
+
+    // ponytail: user can add their own song — stored in Firebase userSongs store,
+    // persisted as base64 via fbPut's Blob handling, reloaded on next visit
+    this.addBtn = this.panel.querySelector('.user-add-song');
+    this.addFileInput = null;
+    if (this.addBtn) {
+      var self = this;
+      this.addBtn.addEventListener('click', function () {
+        if (!self.addFileInput) {
+          self.addFileInput = document.createElement('input');
+          self.addFileInput.type = 'file';
+          self.addFileInput.accept = 'audio/*';
+          self.addFileInput.style.display = 'none';
+          document.body.appendChild(self.addFileInput);
+          self.addFileInput.addEventListener('change', function () {
+            var file = self.addFileInput.files && self.addFileInput.files[0];
+            self.addFileInput.value = '';
+            if (!file) return;
+            var title = window.prompt('Name this song:', file.name.replace(/\.[^.]+$/, ''));
+            if (!title) return;
+            var artist = window.prompt('Who is it by? (optional)', '');
+            dbPut('userSongs', { title: title, artist: artist || 'Added by you', audioBlob: file, audioType: file.type, duration: 180, hasFile: true }).then(function () {
+              var audioUrl;
+              try {
+                audioUrl = URL.createObjectURL(file);
+                audioUrls.push(audioUrl);
+              } catch(e) { return; }
+              self.songs.push({
+                title: title,
+                artist: artist || 'Added by you',
+                cover: PLACEHOLDER_COVERS[self.songs.length % PLACEHOLDER_COVERS.length],
+                src: audioUrl,
+                duration: 180,
+                unlockDate: '',
+                autoUnlock: true,
+                hasFile: true,
+                userAdded: true
+              });
+              self.buildPlaylist();
+              self.updateUI();
+            }).catch(function () {
+              window.alert('Could not save your song. Check connection and try again.');
+            });
+          });
+        }
+        self.addFileInput.click();
+      });
+    }
   };
 
   Jukebox.prototype.isSongUnlocked = function (index) {
@@ -858,6 +937,7 @@
   async function init() {
     var fileSongs = await loadFileSongs();
     var dbSongs = await loadSongsFromDB();
+    var userSongs = await loadUserSongs();
 
     // Merge: file songs first, DB songs override only if they have a valid audio src
     var songs = [];
@@ -873,6 +953,8 @@
         songs.push(s);
       }
     });
+    // ponytail: user-added songs append at the end (never overridden by title merge)
+    (userSongs || []).forEach(function(s) { songs.push(s); });
 
     // Check if all sections unlocked — reveal secret song
     try {

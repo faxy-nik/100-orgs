@@ -278,6 +278,40 @@ console.error = function () {
       var ticking = false;
       var lastTocUpdate = 0;
 
+      // ponytail: JS parallax for parallax-divider + tribute backgrounds.
+      // CSS background-attachment:fixed is disabled on touch and broken by
+      // ancestor transforms, so drive backgroundPosition from scroll instead.
+      // applyParallaxToAll sets data-parallax-bg asynchronously (FeatureFlags.onReady),
+      // so retry until elements appear.
+      var parallaxEls = [];
+      (function grabParallaxEls() {
+        var els = Array.prototype.slice.call(document.querySelectorAll('[data-parallax-bg], .parallax-divider'));
+        if (els.length) {
+          parallaxEls = els;
+          parallaxEls.forEach(function (el) { el.style.backgroundAttachment = 'scroll'; });
+        } else {
+          setTimeout(grabParallaxEls, 500);
+        }
+      })();
+      // ponytail: register elements mixed in later (async gallery mix) for scroll drift
+      window.__registerParallaxEl = function (el) {
+        if (parallaxEls.indexOf(el) === -1) {
+          el.style.backgroundAttachment = 'scroll';
+          parallaxEls.push(el);
+        }
+      };
+
+      function applyParallax() {
+        var vh = window.innerHeight;
+        for (var i = 0; i < parallaxEls.length; i++) {
+          var el = parallaxEls[i];
+          var rect = el.getBoundingClientRect();
+          if (rect.bottom < 0 || rect.top > vh) continue;
+          var shift = (rect.top + rect.height / 2 - vh / 2) * 0.2;
+          el.style.backgroundPosition = 'center calc(50% + ' + shift.toFixed(1) + 'px)';
+        }
+      }
+
       function onScroll() {
         var scrollTop = window.scrollY || document.documentElement.scrollTop;
         var scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
@@ -315,6 +349,7 @@ console.error = function () {
           heroEl.style.transform = 'translateY(' + (scrollTop * 0.15) + 'px)';
           heroEl.style.opacity = Math.max(0.3, 1 - scrollTop / (window.innerHeight * 0.7));
         }
+        applyParallax();
       }
 
       safeAddEventListener(window, 'scroll', function () {
@@ -343,7 +378,12 @@ console.error = function () {
       cards.forEach(function (c) { c.classList.add('fadeCard'); });
       var observer = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
-          if (entry.isIntersecting) entry.target.classList.add('show');
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('show');
+          // ponytail: .show leaves transform:translateY(0) scale(1); any non-none
+          // transform makes background-attachment:fixed behave like scroll, so
+          // tribute parallax backgrounds sat still. Drop it after the fade.
+          setTimeout(function () { entry.target.style.transform = 'none'; }, 1300);
         });
       }, { threshold: rm ? 0 : 0.15 });
       cards.forEach(function (c) { safeObserve(observer, c); });
@@ -1301,6 +1341,39 @@ console.error = function () {
           if (d.attachment) d.el.setAttribute('data-parallax-attachment', d.attachment);
         });
 
+        // ponytail: mix every photo from the Firebase gallery into parallax/text
+        // backgrounds. Each gallery image lands on a random eligible section,
+        // replacing AI images up to 50% of tributes — AI still covers the rest.
+        if (window.FB && FB.get) {
+          FB.get('config', 'gallery').then(function (gdata) {
+            var items = (gdata && gdata.items) || [];
+            var gallerySrcs = [];
+            items.forEach(function (m) {
+              if (!m || m.type === 'video') return;
+              var src = m.fileData || m.file;
+              if (src && gallerySrcs.indexOf(src) === -1) gallerySrcs.push(src);
+            });
+            if (!gallerySrcs.length) return;
+            var eligible = tributeData.filter(function (d) {
+              return !d.skipped && d.bg && d.bg.indexOf('url(data:') !== 0;
+            });
+            var count = Math.min(gallerySrcs.length, eligible.length, Math.floor(tributeData.length * 0.5));
+            var picks = seededShuffle(eligible, 99);
+            for (var gi = 0; gi < count; gi++) {
+              var d = picks[gi];
+              d.bg = 'url(' + gallerySrcs[gi % gallerySrcs.length] + ')';
+              d.el.style.backgroundImage = d.bg;
+              d.el.style.backgroundAttachment = d.attachment;
+              d.el.style.backgroundPosition = 'center';
+              d.el.style.backgroundRepeat = 'no-repeat';
+              d.el.style.backgroundSize = 'cover';
+              d.el.setAttribute('data-parallax-bg', d.bg);
+              d.el.classList.add('ai-parallax');
+              if (window.__registerParallaxEl) window.__registerParallaxEl(d.el);
+            }
+          }).catch(function () {});
+        }
+
         // Observer still used for voice-controls UI + progress tracking
         var viewedKey = 'ash-viewed-' + location.pathname.replace(/[^a-z0-9]/gi, '_');
         if (tributeData.length > 0) { try { localStorage.setItem(viewedKey + '_count', tributeData.length); } catch (e) {} }
@@ -1673,6 +1746,35 @@ console.error = function () {
       if (moodTags.length === 0) moodTags.push('romantic');
       t.setAttribute('data-mood', moodTags.join(' '));
     });
+
+    // ponytail: hide mood buttons whose moods only exist in locked sections.
+    // lock.js hides locked groups via inline display:none (async after FB.get),
+    // so re-check whenever a group's display changes.
+    function isUnlocked(t) {
+      var g = t.closest('.accordion-group');
+      return !g || g.style.display !== 'none';
+    }
+    function refreshMoodButtons() {
+      bar.querySelectorAll('.mood-btn').forEach(function (b) {
+        var mood = b.getAttribute('data-mood');
+        if (mood === 'all') { b.style.display = ''; return; }
+        var has = Array.prototype.some.call(document.querySelectorAll('.tribute'), function (t) {
+          if (!isUnlocked(t)) return false;
+          var m = t.getAttribute('data-mood');
+          return m && m.split(' ').indexOf(mood) !== -1;
+        });
+        b.style.display = has ? '' : 'none';
+      });
+    }
+    refreshMoodButtons();
+    if ('MutationObserver' in window) {
+      new MutationObserver(function (muts) {
+        for (var i = 0; i < muts.length; i++) {
+          var el = muts[i].target;
+          if (el.classList && el.classList.contains('accordion-group')) { refreshMoodButtons(); return; }
+        }
+      }).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['style'] });
+    }
   })();
 
   // Love Letter Generator
@@ -1684,7 +1786,11 @@ console.error = function () {
     btn.addEventListener('mouseenter', function () { this.style.background = 'rgba(232,93,58,0.3)'; });
     btn.addEventListener('mouseleave', function () { this.style.background = 'rgba(232,93,58,0.15)'; });
     btn.addEventListener('click', function () {
-      var sections = document.querySelectorAll('.tribute');
+      // ponytail: only letter from unlocked sections — locked groups are display:none
+      var sections = Array.prototype.filter.call(document.querySelectorAll('.tribute'), function (t) {
+        var g = t.closest('.accordion-group');
+        return !g || g.style.display !== 'none';
+      });
       if (sections.length < 5) return;
       var picks = [], used = new Set();
       while (picks.length < 5) {
@@ -1719,7 +1825,11 @@ console.error = function () {
     btn.addEventListener('mouseenter', function () { this.style.background = 'rgba(100,200,255,0.2)'; });
     btn.addEventListener('mouseleave', function () { this.style.background = 'rgba(100,200,255,0.1)'; });
     btn.addEventListener('click', function () {
-      var tributes = document.querySelectorAll('.tribute');
+      // ponytail: unlocked sections only (same as love letter generator)
+      var tributes = Array.prototype.filter.call(document.querySelectorAll('.tribute'), function (t) {
+        var g = t.closest('.accordion-group');
+        return !g || g.style.display !== 'none';
+      });
       if (!tributes.length) return;
       var pick = tributes[Math.floor(Math.random() * tributes.length)];
       var body = pick.querySelector('.tribute-body');
@@ -1812,6 +1922,19 @@ console.error = function () {
     };
     img.src = imgPath;
   });
+  // ponytail: a butterfly occasionally lands on the wallpaper button.
+  // Pure CSS animation on a fixed element; harmless if the button is hidden.
+  setInterval(function () {
+    if (!btn.offsetParent) return;
+    var b = document.createElement('span');
+    b.textContent = '\uD83E\uDD8B';
+    b.style.cssText = 'position:fixed;bottom:459px;right:25px;z-index:101;font-size:1.1rem;pointer-events:none;opacity:0;animation:wpButterfly 3.5s ease-in-out forwards;';
+    document.body.appendChild(b);
+    setTimeout(function () { if (b.parentNode) b.remove(); }, 3600);
+  }, 25000);
+  var css = document.createElement('style');
+  css.textContent = '@keyframes wpButterfly{0%{opacity:0;transform:translate(40px,-30px) rotate(20deg)}30%{opacity:1;transform:translate(-14px,-8px) rotate(-6deg)}45%{transform:translate(-18px,-2px) rotate(4deg)}60%{opacity:1;transform:translate(-12px,-10px) rotate(-5deg)}80%{transform:translate(-20px,0) rotate(3deg)}100%{opacity:0;transform:translate(30px,-26px) rotate(18deg)}}';
+  document.head.appendChild(css);
   document.body.appendChild(btn);
   })();
 

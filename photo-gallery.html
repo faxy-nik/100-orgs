@@ -470,6 +470,7 @@
 
       function getUrl(m) {
         if (m.fileData) {
+          if (typeof m.fileData === 'string' && m.fileData.indexOf('data:') === 0) return m.fileData;
           return URL.createObjectURL(new Blob([m.fileData], { type: m.fileType || 'image/jpeg' }));
         }
         return m.file;
@@ -598,11 +599,11 @@
 
       loadMedia();
 
-      // ponytail: upload images to parallax pool
-      // stored in localStorage, content-common.js randomly assigns ~10 sections
+      // ponytail: upload images to gallery (Firebase config/gallery, same store as admin)
+      // + parallax pool (localStorage ash-user-parallax, consumed by content-common.js)
       var uploadBtn = document.createElement('button');
-      uploadBtn.textContent = '\uD83D\uDCC1 Use in 100 Organs';
-      uploadBtn.title = 'Upload an image to randomly appear in the 100 Organs parallax';
+      uploadBtn.textContent = '\uD83D\uDCC1 Add Photo';
+      uploadBtn.title = 'Upload your own photo — it joins the gallery and randomly appears in the 100 Organs parallax backgrounds';
       uploadBtn.style.cssText = 'background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.15);color:#6b5f52;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.8rem;transition:all .25s;display:inline-block;margin:0 .4rem;';
       var btnContainer = document.querySelector('div[style*="text-align:center"]') || document.body;
       btnContainer.appendChild(uploadBtn);
@@ -625,24 +626,32 @@
         try { existing = JSON.parse(localStorage.getItem('ash-user-parallax') || '[]'); } catch (e) {}
         var loaded = 0;
         var total = files.length;
+        var added = [];
         for (var fi = 0; fi < files.length; fi++) {
           (function (file) {
             var reader = new FileReader();
             reader.onload = function (e) {
               var dataUrl = e.target.result;
               existing.push(dataUrl);
-              MEDIA.push({ type: 'image', fileData: dataUrl, fileType: file.type, label: 'User Upload', note: '' });
+              added.push({ type: 'image', file: '', fileData: dataUrl, fileType: file.type, label: 'User Upload', note: '' });
               loaded++;
               if (loaded === total) {
+                for (var mi = 0; mi < added.length; mi++) MEDIA.push(added[mi]);
                 try {
                   localStorage.setItem('ash-user-parallax', JSON.stringify(existing));
-                  render();
-                  uploadBtn.textContent = '\u2705 ' + total + ' added (' + existing.length + ' total)';
-                  setTimeout(function () { uploadBtn.textContent = '\uD83D\uDCC1 Use in 100 Organs'; }, 3000);
-                } catch (err) {
-                  uploadBtn.textContent = '\u26A0\uFE0F Storage full ï¿½ remove some';
-                  setTimeout(function () { uploadBtn.textContent = '\uD83D\uDCC1 Use in 100 Organs'; }, 3000);
-                }
+                } catch (err) {}
+                // Persist to Firebase gallery so the photo shows everywhere (same store as admin)
+                try {
+                  FB.get('config', 'gallery').then(function (data) {
+                    var items = (data && data.items && data.items.length) ? data.items.slice() : [];
+                    for (var ai = 0; ai < added.length; ai++) items.push(added[ai]);
+                    FB.put('config', { id: 'gallery', items: items }).catch(function () {});
+                    MEDIA = items;
+                    render();
+                  }).catch(function () { render(); });
+                } catch (e) { render(); }
+                uploadBtn.textContent = '\u2705 ' + total + ' added (' + existing.length + ' total)';
+                setTimeout(function () { uploadBtn.textContent = '\uD83D\uDCC1 Add Photo'; }, 3000);
               }
             };
             reader.readAsDataURL(file);

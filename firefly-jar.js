@@ -107,6 +107,37 @@
     }, 12000);
   }, 3000);
 
+  // ponytail: cursor swarm — a few fireflies that drift toward the pointer.
+  // Cheap lerp + orbit, pointer-events none so it never blocks clicks.
+  (function initCursorSwarm() {
+    var flies = [];
+    var tx = window.innerWidth / 2, ty = window.innerHeight / 2, moved = false;
+    document.addEventListener('mousemove', function (e) {
+      tx = e.clientX; ty = e.clientY; moved = true;
+    }, { passive: true });
+    for (var i = 0; i < 6; i++) {
+      var el = document.createElement('div');
+      el.innerHTML = makeFireflySVG();
+      el.style.cssText = 'position:fixed;z-index:9994;pointer-events:none;will-change:transform;filter:drop-shadow(0 0 4px rgba(255,230,100,0.5));';
+      document.body.appendChild(el);
+      flies.push({ el: el, x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight, o: Math.random() * Math.PI * 2, s: 0.03 + Math.random() * 0.04 });
+    }
+    function step() {
+      for (var i = 0; i < flies.length; i++) {
+        var f = flies[i];
+        f.x += (tx - f.x) * f.s;
+        f.y += (ty - f.y) * f.s;
+        f.o += 0.05;
+        f.x += Math.sin(f.o) * 0.6;
+        f.y += Math.cos(f.o * 0.8) * 0.6;
+        f.el.style.transform = 'translate(' + f.x + 'px,' + f.y + 'px) scale(' + (0.7 + 0.3 * Math.sin(f.o * 2)) + ')';
+        f.el.style.opacity = String(0.35 + 0.3 * Math.sin(f.o * 1.5 + i));
+      }
+      requestAnimationFrame(step);
+    }
+    var idle = setInterval(function () { if (moved) { clearInterval(idle); step(); } }, 500);
+  })();
+
   updateJar();
   showJarIfNeeded();
   window._obsFireflyJar = { updateJar: updateJar, getConfig: function () { return config; } };

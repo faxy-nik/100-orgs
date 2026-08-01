@@ -23,6 +23,7 @@
     "activity": { ".write": "auth != null" },
     "wishes": { ".write": "auth != null" },
     "songRequests": { ".write": "auth != null" },
+    "userSongs": { ".write": "auth != null" },
     "reviews": { ".write": "auth != null" },
     "sectionRequests": { ".write": "auth != null" },
     "letters": { ".write": "auth != null" },

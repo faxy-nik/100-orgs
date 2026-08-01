@@ -256,7 +256,12 @@ var FB = (function () {
     'ash-user-parallax', 'ash-dream', 'ash-section-viewed',
     'ash-sky-current-constellation', 'ash-theme', 'ash-streak',
     'ash-first-visit', 'ash-section-access', 'ash-events-seen',
-    'ash-viewed-dream', 'ash-viewed-make_her_sleep', 'ash-dragon-met'
+    'ash-viewed-dream', 'ash-viewed-make_her_sleep', 'ash-dragon-met',
+    'ash-firefly-jar', 'ash-jukebox', 'ash-jukebox-sky',
+    'ash-constellations', 'ash-sky-const-collection',
+    'ash-obs-favs', 'ash-obs-recent', 'ash-obs-moon', 'ash-obs-star',
+    'ash-obs-radio', 'ash-puzzle-progress', 'ash-tracked-events',
+    'musicState'
   ];
 
   try { if (localStorage.getItem('ash-admin-passkey')) return; } catch(e) { return; }

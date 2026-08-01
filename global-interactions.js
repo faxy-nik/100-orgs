@@ -61,6 +61,35 @@
   }
 
   /* ---------- 2. Feathers ---------- */
+  // ponytail: 5x5 dot-matrix letters for the feather sparkle word
+  var SPARK_LETTERS = {
+    S: ['XXXXX','X...X','XXX..','...X.','XXXXX'],
+    T: ['XXXXX','..X..','..X..','..X..','..X..'],
+    A: ['.X...','X.X..','XXXXX','X...X','X...X'],
+    Y: ['X...X','.X.X.','..X..','..X..','..X..']
+  };
+  function sparkleWord(x, y) {
+    var word = 'stay';
+    var size = 7, gap = 9, frag = document.createDocumentFragment();
+    var dots = [];
+    word.split('').forEach(function (ch, li) {
+      var m = SPARK_LETTERS[ch.toUpperCase()];
+      if (!m) return;
+      for (var r = 0; r < 5; r++) for (var c = 0; c < 5; c++) {
+        if (m[r][c] !== 'X') continue;
+        var d = document.createElement('div');
+        d.style.cssText = 'position:fixed;left:'+(x + li*gap*5 + c*gap)+'px;top:'+(y + r*gap)+'px;width:4px;height:4px;border-radius:50%;background:rgba(255,240,200,0.95);box-shadow:0 0 6px rgba(255,220,150,0.9);z-index:999999;pointer-events:none;transition:opacity 1.6s ease, transform 1.6s ease;';
+        frag.appendChild(d);
+        dots.push(d);
+      }
+    });
+    document.body.appendChild(frag);
+    setTimeout(function () {
+      dots.forEach(function (d, i) { d.style.opacity = '0'; d.style.transform = 'translateY(' + (i % 3) + 'px) scale(0.2)'; });
+      setTimeout(function () { dots.forEach(function (d) { if (d.parentNode) d.remove(); }); }, 1800);
+    }, 2600);
+  }
+
   function initFeathers() {
     setInterval(function () {
       if (Math.random() > 0.25) return;
@@ -73,12 +102,13 @@
         f.style.top = (window.innerHeight + 20) + 'px';
         f.style.left = (startX + (Math.random()-0.5)*15) + 'vw';
       });
-      f.addEventListener('click', function () {
+      f.addEventListener('click', function (e) {
         config.feathers.count = (config.feathers.count || 0) + 1;
         save();
         var rewards = {3:'\uD83E\uDEB6 3 feathers \u2014 the breeze notices you',7:'\uD83E\uDEB6 7 feathers \u2014 you are becoming lighter',15:'\uD83E\uDEB6 15 feathers \u2014 almost floating',30:'\uD83E\uDEB6 30 feathers \u2014 you could fly'};
         var msg = rewards[config.feathers.count] || '\uD83E\uDEB6 +1 feather ('+config.feathers.count+')';
         toast(msg, 'rgba(200,180,150,0.8)', 2000);
+        sparkleWord(e.clientX - 70, e.clientY - 20);
         f.remove();
       });
       setTimeout(function () { if (f.parentNode) f.remove(); }, 8000);
