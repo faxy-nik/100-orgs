@@ -198,6 +198,7 @@
   /* ---------- Discovery ---------- */
   function discover(id) {
     load();
+    if (window.Interactions) window.Interactions.record('catch', 'butterfly_discovered', id);
     if (!data.discovered[id]) {
       data.discovered[id] = { count:1, first:Date.now() };
       save();

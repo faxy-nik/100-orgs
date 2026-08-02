@@ -69,26 +69,84 @@
       var bd = JSON.parse(localStorage.getItem('ash-butterflies'));
       if (bd && bd.discovered) pts += Object.keys(bd.discovered).length * 3;
     } catch (e) {}
+    // Solved / attempted treasure-hunt riddles
+    try {
+      var pp = JSON.parse(localStorage.getItem('ash-puzzle-progress')) || {};
+      pts += Math.min(Object.keys(pp).length, 50) * 2;
+    } catch (e) {}
+    // Secret letters found
+    try {
+      var sl = JSON.parse(localStorage.getItem('ash-secret-letters')) || {};
+      pts += Math.min(Object.keys(sl).length, 30) * 3;
+    } catch (e) {}
+    // Daily streak
+    try {
+      var st = JSON.parse(localStorage.getItem('ash-streak')) || {};
+      pts += Math.min(st.count || 0, 30) * 5;
+    } catch (e) {}
+    // Sections read
+    try {
+      var sv = JSON.parse(localStorage.getItem('ash-section-viewed')) || {};
+      pts += Math.min(Object.keys(sv).length, 30) * 2;
+    } catch (e) {}
+    // Songs played
+    try {
+      var ms = JSON.parse(localStorage.getItem('musicState')) || {};
+      pts += Math.min(ms.played || 0, 20);
+    } catch (e) {}
+    // Dreams completed
+    try {
+      var dr = JSON.parse(localStorage.getItem('ash-dream')) || {};
+      pts += Math.min(dr.completed || 0, 5) * 5;
+    } catch (e) {}
+    // Photos uploaded (admin gallery + her uploads)
+    try {
+      var gl = JSON.parse(localStorage.getItem('ash-gallery')) || [];
+      pts += Math.min(gl.length, 20);
+    } catch (e) {}
+    try {
+      var ug = JSON.parse(localStorage.getItem('ash-user-gallery')) || [];
+      pts += Math.min(ug.length, 20);
+    } catch (e) {}
     if (treeData.visits > 1) pts += Math.min(treeData.visits - 1, 10) * 5;
     return pts;
   }
 
   function getLevel(g) {
+    if (g >= 750) return 12; if (g >= 550) return 11; if (g >= 400) return 10;
     if (g >= 300) return 9; if (g >= 200) return 8; if (g >= 150) return 7;
     if (g >= 100) return 6; if (g >= 75) return 5; if (g >= 50) return 4;
     if (g >= 30) return 3; if (g >= 15) return 2; if (g >= 5) return 1; return 0;
   }
   function getLevelLabel(l) {
-    var a = ['Sprout','Sapling','Young Tree','Blooming Tree','Glowing Tree','Ornamental Tree','Mature Tree','Majestic Tree','Ancient Tree','Ethereal Tree'];
+    var a = ['Sprout','Sapling','Young Tree','Blooming Tree','Glowing Tree','Ornamental Tree','Mature Tree','Majestic Tree','Ancient Tree','Ethereal Tree','Sapphire Tree','Starlight Tree','Mythic Tree'];
     return a[l] || 'Mythic Tree';
   }
 
   /* ---------- Canvas renderer ---------- */
+  function isDay() {
+    try { return localStorage.getItem('ash-theme') === 'day'; } catch (e) { return false; }
+  }
+  function palette() {
+    if (isDay()) {
+      return {
+        trunk: ['#7a5533', '#6b4423'], leaves: ['#3f9444', '#58b35c', '#74c96f'],
+        root: '#5a3a1a', grass: ['#4a9a2e', '#5cb43f', '#3a7a1e'], string: '#9a7a45',
+        glow: 'rgba(255,220,120,0.2)', bg: 'rgba(255,248,235,0.3)', label: '#8a6a20'
+      };
+    }
+    return {
+      trunk: ['#5c3d24', '#4a2f1a'], leaves: ['#2d6b30', '#3a8a3e', '#4ca64f'],
+      root: '#3a2210', grass: ['#2d5a1e', '#3a7a2e', '#1d4a10'], string: '#8a6a3a',
+      glow: 'rgba(255,230,100,0.15)', bg: 'rgba(10,8,6,0.3)', label: '#ffe680'
+    };
+  }
   function renderTree(canvas, level) {
     var ctx = canvas.getContext('2d');
     var W = 100, H = 140;
     canvas.width = W; canvas.height = H;
     ctx.clearRect(0, 0, W, H);
+    var pal = palette();
 
     var trunkH = 25 + level * 8;
     var trunkW = 2.5 + level * 0.5;
@@ -105,7 +163,7 @@
       var ex = x + Math.cos(ang) * len;
       var ey = y - Math.sin(ang) * len;
       ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(ex, ey);
-      ctx.strokeStyle = d > 2 ? '#5c3d24' : '#4a2f1a';
+      ctx.strokeStyle = d > 2 ? pal.trunk[0] : pal.trunk[1];
       ctx.lineWidth = Math.max(0.5, w);
       ctx.lineCap = 'round';
       ctx.stroke();
@@ -113,7 +171,7 @@
       if (d === 1 || (d <= 2 && len < 10)) {
         var lr = 2 + level * 0.5 + Math.random() * 2;
         ctx.beginPath(); ctx.arc(ex+(Math.random()-0.5)*4, ey+(Math.random()-0.5)*4, lr, 0, Math.PI*2);
-        ctx.fillStyle = ['#2d6b30','#3a8a3e','#4ca64f'][level%3];
+        ctx.fillStyle = pal.leaves[level%3];
         if (glowLv) { ctx.shadowColor = 'rgba(200,255,150,0.3)'; ctx.shadowBlur = 8+level; }
         ctx.fill();
 
@@ -128,7 +186,7 @@
         if (ornamentLv && Math.random() < 0.12) {
           var ox = ex+(Math.random()-0.5)*4, oy = ey+lr+4;
           // string
-          ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(ox, oy); ctx.strokeStyle = '#8a6a3a'; ctx.lineWidth = 0.5; ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(ox, oy); ctx.strokeStyle = pal.string; ctx.lineWidth = 0.5; ctx.stroke();
           // lantern body
           ctx.beginPath(); ctx.arc(ox, oy, 2+Math.random()*1.5, 0, Math.PI*2);
           var cs = ['#ffe680','#ff8eb4','#e85d3a','#ffd700','#c0a0ff','#66ddff'];
@@ -156,7 +214,7 @@
         }
 
         ctx.shadowBlur = glowLv ? 20+level*5 : 0;
-        ctx.shadowColor = 'rgba(255,230,100,0.15)';
+        ctx.shadowColor = pal.glow;
         return;
       }
 
@@ -169,7 +227,7 @@
 
     // roots
     if (rootLv) {
-      ctx.strokeStyle = '#3a2210'; ctx.lineWidth = 1.5;
+      ctx.strokeStyle = pal.root; ctx.lineWidth = 1.5;
       for (var r = 0; r < 2+level; r++) {
         var rx = W/2+(Math.random()-0.5)*16;
         ctx.beginPath(); ctx.moveTo(rx, H);
@@ -178,7 +236,7 @@
     }
 
     ctx.shadowBlur = glowLv ? 20+level*5 : 0;
-    ctx.shadowColor = 'rgba(255,230,100,0.15)';
+    ctx.shadowColor = pal.glow;
     branch(W/2, H, trunkH, Math.PI/2, trunkW, depth);
 
     // bird in branches
@@ -206,16 +264,17 @@
       var gx = 20+Math.random()*(W-40);
       ctx.beginPath(); ctx.moveTo(gx, H);
       ctx.quadraticCurveTo(gx-2+(Math.random()-0.5)*4, H-6-Math.random()*8, gx+(Math.random()-0.5)*2, H);
-      ctx.fillStyle = ['#2d5a1e','#3a7a2e','#1d4a10'][g%3];
+      ctx.fillStyle = pal.grass[g%3];
       ctx.fill();
     }
   }
 
   /* ---------- UI ---------- */
   function createUI() {
+    var pal = palette();
     var c = document.createElement('canvas');
     c.width = 100; c.height = 140;
-    c.style.cssText = 'position:fixed;bottom:80px;right:87px;z-index:99998;border-radius:10px;cursor:pointer;background:rgba(10,8,6,0.3);backdrop-filter:blur(4px);transition:transform 0.3s,box-shadow 0.3s;';
+    c.style.cssText = 'position:fixed;bottom:80px;right:87px;z-index:99998;border-radius:10px;cursor:pointer;background:' + pal.bg + ';backdrop-filter:blur(4px);transition:transform 0.3s,box-shadow 0.3s;';
     c.id = 'treeCanvas';
     c.addEventListener('mouseenter', function(){ c.style.transform='scale(1.05)'; c.style.boxShadow='0 0 20px rgba(255,230,100,0.2)'; });
     c.addEventListener('mouseleave', function(){ c.style.transform='scale(1)'; c.style.boxShadow='none'; });
@@ -230,8 +289,9 @@
   }
 
   function updateLabel(el, level) {
-    var icons = ['🌱','🌿','🌳','🌸','✨','🏮','🌳','👑','🌟','🌀'];
+    var icons = ['🌱','🌿','🌳','🌸','✨','🏮','🌳','👑','🌟','🌀','💠','☄️','🌌'];
     el.textContent = (icons[level]||'🌳')+' Lv.'+level;
+    el.style.color = palette().label;
     el.style.opacity = '1';
   }
 
@@ -276,30 +336,17 @@
       document.body.appendChild(statsOverlay);
     });
 
+    // Keep the tree alive: reveal when earned, rescale as memories grow
     setInterval(function() {
       if (!sleepAndDreamAchieved()) return;
+      var c = document.getElementById('treeCanvas');
+      var l = document.getElementById('treeLabel');
+      if (c && c.style.display === 'none') { c.style.display = ''; l.style.display = ''; }
       treeData.growth = scanAchievements(); treeData.lastScan = Date.now(); save();
       var lv = getLevel(treeData.growth);
       renderTree(ui.canvas, lv);
       updateLabel(ui.label, lv);
-    }, 15000);
-
-    window.addEventListener('storage', function() {
-      if (!sleepAndDreamAchieved()) return;
-      treeData.growth = scanAchievements(); save();
-      var lv = getLevel(treeData.growth);
-      renderTree(ui.canvas, lv);
-      updateLabel(ui.label, lv);
-    });
-
-    // Periodically check if tree should be revealed
-    setInterval(function() {
-      if (sleepAndDreamAchieved()) {
-        var c = document.getElementById('treeCanvas');
-        var l = document.getElementById('treeLabel');
-        if (c && c.style.display === 'none') { c.style.display = ''; l.style.display = ''; }
-      }
-    }, 5000);
+    }, 10000);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(init, 500); });

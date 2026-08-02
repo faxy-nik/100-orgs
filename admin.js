@@ -1399,6 +1399,62 @@
     });
   }
 
+  function renderInteractions() {
+    var listEl = document.getElementById('interactionsList');
+    if (!listEl) return;
+    var statsEl = document.getElementById('interactionsStats');
+    listEl.innerHTML = '<div class="empty-state"><div class="icon">&#x23F3;</div><p>Loading interactions...</p></div>';
+    FB.getAll('interactions').then(function (items) {
+      if (!items || !items.length) {
+        if (statsEl) statsEl.innerHTML = '';
+        listEl.innerHTML = '<div class="empty-state"><div class="icon">&#x1F496;</div><p>No interactions recorded yet.</p></div>';
+        return;
+      }
+      items.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
+      var todayKey = new Date().toDateString();
+      var todayCount = 0;
+      var byAction = {};
+      var byActionToday = {};
+      items.forEach(function (e) {
+        byAction[e.action] = (byAction[e.action] || 0) + 1;
+        if (e.ts && new Date(e.ts).toDateString() === todayKey) {
+          todayCount++;
+          byActionToday[e.action] = (byActionToday[e.action] || 0) + 1;
+        }
+      });
+      if (statsEl) {
+        statsEl.innerHTML =
+          '<div class="stat-card" style="flex:1;min-width:100px;padding:10px 14px;border-radius:8px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.08);text-align:center;">' +
+            '<div style="font-size:1.3rem;font-weight:bold;color:#ffe680;">' + items.length + '</div>' +
+            '<div style="font-size:.65rem;color:#6b5f52;text-transform:uppercase;letter-spacing:.05em;">Total</div></div>' +
+          '<div class="stat-card" style="flex:1;min-width:100px;padding:10px 14px;border-radius:8px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.08);text-align:center;">' +
+            '<div style="font-size:1.3rem;font-weight:bold;color:#6fcf93;">' + todayCount + '</div>' +
+            '<div style="font-size:.65rem;color:#6b5f52;text-transform:uppercase;letter-spacing:.05em;">Today</div></div>';
+      }
+      var html = '<div style="margin-bottom:1rem;"><h4 style="margin:0 0 .4rem;color:#ffe680;font-size:.85rem;">By action</h4>';
+      html += '<table style="width:100%;border-collapse:collapse;font-size:.75rem;"><tr style="color:#6b5f52;text-align:left;"><th style="padding:.25rem .5rem;border-bottom:1px solid rgba(255,210,150,.15);">Action</th><th style="padding:.25rem .5rem;border-bottom:1px solid rgba(255,210,150,.15);">All time</th><th style="padding:.25rem .5rem;border-bottom:1px solid rgba(255,210,150,.15);">Today</th></tr>';
+      Object.keys(byAction).sort(function (a, b) { return byAction[b] - byAction[a]; }).forEach(function (a) {
+        html += '<tr><td style="padding:.25rem .5rem;border-bottom:1px solid rgba(255,210,150,.06);">' + esc(a) + '</td><td style="padding:.25rem .5rem;border-bottom:1px solid rgba(255,210,150,.06);">' + byAction[a] + '</td><td style="padding:.25rem .5rem;border-bottom:1px solid rgba(255,210,150,.06);">' + (byActionToday[a] || 0) + '</td></tr>';
+      });
+      html += '</table></div>';
+      html += '<h4 style="margin:0 0 .4rem;color:#ffe680;font-size:.85rem;">Recent 100</h4>';
+      items.slice(0, 100).forEach(function (e) {
+        var date = e.ts ? new Date(e.ts).toLocaleString() : '';
+        html +=
+          '<div class="song-card" style="padding:.4rem .7rem;">' +
+            '<div class="info" style="gap:2px;">' +
+              '<div class="smeta" style="font-size:.7rem;">' + date + ' &middot; ' + esc(e.type || '') + ' &middot; ' + esc(e.page || '') + '</div>' +
+              '<div style="font-size:.8rem;color:#d4c5b2;">' + esc(e.action || '') + (e.detail ? ' &mdash; ' + esc(e.detail) : '') + '</div>' +
+            '</div>' +
+          '</div>';
+      });
+      listEl.innerHTML = html;
+      if (items.length > 100) listEl.innerHTML += '<div style="text-align:center;color:#6b5f52;font-size:.75rem;margin-top:8px;">Showing 100 of ' + items.length + ' entries</div>';
+    }).catch(function () {
+      listEl.innerHTML = '<div class="empty-state"><div class="icon">&#x26A0;&#xFE0F;</div><p>Error loading interactions</p></div>';
+    });
+  }
+
   function openGalleryModal(index) {
     var isNew = index === -1;
     var g = isNew ? {} : galleryItems[index];
@@ -2362,6 +2418,61 @@
     });
   });
 
+  /* ---- Turn On Branch Toggles ---- */
+  var TURN_ON_BRANCHES = [
+    { id: 2, label: 'Fuck you — I want to be inside you' },
+    { id: 400, label: 'Masturbation — you do it to me, or you watch me' },
+    { id: 500, label: 'Fingering — I do it to you, or you do it to yourself' },
+    { id: 600, label: 'Foreplay — I tease you until you beg' },
+    { id: 800, label: 'Fingering drive — I talk you to pieces, my fingers inside you' },
+    { id: 700, label: 'Oral — my mouth on you, I taste every inch' },
+    { id: 900, label: 'Shower — I wash every inch of you' },
+    { id: 1000, label: 'Watching you undress — the slow way' },
+    { id: 1100, label: 'Rough — I take control' },
+    { id: 1200, label: 'Mirror — I watch us together' },
+    { id: 1300, label: '69 — both of us, at once' },
+    { id: 1400, label: 'Morning — I wake you up slow' },
+    { id: 1500, label: 'Bath — I bathe you until you melt' },
+    { id: 1600, label: 'Car — parked, dark, impatient' },
+    { id: 1700, label: 'Public — nothing under your dress' }
+  ];
+  var branchToast;
+  function renderTurnOnBranches() {
+    var box = document.getElementById('turnOnBranches');
+    if (!box) return;
+    branchToast = document.getElementById('turnOnBranchesToast');
+    FB.get('config', 'turnOnSections').then(function (d) {
+      var disabled = (d && d.disabled) || [];
+      var html = '';
+      TURN_ON_BRANCHES.forEach(function (b) {
+        html += '<label style="display:flex;align-items:center;gap:.6rem;padding:.4rem 0;cursor:pointer;font-size:.85rem;color:var(--parchment-dim);">' +
+          '<input type="checkbox" data-branch="' + b.id + '"' + (disabled.indexOf(b.id) === -1 ? ' checked' : '') + ' style="width:16px;height:16px;accent-color:#6fcf93;">' +
+          esc(b.label) + '</label>';
+      });
+      box.innerHTML = html;
+      box.querySelectorAll('input[type=checkbox]').forEach(function (cb) {
+        cb.addEventListener('change', saveTurnOnBranches);
+      });
+    }).catch(function () {});
+  }
+  function saveTurnOnBranches() {
+    var disabled = [];
+    TURN_ON_BRANCHES.forEach(function (b) {
+      var cb = document.querySelector('#turnOnBranches input[data-branch="' + b.id + '"]');
+      if (cb && !cb.checked) disabled.push(b.id);
+    });
+    if (disabled.length >= TURN_ON_BRANCHES.length) {
+      if (branchToast) branchToast.textContent = 'Cannot hide all branches — at least one must stay.';
+      renderTurnOnBranches();
+      return;
+    }
+    FB.put('config', { id: 'turnOnSections', disabled: disabled }).then(function () {
+      if (branchToast) branchToast.textContent = 'Branch toggles saved.';
+    }).catch(function () {
+      if (branchToast) branchToast.textContent = 'Failed to save.';
+    });
+  }
+
   /* ---- Turn On Sessions ---- */
   function renderTurnOnSessions() {
     var list = document.getElementById('turnOnSessionsList');
@@ -2729,11 +2840,20 @@
         if (this.dataset.tab === 'rare') renderRare();
         if (this.dataset.tab === 'achievements') renderAchievements();
         if (this.dataset.tab === 'dreams') renderDreams();
-        if (this.dataset.tab === 'turnon') renderTurnOnSteps();
+        if (this.dataset.tab === 'turnon') { renderTurnOnSteps(); renderTurnOnBranches(); }
         if (this.dataset.tab === 'activity') loadActivity();
+        if (this.dataset.tab === 'interactions') renderInteractions();
         if (this.dataset.tab === 'project') { renderProjectPuzzles(); renderStoryline(); }
       });
     });
+
+    // Interactions auto-refresh while the tab is open
+    var refreshInteractionsBtn = document.getElementById('refreshInteractionsBtn');
+    if (refreshInteractionsBtn) refreshInteractionsBtn.addEventListener('click', renderInteractions);
+    setInterval(function () {
+      var t = document.getElementById('tabInteractions');
+      if (t && t.classList.contains('active')) renderInteractions();
+    }, 20000);
 
     // Wishes search/sort/filter
     var wishInputs = ['wishSearch', 'wishSort', 'wishFilter'];

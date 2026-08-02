@@ -86,6 +86,7 @@
       if (L.cond()) {
         found[L.id] = { foundAt: Date.now(), title: L.title };
         anyNew = true;
+        if (window.Interactions) window.Interactions.record('content', 'secret_letter_found', L.title);
       }
     });
     if (anyNew) { save(); syncFoundToFirebase(); showNotification(); }

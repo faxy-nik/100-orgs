@@ -12,6 +12,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="fb-db.js"></script>
 <script src="global-easter-eggs.js"></script>
+<script defer src="interactions.js"></script>
 <style>
 :root {
   --ink: #17130f;
@@ -130,7 +131,7 @@ body {
 /* Scene */
 .scene-box {
   width: 100%;
-  max-width: 480px;
+  max-width: 520px;
   margin: 0 auto 1.5rem;
   padding: 1.2rem 1.25rem 1rem;
   border-radius: 10px;
@@ -544,7 +545,7 @@ body {
   <!-- Start -->
   <div id="startScreen">
     <h1>Turn Yourself On</h1>
-    <p>An exploration of desire, one choice at a time. 38 steps from the first breath to the quiet after. Every decision stays. Nothing is taken back. Only more is added.</p>
+    <p>An exploration of desire, one choice at a time. Fifteen ways to begin — hundreds of steps from the first breath to the quiet after. Every decision stays. Nothing is taken back. Only more is added.</p>
     <button class="start-btn" id="startBtn">&#x2665; Begin</button>
     <p style="margin-top:1.5rem;font-size:.75rem;"><a href="turnon-history.html" style="color:var(--ash);">&#x2661; Session History</a></p>
   </div>
@@ -605,7 +606,21 @@ var STEPS = [];
 var STEPS_VER = 5;
 function loadSteps() {
   STEPS = getDefaultSteps();
-  initGame();
+  if (typeof FB !== 'undefined' && FB.get) {
+    FB.get('config', 'turnOnSections').then(function (d) {
+      if (d && d.disabled && d.disabled.length) filterBranches(d.disabled);
+      initGame();
+    }).catch(function () { initGame(); });
+  } else {
+    initGame();
+  }
+}
+
+function filterBranches(disabled) {
+  var hub = getStep(1);
+  if (!hub || !hub.options) return;
+  var kept = hub.options.filter(function (o) { return disabled.indexOf(o.next) === -1; });
+  if (kept.length) hub.options = kept; // never lock her out completely
 }
 
 
@@ -668,7 +683,8 @@ function renderGame() {
   document.getElementById('levelBar').innerHTML = levelHtml;
 
   // Level label
-  document.getElementById('levelLabel').textContent = 'Level ' + (step.level + 1) + ' \u2014 ' + (LEVEL_NAMES[step.level] || '');
+  var moodName = step.mood ? ' \u00B7 ' + step.mood : '';
+  document.getElementById('levelLabel').textContent = 'Level ' + (step.level + 1) + ' \u2014 ' + (LEVEL_NAMES[step.level] || '') + moodName;
 
   // Heat meter
   updateHeatMeter(step.level);
@@ -691,16 +707,16 @@ function renderGame() {
   // Type scene, then pause, then prompt, then options
   var pause = step.pause || 600;
   if (step.scene) {
-    typeText(sceneBox, step.scene, 18, function() {
+    typeText(sceneBox, step.scene, 14, function() {
       setTimeout(function() {
-        typeText(document.getElementById('promptText'), step.prompt, 14, function() {
+        typeText(document.getElementById('promptText'), step.prompt, 12, function() {
           showOptions(step);
         });
       }, pause);
     });
   } else {
     setTimeout(function() {
-      typeText(document.getElementById('promptText'), step.prompt, 14, function() {
+      typeText(document.getElementById('promptText'), step.prompt, 12, function() {
         showOptions(step);
       });
     }, pause);
@@ -733,7 +749,10 @@ function showOptions(step) {
   var isHub = step.hub === true;
   step.options.forEach(function (opt, oi) {
     var eClass = energyLabels[(opt.energy || 1) - 1] || '';
-    optHtml += '<button class="opt-btn' + (isHub ? ' opt-hub' : '') + ' opt-' + oi + ' ' + eClass + '" data-next="' + opt.next + '" data-transition="' + esc(opt.transition || '') + '" data-oi="' + oi + '" style="opacity:0;transform:translateY(12px);transition:all 0.4s ease ' + (oi * 0.15) + 's;">' + (icons[oi] || '') + ' ' + esc(opt.text) + '</button>';
+    var sym = '';
+    if (isHub) { var nxt = getStep(opt.next); if (nxt && nxt.symbol) sym = nxt.symbol + ' '; }
+    var delay = Math.min(oi * 0.12, 0.9);
+    optHtml += '<button class="opt-btn' + (isHub ? ' opt-hub' : '') + ' opt-' + oi + ' ' + eClass + '" data-next="' + opt.next + '" data-transition="' + esc(opt.transition || '') + '" data-oi="' + oi + '" style="opacity:0;transform:translateY(12px);transition:all 0.4s ease ' + delay + 's;">' + sym + (icons[oi] || '') + ' <span class="opt-text">' + esc(opt.text) + '</span></button>';
   });
   container.innerHTML = optHtml;
 
@@ -855,10 +874,12 @@ function showEnd() {
       isRough = true;
     }
   });
+  var beganWith = h.length && h[0].choice ? h[0].choice.split(' \u2014 ')[0] : '';
   document.getElementById('statsGrid').innerHTML =
     '<div class="stat-card"><div class="num">' + totalChoices + '</div><div class="label">Choices Made</div></div>' +
     '<div class="stat-card"><div class="num">' + (highestLevel + 1) + '</div><div class="label">Levels Explored</div></div>' +
-    '<div class="stat-card path"><div class="num">' + (isRough ? 'Rough' : 'Tender') + '</div><div class="label">Path</div></div>';
+    '<div class="stat-card path"><div class="num">' + (isRough ? 'Rough' : 'Tender') + '</div><div class="label">Path</div></div>' +
+    (beganWith ? '<div class="stat-card path"><div class="num">' + esc(beganWith) + '</div><div class="label">Night Began With</div></div>' : '');
 
   // Full story recap
   var recapHtml = '';
@@ -882,6 +903,8 @@ function saveState() {
 }
 
 function resetGame() {
+  if (state.stepId && state.history && state.history.length &&
+      !confirm('Start over? Your current path will be lost.')) return;
   localStorage.removeItem('turn-on-state');
   state = { stepId: null, history: [], narrative: [] };
   showStart();

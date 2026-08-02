@@ -59,6 +59,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = ASH_SECRET
       ashState = ASH_SECRET.step(ashState, Date.now(), e.key);
       if (ashState.fired) {
         ashState = ASH_SECRET.state();
+        if (window.Interactions) window.Interactions.record('trigger', 'typed_ash');
         if (window.location.href.indexOf('for-tonight.html') === -1) openSecretDoor();
       }
     }
@@ -68,21 +69,25 @@ if (typeof module !== 'undefined' && module.exports) module.exports = ASH_SECRET
 
     if (buf.indexOf('dream') !== -1) {
       buf = '';
+      if (window.Interactions) window.Interactions.record('trigger', 'typed_dream');
       if (window.location.href.indexOf('dream.html') === -1) window.location.href = 'dream.html';
     }
 
     if (buf.indexOf('sleep') !== -1) {
       buf = '';
+      if (window.Interactions) window.Interactions.record('trigger', 'typed_sleep');
       if (window.location.href.indexOf('make-her-sleep.html') === -1) window.location.href = 'make-her-sleep.html';
     }
 
     if (buf.indexOf('remember') !== -1) {
       buf = '';
+      if (window.Interactions) window.Interactions.record('trigger', 'typed_remember');
       if (window.location.href.indexOf('i-remember.html') === -1) window.location.href = 'i-remember.html';
     }
 
     if (buf.indexOf('letter') !== -1) {
       buf = '';
+      if (window.Interactions) window.Interactions.record('trigger', 'typed_letter');
       if (window.location.href.indexOf('letter-that-writes-itself.html') === -1) {
         window.location.href = 'letter-that-writes-itself.html?secret';
       }
@@ -90,6 +95,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = ASH_SECRET
 
     if (buf.indexOf('lanterns') !== -1) {
       buf = '';
+      if (window.Interactions) window.Interactions.record('trigger', 'typed_lanterns');
       if (typeof window._openLanternWorld === 'function') window._openLanternWorld();
       else if (window.location.href.indexOf('dream.html') === -1) window.location.href = 'dream.html?lanterns';
     }

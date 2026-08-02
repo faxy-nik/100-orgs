@@ -16,7 +16,16 @@ function getDefaultSteps() {
         { text: 'Fingering — I do it to you, or you do it to yourself', next: 500, transition: 'I slide my hand down your body. "My fingers. Yes. I will take you apart."', energy: 2 },
         { text: 'Foreplay — I tease you until you beg', next: 600, transition: 'I smile slowly. "You want to beg? I will make sure you do."', energy: 1 },
         { text: 'Fingering drive — I talk you to pieces, my fingers inside you', next: 800, transition: 'I take your hand and kiss your fingers, then mine. "We are going to talk while I take you apart."', energy: 2 },
-        { text: 'Oral — my mouth on you, I taste every inch', next: 700, transition: 'I kiss down your body, slow and deliberate. "I am going to devour you."', energy: 2 }
+        { text: 'Oral — my mouth on you, I taste every inch', next: 700, transition: 'I kiss down your body, slow and deliberate. "I am going to devour you."', energy: 2 },
+        { text: 'Shower — I wash every inch of you', next: 900, transition: 'Steam curls around us as the water warms. I take your hand. "Come with me. I will take care of you."', energy: 1 },
+        { text: 'Watching you undress — the slow way', next: 1000, transition: 'I sit back and watch you. "Do not rush. I want to see every part of you."', energy: 1 },
+        { text: 'Rough — I take control', next: 1100, transition: 'The air changes. I go quiet, and you know that look. "On your knees."', energy: 3 },
+        { text: 'Mirror — I watch us together', next: 1200, transition: 'I take your hand and lead you to the mirror. "Watch. I want you to see everything."', energy: 2 },
+        { text: '69 — both of us, at once', next: 1300, transition: 'I pull you over me and we settle, mouth to body, body to mouth. "We do this together."', energy: 3 },
+        { text: 'Morning — I wake you up slow', next: 1400, transition: 'The first light is grey and soft. You are still asleep, warm against me. I kiss your shoulder. "Good morning, my love."', energy: 1 },
+        { text: 'Bath — I bathe you until you melt', next: 1500, transition: 'The water is warm, the candles are lit, and I hold my hand out to you. "Come. I will take care of you."', energy: 1 },
+        { text: 'Car — parked, dark, impatient', next: 1600, transition: 'The engine dies. The street is empty. I kill the headlights and turn to you. "Lock the doors."', energy: 2 },
+        { text: 'Public — nothing under your dress', next: 1700, transition: 'We are surrounded by people. I lean close and whisper in your ear: "Tell me you are not wearing anything under that dress."', energy: 3 }
       ]
     },
     {
@@ -5083,6 +5092,1770 @@ function getDefaultSteps() {
       options: [
         { text: 'I stay — I am all yours', next: -1, transition: '', energy: 1 },
         { text: 'I kiss you, still trembling', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 900,
+      level: 1,
+      mood: 'tender',
+      energy: 1,
+      symbol: '💦',
+      pause: 1050,
+      scene: 'The bathroom fills with steam, warm and thick. The water runs, and you stand at the edge of the tub, still dressed, looking back at me. I reach for you.',
+      prompt: '"Let me take care of you tonight. There is nowhere to be, nothing to do. Just us and the water."',
+      options: [
+        { text: 'I step in and the water runs over me', next: 901, transition: 'You step under the stream and gasp as the warmth hits your skin. I join you a second later.', energy: 1 },
+        { text: 'I undress you myself', next: 902, transition: 'I reach for the hem of your shirt, slow. "Let me."', energy: 1 }
+      ]
+    },
+    {
+      id: 901,
+      level: 2,
+      mood: 'teasing',
+      energy: 2,
+      symbol: '💦',
+      pause: 950,
+      scene: 'Water runs down your back, darkening your clothes where it clings. I stand behind you, close enough that you feel my breath on your wet shoulder.',
+      prompt: '"Stand still. I want to look at you like this first — wet, warm, mine."',
+      options: [
+        { text: 'I wash your back', next: 903, transition: 'I take the soap and start at your shoulders, working the lather into your skin.', energy: 1 },
+        { text: 'I turn you to face me', next: 904, transition: 'I turn you to face me and start at your shoulders, lathering the soap over your chest.', energy: 1 }
+      ]
+    },
+    {
+      id: 902,
+      level: 2,
+      mood: 'tender',
+      energy: 1,
+      symbol: '💦',
+      pause: 1050,
+      scene: 'I undress you piece by piece — shirt first, then the rest, each one slower than the last. The water steams around us and you let me.',
+      prompt: '"You are beautiful like this. You are beautiful like everything. But I like seeing all of you."',
+      options: [
+        { text: 'You let me take it all off', next: 903, transition: 'I work the lather into your back, your skin slick and warm under my hands.', energy: 1 },
+        { text: 'You undress me too', next: 905, transition: 'Your hands find the buttons of my shirt, and soon we are both bare under the water.', energy: 2 }
+      ]
+    },
+    {
+      id: 903,
+      level: 3,
+      mood: 'tender',
+      energy: 1,
+      symbol: '💦',
+      pause: 1050,
+      scene: 'My hands glide over your back, soap and water, suds sliding down the curve of your spine. You make a small sound and lean into me.',
+      prompt: '"Good. Let me wash every worry off you. There is nothing here that matters but this."',
+      options: [
+        { text: 'I kiss your wet shoulder', next: 906, transition: 'I press my lips to your shoulder, then your neck, tasting water and you.', energy: 2 },
+        { text: 'You arch under my hands', next: 907, transition: 'You arch into my touch and I follow the line of your body with my palms.', energy: 2 }
+      ]
+    },
+    {
+      id: 904,
+      level: 3,
+      mood: 'teasing',
+      energy: 2,
+      symbol: '💦',
+      pause: 950,
+      scene: 'I turn you to face me and wash you slowly — your collarbones, your ribs, the places where you are softest. The water runs between us.',
+      prompt: '"Watch me. I want you to see how careful I am with you."',
+      options: [
+        { text: 'I wash you lower', next: 907, transition: 'My hand slides down your stomach, slow, and you gasp.', energy: 2 },
+        { text: 'You grip my arms', next: 908, transition: 'You grip my arms to steady yourself and I grin. "That is it."', energy: 2 }
+      ]
+    },
+    {
+      id: 905,
+      level: 3,
+      mood: 'intense',
+      energy: 2,
+      symbol: '💦',
+      pause: 1000,
+      scene: 'We undress each other under the spray, skin to skin, water streaming between us. I pull you flush against me and you feel how much I want you.',
+      prompt: 'My mouth is at your ear. "This is my favourite place in the world — right here, with you, nothing between us."',
+      options: [
+        { text: 'I pull you against me', next: 906, transition: 'I hold you against me under the water and we move together, slow and warm.', energy: 2 },
+        { text: 'I lift your thigh over my hip', next: 908, transition: 'I lift your thigh around me and you feel me against you, hard and waiting.', energy: 3 }
+      ]
+    },
+    {
+      id: 906,
+      level: 4,
+      mood: 'intense',
+      energy: 3,
+      symbol: '💦',
+      pause: 1000,
+      scene: 'Bodies pressed together, soap-slick and steaming. My hands roam you under the water — your hips, your thighs, the small of your back.',
+      prompt: '"Tell me what you want, baby. Say it and it is yours."',
+      options: [
+        { text: 'My hand slides between your legs', next: 909, transition: 'My hand slides down and finds you, slippery and hot. You moan into my mouth.', energy: 3 },
+        { text: 'You pin me to the tiles', next: 910, transition: 'You push me against the cold tiles and kiss me hard, water drumming around us.', energy: 3 }
+      ]
+    },
+    {
+      id: 907,
+      level: 4,
+      mood: 'vulnerable',
+      energy: 2,
+      symbol: '💦',
+      pause: 1050,
+      scene: 'Water streams down your back as I kiss along your neck, your shoulder, lower. You arch against the wall of the shower, hands braced, head tipped back.',
+      prompt: '"I could spend forever on my knees for you."',
+      options: [
+        { text: 'I kneel before you', next: 910, transition: 'I slide down your body and kneel in the water, looking up at you.', energy: 2 },
+        { text: 'You turn and pull me back up', next: 911, transition: 'You turn in my arms and pull me up to kiss you, desperate.', energy: 2 }
+      ]
+    },
+    {
+      id: 908,
+      level: 5,
+      mood: 'intense',
+      energy: 3,
+      symbol: '💦',
+      pause: 950,
+      scene: 'The water is hot, the steam thick, and you are pinned between me and the tiles. I grind against you and you rock into me, slick and urgent.',
+      prompt: '"I want to be inside you so badly it hurts. Say it. Say you want me."',
+      options: [
+        { text: 'I want you inside me', next: 912, transition: 'The words leave your mouth and I groan, pressing my forehead to yours.', energy: 3 },
+        { text: 'I make you wait', next: 911, transition: 'I pull back and smile. "Not yet. I want to hear you beg."', energy: 2 }
+      ]
+    },
+    {
+      id: 909,
+      level: 5,
+      mood: 'intense',
+      energy: 3,
+      symbol: '💦',
+      pause: 950,
+      scene: 'My fingers work you under the water, the soap making everything slippery, your legs shaking, the shower drumming like a heartbeat.',
+      prompt: '"So wet for me. Is that the water, baby, or is that you?"',
+      options: [
+        { text: 'It is all you', next: 912, transition: '"Good girl." I slide deeper and your knees buckle.', energy: 3 },
+        { text: 'I make you come like this', next: 913, transition: 'I keep going until you are shaking, right there on the edge.', energy: 3 }
+      ]
+    },
+    {
+      id: 910,
+      level: 6,
+      mood: 'intense',
+      energy: 3,
+      symbol: '💦',
+      pause: 1050,
+      scene: 'I kneel before you in the water, looking up as you arch against the tiles. The steam curls around us, and I worship you slowly, my mouth finding every part of you.',
+      prompt: 'I look up at you, water running down my face. "You taste like the rain. I am never going to get enough of you."',
+      options: [
+        { text: 'I make you come', next: 913, transition: 'I stay with you until you shatter against the wall, crying out into the steam.', energy: 3 },
+        { text: 'You pull me up and turn me around', next: 914, transition: 'You pull me up and press me against the tiles, and now it is your turn to take care of me.', energy: 3 }
+      ]
+    },
+    {
+      id: 911,
+      level: 6,
+      mood: 'ecstasy',
+      energy: 3,
+      symbol: '💦',
+      pause: 1000,
+      scene: 'We kiss under the water, deep and hungry, your hands in my wet hair, my hands on your hips. The water runs over us like we are standing in the rain.',
+      prompt: 'I break the kiss just long enough to breathe. "I love you like this. I love you like everything."',
+      options: [
+        { text: 'I press you against the wall', next: 914, transition: 'I press you into the tiles and you wrap your legs around me.', energy: 3 },
+        { text: 'Your hand finds me', next: 915, transition: 'Your hand slides down and wraps around me and I groan into your neck.', energy: 3 }
+      ]
+    },
+    {
+      id: 912,
+      level: 7,
+      mood: 'ecstasy',
+      energy: 3,
+      symbol: '💦',
+      pause: 1050,
+      scene: 'The edge. Steam everywhere, water hot, you pinned against the tiles, my body against yours, both of us trembling with how much we want this.',
+      prompt: '"Tell me again. Tell me you want me inside you. I want to hear it while I am this close to losing my mind."',
+      options: [
+        { text: 'I want you inside me', next: 915, transition: 'You say it again, louder, and I am done for.', energy: 3 },
+        { text: 'I take you against the tiles', next: 916, transition: 'I lift you and take you right there, water streaming over us, and we both lose ourselves.', energy: 3 }
+      ]
+    },
+    {
+      id: 913,
+      level: 7,
+      mood: 'ecstasy',
+      energy: 3,
+      symbol: '💦',
+      pause: 1200,
+      scene: 'You come apart in the shower — under my mouth, under my hands — the water catching every sound, the steam swallowing your cries. I hold you up as you shake.',
+      prompt: 'I hold you, forehead to forehead, breath ragged. "That is my girl. That is my whole heart."',
+      options: [
+        { text: 'I am yours', next: 916, transition: 'You say it, breathless, and I kiss you, tasting the shower and you.', energy: 1 },
+        { text: 'I hold you through it', next: 914, transition: 'I hold you as you come down, the water warming your shoulders.', energy: 1 }
+      ]
+    },
+    {
+      id: 914,
+      level: 7,
+      mood: 'tender',
+      energy: 1,
+      symbol: '💋',
+      pause: 1200,
+      scene: 'The water runs warm over us, steam curling, your body soft against mine. I hold you like you are the only thing in the world that exists.',
+      prompt: '"I could stay here forever. Just you and me and the water."',
+      options: [
+        { text: 'I stay in your arms', next: -1, transition: '', energy: 1 },
+        { text: 'You kiss me, warm and slow', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 915,
+      level: 7,
+      mood: 'tender',
+      energy: 1,
+      symbol: '💋',
+      pause: 1200,
+      scene: 'We stand under the water until it runs cold, laughing softly, your head on my chest, my hand in your hair.',
+      prompt: '"Every time I think I know how much I love you, you give me another reason to fall."',
+      options: [
+        { text: 'I love you too', next: -1, transition: '', energy: 1 },
+        { text: 'I am too happy to speak', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 916,
+      level: 7,
+      mood: 'tender',
+      energy: 1,
+      symbol: '🫂',
+      pause: 1200,
+      scene: 'We step out into the cool air, wrapped in towels, your skin flushed and warm. I pull you close and kiss the top of your head.',
+      prompt: '"Tonight, tomorrow, forever. It is always going to be you."',
+      options: [
+        { text: 'Forever', next: -1, transition: '', energy: 1 },
+        { text: 'I believe you', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 1000,
+      level: 1,
+      mood: 'teasing',
+      energy: 1,
+      symbol: '🔥',
+      pause: 1000,
+      scene: 'You stand in the middle of the room and I sit on the edge of the bed, watching you. The lamp is low. You know what I want. You have always known.',
+      prompt: '"This is my favourite fantasy — and you are living it. Undress for me. Slowly. Do not rush. I want to see everything."',
+      options: [
+        { text: 'You start with the hem of your shirt', next: 1001, transition: 'Your fingers catch the hem of your shirt and lift it inch by inch.', energy: 1 },
+        { text: 'You turn your back to me', next: 1002, transition: 'You turn around slowly, showing me the line of your back.', energy: 1 }
+      ]
+    },
+    {
+      id: 1001,
+      level: 2,
+      mood: 'teasing',
+      energy: 2,
+      symbol: '🔥',
+      pause: 950,
+      scene: 'You lift your shirt over your head, and the light catches your skin. I do not move. I do not breathe. I just watch.',
+      prompt: '"Keep going. I want to remember every second of this."',
+      options: [
+        { text: 'I slide the straps of your bra down', next: 1003, transition: 'You reach back and unclip your bra, letting it fall.', energy: 2 },
+        { text: 'You shimmy out of your jeans', next: 1004, transition: 'You unbutton your jeans and roll them down your hips, slow.', energy: 2 }
+      ]
+    },
+    {
+      id: 1002,
+      level: 2,
+      mood: 'teasing',
+      energy: 2,
+      symbol: '🔥',
+      pause: 950,
+      scene: 'You turn your back to me and look over your shoulder. I watch you undress from behind — the curve of your waist, the dip of your spine.',
+      prompt: '"God. I have watched you a thousand times and it never gets old. Turn around."',
+      options: [
+        { text: 'You turn and face me', next: 1003, transition: 'You turn slowly, your hands dropping to your sides, and I lose my breath.', energy: 2 },
+        { text: 'You keep your back to me', next: 1005, transition: 'You keep your back to me and keep undressing, making me wait.', energy: 2 }
+      ]
+    },
+    {
+      id: 1003,
+      level: 3,
+      mood: 'intense',
+      energy: 2,
+      symbol: '🔥',
+      pause: 1000,
+      scene: 'There is a fire in the room and it is nothing compared to the one between us. Your clothes are on the floor and you stand in the warm light, watching me watch you.',
+      prompt: '"You have no idea what you do to me. Come here. Slowly."',
+      options: [
+        { text: 'You walk to me slowly', next: 1006, transition: 'You walk to me slow, deliberate, and my hands shake for you.', energy: 2 },
+        { text: 'I come to you instead', next: 1007, transition: 'I stand and come to you, and the space between us becomes nothing.', energy: 2 }
+      ]
+    },
+    {
+      id: 1004,
+      level: 3,
+      mood: 'intense',
+      energy: 2,
+      symbol: '🔥',
+      pause: 1050,
+      scene: 'You are down to nothing but the last pieces, and you let them fall too. You stand there, bare, beautiful, brave.',
+      prompt: 'I take you in. All of you. "You are the most beautiful thing I have ever seen. And you are mine."',
+      options: [
+        { text: 'I reach for you', next: 1007, transition: 'I reach for you and my fingers brush your waist like you are made of fire.', energy: 3 },
+        { text: 'You come to me', next: 1008, transition: 'You come to me and press yourself against me, and I feel the heat of your skin through my shirt.', energy: 3 }
+      ]
+    },
+    {
+      id: 1005,
+      level: 3,
+      mood: 'teasing',
+      energy: 2,
+      symbol: '🔥',
+      pause: 950,
+      scene: 'You keep your back to me, unhurried, dropping each piece of clothing like you have all the time in the world. I sit forward, hands gripping the bed.',
+      prompt: '"You are a tease. You know exactly what you are doing. Keep going — I am enjoying this far too much to stop you."',
+      options: [
+        { text: 'You finally turn around', next: 1008, transition: 'You finally turn around, and the sight of you nearly undoes me.', energy: 2 },
+        { text: 'I cannot wait any longer', next: 1009, transition: 'I stand and cross the room and take you in my arms.', energy: 3 }
+      ]
+    },
+    {
+      id: 1006,
+      level: 4,
+      mood: 'intense',
+      energy: 3,
+      symbol: '🔥',
+      pause: 1000,
+      scene: 'You stop in front of me and I look up at you, firelight on your skin. I take your hand and kiss your palm, then your wrist.',
+      prompt: '"When our skin meets, all the rules break down. You know that, right? Nothing else matters."',
+      options: [
+        { text: 'I pull you onto the bed', next: 1009, transition: 'I pull you onto the bed and the world outside disappears.', energy: 3 },
+        { text: 'I stand and press against you', next: 1010, transition: 'I stand and press my body to yours, and the fire between us catches.', energy: 3 }
+      ]
+    },
+    {
+      id: 1007,
+      level: 4,
+      mood: 'intense',
+      energy: 3,
+      symbol: '🔥',
+      pause: 1050,
+      scene: 'Skin to skin, the fire we both lit burning between us. My hands learn you again like it is the first time — your waist, your ribs, the heat of you.',
+      prompt: '"I dreamed about this. About you, like this, in this light. The dream was never this good."',
+      options: [
+        { text: 'I undress the rest of the way', next: 1010, transition: 'I pull off my shirt and the last of our clothes fall to the floor together.', energy: 3 },
+        { text: 'You pull my head down to kiss you', next: 1011, transition: 'You pull me down into a kiss that swallows the whole world.', energy: 3 }
+      ]
+    },
+    {
+      id: 1008,
+      level: 5,
+      mood: 'intense',
+      energy: 3,
+      symbol: '🔥',
+      pause: 1000,
+      scene: 'You are bare and I am not, and the difference is driving me crazy. I pull you into me and you feel how much I want you through my clothes.',
+      prompt: '"Undress me. I want your hands on me when I lose every piece of it."',
+      options: [
+        { text: 'You undress me slowly', next: 1011, transition: 'Your hands work my buttons slow, and I watch your face as you bare me.', energy: 3 },
+        { text: 'I cannot wait', next: 1012, transition: 'I lift you and you wrap around me, and nothing in the world matters but you.', energy: 3 }
+      ]
+    },
+    {
+      id: 1009,
+      level: 6,
+      mood: 'ecstasy',
+      energy: 3,
+      symbol: '🔥',
+      pause: 1050,
+      scene: 'The fire, the dark, the two of us — tangled, breathless, skin sliding on skin. The rest of the world has stopped existing.',
+      prompt: '"Say my name. I want to hear it when you fall apart."',
+      options: [
+        { text: 'I make you come', next: 1012, transition: 'I take you to the edge and hold you there until you shatter.', energy: 3 },
+        { text: 'We come together', next: -1, transition: 'We come together and hold each other, the fire and us, nothing else in the world.', energy: 3 }
+      ]
+    },
+    {
+      id: 1010,
+      level: 7,
+      mood: 'ecstasy',
+      energy: 1,
+      symbol: '🫂',
+      pause: 1200,
+      scene: 'The fire burns low. We lie tangled in the sheets, my arm around you, your head on my chest, both of us still catching our breath.',
+      prompt: '"This is better than any dream. Because it is real, and it is you."',
+      options: [
+        { text: 'I hold you closer', next: -1, transition: '', energy: 1 },
+        { text: 'You trace my chest', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 1011,
+      level: 7,
+      mood: 'ecstasy',
+      energy: 1,
+      symbol: '🫂',
+      pause: 1200,
+      scene: 'I trace your skin with my fingertips like I am memorising it. The firelight dances on your face.',
+      prompt: '"I want to remember this forever. Your skin, your breathing, the way you look at me."',
+      options: [
+        { text: 'I am yours', next: -1, transition: '', energy: 1 },
+        { text: 'I kiss you, soft', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 1012,
+      level: 7,
+      mood: 'tender',
+      energy: 1,
+      symbol: '🫂',
+      pause: 1200,
+      scene: 'You are still shaking, and I hold you through it, kissing your forehead, your temple, your lips. Nothing else has ever mattered this much.',
+      prompt: '"You are my favourite story. The one I never want to end."',
+      options: [
+        { text: 'Then it never ends', next: -1, transition: '', energy: 1 },
+        { text: 'I hold you tighter', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 1100,
+      level: 1,
+      mood: 'intense',
+      energy: 3,
+      symbol: '🔥',
+      pause: 900,
+      scene: 'The air changes. You see it in my eyes — the way I go quiet, the way my jaw sets. You know that look. You know exactly what it means.',
+      prompt: '"On your knees." That is all I say. And you know exactly what I mean.',
+      options: [
+        { text: 'You sink to your knees', next: 1101, transition: 'You sink to your knees in front of me, looking up, and my breath catches.', energy: 2 },
+        { text: 'You look up at me, defiant', next: 1102, transition: 'You hold my gaze, chin lifted, a challenge in your eyes. I smile slowly.', energy: 2 }
+      ]
+    },
+    {
+      id: 1101,
+      level: 2,
+      mood: 'intense',
+      energy: 3,
+      symbol: '🔥',
+      pause: 950,
+      scene: 'You kneel before me, looking up, and I cup your chin, tilting your face up to mine. My thumb traces your lower lip.',
+      prompt: '"Good girl. You know I would never hurt you — but I am going to take what is mine. And you are going to love it."',
+      options: [
+        { text: 'I guide your head down', next: 1103, transition: 'I guide you down gently, my hand in your hair, and you take me into your mouth.', energy: 3 },
+        { text: 'I pull you up by the chin', next: 1104, transition: 'I pull you up and back, pressing you against the wall, my mouth at your ear.', energy: 2 }
+      ]
+    },
+    {
+      id: 1102,
+      level: 2,
+      mood: 'teasing',
+      energy: 2,
+      symbol: '🔥',
+      pause: 950,
+      scene: 'You hold my gaze, chin lifted, daring me. I walk around you slowly, and you feel me watching every inch of you.',
+      prompt: '"Defiant. I love it. We will fix that in a minute."',
+      options: [
+        { text: 'You are going to behave', next: 1103, transition: 'I take your chin and tilt your face up. "Are you going to behave?"', energy: 3 },
+        { text: 'I turn you over my knee', next: 1105, transition: 'I sit and pull you over my knee, your skin bared to my hand.', energy: 3 }
+      ]
+    },
+    {
+      id: 1103,
+      level: 3,
+      mood: 'intense',
+      energy: 3,
+      symbol: '🔥',
+      pause: 1000,
+      scene: 'I guide you down and you take me into your mouth, and I watch you — your eyes on mine, your hair in my fist. I am in no hurry.',
+      prompt: '"Slow. Look at me. That is it. You are perfect like this."',
+      options: [
+        { text: 'I hold your hair gently', next: 1106, transition: 'My fist tightens gently in your hair, guiding your rhythm, and I watch you take me.', energy: 3 },
+        { text: 'I let you set the pace', next: 1107, transition: 'I let you take the lead and groan, head back, as you decide how fast.', energy: 2 }
+      ]
+    },
+    {
+      id: 1104,
+      level: 3,
+      mood: 'intense',
+      energy: 3,
+      symbol: '🔥',
+      pause: 950,
+      scene: 'I pull you up and pin you against the wall, my forearm across your chest, my mouth at your ear, my thigh between your legs.',
+      prompt: '"You like it when I am rough with you. Say it."',
+      options: [
+        { text: 'I like it', next: 1107, transition: 'You say it and I press closer, one hand sliding down between your legs. "Good girl."', energy: 2 },
+        { text: 'I make you say it again', next: 1108, transition: '"Louder. I want to hear it." You say it again, breathless, and I grin.', energy: 3 }
+      ]
+    },
+    {
+      id: 1105,
+      level: 3,
+      mood: 'intense',
+      energy: 3,
+      symbol: '🔥',
+      pause: 950,
+      scene: 'You are over my knee, bare and warm under my palm. I spank you once — sharp — and you gasp, your hips pressing down into me.',
+      prompt: '"Count them. I want to hear you."',
+      options: [
+        { text: 'One — I spank you again', next: 1108, transition: '"One." I spank you again, harder, and your voice shakes.', energy: 3 },
+        { text: 'You arch up, asking for more', next: 1109, transition: 'You press back into my hand, asking without words, and I know exactly what you want.', energy: 3 }
+      ]
+    },
+    {
+      id: 1106,
+      level: 4,
+      mood: 'intense',
+      energy: 3,
+      symbol: '🔥',
+      pause: 1000,
+      scene: 'My fist is in your hair, firm but gentle, guiding your rhythm. You take me deeper and I groan, head back against the wall.',
+      prompt: '"That is it. Take all of me. You were made for this."',
+      options: [
+        { text: 'I let you take control', next: 1109, transition: 'I loosen my grip and let you take over, and you devour me.', energy: 2 },
+        { text: 'I take you deeper', next: 1110, transition: 'I take you deeper, and you moan around me, your eyes watering, looking up.', energy: 3 }
+      ]
+    },
+    {
+      id: 1107,
+      level: 4,
+      mood: 'intense',
+      energy: 3,
+      symbol: '🔥',
+      pause: 1000,
+      scene: 'You say it and I press closer, my hand sliding down between your legs. You are already wet, and I laugh low in your ear.',
+      prompt: '"Look how ready you are. My rough girl. My good girl. Both of you are mine."',
+      options: [
+        { text: 'I touch you slowly', next: 1110, transition: 'I slide my fingers over you, slow, teasing, while I hold you pinned.', energy: 3 },
+        { text: 'I make you beg', next: 1111, transition: 'I stop and wait. "Beg for it."', energy: 3 }
+      ]
+    },
+    {
+      id: 1108,
+      level: 5,
+      mood: 'intense',
+      energy: 3,
+      symbol: '🔥',
+      pause: 950,
+      scene: '"One. Two." I spank you again, and again, each one harder — and each time you press back into my hand, chasing it.',
+      prompt: '"You are counting wrong on purpose. You want more. Say it."',
+      options: [
+        { text: 'More — please', next: 1111, transition: '"Please." That word. I give you exactly what you asked for.', energy: 3 },
+        { text: 'I stop and hold you', next: 1112, transition: 'I stop, and pull you into my lap, your skin warm and stinging. "That is enough. You were so good."', energy: 2 }
+      ]
+    },
+    {
+      id: 1109,
+      level: 5,
+      mood: 'intense',
+      energy: 3,
+      symbol: '🔥',
+      pause: 1000,
+      scene: 'You are bent over the edge of the bed, and I am behind you, my hand tangled in your hair, your body arching back into mine.',
+      prompt: '"Beg for it. I want to hear how much you need me."',
+      options: [
+        { text: 'Please — I need you', next: 1112, transition: 'You beg me and I slide into you, both of us groaning.', energy: 3 },
+        { text: 'I make you wait', next: 1113, transition: 'I hold you on the edge, teasing, until you are trembling. "Not yet."', energy: 3 }
+      ]
+    },
+    {
+      id: 1110,
+      level: 6,
+      mood: 'intense',
+      energy: 3,
+      symbol: '🔥',
+      pause: 1000,
+      scene: 'I push inside you — hard, deep — and you cry out. My hand is on the back of your neck, your body pinned, and I take you like I own you.',
+      prompt: '"Look at me. I want to see your eyes when you come."',
+      options: [
+        { text: 'I take you hard', next: 1113, transition: 'I take you hard and deep, and you claw at the sheets, moaning my name.', energy: 3 },
+        { text: 'I slow down — you are close', next: -1, transition: 'I slow to a tease at the very edge, and when I move again you shatter around me, screaming my name.', energy: 3 }
+      ]
+    },
+    {
+      id: 1111,
+      level: 7,
+      mood: 'ecstasy',
+      energy: 3,
+      symbol: '🔥',
+      pause: 1100,
+      scene: 'You come apart for me — rough and loud and beautiful — and I am right there with you, my forehead against yours, both of us shaking.',
+      prompt: '"That is my girl. Mine. Fucking mine."',
+      options: [
+        { text: 'I am yours', next: -1, transition: '', energy: 1 },
+        { text: 'You kiss me, hard and soft at once', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 1112,
+      level: 7,
+      mood: 'tender',
+      energy: 1,
+      symbol: '🫂',
+      pause: 1200,
+      scene: 'I pull you into my arms and hold you, stroking your back where it is warm, kissing the top of your head. The rough part is over. This part is mine too.',
+      prompt: '"You were so good for me. Are you okay? Tell me."',
+      options: [
+        { text: 'I am perfect', next: -1, transition: '', energy: 1 },
+        { text: 'You hold me tighter', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 1113,
+      level: 7,
+      mood: 'tender',
+      energy: 1,
+      symbol: '🫂',
+      pause: 1200,
+      scene: 'We lie tangled, your cheek on my chest, my hand in your hair, your heartbeat slowly returning to normal against mine.',
+      prompt: '"I love you more when I am rough with you — because I get to hold you after, and remember you chose me."',
+      options: [
+        { text: 'I always choose you', next: -1, transition: '', energy: 1 },
+        { text: 'I kiss your chest', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 1200,
+      level: 1,
+      mood: 'teasing',
+      energy: 2,
+      symbol: '💋',
+      pause: 1000,
+      scene: 'I take your hand and lead you to the full-length mirror. I stand behind you, my hands on your shoulders, and we both look at us.',
+      prompt: '"Watch. I want you to see everything I see."',
+      options: [
+        { text: 'I undress you, watching', next: 1201, transition: 'I undress you slowly, and you watch yourself in the mirror as I reveal you.', energy: 2 },
+        { text: 'You undress yourself', next: 1202, transition: 'I step back and let you undress yourself, both of us watching you in the glass.', energy: 2 }
+      ]
+    },
+    {
+      id: 1201,
+      level: 2,
+      mood: 'teasing',
+      energy: 2,
+      symbol: '💋',
+      pause: 1000,
+      scene: 'I undress you piece by piece, my hands moving over you, and the mirror shows us everything — your reflection, my hands, the look on your face.',
+      prompt: '"Look at yourself. Look how beautiful you are when I take your clothes off."',
+      options: [
+        { text: 'I kiss your neck — you watch', next: 1203, transition: 'I kiss your neck and you watch in the mirror as your eyes close, then open again.', energy: 2 },
+        { text: 'My hands slide to your breasts', next: 1204, transition: 'My hands slide up and cup you, and you watch my fingers move in the glass.', energy: 3 }
+      ]
+    },
+    {
+      id: 1202,
+      level: 2,
+      mood: 'teasing',
+      energy: 2,
+      symbol: '💋',
+      pause: 1050,
+      scene: 'You undress yourself slowly, for the mirror, for me — and I watch both of you, my hands in my pockets, not touching.',
+      prompt: '"Do not stop. I want to watch you look at yourself the way I look at you."',
+      options: [
+        { text: 'You turn, showing me', next: 1203, transition: 'You turn slowly and I see all of you at once, in the glass and in person.', energy: 2 },
+        { text: 'You keep undressing, slower', next: 1205, transition: 'You slow down, dragging it out, and I lose my breath.', energy: 2 }
+      ]
+    },
+    {
+      id: 1203,
+      level: 3,
+      mood: 'intense',
+      energy: 2,
+      symbol: '💋',
+      pause: 1000,
+      scene: 'You are bare now, pressed back against me, and the mirror shows us — you in front, me behind, my hands on your skin.',
+      prompt: '"This is us. Look at us. I want you to remember this forever."',
+      options: [
+        { text: 'I press you against the mirror', next: 1206, transition: 'I press you gently against the cool glass and you gasp, watching yourself.', energy: 3 },
+        { text: 'You arch into me', next: 1207, transition: 'You arch back into me, your head on my shoulder, both of us watching.', energy: 2 }
+      ]
+    },
+    {
+      id: 1204,
+      level: 3,
+      mood: 'intense',
+      energy: 3,
+      symbol: '💋',
+      pause: 950,
+      scene: 'My hands move over your breasts in the mirror, my thumbs circling, and you watch your own reflection — mouth open, eyes dark.',
+      prompt: '"You like watching yourself like this. I know you do. I can feel how much."',
+      options: [
+        { text: 'My hand slides down your stomach', next: 1205, transition: 'My hand slides down, slow, over your stomach, lower.', energy: 3 },
+        { text: 'I turn you to face the mirror', next: 1206, transition: 'I turn you to face the mirror fully, your back to my chest, nothing hidden.', energy: 3 }
+      ]
+    },
+    {
+      id: 1205,
+      level: 4,
+      mood: 'intense',
+      energy: 3,
+      symbol: '💋',
+      pause: 1000,
+      scene: 'My hand slides between your legs from behind, and you watch my fingers work you in the mirror. Your knees buckle.',
+      prompt: '"Watch. I want you to see exactly where I touch you and how you react."',
+      options: [
+        { text: 'I make you come like this', next: 1208, transition: 'I work you slow and deep while you watch, until you come apart in the glass.', energy: 3 },
+        { text: 'You beg me to be inside you', next: 1209, transition: 'You beg me, watching yourself beg in the mirror, and I am done for.', energy: 3 }
+      ]
+    },
+    {
+      id: 1206,
+      level: 4,
+      mood: 'intense',
+      energy: 3,
+      symbol: '💋',
+      pause: 1000,
+      scene: 'You are pressed against the mirror, your palms flat on the glass, your breath fogging it. I stand behind you, both of us reflected.',
+      prompt: '"Look at yourself. This is what I get to see. This is mine."',
+      options: [
+        { text: 'I slide a finger into you', next: 1208, transition: 'I slide into you from behind and you watch my fingers disappear into you.', energy: 3 },
+        { text: 'I press against you', next: 1209, transition: 'I press against you, hard and ready, and you push back into me.', energy: 3 }
+      ]
+    },
+    {
+      id: 1207,
+      level: 5,
+      mood: 'vulnerable',
+      energy: 2,
+      symbol: '💋',
+      pause: 1050,
+      scene: 'You arch against me, your head on my shoulder, your eyes locked on the mirror. I kiss your neck and you watch yourself melt.',
+      prompt: '"I love the way you look at yourself when it is me making you feel like this."',
+      options: [
+        { text: 'I slide inside you — slowly', next: 1209, transition: 'I slide into you slowly and we both watch, neither of us able to look away.', energy: 3 },
+        { text: 'You turn to kiss me', next: 1210, transition: 'You turn your head and kiss me, deep, while we stay joined.', energy: 2 }
+      ]
+    },
+    {
+      id: 1208,
+      level: 5,
+      mood: 'ecstasy',
+      energy: 3,
+      symbol: '💋',
+      pause: 1000,
+      scene: 'I work you until you come against the glass — your hands sliding down the mirror, your reflection shivering, my name on your lips.',
+      prompt: 'I hold you up as you shake, and you see yourself in the mirror — spent, glowing, beautiful. "Look at you."',
+      options: [
+        { text: 'I hold you up', next: 1210, transition: 'I hold you up and kiss your shoulder, and you watch us in the glass.', energy: 2 },
+        { text: 'You turn into my arms', next: 1211, transition: 'You turn into my arms, still trembling, and I gather you up.', energy: 2 }
+      ]
+    },
+    {
+      id: 1209,
+      level: 6,
+      mood: 'ecstasy',
+      energy: 3,
+      symbol: '💋',
+      pause: 1050,
+      scene: 'I slide into you from behind, and the mirror shows us everything — your face, mine, the place where we are joined.',
+      prompt: '"Look at us. This is the most beautiful thing I have ever seen."',
+      options: [
+        { text: 'We move together, watching', next: 1212, transition: 'We move together slowly, both of us watching the mirror, and I feel you tighten around me.', energy: 3 },
+        { text: 'I take you against the glass', next: 1210, transition: 'I take you harder, your hands flat on the glass, and you cry out my name.', energy: 3 }
+      ]
+    },
+    {
+      id: 1210,
+      level: 7,
+      mood: 'ecstasy',
+      energy: 3,
+      symbol: '💋',
+      pause: 1100,
+      scene: 'We come together in front of the mirror — you first, then me, your reflection blurring with tears and pleasure, mine buried in your neck.',
+      prompt: '"I love you. I love watching us. I love everything you are."',
+      options: [
+        { text: 'I love you too', next: -1, transition: '', energy: 1 },
+        { text: 'You kiss me, fogging the glass', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 1211,
+      level: 7,
+      mood: 'tender',
+      energy: 1,
+      symbol: '🫂',
+      pause: 1200,
+      scene: 'You turn in my arms, your back to the mirror, and I hold you, my hand in your hair, both of us catching our breath.',
+      prompt: '"See? You are perfect. You were perfect in that mirror, and you are perfect here in my arms."',
+      options: [
+        { text: 'I believe you', next: -1, transition: '', energy: 1 },
+        { text: 'You stay in my arms', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 1212,
+      level: 7,
+      mood: 'tender',
+      energy: 1,
+      symbol: '🫂',
+      pause: 1200,
+      scene: 'The mirror is fogged now, and so are we — wrapped in each other, warm, quiet, smiling at our blurred reflections.',
+      prompt: '"Every time I see us, I fall a little harder. Do not ever stop being you."',
+      options: [
+        { text: 'I never will', next: -1, transition: '', energy: 1 },
+        { text: 'You kiss my shoulder', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 1300,
+      level: 1,
+      mood: 'teasing',
+      energy: 3,
+      symbol: '👅',
+      pause: 950,
+      scene: 'I lie back and pull you over me, and we settle — you above my face, me between your thighs. We look at each other upside down and grin.',
+      prompt: '"We do this together. You take what you need, and I take what I need. At the same time."',
+      options: [
+        { text: 'I pull you down to me', next: 1301, transition: 'I pull you down and my mouth finds you, and yours finds me.', energy: 3 },
+        { text: 'You take me first', next: 1302, transition: 'You take me into your mouth and I groan, my hands gripping your hips.', energy: 2 }
+      ]
+    },
+    {
+      id: 1301,
+      level: 2,
+      mood: 'intense',
+      energy: 3,
+      symbol: '👅',
+      pause: 1000,
+      scene: 'We taste each other at the same time — you sinking onto me, me holding you open, both of us moaning into each other.',
+      prompt: 'I look up at you, lips slick. "You taste incredible. Do not stop. I am not stopping."',
+      options: [
+        { text: 'We find a rhythm', next: 1303, transition: 'We find a rhythm together, rocking, and the room fills with both of our sounds.', energy: 3 },
+        { text: 'You ride my mouth', next: 1304, transition: 'You ride my mouth, taking what you need, while you keep working me.', energy: 3 }
+      ]
+    },
+    {
+      id: 1302,
+      level: 2,
+      mood: 'intense',
+      energy: 3,
+      symbol: '👅',
+      pause: 1000,
+      scene: 'You take me deep and slow, and my head falls back, my hands finding your thighs. You are in charge, and you know it.',
+      prompt: '"You are going to make me lose my mind. That is it. Just like that."',
+      options: [
+        { text: 'I grip your hips and pull you up', next: 1303, transition: 'I grip your hips and pull you up to my mouth, my tongue finding you.', energy: 3 },
+        { text: 'I let you take your time', next: 1305, transition: 'I let you take your time, watching you work, trembling under your mouth.', energy: 2 }
+      ]
+    },
+    {
+      id: 1303,
+      level: 3,
+      mood: 'intense',
+      energy: 3,
+      symbol: '👅',
+      pause: 1000,
+      scene: 'We rock together — me licking you deep, you bobbing over me — each of us driving the other faster, neither of us willing to stop.',
+      prompt: 'My voice is wrecked under you. "I am close. Stay right there. Do not move."',
+      options: [
+        { text: 'I make you come on my tongue', next: 1306, transition: 'I focus everything on you and you tremble, your rhythm breaking.', energy: 3 },
+        { text: 'You keep going — we are close', next: 1307, transition: 'We stay locked together, both of us climbing, both of us moaning.', energy: 3 }
+      ]
+    },
+    {
+      id: 1304,
+      level: 3,
+      mood: 'ecstasy',
+      energy: 3,
+      symbol: '👅',
+      pause: 1000,
+      scene: 'You ride my face, grinding, taking exactly what you need, and you are so good at it — your fingers working me in perfect rhythm.',
+      prompt: 'I grip your hips and hold you down. "Use me. Take it. I am yours."',
+      options: [
+        { text: 'You come against my mouth', next: 1308, transition: 'You come with a cry, your thighs shaking around my head, and I drink all of you.', energy: 3 },
+        { text: 'I hold you still and finish you', next: 1309, transition: 'I hold you still and finish you slowly, and you collapse onto me.', energy: 3 }
+      ]
+    },
+    {
+      id: 1305,
+      level: 3,
+      mood: 'intense',
+      energy: 3,
+      symbol: '👅',
+      pause: 1050,
+      scene: 'You take your time, teasing me, pulling back just when I am about to lose it — and I punish you by pulling you up to my mouth and devouring you.',
+      prompt: 'I laugh breathlessly under you. "You tease me, I tease you. Fair is fair."',
+      options: [
+        { text: 'I make you scream', next: 1308, transition: 'I make you scream into the dark, and your grip on me turns desperate.', energy: 3 },
+        { text: 'We slow down — we are close', next: 1309, transition: 'We slow down, savoring each other, both of us right on the edge.', energy: 2 }
+      ]
+    },
+    {
+      id: 1306,
+      level: 4,
+      mood: 'ecstasy',
+      energy: 3,
+      symbol: '👅',
+      pause: 1050,
+      scene: 'I work you with my mouth and fingers together, and you come undone above me — your body bowing, your cry muffled around me.',
+      prompt: 'I keep going through it, gentler now, until you push at my head, laughing and breathless. "Come back here."',
+      options: [
+        { text: 'You collapse onto me', next: 1309, transition: 'You collapse onto me, spent, and we lie tangled, still joined mouth to body.', energy: 2 },
+        { text: 'You take me again', next: 1310, transition: 'You take me into your mouth again, and I groan, already close.', energy: 3 }
+      ]
+    },
+    {
+      id: 1307,
+      level: 4,
+      mood: 'ecstasy',
+      energy: 3,
+      symbol: '👅',
+      pause: 1050,
+      scene: 'We are both climbing together — my tongue on you, your mouth on me — and we are racing, moaning into each other, holding each other tight.',
+      prompt: '"Together. I want us to come together. Do not stop. Do not you dare stop."',
+      options: [
+        { text: 'We come together', next: 1311, transition: 'We come together, both of us shaking, both of us moaning each other\'s names.', energy: 3 },
+        { text: 'I come first — you follow', next: 1310, transition: 'I come hard, gripping your thighs, and the sound of it pushes you over too.', energy: 3 }
+      ]
+    },
+    {
+      id: 1308,
+      level: 5,
+      mood: 'ecstasy',
+      energy: 3,
+      symbol: '👅',
+      pause: 1100,
+      scene: 'You come against my mouth, your thighs trembling, my name falling out of you — and I do not stop until you push me away.',
+      prompt: 'I come up for air, grinning, lips slick. "That was beautiful. Now come here."',
+      options: [
+        { text: 'I pull you up to kiss me', next: 1311, transition: 'I pull you up and kiss you, and you taste yourself on me.', energy: 2 },
+        { text: 'We finish together', next: 1312, transition: 'We finish together, tangled, breathless, both of us wrecked and happy.', energy: 3 }
+      ]
+    },
+    {
+      id: 1309,
+      level: 5,
+      mood: 'ecstasy',
+      energy: 3,
+      symbol: '👅',
+      pause: 1100,
+      scene: 'You collapse onto me, spent, and I hold you there, my hands on your back, still tasting you, still feeling you breathe.',
+      prompt: '"Stay there. I want to feel you like this for a minute. Then I am going to finish what we started."',
+      options: [
+        { text: 'You take me into your mouth again', next: 1310, transition: 'You take me again, slow, and I am gone within minutes.', energy: 3 },
+        { text: 'I pull you up to kiss me', next: 1312, transition: 'I pull you up and we kiss, and the night is still young.', energy: 2 }
+      ]
+    },
+    {
+      id: 1310,
+      level: 6,
+      mood: 'ecstasy',
+      energy: 3,
+      symbol: '👅',
+      pause: 1050,
+      scene: 'You take me deep, your hand wrapped around what your mouth cannot reach, and I am gone — gripping the sheets, your name on my lips.',
+      prompt: '"I am going to come. Do not stop. Please, do not stop."',
+      options: [
+        { text: 'I come in your mouth', next: 1311, transition: 'I come hard, crying out your name, and you take all of me.', energy: 3 },
+        { text: 'I pull you up and hold you', next: 1312, transition: 'I pull you up and hold you tight, still shaking.', energy: 2 }
+      ]
+    },
+    {
+      id: 1311,
+      level: 7,
+      mood: 'tender',
+      energy: 1,
+      symbol: '🫂',
+      pause: 1200,
+      scene: 'We lie tangled, still catching our breath, my arm around you, your head on my chest. The room smells like us.',
+      prompt: '"That is my favourite way to finish — together, at the same time, neither of us left behind."',
+      options: [
+        { text: 'I love that too', next: -1, transition: '', energy: 1 },
+        { text: 'You kiss my chest', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 1312,
+      level: 7,
+      mood: 'tender',
+      energy: 1,
+      symbol: '🫂',
+      pause: 1200,
+      scene: 'I hold you against me, spent and glowing, and kiss the top of your head. You are warm, soft, completely mine.',
+      prompt: '"We are good at this, you know. I love being good at this with you."',
+      options: [
+        { text: 'The best', next: -1, transition: '', energy: 1 },
+        { text: 'I hold you tighter', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 1400,
+      level: 1,
+      mood: 'tender',
+      energy: 1,
+      symbol: '💋',
+      pause: 1050,
+      scene: 'The first light is grey and soft through the curtains. You are still asleep, warm against me, your back to my chest. I kiss your shoulder.',
+      prompt: '"Good morning, my love. I have been awake for a while, just watching you breathe."',
+      options: [
+        { text: 'I kiss your shoulder awake', next: 1401, transition: 'You stir, making that small sleepy sound, and I kiss your shoulder again.', energy: 1 },
+        { text: 'You feel me before you wake', next: 1402, transition: 'You feel me against you — already hard — and you smile without opening your eyes.', energy: 2 }
+      ]
+    },
+    {
+      id: 1401,
+      level: 2,
+      mood: 'tender',
+      energy: 1,
+      symbol: '💋',
+      pause: 1050,
+      scene: 'You wake slowly, your voice thick with sleep. "What time is it?" I pull you closer. "Time for nothing. Go back to sleep. I have you."',
+      prompt: 'My hand slides over your hip, slow, warm. "Just stay here with me. Let me touch you before the day starts."',
+      options: [
+        { text: 'I slide my hand over your hip', next: 1403, transition: 'My hand moves over your hip, your stomach, your skin still warm from sleep.', energy: 2 },
+        { text: 'You roll into me', next: 1404, transition: 'You roll into me, burrowing into my chest, and I wrap myself around you.', energy: 1 }
+      ]
+    },
+    {
+      id: 1402,
+      level: 2,
+      mood: 'teasing',
+      energy: 2,
+      symbol: '💋',
+      pause: 1000,
+      scene: 'You are still half asleep, but you feel exactly what is pressed against you, and you smile into the pillow.',
+      prompt: '"You feel that? That is what you do to me just by sleeping next to me."',
+      options: [
+        { text: 'You arch back into me', next: 1403, transition: 'You arch back into me, pressing close, and I groan into your hair.', energy: 2 },
+        { text: 'You reach back for me', next: 1405, transition: 'Your hand finds me under the covers, and I bite my lip.', energy: 3 }
+      ]
+    },
+    {
+      id: 1403,
+      level: 3,
+      mood: 'tender',
+      energy: 2,
+      symbol: '💋',
+      pause: 1050,
+      scene: 'Slow morning hands — no rush, nowhere to be. I trace your skin under the covers while the light grows, and you make that small contented sound.',
+      prompt: '"This is my favourite part of the day. You, me, and no one else in the world yet."',
+      options: [
+        { text: 'I touch you slowly', next: 1406, transition: 'I touch you slow, gentle, and you open for me like a secret.', energy: 2 },
+        { text: 'You pull my hand lower', next: 1407, transition: 'You take my hand and guide it lower, and I follow you without question.', energy: 3 }
+      ]
+    },
+    {
+      id: 1404,
+      level: 3,
+      mood: 'tender',
+      energy: 2,
+      symbol: '💋',
+      pause: 1050,
+      scene: 'You are wrapped around me, your leg hooked over mine, your face buried in my neck, still half asleep and completely trusting.',
+      prompt: 'I whisper into your hair. "You are so soft like this. So mine. I could stay here all day."',
+      options: [
+        { text: 'I lift your leg', next: 1407, transition: 'I lift your leg over my hip and you feel me settle against you.', energy: 2 },
+        { text: 'I turn you onto your back', next: 1408, transition: 'I turn you gently onto your back, and you look up at me, sleepy and wanting.', energy: 2 }
+      ]
+    },
+    {
+      id: 1405,
+      level: 3,
+      mood: 'intense',
+      energy: 3,
+      symbol: '💋',
+      pause: 1000,
+      scene: 'Your hand works me slow under the covers, your eyes still closed, and I press my forehead to your back, breathing hard.',
+      prompt: '"You are going to ruin me before breakfast. Do not stop."',
+      options: [
+        { text: 'I slide into you slowly', next: 1408, transition: 'I slide into you slowly, both of us sighing, the morning gone quiet.', energy: 3 },
+        { text: 'You push back against me', next: 1409, transition: 'You push back into me, guiding me home, and we move together slow.', energy: 3 }
+      ]
+    },
+    {
+      id: 1406,
+      level: 4,
+      mood: 'tender',
+      energy: 2,
+      symbol: '💋',
+      pause: 1100,
+      scene: 'Slow and deep, the way mornings should be. The sheets are tangled, the light is warm, and you are looking up at me like I am the whole world.',
+      prompt: 'I hold your face in my hands. "I love you. I love waking up to you. I love this."',
+      options: [
+        { text: 'I move slowly', next: 1409, transition: 'I move inside you slow and deep, and you sigh my name.', energy: 2 },
+        { text: 'You wrap your leg around me', next: 1410, transition: 'You wrap your leg around me and pull me deeper, and I lose my rhythm.', energy: 3 }
+      ]
+    },
+    {
+      id: 1407,
+      level: 4,
+      mood: 'intense',
+      energy: 3,
+      symbol: '💋',
+      pause: 1050,
+      scene: 'I slide into you from behind, slow, spooned against you, and we both let out a breath we have been holding all night.',
+      prompt: '"Good morning," I murmur against your neck, and you feel me smile. "It is now."',
+      options: [
+        { text: 'We move together, slow', next: 1410, transition: 'We move together slow, still tangled in sleep, and the world outside does not exist.', energy: 2 },
+        { text: 'You turn your head for a kiss', next: 1411, transition: 'You turn your head and kiss me, deep, while I stay inside you.', energy: 2 }
+      ]
+    },
+    {
+      id: 1408,
+      level: 5,
+      mood: 'intense',
+      energy: 3,
+      symbol: '💋',
+      pause: 1050,
+      scene: 'On your back now, morning light on your face, my weight warm on you. I move slow, watching every expression cross your face.',
+      prompt: '"I want to see you. I want to watch you feel this. You are so beautiful in the morning light."',
+      options: [
+        { text: 'I stay slow — you are close', next: 1411, transition: 'I stay slow, teasing you toward it, and you grip my shoulders.', energy: 2 },
+        { text: 'I speed up', next: 1412, transition: 'I speed up, and the quiet morning fills with both of our sounds.', energy: 3 }
+      ]
+    },
+    {
+      id: 1409,
+      level: 5,
+      mood: 'ecstasy',
+      energy: 3,
+      symbol: '💋',
+      pause: 1050,
+      scene: 'The sheets are a mess, the pillows scattered, and we have forgotten the time, the day, the world. There is only this.',
+      prompt: 'I breathe against your mouth. "I am close. Tell me you are close. I want us to come together."',
+      options: [
+        { text: 'I feel you tighten', next: 1412, transition: 'I feel you tighten around me and I am gone, groaning your name.', energy: 3 },
+        { text: 'You pull me deeper', next: 1413, transition: 'You pull me deeper and hold me there, and we fall over together.', energy: 3 }
+      ]
+    },
+    {
+      id: 1410,
+      level: 6,
+      mood: 'ecstasy',
+      energy: 3,
+      symbol: '💋',
+      pause: 1100,
+      scene: 'We come together in the warm light — you first, then me — your cry muffled in the pillow, mine buried in your neck, the morning holding its breath.',
+      prompt: 'I hold you through it, stroking your hair. "That is my girl. My sleepy, perfect girl."',
+      options: [
+        { text: 'I stay inside you', next: 1413, transition: 'I stay inside you, soft, and kiss your shoulder. Neither of us moves.', energy: 1 },
+        { text: 'We lie tangled', next: -1, transition: 'We lie tangled, catching our breath, the morning light warm on our skin.', energy: 1 }
+      ]
+    },
+    {
+      id: 1411,
+      level: 7,
+      mood: 'tender',
+      energy: 1,
+      symbol: '🫂',
+      pause: 1200,
+      scene: 'You lie in the crook of my arm, your hand on my chest, both of us warm and quiet. The day can wait. We cannot.',
+      prompt: '"This is my favourite way to wake up. I want this for the rest of my life."',
+      options: [
+        { text: 'Every morning', next: -1, transition: '', energy: 1 },
+        { text: 'You kiss my chest', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 1412,
+      level: 7,
+      mood: 'tender',
+      energy: 1,
+      symbol: '🫂',
+      pause: 1200,
+      scene: 'The sheets are ruined and so are we — laughing, breathless, your leg over mine, the morning golden around us.',
+      prompt: '"We are never getting out of bed. I have decided. This is our new life."',
+      options: [
+        { text: 'I agree completely', next: -1, transition: '', energy: 1 },
+        { text: 'You pull the covers over us', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 1413,
+      level: 7,
+      mood: 'tender',
+      energy: 1,
+      symbol: '🫂',
+      pause: 1200,
+      scene: 'I hold you, still joined, still warm, my lips on your forehead. The light moves across the room and neither of us cares.',
+      prompt: '"Good morning, my love. Best morning of my life. And tomorrow we do it again."',
+      options: [
+        { text: 'I love you', next: -1, transition: '', energy: 1 },
+        { text: 'You smile into my chest', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 1500,
+      level: 1,
+      mood: 'tender',
+      energy: 1,
+      symbol: '💦',
+      pause: 1050,
+      scene: 'The bath is drawn — warm water, candlelight, steam curling. I hold my hand out to you and you take it without a word.',
+      prompt: '"Come. I am going to bathe you until you forget your own name. Then I will remind you who you belong to."',
+      options: [
+        { text: 'I undress you', next: 1501, transition: 'I undress you slow, piece by piece, while the water waits for us.', energy: 1 },
+        { text: 'You step in first', next: 1502, transition: 'You step into the water first, and I watch you sink into it with a sigh.', energy: 1 }
+      ]
+    },
+    {
+      id: 1501,
+      level: 2,
+      mood: 'tender',
+      energy: 1,
+      symbol: '💦',
+      pause: 1050,
+      scene: 'You step into the warm water and sink back with a sigh. I undress and join you, settling behind you, your back against my chest.',
+      prompt: 'I kiss your temple. "Relax. Tonight I take care of every inch of you."',
+      options: [
+        { text: 'I wash your back', next: 1503, transition: 'I take the soap and wash your back slowly, your shoulders, the curve of your spine.', energy: 1 },
+        { text: 'You lie back against me', next: 1504, transition: 'You lie back against me, your head on my shoulder, the water lapping at your chest.', energy: 1 }
+      ]
+    },
+    {
+      id: 1502,
+      level: 2,
+      mood: 'tender',
+      energy: 1,
+      symbol: '💦',
+      pause: 1050,
+      scene: 'You are already in the water, and I kneel beside the tub, dipping my hands in and working the soap between my palms.',
+      prompt: '"Lift your chin." I wash your neck, your collarbones, your shoulders. "You are allowed to do nothing. I have you."',
+      options: [
+        { text: 'I wash your shoulders', next: 1503, transition: 'I wash your shoulders and arms, slow, the water warm around you.', energy: 1 },
+        { text: 'You pull me in', next: 1505, transition: 'You tug my hand and water splashes everywhere, and I climb in with you, laughing.', energy: 2 }
+      ]
+    },
+    {
+      id: 1503,
+      level: 3,
+      mood: 'tender',
+      energy: 2,
+      symbol: '💦',
+      pause: 1050,
+      scene: 'My hands glide over your skin under the water — your back, your sides, your legs — washing you slow, worshipping you with every stroke.',
+      prompt: '"Close your eyes. Trust me. I am going to take care of you the way you deserve."',
+      options: [
+        { text: 'I wash your legs', next: 1506, transition: 'I lift one leg and wash it slowly, from your thigh to your ankle and back.', energy: 2 },
+        { text: 'I kiss your neck', next: 1507, transition: 'I kiss your neck, the water warm, my hands under it around your waist.', energy: 2 }
+      ]
+    },
+    {
+      id: 1504,
+      level: 3,
+      mood: 'tender',
+      energy: 2,
+      symbol: '💦',
+      pause: 1050,
+      scene: 'You are reclined against me, weightless in the warm water, your eyes closed, your breathing slow. I could stay like this forever.',
+      prompt: 'I whisper against your ear. "You are so beautiful when you let yourself be soft. Let me keep you soft."',
+      options: [
+        { text: 'My hands roam under the water', next: 1507, transition: 'My hands drift under the water — your ribs, your waist, lower.', energy: 2 },
+        { text: 'You close your eyes', next: 1508, transition: 'You let your eyes close and your head fall back against my shoulder, trusting me completely.', energy: 2 }
+      ]
+    },
+    {
+      id: 1505,
+      level: 3,
+      mood: 'intense',
+      energy: 2,
+      symbol: '💦',
+      pause: 1000,
+      scene: 'We are both in the tub now, water sloshing over the edge, my legs around you, your back against my chest. Cramped and perfect.',
+      prompt: 'I laugh softly. "Best idea I ever had. Now let me take care of you properly."',
+      options: [
+        { text: 'I slide my hand down your stomach', next: 1508, transition: 'My hand slides down your stomach, under the water, slow.', energy: 3 },
+        { text: 'You turn to face me', next: 1509, transition: 'You turn in my arms, water streaming off you, and wrap yourself around me.', energy: 3 }
+      ]
+    },
+    {
+      id: 1506,
+      level: 4,
+      mood: 'teasing',
+      energy: 2,
+      symbol: '💦',
+      pause: 1000,
+      scene: 'I lift your leg over the edge of the tub and wash it slowly — ankle, calf, knee, thigh — taking my time, watching your eyes flutter.',
+      prompt: '"Your legs are my favourite things in the world. Do you know how many times I have dreamed of your legs wrapped around me?"',
+      options: [
+        { text: 'I wash higher', next: 1509, transition: 'I wash higher, my hand sliding along your inner thigh, and you press your lips together.', energy: 3 },
+        { text: 'You spread for me', next: 1510, transition: 'You spread your legs for me under the water, an invitation I cannot refuse.', energy: 3 }
+      ]
+    },
+    {
+      id: 1507,
+      level: 4,
+      mood: 'intense',
+      energy: 3,
+      symbol: '💦',
+      pause: 1050,
+      scene: 'I kiss down your neck while my hands move under the water, the bath slick and warm, the candles flickering, your breath quickening.',
+      prompt: '"I said I would wash every inch of you. I intend to do it very, very thoroughly."',
+      options: [
+        { text: 'I slide a finger inside you', next: 1510, transition: 'My hand slides between your legs and I find you, already ready, already warm.', energy: 3 },
+        { text: 'You grind back into me', next: 1511, transition: 'You grind back into me, water sloshing, and I groan into your neck.', energy: 3 }
+      ]
+    },
+    {
+      id: 1508,
+      level: 5,
+      mood: 'vulnerable',
+      energy: 2,
+      symbol: '💦',
+      pause: 1050,
+      scene: 'You are floating on me, weightless, your head on my shoulder, completely surrendered. The water holds us. I hold you.',
+      prompt: 'I keep my voice low and soft. "I love you like this. Open. Trusting. Mine. There is no one else in the world."',
+      options: [
+        { text: 'I touch you slow', next: 1511, transition: 'I touch you slow and deep under the water, and you sigh against me.', energy: 2 },
+        { text: 'You beg me', next: 1512, transition: 'You whisper what you want, barely audible, and I give it to you.', energy: 3 }
+      ]
+    },
+    {
+      id: 1509,
+      level: 5,
+      mood: 'ecstasy',
+      energy: 3,
+      symbol: '💦',
+      pause: 1050,
+      scene: 'Warm water, warm skin, my fingers moving in you slow, your head thrown back against my shoulder, the candles blurring.',
+      prompt: '"Come for me, baby. Right here, in the water, in my arms. I have you."',
+      options: [
+        { text: 'I make you come in the water', next: 1512, transition: 'You come with a cry that the water swallows, your body bowing against mine.', energy: 3 },
+        { text: 'I lift you onto me', next: 1513, transition: 'I lift you and settle you onto me, and we move together in the water.', energy: 3 }
+      ]
+    },
+    {
+      id: 1510,
+      level: 6,
+      mood: 'ecstasy',
+      energy: 3,
+      symbol: '💦',
+      pause: 1100,
+      scene: 'I work you to the edge and hold you there, water sloshing, your hands gripping the edges of the tub, your cries filling the room.',
+      prompt: '"Not yet. Look at me. I want to see your face when I let you."',
+      options: [
+        { text: 'You come — I hold you', next: 1513, transition: 'I let you come and hold you through it, the water still warm around us.', energy: 2 },
+        { text: 'We finish together', next: -1, transition: 'We finish together in the cooling water, tangled, breathless, laughing softly.', energy: 3 }
+      ]
+    },
+    {
+      id: 1511,
+      level: 7,
+      mood: 'tender',
+      energy: 1,
+      symbol: '🫂',
+      pause: 1200,
+      scene: 'The water is cooling and neither of us cares. You are curled against me, spent, your fingers tracing circles on my chest.',
+      prompt: '"That was the best bath of my life. And I am not saying that just because of the ending."',
+      options: [
+        { text: 'Me too', next: -1, transition: '', energy: 1 },
+        { text: 'You kiss my shoulder', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 1512,
+      level: 7,
+      mood: 'tender',
+      energy: 1,
+      symbol: '🫂',
+      pause: 1200,
+      scene: 'I pull the plug and wrap you in the biggest towel we own, then wrap myself around you, both of us warm and glowing.',
+      prompt: '"There is no one else in the world. There never has been. Just you."',
+      options: [
+        { text: 'I know', next: -1, transition: '', energy: 1 },
+        { text: 'You hold me tighter', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 1513,
+      level: 7,
+      mood: 'tender',
+      energy: 1,
+      symbol: '🫂',
+      pause: 1200,
+      scene: 'We lie on the bathmat, towels tangled, the candles still burning, your head on my chest, both of us glowing and ruined.',
+      prompt: '"I am going to draw you a bath every single night. This is my new life purpose."',
+      options: [
+        { text: 'I hold you to that', next: -1, transition: '', energy: 1 },
+        { text: 'You laugh, soft', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 1600,
+      level: 1,
+      mood: 'intense',
+      energy: 3,
+      symbol: '🔥',
+      pause: 950,
+      scene: 'The engine dies. The street is dark and empty. I kill the headlights and turn to you, and the silence is suddenly loud.',
+      prompt: '"Lock the doors."',
+      options: [
+        { text: 'I pull you over the seat', next: 1601, transition: 'I pull you over the centre console and you land in my lap, breathless.', energy: 3 },
+        { text: 'You slide into my lap', next: 1602, transition: 'You climb over and settle in my lap, the steering wheel against your back.', energy: 3 }
+      ]
+    },
+    {
+      id: 1601,
+      level: 2,
+      mood: 'intense',
+      energy: 3,
+      symbol: '🔥',
+      pause: 950,
+      scene: 'You are in my lap, the seat reclined as far as it goes, your knees on either side of me, the windows already starting to fog.',
+      prompt: 'I grip your hips. "Anyone could walk past. Do you care?"',
+      options: [
+        { text: 'I kiss you deep', next: 1603, transition: 'You answer with a kiss that says everything, and I pull you close.', energy: 2 },
+        { text: 'You undo my belt', next: 1604, transition: 'Your fingers find my belt and the world narrows to your hands.', energy: 3 }
+      ]
+    },
+    {
+      id: 1602,
+      level: 2,
+      mood: 'intense',
+      energy: 3,
+      symbol: '🔥',
+      pause: 950,
+      scene: 'You are straddling me in the driver\'s seat, the wheel digging into your back, your hands on my shoulders, the dark pressing in.',
+      prompt: '"This is the best seat in the house. Now — what are you going to do about it?"',
+      options: [
+        { text: 'I lift your skirt', next: 1603, transition: 'I gather your skirt in my hands and slide it up your thighs.', energy: 3 },
+        { text: 'You grind against me', next: 1605, transition: 'You grind against me through our clothes, and I hiss through my teeth.', energy: 3 }
+      ]
+    },
+    {
+      id: 1603,
+      level: 3,
+      mood: 'intense',
+      energy: 3,
+      symbol: '🔥',
+      pause: 950,
+      scene: 'We kiss like teenagers — deep, desperate, hands everywhere, the windows fogging, the car rocking gently.',
+      prompt: 'I breathe against your mouth. "We have maybe ten minutes before someone notices the fogged-up car. Make them count."',
+      options: [
+        { text: 'My hand slides up your thigh', next: 1606, transition: 'My hand slides up your thigh and you gasp against my mouth.', energy: 3 },
+        { text: 'You bite my lip', next: 1607, transition: 'You bite my lip and I growl, pulling you closer.', energy: 3 }
+      ]
+    },
+    {
+      id: 1604,
+      level: 3,
+      mood: 'intense',
+      energy: 3,
+      symbol: '🔥',
+      pause: 950,
+      scene: 'Your hand wraps around me in the dark car, slow and deliberate, and I grip the steering wheel with my free hand.',
+      prompt: '"You are going to make me lose control in a parking lot. I hope you know what you are doing."',
+      options: [
+        { text: 'I guide you onto me', next: 1607, transition: 'I guide you onto me and we both gasp as you sink down.', energy: 3 },
+        { text: 'You tease me', next: 1608, transition: 'You tease me, slow, and I swear under my breath.', energy: 3 }
+      ]
+    },
+    {
+      id: 1605,
+      level: 3,
+      mood: 'intense',
+      energy: 3,
+      symbol: '🔥',
+      pause: 1000,
+      scene: 'We grind against each other through our clothes, desperate and quiet, the car filling with our breathing.',
+      prompt: '"We need to stop. We are not stopping. You first."',
+      options: [
+        { text: 'I slide inside you', next: 1608, transition: 'I slide inside you and we both stop breathing for a second.', energy: 3 },
+        { text: 'You take what you need', next: 1609, transition: 'You take what you need, setting the pace, and I let you.', energy: 3 }
+      ]
+    },
+    {
+      id: 1606,
+      level: 4,
+      mood: 'intense',
+      energy: 3,
+      symbol: '🔥',
+      pause: 1000,
+      scene: 'The seat is back, you are half under me, your skirt around your waist, the windows completely fogged, the street silent.',
+      prompt: 'I whisper, lips against your ear. "Be quiet. There is a car passing. Bite my shoulder if you are going to make noise."',
+      options: [
+        { text: 'I move inside you', next: 1609, transition: 'I move inside you slow and deep, and you bite your lip so hard it hurts.', energy: 3 },
+        { text: 'I hold your hips', next: 1610, transition: 'I hold your hips and set a rhythm that has you gripping the seat.', energy: 3 }
+      ]
+    },
+    {
+      id: 1607,
+      level: 4,
+      mood: 'ecstasy',
+      energy: 3,
+      symbol: '🔥',
+      pause: 1000,
+      scene: 'You are on top of me in the driver\'s seat, the steering wheel digging into your back, moving slow, your face in shadow.',
+      prompt: '"You are so beautiful like this. I want to remember this forever."',
+      options: [
+        { text: 'We move together', next: 1610, transition: 'We move together in the dark, the car rocking, the night holding its breath.', energy: 3 },
+        { text: 'You ride me slow', next: 1611, transition: 'You ride me slow, deliberately, and I am completely yours.', energy: 3 }
+      ]
+    },
+    {
+      id: 1608,
+      level: 5,
+      mood: 'ecstasy',
+      energy: 3,
+      symbol: '🔥',
+      pause: 1000,
+      scene: 'I have you pinned against the passenger window, one hand on the glass, the other between your legs, the streetlights sliding over us.',
+      prompt: '"Tell me you want this. Whisper it. I want to hear you say it in this car."',
+      options: [
+        { text: 'I want this', next: 1611, transition: 'You whisper it and I slide into you, both of us groaning.', energy: 3 },
+        { text: 'You climb onto me', next: 1612, transition: 'You climb onto me and take me, and the car fills with us.', energy: 3 }
+      ]
+    },
+    {
+      id: 1609,
+      level: 5,
+      mood: 'ecstasy',
+      energy: 3,
+      symbol: '🔥',
+      pause: 1000,
+      scene: 'Quick and desperate, the way it is when it cannot wait — your legs around me, my hand over your mouth, both of us trying to stay quiet.',
+      prompt: '"Come for me. Quietly. I am right there with you."',
+      options: [
+        { text: 'I make you come quietly', next: 1612, transition: 'You come against my hand, shaking, silent, and I follow a heartbeat later.', energy: 3 },
+        { text: 'We finish together', next: 1613, transition: 'We finish together, forehead to forehead, the car suddenly very small and very perfect.', energy: 3 }
+      ]
+    },
+    {
+      id: 1610,
+      level: 6,
+      mood: 'ecstasy',
+      energy: 3,
+      symbol: '🔥',
+      pause: 1050,
+      scene: 'We are a tangle of limbs and fogged glass, the rhythm broken by stifled sounds, the dark street forgetting us completely.',
+      prompt: '"Look at me. I want to see you when we go over together."',
+      options: [
+        { text: 'We go over together', next: 1613, transition: 'We go over together, clinging to each other, the car rocking gently.', energy: 3 },
+        { text: 'I hold you through it', next: -1, transition: 'I hold you through it, and we stay wrapped together in the dark, windows fogged, hearts pounding.', energy: 2 }
+      ]
+    },
+    {
+      id: 1611,
+      level: 7,
+      mood: 'tender',
+      energy: 1,
+      symbol: '🫂',
+      pause: 1200,
+      scene: 'We sit in the quiet car, windows still fogged, your head on my shoulder, my hand in your hair. The streetlights glow through the glass.',
+      prompt: '"I think that was the best parking spot we have ever found."',
+      options: [
+        { text: 'The best', next: -1, transition: '', energy: 1 },
+        { text: 'You laugh against my neck', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 1612,
+      level: 7,
+      mood: 'tender',
+      energy: 1,
+      symbol: '🫂',
+      pause: 1200,
+      scene: 'I reach over and squeeze your hand, still breathing hard. "Should we go home?" You shake your head. "Five more minutes."',
+      prompt: '"Five more minutes. Then five more. I could stay in this car with you all night."',
+      options: [
+        { text: 'Me too', next: -1, transition: '', energy: 1 },
+        { text: 'You kiss me, soft', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 1613,
+      level: 7,
+      mood: 'tender',
+      energy: 1,
+      symbol: '🫂',
+      pause: 1200,
+      scene: 'We finally clean up the best we can, laughing, your skirt fixed, my shirt misbuttoned. We look at each other and lose it.',
+      prompt: '"We are absolutely doing that again. Next time, I am picking the parking spot."',
+      options: [
+        { text: 'You are impossible', next: -1, transition: '', energy: 1 },
+        { text: 'I love you', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 1700,
+      level: 1,
+      mood: 'teasing',
+      energy: 3,
+      symbol: '👅',
+      pause: 950,
+      scene: 'We are surrounded by people — a dinner, a party, everyone talking. I lean close to you and my voice drops. "Tell me you are not wearing anything under that dress."',
+      prompt: 'Your face stays perfectly calm. That is the tell. "Say it. Whisper it."',
+      options: [
+        { text: 'You confirm, barely breathing', next: 1701, transition: '"Nothing," you whisper, and my hand finds your knee under the table.', energy: 3 },
+        { text: 'You pretend nothing happened', next: 1702, transition: 'You take a sip of your drink, utterly composed, and I know you are lying.', energy: 2 }
+      ]
+    },
+    {
+      id: 1701,
+      level: 2,
+      mood: 'teasing',
+      energy: 3,
+      symbol: '👅',
+      pause: 950,
+      scene: 'My hand rests on your knee under the table, the music playing, people laughing, and no one knows a thing.',
+      prompt: 'I keep my voice perfectly level. "Smile at me. Just like that. Now tell me — how long have you been planning this?"',
+      options: [
+        { text: 'I slide higher', next: 1703, transition: 'My hand slides higher, and you press your thighs together.', energy: 3 },
+        { text: 'You squeeze your thighs together', next: 1704, transition: 'You squeeze your thighs together around my hand, and I smile.', energy: 3 }
+      ]
+    },
+    {
+      id: 1702,
+      level: 2,
+      mood: 'teasing',
+      energy: 2,
+      symbol: '👅',
+      pause: 950,
+      scene: 'You act like nothing is happening, chatting, laughing, crossing your legs. I let you. For now.',
+      prompt: 'I lean in again, closer this time. "You are doing so well. But your voice went up half an octave when I asked."',
+      options: [
+        { text: 'I touch your knee anyway', next: 1703, transition: 'My hand finds your knee under the table and you almost jump.', energy: 3 },
+        { text: 'You excuse yourself', next: 1705, transition: 'You stand up, murmuring something about the bathroom, and I watch you go.', energy: 2 }
+      ]
+    },
+    {
+      id: 1703,
+      level: 3,
+      mood: 'intense',
+      energy: 3,
+      symbol: '👅',
+      pause: 1000,
+      scene: 'My fingers move under the table, slow, hidden, while you carry on a conversation with someone who has no idea.',
+      prompt: '"Keep talking. Smile. No one can know. But you and I both know exactly what is happening right now."',
+      options: [
+        { text: 'I touch you', next: 1706, transition: 'My fingers find you, bare, already warm, and your voice catches.', energy: 3 },
+        { text: 'You bite your lip', next: 1707, transition: 'You bite your lip and your eyes go wide, and I do not stop.', energy: 3 }
+      ]
+    },
+    {
+      id: 1704,
+      level: 3,
+      mood: 'intense',
+      energy: 3,
+      symbol: '👅',
+      pause: 1000,
+      scene: 'You are trembling, trying to keep your face calm, your thighs pressed tight around my hand.',
+      prompt: '"Relax. You are doing so well. But I can feel how close you are. And we are not leaving yet."',
+      options: [
+        { text: 'I keep going', next: 1707, transition: 'I keep going, slow, and you grip the tablecloth.', energy: 3 },
+        { text: 'We leave — now', next: 1708, transition: '"We are leaving," you whisper, and I stand before you finish the sentence.', energy: 3 }
+      ]
+    },
+    {
+      id: 1705,
+      level: 3,
+      mood: 'intense',
+      energy: 3,
+      symbol: '👅',
+      pause: 1000,
+      scene: 'You are in the hallway, hand against the wall, and I come up behind you, close enough that you feel my breath on your neck.',
+      prompt: '"Running away? I thought you were braver than that."',
+      options: [
+        { text: 'I follow you', next: 1708, transition: 'I press you against the hallway wall and kiss your neck, hidden in the dark.', energy: 3 },
+        { text: 'We make our excuses', next: 1709, transition: 'We grab our coats, say our goodbyes, and are gone in minutes.', energy: 3 }
+      ]
+    },
+    {
+      id: 1706,
+      level: 4,
+      mood: 'ecstasy',
+      energy: 3,
+      symbol: '👅',
+      pause: 1000,
+      scene: 'My fingers work you under the table — slow, hidden, relentless — while everyone around us laughs and talks and knows nothing.',
+      prompt: '"You have to stay quiet. Can you do that for me? Can you sit here and come apart and no one will ever know?"',
+      options: [
+        { text: 'I make you come quietly', next: 1709, transition: 'You come against my fingers, silent, your face a mask, and I feel every shudder.', energy: 3 },
+        { text: 'I pull back', next: 1710, transition: 'I pull my hand away just before, and you glare at me with murder in your eyes.', energy: 3 }
+      ]
+    },
+    {
+      id: 1707,
+      level: 4,
+      mood: 'intense',
+      energy: 3,
+      symbol: '👅',
+      pause: 1000,
+      scene: 'Your hand finds me under the table, hidden by the cloth, and suddenly I am the one trying to keep a straight face.',
+      prompt: '"You are playing with fire in a room full of people. I love it. Keep going."',
+      options: [
+        { text: 'We leave', next: 1710, transition: 'I stand abruptly, pulling you with me. "We are leaving. Now."', energy: 3 },
+        { text: 'I almost lose control', next: 1711, transition: 'You get me to the edge right there, and I grip your wrist. "Not here. Not yet."', energy: 3 }
+      ]
+    },
+    {
+      id: 1708,
+      level: 5,
+      mood: 'intense',
+      energy: 3,
+      symbol: '👅',
+      pause: 1000,
+      scene: 'The front door barely closes behind us before I have you against it, my hands everywhere, both of us breathless.',
+      prompt: '"You think you can tease me all night and walk away? The night is just starting."',
+      options: [
+        { text: 'I press you against the door', next: 1711, transition: 'I press you against the door and lift you, and your legs wrap around me.', energy: 3 },
+        { text: 'I drop to my knees', next: 1712, transition: 'I drop to my knees in the hallway and pull your dress up.', energy: 3 }
+      ]
+    },
+    {
+      id: 1709,
+      level: 5,
+      mood: 'ecstasy',
+      energy: 3,
+      symbol: '👅',
+      pause: 1050,
+      scene: 'You are in the car, still in your dress, and I am driving one-handed, the other hand on you, both of us silent and electric.',
+      prompt: 'My voice is rough. "You are not allowed to be surprised when we get home and I ruin you."',
+      options: [
+        { text: 'I cannot wait', next: 1712, transition: 'We are home in minutes, and I carry you inside.', energy: 3 },
+        { text: 'You take my hand and guide it', next: 1713, transition: 'You take my hand and guide it, and I nearly drive off the road.', energy: 3 }
+      ]
+    },
+    {
+      id: 1710,
+      level: 6,
+      mood: 'intense',
+      energy: 3,
+      symbol: '👅',
+      pause: 1050,
+      scene: 'The bedroom door shuts and the composed version of you disappears. I push you onto the bed and you are already reaching for me.',
+      prompt: '"All night you sat there, perfect and untouchable. Now look at you. Mine. All of this is mine."',
+      options: [
+        { text: 'I take you hard', next: 1713, transition: 'I take you hard, the dress still half on, and we both lose our minds.', energy: 3 },
+        { text: 'We go slow this time', next: -1, transition: 'We go slow this time, teasing each other out of our clothes, and it is the sweetest torture.', energy: 2 }
+      ]
+    },
+    {
+      id: 1711,
+      level: 7,
+      mood: 'ecstasy',
+      energy: 3,
+      symbol: '👅',
+      pause: 1100,
+      scene: 'We come together against the door, still half dressed, still breathless, the house dark and quiet around us.',
+      prompt: '"You are never wearing anything under a dress in public again. I cannot survive it."',
+      options: [
+        { text: 'I will do it again', next: -1, transition: '', energy: 1 },
+        { text: 'You kiss me, breathless', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 1712,
+      level: 7,
+      mood: 'tender',
+      energy: 1,
+      symbol: '🫂',
+      pause: 1200,
+      scene: 'We are in bed, your dress finally off, my shirt gone, wrapped around each other, the night finally quiet.',
+      prompt: '"I love that we get to be like this. Wild in public, soft here. Both of it is you."',
+      options: [
+        { text: 'Both of it is us', next: -1, transition: '', energy: 1 },
+        { text: 'You curl into me', next: -1, transition: '', energy: 1 }
+      ]
+    },
+    {
+      id: 1713,
+      level: 7,
+      mood: 'tender',
+      energy: 1,
+      symbol: '🫂',
+      pause: 1200,
+      scene: 'The dress is on the floor, and we are tangled in sheets, your head on my chest, both of us smiling at the ceiling.',
+      prompt: '"We are never doing that again." Pause. "We are absolutely doing that again."',
+      options: [
+        { text: 'I love you', next: -1, transition: '', energy: 1 },
+        { text: 'You laugh into my chest', next: -1, transition: '', energy: 1 }
       ]
     }
   ];

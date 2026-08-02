@@ -60,6 +60,7 @@
 <script src="fb-db.js"></script>
 <script src="seed-content.js"></script>
 <script src="global-easter-eggs.js"></script>
+<script defer src="interactions.js"></script>
 <script src="activity-tracker.js"></script>
 
 <script>
@@ -164,6 +165,7 @@
       if (hist.length > HISTORY_CAP) hist.length = HISTORY_CAP;
       saveJSON(HISTORY_KEY, hist);
       sessionSeen.push(it.id);
+      if (window.Interactions) window.Interactions.record('content', 'memory_seen', it.id);
       if (it.once && onceDone.indexOf(it.id) === -1) {
         onceDone.push(it.id);
         saveJSON(ONCE_KEY, onceDone);

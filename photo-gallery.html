@@ -531,6 +531,7 @@
         var m = MEDIA[idx];
         updateLightbox(m, idx);
         lightbox.classList.add('open');
+        if (window.Interactions) window.Interactions.record('love', 'gallery_lightbox_open', m ? String(m.label || '').slice(0, 100) : '');
       }
 
       function updateLightbox(m, idx) {
@@ -654,6 +655,7 @@
                 } catch (e) { render(); }
                 uploadBtn.textContent = '\u2705 ' + total + ' added (' + existing.length + ' total)';
                 setTimeout(function () { uploadBtn.textContent = '\uD83D\uDCC1 Add Photo'; }, 3000);
+                if (window.Interactions) window.Interactions.record('upload', 'photo_uploaded', total + ' photo(s)');
               }
             };
             reader.readAsDataURL(file);
@@ -676,6 +678,7 @@
   <script src="global-interactions.js"></script>
 <script>document.addEventListener('mousedown',function(){document.body.style.cursor="url('cursor images/imresizer-meme-pop-cat-pack click.jpg'), auto"});document.addEventListener('mouseup',function(){document.body.style.cursor="url('cursor images/imresizer-meme-pop-cat-pack.jpg'), auto"});</script>
 <script src="global-easter-eggs.js"></script>
+<script defer src="interactions.js"></script>
 <script src="activity-tracker.js"></script>
 <script src="events.js"></script>
 <script src="puzzle-hunt.js"></script>

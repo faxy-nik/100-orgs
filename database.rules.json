@@ -21,6 +21,7 @@
     },
 
     "activity": { ".write": "auth != null" },
+    "interactions": { ".write": "auth != null" },
     "wishes": { ".write": "auth != null" },
     "songRequests": { ".write": "auth != null" },
     "userSongs": { ".write": "auth != null" },

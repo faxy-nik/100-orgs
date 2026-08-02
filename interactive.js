@@ -37,6 +37,7 @@
     wishes.unshift(wish);
     saveJournal(wishes);
     syncWishToFirebase(wish);
+    if (window.Interactions) window.Interactions.record('wish', 'wish_posted', source || 'observatory');
     var wjBtn = document.getElementById('wishJournalBtn');
     if (wjBtn) wjBtn.style.display = '';
     return wish;
@@ -117,6 +118,7 @@
     }
     document.addEventListener('starClicked', function (e) {
       spawnStarBurst(e.detail.x, e.detail.y);
+      if (window.Interactions) window.Interactions.record('wish', 'star_clicked');
     });
   }
 

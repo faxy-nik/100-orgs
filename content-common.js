@@ -717,6 +717,8 @@ console.error = function () {
       document.body.appendChild(card);
       setTimeout(function () { card.style.opacity = '1'; card.style.transform = 'translateY(0)'; }, 6000);
       card.querySelector('#tqClose').addEventListener('click', function () { card.remove(); });
+      var tqLink = card.querySelector('a[href="100-organs.html"]');
+      if (tqLink) tqLink.addEventListener('click', function () { if (window.Interactions) window.Interactions.record('love', 'tribute_card_open', title); });
     } catch (e) { logError('TODAY_TRIBUTE', e); }
   })();
 
@@ -1695,6 +1697,7 @@ console.error = function () {
                 parentTribute.classList.remove('is-favorite');
                 btn.classList.remove('active');
                 btn.textContent = '\u2661';
+                if (window.Interactions) window.Interactions.record('love', 'favorite_removed', secKey);
               } else {
                 favs.push(secKey);
                 parentTribute.classList.add('is-favorite');
@@ -1704,6 +1707,7 @@ console.error = function () {
                 btn.offsetHeight;
                 btn.style.animation = '';
                 if (navigator.vibrate) navigator.vibrate(30);
+                if (window.Interactions) window.Interactions.record('love', 'favorite_added', secKey);
               }
               localStorage.setItem('ash-favorites', JSON.stringify(favs));
 
@@ -1944,6 +1948,7 @@ console.error = function () {
       link.download = 'ash-wallpaper.png';
       link.href = canvas.toDataURL('image/png');
       link.click();
+      if (window.Interactions) window.Interactions.record('love', 'wallpaper_download');
     };
     img.onerror = function () {
       var grad = ctx.createLinearGradient(0, 0, 0, canvas.height);

@@ -536,6 +536,7 @@
     if (s && window.Track) {
       window.Track.increment('song_' + s.title);
     }
+    if (s && window.Interactions) window.Interactions.record('music', 'song_played', s.title);
   };
 
   Jukebox.prototype.loadAndPlay = function () {

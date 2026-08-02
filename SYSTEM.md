@@ -1,6 +1,6 @@
 # SYSTEM.md — 100 prghs for eeshah
 
-Last updated: 2026-08-02 (v12 — user uploads, events merge, streak, today's tribute, goodnight routine, year in review)
+Last updated: 2026-08-02 (v13 — interactions log, admin Interactions tab)
 
 ---
 
@@ -30,7 +30,7 @@ Access = link/card on another page, trigger word (type anywhere, see Secret Word
 | `make-her-sleep.html` | Chat/storyline page | Trigger: type `sleep` |
 | `guide.html` | Interactive site guide — accordion sections, music pairings, progress tracking | Direct URL: `.../guide.html` |
 | `promises.html` | 100 promises with bookmarkable hearts, Promise of the Day, Surprise Me | Link inside guide.html |
-| `turn-on.html` | 360-step intimate narrative game, branching paths, Firebase session tracking | Direct URL: `.../turn-on.html` |
+| `turn-on.html` | 360-step intimate narrative game, branching paths, Firebase session tracking. Hub branches filterable via `config/turnOnSections` (admin Branch Toggles) | Direct URL: `.../turn-on.html` |
 | `turnon-history.html` | Session history viewer for turn-on game playthroughs | Link at bottom of turn-on.html |
 | `timeline.html` | Relationship timeline page | Direct URL: `.../timeline.html` |
 | `story.html` | Storyline page with quizzes | Our Story link on home |
@@ -52,15 +52,16 @@ Access = link/card on another page, trigger word (type anywhere, see Secret Word
 |------|---------|
 | `fb-db.js` | Firebase Realtime DB helper (CRUD, blob encode/decode). **Localhost:** localStorage-backed mock. **Remote:** Firebase RTDB |
 | `content-common.js` | Section tracking, parallax, voice controls, love letter generator, wallpaper download. Uses `FeatureFlags.get()` directly (no `onReady`) |
-| `quiz.js` | Per-section quiz buttons for all sections of love.html and 100-organs.html. Questions now match actual section content. Saves individual answer details to `quizHistory/all` in Firebase |
+| `quiz.js` | Per-section quiz buttons for all sections of love.html and 100-organs.html (+ page-level quiz on fantasies.html). Questions match actual section content. Saves individual answer details to `quizHistory/all` in Firebase |
 | `section-lock.js` | Date-gated section access, reads unlock config from Firebase |
 | `lock.js` | Section unlock request buttons, Firebase listener for admin approvals |
 | `activity-tracker.js` | Records `page-visit`, `section-view`, `image-view` to `activity` in Firebase. Skips admin via `ash-admin-passkey` |
+| `interactions.js` | Records every click & catch (balloons, favorites, downloads, wishes, triggers...) to `interactions` in Firebase. Queue `ash-interactions-queue` flushed every 30s + on close. Skips admin via `ash-admin-passkey`. Flag `interactions` |
 | `events.js` | Seasonal event engine — reads `config/events`, matches today's date, applies sky/theme/popup |
-| `puzzle-hunt.js` | Treasure hunt puzzles — floating panel with multi-step puzzles from `config/puzzles` |
+| `puzzle-hunt.js` | Treasure hunt puzzles — floating panel with multi-step puzzles from `config/puzzles`. ~50 default riddles embedded via `getDefaultPuzzles()` (per-page, incl. 100-organs/love gated by unlocked section via `isVisible()`); Firebase puzzles override by id |
 | `letters.js` | "Write a Letter" modal — stores letters in `letters` store in Firebase |
 | `dynamic-content.js` | Reads `config/dynamicContent`, renders "Extra Letters" accordion at page bottom |
-| `feature-flags.js` | 48 feature flags (was 54), localStorage + Firebase backed. `set()` now auto-calls `save()` for immediate sync. 6 unused section flags removed |
+| `feature-flags.js` | 49 feature flags (was 54; 6 unused section flags removed, +1 interactions), localStorage + Firebase backed. `set()` now auto-calls `save()` for immediate sync |
 | `track.js` | IndexedDB visit counters |
 | `secret-letters.js` | 30 enhanced hidden letters unlocked by achievements, with narrative text. Exposes `window.SecretLetters` (list/isEnabled/setEnabled/check/openCollection/count/total). Found state in `userData/secretLetters`; per-letter on/off toggles in `config/secretLetters` (default on; admin Achievements tab). Script's feature-flag guard is skipped on admin.html so the API always loads there |
 | `world-progress.js` | World progress dashboard — hidden until all 5 sections read |
@@ -71,7 +72,7 @@ Access = link/card on another page, trigger word (type anywhere, see Secret Word
 | `adaptive-text.js` | Text animation effects |
 | `install-prompt.js` | "Add to Home Screen" banner — offered once per device (`ash_install_offered`), browser install prompt on Android/desktop, manual instructions (Share → Add to Home Screen) on iOS. Suppressed if `ash_installed` set or already running standalone |
 | `admin.js` | Admin panel logic (extracted from admin.html inline script — byte-identical move) |
-| `turn-on-steps.js` | 360-step turn-on game data (`getDefaultSteps()` — extracted from turn-on.html inline script, byte-identical move) |
+| `turn-on-steps.js` | 486-step turn-on game data (`getDefaultSteps()` — extracted from turn-on.html inline script). 15 branches: fuck (2), masturbation (400), fingering (500), foreplay (600), oral (700), fingering drive (800), shower (900), watching you undress (1000), rough (1100), mirror (1200), 69 (1300), morning (1400), bath (1500), car (1600), public (1700) |
 | `sw.js` | Service worker — offline cache (**ash-v47**)
 
 ## Companion, skies, music scripts — companions are sprite-sheet or procedurally drawn, skies use a 150+ definition rendering engine, music uses Web Audio API crossfade jukebox
@@ -92,6 +93,7 @@ Access = link/card on another page, trigger word (type anywhere, see Secret Word
 | Timeline | `config/timeline` | admin + story.html | `{id: 'timeline', list: [{date, year, title, body, img}]}` |
 | Quizzes (admin) | `config/quizzes` | admin | `{id: 'quizzes', list: [{id, page, title, questions}]}` |
 | Quiz history | `quizHistory` | quiz.js + admin | `[{quizId, score, total, passed, timestamp}]` |
+| Turn-on branch toggles | `config/turnOnSections` | admin + turn-on.html | `{id: 'turnOnSections', disabled: [branchStartStepId]}` — hidden branches removed from hub (never all) |
 | Section unlock | `sectionUnlock/{page}` | admin + page scripts | `{id: {page}, unlocked: {groupIndex}}` |
 | Section requests | `sectionRequests/{id}` | page scripts + admin | `{id, page, groupIndex, status, createdAt}` |
 | Gallery | `config/gallery` | admin | `{id: 'gallery', items: [{type, label, note, file, fileBlob}]}` |
@@ -100,6 +102,7 @@ Access = link/card on another page, trigger word (type anywhere, see Secret Word
 | User songs | `userSongs/{id}` | music.js (user uploads) | `{title, artist, duration, audioBlob, audioType, hasFile}` — write: `auth != null` |
 | Reviews | `reviews/{id}` | content-common.js + admin | `{id, page, section, text, audioBlob, type, date}` |
 | Activity | `activity/{id}` | activity-tracker.js + admin | `{id, type, page, timestamp, sectionIdx, file}` |
+| Interactions | `interactions/{id}` | interactions.js + admin | `{type, action, detail, page, ts}` |
 | Letters | `letters/{id}` | letters.js + admin | `{id, subject, body, createdAt, read}` |
 | Memories | `memories/{id}` | i-remember.html + admin (🌸 Remember) | `{id, cat, text, rare, once, on, createdAt}` — rare = shown rarely (0.15 weight), once = shown exactly once ever |
 | Self letters | `selfLetters/{id}` | letter-that-writes-itself.html + admin (✍ Self Letters) | `{id, title, recipient, body, signature, scheduledDate, music, priority, enabled, secret, createdAt}` — secret = only via hidden path (`?secret`) |
@@ -252,10 +255,12 @@ Note: `ash` has a 1.8s typing window between keys; the others are plain substrin
 | **Admin: Events merged** | Two event systems merged into one — `project-events` store retired. `renderEvents()` runs a one-time migration (merge `project-events/list` into `config/events`, then clears the old store). `renderProjectEvents`/`openProjectEventModal` deleted; Project Events group removed from admin.html Project tab; events.js reads only `config/events` |
 | **Admin: anime.min.js dropped** | admin.html no longer loads anime.min.js (115KB) or motion-masterpiece.js — no animated targets exist there |
 | **Day streak widget** | index.html milestone row gains "Day Streak" (`milestoneStreak`): consecutive-day counter via `ash-streak`/`ash-last-visit`, resets if a day is skipped |
+| **Interactions log** | NEW `interactions.js` (loaded on every page, flag `interactions`): every click & catch recorded — balloons, feathers, fireflies, butterflies, coffee, lucky star, fragments, achievements, favorites, wallpaper downloads, tribute card, gallery lightbox, photo uploads, song plays, wishes, star clicks, lantern releases, secret letters, memories, quiz results, puzzles, promise bookmarks, self-letter opens, and typed triggers (`ash`/`dream`/`sleep`/`remember`/`letter`/`lanterns`). Queue in `ash-interactions-queue` (localStorage), flushed to `interactions/{id}` every 30s + on page close; admin passkey skips recording. Admin has a new "Interactions" tab: total/today cards, counts by action, recent 100, auto-refresh |
 | **Today's tribute card** | content-common.js: one tribute picked by day-of-year, shown once per day (bottom-left dismissible card, `ash-today-tribute`), links to 100-organs.html. Gated by `floating-quotes` flag |
 | **Goodnight routine** | make-her-sleep.html now has 4 full chat versions (one per night, rotates by date — including one tender intimacy night) ending with "Tonight's ritual" (3 exact-moment scenes, one per night) + firefly jar + jukebox + visit tracking (firefly-jar.js, music.js, track.js loaded) |
 | **Year in review** | stats.html adds a "YYYY, in Numbers" section: days visited, current + longest streak (from `ash-visit-days`), days together, most-visited page, most-played song |
 | **DB rules** | `userSongs` store added with `auth != null` write (deployed) |
+| **DB rules** | `interactions` store added with `auth != null` write (deployed) |
 
 
 

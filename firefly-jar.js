@@ -95,6 +95,7 @@
       updateJar();
       showJarIfNeeded();
       toast('Caught! (' + config.fireflies.caught + ')', 'rgba(255,230,100,0.7)', 1200);
+      if (window.Interactions) window.Interactions.record('catch', 'firefly_caught');
       ff.style.transform = 'scale(2.5)';
       ff.style.opacity = '0';
       setTimeout(function () { if (ff.parentNode) ff.remove(); }, 400);

@@ -50,6 +50,7 @@
         toast('\uD83C\uDF88 '+msg, 'rgba(200,180,220,0.85)', 5000);
         config.balloonNotes.push({ text: msg, at: Date.now() });
         save();
+        if (window.Interactions) window.Interactions.record('catch', 'balloon_hit');
         balloon.style.transform = 'scale(0.3)';
         balloon.style.opacity = '0';
         setTimeout(function () { if (balloon.parentNode) balloon.remove(); }, 800);
@@ -109,6 +110,7 @@
         var msg = rewards[config.feathers.count] || '\uD83E\uDEB6 +1 feather ('+config.feathers.count+')';
         toast(msg, 'rgba(200,180,150,0.8)', 2000);
         sparkleWord(e.clientX - 70, e.clientY - 20);
+        if (window.Interactions) window.Interactions.record('catch', 'feather_caught');
         f.remove();
       });
       setTimeout(function () { if (f.parentNode) f.remove(); }, 8000);
@@ -126,7 +128,7 @@
         '<p style="font-size:0.75rem;color:var(--ash);margin:0.3rem 0 0;">You have been exploring for a while \u2728</p>' +
       '</div>';
       cup.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:99999;background:var(--ink-soft);border:1px solid var(--gold);border-radius:16px;padding:2rem;box-shadow:0 8px 40px rgba(0,0,0,.7);animation:fadeIn 0.5s ease;';
-      cup.addEventListener('click', function () { config.coffeeAt = Date.now(); save(); cup.remove(); });
+      cup.addEventListener('click', function () { config.coffeeAt = Date.now(); save(); if (window.Interactions) window.Interactions.record('catch', 'coffee_click'); cup.remove(); });
       document.body.appendChild(cup);
       setTimeout(function () {
         cup.style.opacity = '0';
@@ -190,6 +192,7 @@
       setTimeout(function () { star.remove(); luckyStarEl = null; }, 1000);
       config.luckyStar.found = true;
       save();
+      if (window.Interactions) window.Interactions.record('catch', 'lucky_star_found');
     });
     star.addEventListener('mouseenter', function () { star.style.opacity = '1'; star.style.transform = 'scale(1.3)'; });
     star.addEventListener('mouseleave', function () { star.style.opacity = '0.7'; star.style.transform = 'scale(1)'; });
@@ -259,6 +262,7 @@
           for (var k = 0; k < allFrags.length; k++) { allFrags[k].remove(); }
           toast('\uD83E\uDDE9 ' + f2.msg + ' (' + getTotalCollected() + '/' + TOTAL_FRAGMENTS + ')', 'rgba(200,180,255,0.85)', 5000);
           checkAllFragments();
+          if (window.Interactions) window.Interactions.record('catch', 'fragment_collected', f2.msg);
         }; }(f));
       }, 5000 + idx * 4000);
     });
@@ -287,6 +291,7 @@
       save();
       toast('\uD83D\uDCF8 ' + pf.msg + ' (' + getTotalCollected() + '/' + TOTAL_FRAGMENTS + ')', 'rgba(255,200,150,0.9)', 5000);
       checkAllFragments();
+      if (window.Interactions) window.Interactions.record('catch', 'photo_fragment_found', pf.msg);
     });
   }
 
@@ -299,6 +304,7 @@
   ];
 
   function openAchievements() {
+    if (window.Interactions) window.Interactions.record('catch', 'achievements_opened');
     var existing = document.getElementById('achievementPanel');
     if (existing) { existing.remove(); return; }
     var overlay = document.createElement('div');

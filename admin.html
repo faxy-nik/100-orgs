@@ -363,6 +363,7 @@
       <button class="tab" data-tab="selfletters">&#x270D; Self Letters</button>
       <button class="tab" data-tab="rare">&#x1F48E; Rare Links</button>
       <button class="tab" data-tab="achievements">&#x1F3C6; Achievements</button>
+      <button class="tab" data-tab="interactions">&#x1F496; Interactions</button>
     </div>
     <div class="admin-content">
 
@@ -624,6 +625,11 @@
     <div id="turnOnStepsList"></div>
     <p style="font-size:.75rem;color:var(--ash);margin-top:1.5rem;"><span id="turnOnStatus">0</span> step(s)</p>
     <hr style="border-color:rgba(255,210,150,.08);margin:1.5rem 0;">
+    <h3 style="font-family:'Fraunces',Georgia,serif;font-size:1rem;font-weight:500;color:var(--gold);margin-bottom:.75rem;">&#x2661; Branch Toggles</h3>
+    <p style="color:#6b5f52;font-size:.8rem;font-style:italic;margin-bottom:1rem;">Show or hide the 6 opening branches of the journey. Uncheck to hide a branch.</p>
+    <div id="turnOnBranches"></div>
+    <p id="turnOnBranchesToast" style="font-size:.75rem;color:var(--ash);margin:0 0 .5rem;"></p>
+    <hr style="border-color:rgba(255,210,150,.08);margin:1.5rem 0;">
     <h3 style="font-family:'Fraunces',Georgia,serif;font-size:1rem;font-weight:500;color:var(--gold);margin-bottom:.75rem;">&#x2661; Session History</h3>
     <p style="color:#6b5f52;font-size:.8rem;font-style:italic;margin-bottom:1rem;">Each session is a completed playthrough from the turn-on game.</p>
     <div id="turnOnSessionsList"></div>
@@ -684,6 +690,18 @@
     <div id="activityList"></div>
   </div>
 
+  <!-- Tab: Interactions -->
+  <div class="tab-content" id="tabInteractions">
+    <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
+      Every click and catch: balloons, feathers, fireflies, favorites, downloads, wishes, songs, secret triggers.
+    </p>
+    <div id="interactionsStats" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;"></div>
+    <div style="margin-bottom:.5rem;">
+      <button id="refreshInteractionsBtn" style="padding:.35rem .6rem;border-radius:6px;background:rgba(255,220,160,.08);border:1px solid rgba(255,210,150,.2);color:#ffebd2;cursor:pointer;font-size:.75rem;">&#x21BB; Refresh</button>
+    </div>
+    <div id="interactionsList"></div>
+  </div>
+
   <!-- Tab: Quiz -->
   <div class="tab-content" id="tabQuiz">
     <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
@@ -727,6 +745,7 @@
   <script src="matrix-rain.js"></script>
 <script src="seed-content.js"></script>
 <script src="global-easter-eggs.js"></script>
+<script defer src="interactions.js"></script>
 
 
 

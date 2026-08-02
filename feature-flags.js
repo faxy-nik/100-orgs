@@ -52,6 +52,7 @@
     { id:'section-unlock', label:'Section Unlock Requests', cat:'Features', desc:'Daily section unlock request buttons and Firebase listener', auto:'' },
     { id:'section-lock', label:'Section Lock (Date Gate)', cat:'Features', desc:'Page-level date-lock that hides content until unlock date', auto:'' },
     { id:'wallpaper', label:'Wallpaper Download', cat:'Features', desc:'Download a quote from a random tribute as wallpaper', auto:'' },
+    { id:'interactions', label:'Interactions Log', cat:'Features', desc:'Records clicks & catches (balloons, favorites, downloads...) to the interactions store', auto:'' },
   ];
 
   function load() {

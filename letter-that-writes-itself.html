@@ -103,6 +103,7 @@
 <script src="fb-db.js"></script>
 <script src="seed-content.js"></script>
 <script src="global-easter-eggs.js"></script>
+<script defer src="interactions.js"></script>
 <script src="activity-tracker.js"></script>
 
 <script>
@@ -208,6 +209,7 @@
     document.getElementById('lwDate').textContent = letter.date || todayKey();
     document.getElementById('lwGreeting').textContent = (letter.recipient || 'Dear Ash') + ',';
     document.getElementById('lwSig').textContent = letter.signature || 'Faxy';
+    if (window.Interactions) window.Interactions.record('content', 'selfletter_opened');
   }
 
   function newPara() {

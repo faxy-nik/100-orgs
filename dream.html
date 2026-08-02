@@ -411,6 +411,7 @@
   <script defer src="music.js"></script>
   <script defer src="matrix-rain.js"></script>
   <script defer src="global-easter-eggs.js"></script>
+<script defer src="interactions.js"></script>
 
 <script>
 (function () {
@@ -679,6 +680,7 @@
     var color = LANTERN_COLORS[colorIdx] || LANTERN_COLORS[0];
     released.push({ wish: wishText, color: color.hex, glow: glowIntensity, time: Date.now() });
     saveReleased(released);
+    if (window.Interactions) window.Interactions.record('wish', 'lantern_released', String(wishText || '').slice(0, 100));
 
     var rect = cardEl.getBoundingClientRect();
     var cx = rect.left + rect.width / 2;

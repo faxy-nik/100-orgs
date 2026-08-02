@@ -586,8 +586,8 @@ h2 {
       e.stopPropagation();
       var idx = li.dataset.idx;
       var pos = bookmarked.indexOf(idx);
-      if (pos === -1) bookmarked.push(idx);
-      else bookmarked.splice(pos, 1);
+      if (pos === -1) { bookmarked.push(idx); if (window.Interactions) window.Interactions.record('content', 'promise_bookmarked', String(parseInt(idx, 10) + 1)); }
+      else { bookmarked.splice(pos, 1); if (window.Interactions) window.Interactions.record('content', 'promise_unbookmarked', String(parseInt(idx, 10) + 1)); }
       saveBookmarks(); updateUI();
     });
   });
@@ -729,5 +729,6 @@ h2 {
 </script>
 
 <script src="global-easter-eggs.js"></script>
+<script defer src="interactions.js"></script>
 </body>
 </html>

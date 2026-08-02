@@ -213,6 +213,18 @@
           { question: 'What does he say about the home they will build?', options: ['It will be big', 'Not just a house — filled with shared memories, inside jokes, favorite things', 'It will be perfect', 'It will be cosy'], answer: 1 },
           { question: 'What does he say about the version of him she brings out?', options: ['She made him better', 'Before her, he did not know he could be this soft, this patient — she just believed it was possible', 'She inspires him', 'She completes him'], answer: 1 }
         ]
+      },
+      // fantasies — single story page (sectionIdx -1 = page-level quiz, appended at end)
+      {
+        id: 'fantasies-story', page: 'fantasies', sectionIdx: -1, title: 'Fantasies — The Story',
+        questions: [
+          { question: 'What is the hero title of this story?', options: ['ASH', '100 paragraphs', 'Love', 'Dreams'], answer: 0 },
+          { question: 'The dedication warns these pages are for whose eyes only?', options: ['Everyone\'s', 'Eeshah\'s — "For Your Eyes Only"', 'The author\'s', 'No one\'s'], answer: 1 },
+          { question: 'What happens when their skin finally meets, according to "The Fire & Our Skin"?', options: ['All the rules break down', 'The world disappears', 'They speak softly', 'Nothing changes'], answer: 0 },
+          { question: 'What does he say turns him on more than anything in the world?', options: ['Watching her undress — the slow way', 'Her laughter', 'Her voice', 'Her perfume'], answer: 0 },
+          { question: 'Where do these fantasies bloom, according to the dedication?', options: ['In the dark, quiet hours', 'In his diary', 'In dreams', 'In songs'], answer: 0 },
+          { question: 'What is this story "never meant to be"?', options: ['Forgotten', 'Shared', 'Finished', 'Written'], answer: 0 }
+        ]
       }
     ];
   }
@@ -246,7 +258,6 @@
 
   function addQuizButtons() {
     var groups = document.querySelectorAll('.accordion-group');
-    if (!groups.length) return;
     groups.forEach(function (g, idx) {
       var quiz = getQuizForSection(PAGE, idx);
       if (!quiz) return;
@@ -268,6 +279,21 @@
         else content.appendChild(btn);
       }
     });
+    // Page-level quiz for pages without accordion sections (e.g. fantasies)
+    if (!groups.length) {
+      var pageQuiz = getQuizForSection(PAGE, -1);
+      if (!pageQuiz) return;
+      var host = document.querySelector('article.page, main') || document.body;
+      if (!host || host.querySelector('.section-quiz-btn')) return;
+      var pbtn = document.createElement('button');
+      pbtn.className = 'section-quiz-btn';
+      pbtn.textContent = '\uD83E\uDDEA Quiz (' + pageQuiz.questions.length + ' questions)';
+      pbtn.style.cssText = 'display:block;margin:2rem auto;padding:.6rem 1.2rem;border-radius:8px;background:rgba(111,207,147,.08);border:1px solid rgba(111,207,147,.25);color:#6fcf93;font-family:Fraunces,Georgia,serif;font-size:.82rem;cursor:pointer;transition:all .25s;';
+      pbtn.onmouseover = function () { this.style.background = '#6fcf93'; this.style.color = '#181214'; };
+      pbtn.onmouseout = function () { this.style.background = 'rgba(111,207,147,.08)'; this.style.color = '#6fcf93'; };
+      pbtn.onclick = function () { openQuizModal(pageQuiz); };
+      host.appendChild(pbtn);
+    }
   }
 
   function openQuizModal(quiz) {
@@ -342,6 +368,7 @@
       USED_KEYS[key] = true;
       items.push({ quizId: quiz.id, score: score, total: total, passed: passed, answers: answers, timestamp: Date.now() });
       FB.put('quizHistory', { id: 'all', items: items }).catch(function () {});
+      if (window.Interactions) window.Interactions.record('content', passed ? 'quiz_passed' : 'quiz_failed', quiz.id);
     }).catch(function () {});
   }
 
