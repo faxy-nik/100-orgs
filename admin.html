@@ -615,18 +615,11 @@
   <!-- Tab: Turn On -->
   <div class="tab-content" id="tabTurnon">
     <p style="color:#6b5f52;font-size:.85rem;margin-bottom:1rem;font-style:italic;">
-      Manage the Turn Yourself On journey steps. Each step has a prompt and 2-3 options that lead to the next step.
+      Show or hide the journey's 12 opening branches, and browse completed playthroughs from the turn-on game.
     </p>
-    <div style="display:flex;gap:.5rem;margin-bottom:1rem;">
-      <button id="addTurnOnStepBtn" style="padding:.45rem 1.1rem;border-radius:6px;cursor:pointer;font-family:'Fraunces',Georgia,serif;font-size:.8rem;background:rgba(111,207,147,.1);border:1px solid rgba(111,207,147,.3);color:#6fcf93;">+ Add Step</button>
-      <button id="saveTurnOnBtn" style="padding:.45rem 1.1rem;border-radius:6px;cursor:pointer;font-family:'Fraunces',Georgia,serif;font-size:.8rem;background:rgba(255,230,128,.1);border:1px solid var(--gold);color:var(--gold);">Save to Firebase</button>
-    </div>
-    <p id="turnOnToast" style="font-size:.75rem;color:var(--ash);margin:0 0 .5rem;"></p>
-    <div id="turnOnStepsList"></div>
-    <p style="font-size:.75rem;color:var(--ash);margin-top:1.5rem;"><span id="turnOnStatus">0</span> step(s)</p>
     <hr style="border-color:rgba(255,210,150,.08);margin:1.5rem 0;">
     <h3 style="font-family:'Fraunces',Georgia,serif;font-size:1rem;font-weight:500;color:var(--gold);margin-bottom:.75rem;">&#x2661; Branch Toggles</h3>
-    <p style="color:#6b5f52;font-size:.8rem;font-style:italic;margin-bottom:1rem;">Show or hide the 6 opening branches of the journey. Uncheck to hide a branch.</p>
+    <p style="color:#6b5f52;font-size:.8rem;font-style:italic;margin-bottom:1rem;">Show or hide the 12 opening branches of the journey. Uncheck to hide a branch.</p>
     <div id="turnOnBranches"></div>
     <p id="turnOnBranchesToast" style="font-size:.75rem;color:var(--ash);margin:0 0 .5rem;"></p>
     <hr style="border-color:rgba(255,210,150,.08);margin:1.5rem 0;">
@@ -732,7 +725,9 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="turn-on-steps.js"></script>
 <script src="admin.js"></script>
+<script src="puzzle-hunt.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });

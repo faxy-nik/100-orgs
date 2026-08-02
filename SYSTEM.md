@@ -319,7 +319,7 @@ Note: `ash` has a 1.8s typing window between keys; the others are plain substrin
 | **6 unused flags removed** | `section-100-organs`, `section-love`, `section-fantasies`, `section-sky-observatory`, `section-photo-gallery`, `globe` removed. Down from 54 to 48 |
 | **Turn-on game (38 steps)** | `turn-on.html`: full narrative game with branching paths, two-column layout, Firebase session push on completion |
 | **Turn-on session tracking** | `pushSession()` reads existing `turnOn/sessions_data`, appends new session, writes back. 5-min dedup via `ash-turnon-last-push`. Admin passkey skip |
-| **Admin TurnOn tab** | Fixed `turnOnStatus` element missing bug. Added session history viewer below step editor — loads from Firebase, shows each playthrough |
+| **Admin TurnOn tab** | Branch toggles (`config/turnOnSections`) + session history viewer from `turnOn/sessions_data`. Step editor (steps list in `turnOn/steps`) removed — the game only ever ran the embedded `turn-on-steps.js` journey, so edits never reached players |
 | **turnon-history.html** | New page: loads sessions from Firebase, newest-first, collapsible cards with all choices. Admin passkey skip |
 | **Song upload status** | Each song card shows audio status (— file / — audio / ! no audio / no file). Save progress ("Saving songs... X/Y"). `audioValid` flag set on save and load |
 | **Admin error badge** | Red badge next to "Admin Dashboard" title showing `window.globalErrors` count. Click opens modal with full error details |

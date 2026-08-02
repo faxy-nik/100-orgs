@@ -350,12 +350,17 @@
     setTimeout(function () { t.style.opacity = '0'; setTimeout(function () { t.remove(); }, 300); }, 2000);
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-  else init();
+  // admin.html loads this file for getDefaultPuzzles() only — skip UI init there
+  var isAdminPage = !!(document.getElementById && document.getElementById('projectPuzzlesList'));
+  if (!isAdminPage) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+  }
 
   window.PuzzleHunt = {
     checkAutoClues: checkAutoClues,
     renderPuzzlePanel: renderPuzzlePanel,
-    submitAnswer: submitAnswer
+    submitAnswer: submitAnswer,
+    getDefaultPuzzles: getDefaultPuzzles
   };
 })();

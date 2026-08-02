@@ -703,7 +703,7 @@ function renderGame() {
   var memory = branchMemoryText(step);
   if (memory) {
     step = {
-      id: step.id, level: step.level, mood: step.mood, energy: step.energy,
+      id: step.id, level: step.level, mood: step.mood,
       symbol: step.symbol, pause: step.pause, hub: step.hub,
       scene: (step.scene || '') + ' ' + memory,
       prompt: step.prompt, options: step.options

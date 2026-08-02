@@ -691,6 +691,13 @@
     if (!list) return;
     FB.get('project-puzzles', 'list').then(function (data) {
       var puzzles = getProjectPuzzles(data);
+      if (window.PuzzleHunt && window.PuzzleHunt.getDefaultPuzzles) {
+        var ids = {};
+        puzzles.forEach(function (p) { if (p && p.id) ids[p.id] = 1; });
+        window.PuzzleHunt.getDefaultPuzzles().forEach(function (p) {
+          if (p && p.id && !ids[p.id]) { p.isBuiltIn = true; puzzles.push(p); ids[p.id] = 1; }
+        });
+      }
       if (!puzzles.length) {
         list.innerHTML = '<div class="empty-state"><div class="icon">&#x1F9E9;</div><p>No project puzzles yet.</p></div>';
         return;
@@ -701,12 +708,14 @@
         html +=
           '<div class="song-card">' +
             '<div class="info">' +
-              '<div class="stitle">' + esc(p.title || '') + '</div>' +
-              '<div class="smeta">' + (p.steps ? p.steps.length : 0) + ' steps</div>' +
+              '<div class="stitle">' + esc(p.title || '') + (p.isBuiltIn ? ' <span style="color:#6b5f52;font-size:.7rem;">[built-in]</span>' : '') + '</div>' +
+              '<div class="smeta">' + (p.steps ? p.steps.length : 0) + ' steps' +
+                (p.page ? ' · ' + esc(p.page) + (p.sectionIdx !== undefined ? ' · section ' + p.sectionIdx : '') : '') + '</div>' +
+              (p.subtitle ? '<div style="font-size:.72rem;color:#6b5f52;font-style:italic;margin-top:2px;">' + esc(p.subtitle) + '</div>' : '') +
             '</div>' +
             '<div class="actions">' +
               '<button class="edit-btn" data-idx="' + i + '" style="background:rgba(255,230,128,.08);border:1px solid rgba(255,230,128,.2);color:#ffe680;padding:.3rem .6rem;border-radius:6px;cursor:pointer;font-size:.75rem;">Edit</button>' +
-              '<button class="del-btn" data-idx="' + i + '">Delete</button>' +
+              (p.isBuiltIn ? '' : '<button class="del-btn" data-idx="' + i + '">Delete</button>') +
             '</div>' +
           '</div>';
       }
@@ -720,7 +729,7 @@
           if (!confirm('Delete this puzzle?')) return;
           var idx = parseInt(this.dataset.idx, 10);
           puzzles.splice(idx, 1);
-          FB.put('project-puzzles', { id: 'list', list: puzzles }).then(function () { renderProjectPuzzles(); toast('Puzzle deleted.'); });
+          FB.put('project-puzzles', { id: 'list', list: puzzles.filter(function (x) { return x && !x.isBuiltIn; }) }).then(function () { renderProjectPuzzles(); toast('Puzzle deleted.'); });
         });
       });
     }).catch(function () { list.innerHTML = '<div class="empty-state"><div class="icon">&#x26A0;&#xFE0F;</div><p>Error loading</p></div>'; });
@@ -804,7 +813,7 @@
       puzzles = getProjectPuzzles(data);
       if (isNew) puzzles.push(puzzle);
       else puzzles[idx] = puzzle;
-      FB.put('project-puzzles', { id: 'list', list: puzzles }).then(function () { closeModal(); renderProjectPuzzles(); toast('Project puzzle saved.'); });
+      FB.put('project-puzzles', { id: 'list', list: puzzles.filter(function (x) { return x && x.id; }) }).then(function () { closeModal(); renderProjectPuzzles(); toast('Project puzzle saved.'); });
     });
   }
 
@@ -881,6 +890,7 @@
   function renderSelfLetters() {
     var list = document.getElementById('selfLettersList');
     if (!list) return;
+    if (window.SEED_CONTENT) window.SEED_CONTENT.seedAll();
     FB.getAll('selfLetters').then(function (letters) {
       allSelfLetters = (letters && letters.length) ? letters : (window.SEED_CONTENT ? window.SEED_CONTENT.letters : []);
       if (!allSelfLetters.length) {
@@ -988,6 +998,7 @@
   function renderMemories() {
     var list = document.getElementById('memoriesList');
     if (!list) return;
+    if (window.SEED_CONTENT) window.SEED_CONTENT.seedAll();
     FB.getAll('memories').then(function (memories) {
       allMemories = (memories && memories.length) ? memories : (window.SEED_CONTENT ? window.SEED_CONTENT.memories : []);
       if (!allMemories.length) {
@@ -1399,6 +1410,30 @@
     });
   }
 
+  var ACTION_LABELS = {
+    typed_ash: "Typed 'ash'", typed_dream: "Typed 'dream'", typed_sleep: "Typed 'sleep'", typed_remember: "Typed 'remember'", typed_letter: "Typed 'letter'", typed_lanterns: "Typed 'lanterns'",
+    butterfly_discovered: 'Discovered a butterfly', firefly_caught: 'Caught a firefly', balloon_hit: 'Popped a balloon', feather_caught: 'Caught a feather', coffee_click: 'Tapped the coffee', lucky_star_found: 'Found a lucky star', fragment_collected: 'Collected a fragment', photo_fragment_found: 'Found a photo fragment', achievements_opened: 'Opened achievements',
+    lantern_released: 'Released a lantern', wish_posted: 'Posted a wish', star_clicked: 'Clicked a star',
+    selfletter_opened: 'Opened a self-writing letter', memory_seen: 'Read a memory', secret_letter_found: 'Found a secret letter', quiz_passed: 'Passed a quiz', quiz_failed: 'Failed a quiz', puzzle_solved: 'Solved a puzzle', promise_bookmarked: 'Bookmarked a promise', promise_unbookmarked: 'Unbookmarked a promise',
+    song_played: 'Played a song', tribute_card_open: 'Opened a tribute card', favorite_added: 'Added a favorite', favorite_removed: 'Removed a favorite', wallpaper_download: 'Downloaded wallpaper', gallery_lightbox_open: 'Opened a gallery photo', photo_uploaded: 'Uploaded photo(s)'
+  };
+  var TYPE_COLORS = { catch: '#6fcf93', trigger: '#c77dff', content: '#ffe680', love: '#ff8fa3', wish: '#7cc4ff', music: '#b79bff', upload: '#ffb86b' };
+  var TYPE_LABELS = { catch: 'Catch', trigger: 'Trigger', content: 'Content', love: 'Love', wish: 'Wish', music: 'Music', upload: 'Upload' };
+
+  function humanAction(a) {
+    return ACTION_LABELS[a] || String(a).replace(/_/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+  }
+
+  function relTime(ts) {
+    if (!ts) return '';
+    var s = Math.floor((Date.now() - ts) / 1000);
+    if (s < 60) return 'just now';
+    if (s < 3600) return Math.floor(s / 60) + 'm ago';
+    if (s < 86400) return Math.floor(s / 3600) + 'h ago';
+    if (s < 604800) return Math.floor(s / 86400) + 'd ago';
+    return new Date(ts).toLocaleDateString();
+  }
+
   function renderInteractions() {
     var listEl = document.getElementById('interactionsList');
     if (!listEl) return;
@@ -1411,45 +1446,107 @@
         return;
       }
       items.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
+      var now = Date.now(), DAY = 86400000;
       var todayKey = new Date().toDateString();
-      var todayCount = 0;
-      var byAction = {};
-      var byActionToday = {};
+      var todayCount = 0, weekCount = 0;
+      var byAction = {}, byActionToday = {}, byPage = {}, byPageToday = {};
       items.forEach(function (e) {
-        byAction[e.action] = (byAction[e.action] || 0) + 1;
+        var act = e.action || 'unknown', pg = e.page || 'unknown';
+        byAction[act] = (byAction[act] || 0) + 1;
+        byPage[pg] = (byPage[pg] || 0) + 1;
         if (e.ts && new Date(e.ts).toDateString() === todayKey) {
           todayCount++;
-          byActionToday[e.action] = (byActionToday[e.action] || 0) + 1;
+          byActionToday[act] = (byActionToday[act] || 0) + 1;
+          byPageToday[pg] = (byPageToday[pg] || 0) + 1;
+        } else if (e.ts && e.ts >= now - 7 * DAY) {
+          weekCount++;
         }
       });
+      var topPage = Object.keys(byPage).sort(function (a, b) { return byPage[b] - byPage[a]; })[0] || '—';
       if (statsEl) {
-        statsEl.innerHTML =
-          '<div class="stat-card" style="flex:1;min-width:100px;padding:10px 14px;border-radius:8px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.08);text-align:center;">' +
-            '<div style="font-size:1.3rem;font-weight:bold;color:#ffe680;">' + items.length + '</div>' +
-            '<div style="font-size:.65rem;color:#6b5f52;text-transform:uppercase;letter-spacing:.05em;">Total</div></div>' +
-          '<div class="stat-card" style="flex:1;min-width:100px;padding:10px 14px;border-radius:8px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.08);text-align:center;">' +
-            '<div style="font-size:1.3rem;font-weight:bold;color:#6fcf93;">' + todayCount + '</div>' +
-            '<div style="font-size:.65rem;color:#6b5f52;text-transform:uppercase;letter-spacing:.05em;">Today</div></div>';
+        var stat = function (val, label, color) {
+          return '<div class="stat-card" style="flex:1;min-width:110px;padding:10px 14px;border-radius:8px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.08);text-align:center;">' +
+            '<div style="font-size:1.3rem;font-weight:bold;color:' + color + ';">' + val + '</div>' +
+            '<div style="font-size:.65rem;color:#6b5f52;text-transform:uppercase;letter-spacing:.05em;">' + label + '</div></div>';
+        };
+        statsEl.innerHTML = stat(items.length, 'Total', '#ffe680') + stat(todayCount, 'Today', '#6fcf93') + stat(weekCount, 'Last 7 days', '#7cc4ff') + stat(esc(topPage), 'Top page', '#ff8fa3');
       }
-      var html = '<div style="margin-bottom:1rem;"><h4 style="margin:0 0 .4rem;color:#ffe680;font-size:.85rem;">By action</h4>';
-      html += '<table style="width:100%;border-collapse:collapse;font-size:.75rem;"><tr style="color:#6b5f52;text-align:left;"><th style="padding:.25rem .5rem;border-bottom:1px solid rgba(255,210,150,.15);">Action</th><th style="padding:.25rem .5rem;border-bottom:1px solid rgba(255,210,150,.15);">All time</th><th style="padding:.25rem .5rem;border-bottom:1px solid rgba(255,210,150,.15);">Today</th></tr>';
-      Object.keys(byAction).sort(function (a, b) { return byAction[b] - byAction[a]; }).forEach(function (a) {
-        html += '<tr><td style="padding:.25rem .5rem;border-bottom:1px solid rgba(255,210,150,.06);">' + esc(a) + '</td><td style="padding:.25rem .5rem;border-bottom:1px solid rgba(255,210,150,.06);">' + byAction[a] + '</td><td style="padding:.25rem .5rem;border-bottom:1px solid rgba(255,210,150,.06);">' + (byActionToday[a] || 0) + '</td></tr>';
+
+      var dayStarts = [], dayCounts = [];
+      for (var di = 0; di < 14; di++) {
+        var d0 = new Date(now - (13 - di) * DAY);
+        dayStarts.push(new Date(d0.getFullYear(), d0.getMonth(), d0.getDate()).getTime());
+        dayCounts.push(0);
+      }
+      items.forEach(function (e) {
+        if (!e.ts) return;
+        var d = new Date(e.ts);
+        var idx = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() - dayStarts[0]) / DAY);
+        if (idx >= 0 && idx < dayCounts.length) dayCounts[idx]++;
       });
-      html += '</table></div>';
-      html += '<h4 style="margin:0 0 .4rem;color:#ffe680;font-size:.85rem;">Recent 100</h4>';
-      items.slice(0, 100).forEach(function (e) {
-        var date = e.ts ? new Date(e.ts).toLocaleString() : '';
-        html +=
-          '<div class="song-card" style="padding:.4rem .7rem;">' +
-            '<div class="info" style="gap:2px;">' +
-              '<div class="smeta" style="font-size:.7rem;">' + date + ' &middot; ' + esc(e.type || '') + ' &middot; ' + esc(e.page || '') + '</div>' +
-              '<div style="font-size:.8rem;color:#d4c5b2;">' + esc(e.action || '') + (e.detail ? ' &mdash; ' + esc(e.detail) : '') + '</div>' +
+      var maxDay = Math.max.apply(null, dayCounts) || 1;
+      var chart = '<div style="margin-bottom:1rem;"><h4 style="margin:0 0 .4rem;color:#ffe680;font-size:.85rem;">Activity — last 14 days</h4>' +
+        '<div style="display:flex;align-items:flex-end;gap:4px;height:90px;">';
+      for (var bi = 0; bi < dayCounts.length; bi++) {
+        var h = dayCounts[bi] ? Math.max(6, Math.round(dayCounts[bi] / maxDay * 90)) : 2;
+        var d2 = new Date(dayStarts[bi]);
+        chart += '<div title="' + d2.toDateString() + ': ' + dayCounts[bi] + '" style="flex:1;height:' + h + 'px;background:' + (bi === dayCounts.length - 1 ? 'rgba(255,230,128,.85)' : 'rgba(255,210,150,.25)') + ';border-radius:3px 3px 0 0;"></div>';
+      }
+      chart += '</div><div style="display:flex;gap:4px;margin-top:4px;">';
+      for (var li = 0; li < dayCounts.length; li++) {
+        var d3 = new Date(dayStarts[li]);
+        chart += '<div style="flex:1;text-align:center;font-size:.6rem;' + (li === dayCounts.length - 1 ? 'color:#ffe680;' : 'color:#6b5f52;') + '">' + (li === dayCounts.length - 1 ? 'today' : (d3.getMonth() + 1) + '/' + d3.getDate()) + '</div>';
+      }
+      chart += '</div></div>';
+
+      var table = function (title, rows) {
+        return '<div style="margin-bottom:1rem;"><h4 style="margin:0 0 .4rem;color:#ffe680;font-size:.85rem;">' + title + '</h4>' +
+          '<table style="width:100%;border-collapse:collapse;font-size:.75rem;"><tr style="color:#6b5f52;text-align:left;"><th style="padding:.25rem .5rem;border-bottom:1px solid rgba(255,210,150,.15);">Name</th><th style="padding:.25rem .5rem;border-bottom:1px solid rgba(255,210,150,.15);">All time</th><th style="padding:.25rem .5rem;border-bottom:1px solid rgba(255,210,150,.15);">Today</th></tr>' + rows + '</table></div>';
+      };
+      var pageRows = Object.keys(byPage).sort(function (a, b) { return byPage[b] - byPage[a]; }).map(function (p) {
+        return '<tr><td style="padding:.25rem .5rem;border-bottom:1px solid rgba(255,210,150,.06);">' + esc(p) + '</td><td style="padding:.25rem .5rem;border-bottom:1px solid rgba(255,210,150,.06);">' + byPage[p] + '</td><td style="padding:.25rem .5rem;border-bottom:1px solid rgba(255,210,150,.06);">' + (byPageToday[p] || 0) + '</td></tr>';
+      }).join('');
+      var actionRows = Object.keys(byAction).sort(function (a, b) { return byAction[b] - byAction[a]; }).map(function (a) {
+        return '<tr><td style="padding:.25rem .5rem;border-bottom:1px solid rgba(255,210,150,.06);">' + esc(humanAction(a)) + '</td><td style="padding:.25rem .5rem;border-bottom:1px solid rgba(255,210,150,.06);">' + byAction[a] + '</td><td style="padding:.25rem .5rem;border-bottom:1px solid rgba(255,210,150,.06);">' + (byActionToday[a] || 0) + '</td></tr>';
+      }).join('');
+
+      listEl.innerHTML = chart + table('By page', pageRows) + table('By action', actionRows) +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 .4rem;">' +
+        '<h4 style="margin:0;color:#ffe680;font-size:.85rem;">Recent events</h4>' +
+        '<input id="interactionsSearch" placeholder="Filter events..." style="width:180px;padding:.3rem .5rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-family:inherit;font-size:.75rem;outline:none;">' +
+        '</div><div id="interactionsRecent"></div>';
+
+      function recentItem(e) {
+        var color = TYPE_COLORS[e.type] || '#d4c5b2';
+        return '<div class="song-card" style="padding:.45rem .7rem;margin-bottom:.35rem;">' +
+          '<div class="info" style="gap:2px;">' +
+            '<div class="smeta" style="font-size:.7rem;color:#6b5f52;">' + esc(new Date(e.ts).toLocaleString()) + '</div>' +
+            '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">' +
+              '<span style="font-size:.62rem;padding:1px 6px;border-radius:8px;background:' + color + '22;border:1px solid ' + color + '44;color:' + color + ';">' + esc(TYPE_LABELS[e.type] || e.type || '?') + '</span>' +
+              '<span style="font-size:.8rem;color:#d4c5b2;">' + esc(humanAction(e.action)) + '</span>' +
+              '<span style="font-size:.7rem;color:#6b5f52;">on ' + esc(e.page || '?') + '</span>' +
+              '<span style="font-size:.7rem;color:#6b5f52;">&middot; ' + relTime(e.ts) + '</span>' +
             '</div>' +
-          '</div>';
-      });
-      listEl.innerHTML = html;
-      if (items.length > 100) listEl.innerHTML += '<div style="text-align:center;color:#6b5f52;font-size:.75rem;margin-top:8px;">Showing 100 of ' + items.length + ' entries</div>';
+            (e.detail ? '<div style="font-size:.75rem;color:#6b5f52;font-style:italic;margin-top:2px;">' + esc(e.detail) + '</div>' : '') +
+          '</div>' +
+        '</div>';
+      }
+
+      function renderRecentList() {
+        var q = ((document.getElementById('interactionsSearch') || {}).value || '').toLowerCase();
+        var recent = items.slice(0, 200);
+        if (q) {
+          recent = recent.filter(function (e) {
+            return (e.action || '').toLowerCase().indexOf(q) >= 0 || (e.detail || '').toLowerCase().indexOf(q) >= 0 || (e.page || '').toLowerCase().indexOf(q) >= 0 || (e.type || '').toLowerCase().indexOf(q) >= 0 || humanAction(e.action).toLowerCase().indexOf(q) >= 0;
+          });
+        }
+        var el = document.getElementById('interactionsRecent');
+        if (!el) return;
+        el.innerHTML = recent.map(recentItem).join('') || '<div style="color:#6b5f52;font-size:.75rem;text-align:center;padding:1rem 0;">No matching events.</div>';
+        if (items.length > 200) el.innerHTML += '<div style="text-align:center;color:#6b5f52;font-size:.75rem;margin-top:8px;">Showing ' + recent.length + ' of ' + items.length + ' entries</div>';
+      }
+      renderRecentList();
+      document.getElementById('interactionsSearch').addEventListener('input', renderRecentList);
     }).catch(function () {
       listEl.innerHTML = '<div class="empty-state"><div class="icon">&#x26A0;&#xFE0F;</div><p>Error loading interactions</p></div>';
     });
@@ -2251,172 +2348,29 @@
   }
 
   /* ---- Turn On ---- */
-  var turnOnSteps = [];
-  var turnOnIdCounter = 100;
+  // The journey the game actually runs — the embedded file. Branch step counts and session stats read from here.
+  var turnOnSteps = (typeof getDefaultSteps === 'function') ? getDefaultSteps() : [];
 
-  function renderTurnOnSteps() {
-    FB.get('turnOn', 'steps').then(function (d) {
-      turnOnSteps = (d && d.list) ? JSON.parse(JSON.stringify(d.list)) : [];
-      turnOnIdCounter = 100;
-      turnOnSteps.forEach(function (s) { if (s.id >= turnOnIdCounter) turnOnIdCounter = s.id + 1; });
-      renderTurnOnList();
-    }).catch(function () {
-      turnOnSteps = [];
-      renderTurnOnList();
-    });
-  }
-
-  function renderTurnOnList() {
-    var container = document.getElementById('turnOnStepsList');
-    if (!container) return;
-    if (!turnOnSteps.length) {
-      container.innerHTML = '<div class="empty-state"><div class="icon">&#x2665;</div><p>No steps yet. Add your first one.</p></div>';
-      return;
+  function turnOnBranchOf(stepId) {
+    if (stepId < 100) return 2;
+    var starts = [1400, 1300, 1200, 1100, 1000, 900, 800, 700, 600, 500, 400];
+    for (var i = 0; i < starts.length; i++) {
+      if (stepId >= starts[i] && stepId < starts[i] + 100) return starts[i];
     }
-    var html = '';
-    turnOnSteps.forEach(function (step, i) {
-      html += '<div style="background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);border-radius:10px;padding:1rem;margin-bottom:.75rem;">';
-      html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;">';
-      html += '<span style="font-family:\'Fraunces\',Georgia,serif;font-size:.85rem;color:var(--gold);">Step #' + step.id + ' <span style="color:var(--ash);font-size:.7rem;">(Level ' + (step.level + 1) + ')</span></span>';
-      html += '<div style="display:flex;gap:.4rem;">';
-      html += '<button class="del-btn" data-to-idx="' + i + '" style="font-size:.7rem;">Delete</button>';
-      html += '</div></div>';
-      html += '<div class="field"><label>Prompt</label>';
-      html += '<input type="text" class="to-prompt" value="' + esc(step.prompt) + '" data-idx="' + i + '" style="width:100%;"></div>';
-      html += '<div class="field"><label>Scene (narrative description)</label>';
-      html += '<textarea class="to-scene" data-idx="' + i + '" rows="2" style="width:100%;padding:.45rem .6rem;border-radius:4px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-size:.8rem;outline:none;font-family:\'Lora\',Georgia,serif;">' + esc(step.scene || '') + '</textarea></div>';
-      html += '<div style="display:flex;gap:1rem;margin-bottom:.5rem;flex-wrap:wrap;">';
-      html += '<div class="field" style="flex:1;min-width:80px;"><label>Level (0-9)</label>';
-      html += '<input type="number" class="to-level" value="' + step.level + '" min="0" max="9" data-idx="' + i + '" style="width:100%;"></div>';
-      html += '<div class="field" style="flex:1;min-width:100px;"><label>Mood</label>';
-      html += '<select class="to-mood" data-idx="' + i + '" style="width:100%;padding:.35rem .5rem;border-radius:4px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-size:.8rem;outline:none;">' +
-        '<option value="tender"' + (step.mood === 'tender' ? ' selected' : '') + '>Tender</option>' +
-        '<option value="teasing"' + (step.mood === 'teasing' ? ' selected' : '') + '>Teasing</option>' +
-        '<option value="intense"' + (step.mood === 'intense' ? ' selected' : '') + '>Intense</option>' +
-        '<option value="vulnerable"' + (step.mood === 'vulnerable' ? ' selected' : '') + '>Vulnerable</option>' +
-        '<option value="ecstasy"' + (step.mood === 'ecstasy' ? ' selected' : '') + '>Ecstasy</option>' +
-      '</select></div>';
-      html += '<div class="field" style="width:60px;"><label>Symbol</label>';
-      html += '<input type="text" class="to-symbol" value="' + esc(step.symbol || '') + '" maxlength="2" data-idx="' + i + '" style="width:100%;text-align:center;padding:.35rem .2rem;border-radius:4px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-size:.9rem;outline:none;"></div>';
-      html += '<div class="field" style="width:80px;"><label>Pause (ms)</label>';
-      html += '<input type="number" class="to-pause" value="' + (step.pause || 400) + '" min="0" max="5000" step="100" data-idx="' + i + '" style="width:100%;padding:.35rem .4rem;border-radius:4px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-size:.8rem;outline:none;"></div>';
-      html += '</div>';
-      html += '<div style="font-size:.7rem;color:var(--ash);margin-bottom:.4rem;">Options:</div>';
-      step.options.forEach(function (opt, oi) {
-        html += '<div style="display:flex;gap:.4rem;margin-bottom:.3rem;align-items:center;">';
-        html += '<input type="text" class="to-opt-text" value="' + esc(opt.text) + '" placeholder="Option text" data-idx="' + i + '" data-oi="' + oi + '" style="flex:1;padding:.35rem .5rem;border-radius:4px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-size:.8rem;outline:none;">';
-        html += '<input type="text" class="to-opt-trans" value="' + esc(opt.transition || '') + '" placeholder="Transition text" data-idx="' + i + '" data-oi="' + oi + '" style="flex:1;padding:.35rem .5rem;border-radius:4px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-size:.8rem;outline:none;">';
-        html += '<select class="to-opt-energy" data-idx="' + i + '" data-oi="' + oi + '" style="padding:.35rem .3rem;border-radius:4px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-size:.72rem;outline:none;">' +
-          '<option value="1"' + (opt.energy === 1 ? ' selected' : '') + '>Soft</option>' +
-          '<option value="2"' + (opt.energy === 2 ? ' selected' : '') + '>Medium</option>' +
-          '<option value="3"' + (opt.energy === 3 ? ' selected' : '') + '>Intense</option>' +
-        '</select>';
-        html += '<input type="number" class="to-opt-next" value="' + opt.next + '" placeholder="Next step ID" data-idx="' + i + '" data-oi="' + oi + '" style="width:70px;padding:.35rem .5rem;border-radius:4px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-size:.8rem;outline:none;">';
-        html += '<span style="color:var(--ash);font-size:.7rem;">(-1 = end)</span>';
-        html += '</div>';
-      });
-      html += '</div>';
-    });
-    container.innerHTML = html;
-
-    // Bind changes
-    container.querySelectorAll('.to-prompt').forEach(function (el) {
-      el.addEventListener('input', function () {
-        turnOnSteps[parseInt(this.dataset.idx)].prompt = this.value;
-      });
-    });
-    container.querySelectorAll('.to-level').forEach(function (el) {
-      el.addEventListener('input', function () {
-        turnOnSteps[parseInt(this.dataset.idx)].level = parseInt(this.value) || 0;
-      });
-    });
-    container.querySelectorAll('.to-scene').forEach(function (el) {
-      el.addEventListener('input', function () {
-        turnOnSteps[parseInt(this.dataset.idx)].scene = this.value;
-      });
-    });
-    container.querySelectorAll('.to-mood').forEach(function (el) {
-      el.addEventListener('change', function () {
-        turnOnSteps[parseInt(this.dataset.idx)].mood = this.value;
-      });
-    });
-    container.querySelectorAll('.to-symbol').forEach(function (el) {
-      el.addEventListener('input', function () {
-        turnOnSteps[parseInt(this.dataset.idx)].symbol = this.value;
-      });
-    });
-    container.querySelectorAll('.to-pause').forEach(function (el) {
-      el.addEventListener('input', function () {
-        turnOnSteps[parseInt(this.dataset.idx)].pause = parseInt(this.value) || 400;
-      });
-    });
-    container.querySelectorAll('.to-opt-text').forEach(function (el) {
-      el.addEventListener('input', function () {
-        var i = parseInt(this.dataset.idx);
-        var oi = parseInt(this.dataset.oi);
-        turnOnSteps[i].options[oi].text = this.value;
-      });
-    });
-    container.querySelectorAll('.to-opt-trans').forEach(function (el) {
-      el.addEventListener('input', function () {
-        var i = parseInt(this.dataset.idx);
-        var oi = parseInt(this.dataset.oi);
-        turnOnSteps[i].options[oi].transition = this.value;
-      });
-    });
-    container.querySelectorAll('.to-opt-energy').forEach(function (el) {
-      el.addEventListener('change', function () {
-        var i = parseInt(this.dataset.idx);
-        var oi = parseInt(this.dataset.oi);
-        turnOnSteps[i].options[oi].energy = parseInt(this.value);
-      });
-    });
-    container.querySelectorAll('.to-opt-next').forEach(function (el) {
-      el.addEventListener('input', function () {
-        var i = parseInt(this.dataset.idx);
-        var oi = parseInt(this.dataset.oi);
-        turnOnSteps[i].options[oi].next = parseInt(this.value) || -1;
-      });
-    });
-    container.querySelectorAll('.del-btn[data-to-idx]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var idx = parseInt(this.dataset.toIdx);
-        turnOnSteps.splice(idx, 1);
-        renderTurnOnList();
-        toast('Step deleted.');
-      });
-    });
-
-    document.getElementById('turnOnStatus').textContent = turnOnSteps.length;
+    return null;
   }
-
-  document.getElementById('addTurnOnStepBtn').addEventListener('click', function () {
-    var newId = turnOnIdCounter++;
-    var lastLevel = turnOnSteps.length > 0 ? turnOnSteps[turnOnSteps.length - 1].level : 0;
-    turnOnSteps.push({
-      id: newId,
-      level: Math.min(lastLevel + (turnOnSteps.length > 0 ? 1 : 0), 9),
-      mood: 'tender',
-      symbol: '♡',
-      pause: 600,
-      scene: 'A quiet moment in the dark...',
-      prompt: 'What do you do?',
-      options: [
-        { text: 'Option 1', next: newId + 1, transition: 'You choose option 1...', energy: 1 },
-        { text: 'Option 2', next: newId + 1, transition: 'You choose option 2...', energy: 2 }
-      ]
-    });
-    renderTurnOnList();
-    toast('Step added.');
-  });
-
-  document.getElementById('saveTurnOnBtn').addEventListener('click', function () {
-    FB.put('turnOn', { id: 'steps', list: turnOnSteps, ver: 5 }).then(function () {
-      toast('Turn On steps saved to Firebase.');
-    }).catch(function () {
-      toast('Failed to save.');
-    });
-  });
+  function turnOnBranchLabel(id) {
+    for (var i = 0; i < TURN_ON_BRANCHES.length; i++) {
+      if (TURN_ON_BRANCHES[i].id === id) return TURN_ON_BRANCHES[i].label;
+    }
+    return 'Entry & endings';
+  }
+  function turnOnBranchSymbol(steps, id) {
+    for (var i = 0; i < steps.length; i++) {
+      if (turnOnBranchOf(steps[i].id) === id && steps[i].symbol) return steps[i].symbol;
+    }
+    return '';
+  }
 
   /* ---- Turn On Branch Toggles ---- */
   var TURN_ON_BRANCHES = [
@@ -2442,9 +2396,16 @@
       var disabled = (d && d.disabled) || [];
       var html = '';
       TURN_ON_BRANCHES.forEach(function (b) {
-        html += '<label style="display:flex;align-items:center;gap:.6rem;padding:.4rem 0;cursor:pointer;font-size:.85rem;color:var(--parchment-dim);">' +
-          '<input type="checkbox" data-branch="' + b.id + '"' + (disabled.indexOf(b.id) === -1 ? ' checked' : '') + ' style="width:16px;height:16px;accent-color:#6fcf93;">' +
-          esc(b.label) + '</label>';
+        var count = turnOnSteps.filter(function (s) { return turnOnBranchOf(s.id) === b.id; }).length;
+        var on = disabled.indexOf(b.id) === -1;
+        var symbol = turnOnBranchSymbol(turnOnSteps, b.id);
+        html += '<div style="display:flex;align-items:center;gap:.6rem;padding:.5rem .7rem;margin-bottom:.4rem;border:1px solid rgba(255,210,150,.08);border-radius:8px;background:rgba(255,220,160,.02);">' +
+          '<input type="checkbox" data-branch="' + b.id + '"' + (on ? ' checked' : '') + ' style="width:16px;height:16px;accent-color:#6fcf93;">' +
+          '<span style="font-size:.9rem;">' + esc(symbol) + '</span>' +
+          '<span style="flex:1;font-size:.82rem;color:var(--parchment-dim);">' + esc(b.label) + '</span>' +
+          '<span style="font-size:.7rem;color:var(--ash);">' + count + ' steps</span>' +
+          '<span style="font-size:.62rem;padding:1px 8px;border-radius:8px;' + (on ? 'background:rgba(111,207,147,.15);color:#6fcf93;' : 'background:rgba(232,93,58,.12);color:#e85d3a;') + '">' + (on ? 'ON' : 'OFF') + '</span>' +
+        '</div>';
       });
       box.innerHTML = html;
       box.querySelectorAll('input[type=checkbox]').forEach(function (cb) {
@@ -2481,45 +2442,73 @@
         list.innerHTML = '<div class="empty-state"><div class="icon">&#x2661;</div><p>No sessions yet.</p></div>';
         return;
       }
-      var html = '';
+      var totalChoices = 0, branchCounts = {};
+      items.forEach(function (s) {
+        totalChoices += s.history ? s.history.length : 0;
+        var br = s.history && s.history.length ? turnOnBranchOf(s.history[0].stepId) : null;
+        if (br !== null) branchCounts[br] = (branchCounts[br] || 0) + 1;
+      });
+      var stat = function (val, label, color) {
+        return '<div style="flex:1;min-width:90px;padding:8px 12px;border-radius:8px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.08);text-align:center;">' +
+          '<div style="font-size:1.15rem;font-weight:bold;color:' + color + ';">' + val + '</div>' +
+          '<div style="font-size:.62rem;color:#6b5f52;text-transform:uppercase;letter-spacing:.05em;">' + label + '</div></div>';
+      };
+      var topBranch = Object.keys(branchCounts).sort(function (a, b) { return branchCounts[b] - branchCounts[a]; })[0];
+      var html =
+        '<div style="display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:.75rem;">' +
+          stat(items.length, 'Sessions', '#ffe680') +
+          stat(totalChoices, 'Total choices', '#7cc4ff') +
+          stat((totalChoices / items.length).toFixed(1), 'Avg choices', '#6fcf93') +
+          stat(esc(topBranch ? turnOnBranchLabel(parseInt(topBranch, 10)).split(' — ')[0] : '—'), 'Top branch', '#ff8fa3') +
+        '</div>';
       items.forEach(function (s, i) {
         var choices = s.history ? s.history.length : 0;
         var label = s.label || 'Session ' + (i + 1);
+        var br = s.history && s.history.length ? turnOnBranchOf(s.history[0].stepId) : null;
+        var brLabel = br !== null ? turnOnBranchLabel(br).split(' — ')[0] : '—';
+        var date = s.timestamp ? new Date(s.timestamp).toLocaleString() : '';
         var highestLevel = 0;
         if (s.history) {
           s.history.forEach(function (h) {
-            if (h.stepId > highestLevel) highestLevel = h.stepId;
+            var st = null;
+            for (var si = 0; si < turnOnSteps.length; si++) { if (turnOnSteps[si].id === h.stepId) { st = turnOnSteps[si]; break; } }
+            if (st && st.level >= highestLevel) highestLevel = st.level + 1;
           });
         }
-        html += '<div style="background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);border-radius:10px;padding:1rem;margin-bottom:.75rem;">';
-        html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem;">';
-        html += '<span style="font-family:\'Fraunces\',Georgia,serif;font-size:.9rem;color:var(--gold);">' + esc(label) + '</span>';
-        html += '<span style="color:var(--ash);font-size:.75rem;">' + choices + ' choices</span></div>';
+        html += '<div class="to-card" style="border:1px solid rgba(255,210,150,.08);border-radius:10px;margin-bottom:.5rem;background:rgba(255,220,160,.02);">';
+        html += '<div class="to-card-head" style="display:flex;justify-content:space-between;align-items:center;gap:.6rem;padding:.55rem .8rem;cursor:pointer;">';
+        html += '<span style="font-family:\'Fraunces\',Georgia,serif;font-size:.85rem;color:var(--gold);">' + esc(label) + '</span>';
+        html += '<span style="font-size:.62rem;padding:1px 8px;border-radius:8px;background:rgba(255,210,150,.12);color:#d4c5b2;">' + esc(brLabel) + '</span>';
+        html += '<span style="color:var(--ash);font-size:.72rem;">' + choices + ' choices</span>';
+        html += '<span style="color:var(--ash);font-size:.72rem;">peak Lv ' + highestLevel + '</span>';
+        html += '<span style="flex:1;color:var(--ash);font-size:.72rem;text-align:right;">' + esc(date) + '</span>';
+        html += '<span style="color:var(--ash);font-size:.75rem;">&#9662;</span>';
+        html += '</div>';
+        html += '<div class="to-body" style="padding:.6rem .8rem;border-top:1px solid rgba(255,210,150,.06);display:none;">';
         if (s.history) {
-          html += '<div style="font-size:.8rem;color:var(--parchment-dim);">';
           s.history.forEach(function (h, hi) {
-            html += '<div style="padding:.2rem 0;border-bottom:1px solid rgba(255,210,150,.05);">';
-            html += '<span style="color:var(--ash);font-size:.7rem;">' + (hi + 1) + '.</span> ';
-            html += '<span style="color:var(--parchment);">' + esc(h.choice || '') + '</span>';
-            html += ' <span style="color:var(--ash);font-size:.7rem;">\u2192 step ' + h.stepId + '</span>';
+            html += '<div style="display:flex;gap:.5rem;padding:.22rem 0;border-bottom:1px solid rgba(255,210,150,.05);align-items:baseline;">';
+            html += '<span style="color:var(--ash);font-size:.68rem;min-width:22px;">' + (hi + 1) + '.</span>';
+            html += '<span style="flex:1;font-size:.8rem;color:var(--parchment);">' + esc(h.choice || '') + '</span>';
+            html += '<span style="color:var(--ash);font-size:.68rem;">&#8594; step ' + h.stepId + '</span>';
             html += '</div>';
           });
-          html += '</div>';
         }
-        html += '</div>';
+        html += '</div></div>';
       });
       list.innerHTML = html;
+      list.querySelectorAll('.to-card-head').forEach(function (h) {
+        h.addEventListener('click', function () { this.closest('.to-card').classList.toggle('open'); });
+      });
     }).catch(function () {
       list.innerHTML = '<div class="empty-state"><div class="icon">&#x2661;</div><p>Could not load sessions.</p></div>';
     });
   }
 
-  // Extend turnon tab activation to also load sessions
-  var origTurnOn = renderTurnOnSteps;
-  renderTurnOnSteps = function () {
-    origTurnOn();
+  function renderTurnOn() {
+    renderTurnOnBranches();
     renderTurnOnSessions();
-  };
+  }
 
   /* ---- Secret Song ---- */
   function loadSecretForm() {
@@ -2837,7 +2826,7 @@
         if (this.dataset.tab === 'rare') renderRare();
         if (this.dataset.tab === 'achievements') renderAchievements();
         if (this.dataset.tab === 'dreams') renderDreams();
-        if (this.dataset.tab === 'turnon') { renderTurnOnSteps(); renderTurnOnBranches(); }
+        if (this.dataset.tab === 'turnon') { renderTurnOn(); }
         if (this.dataset.tab === 'activity') loadActivity();
         if (this.dataset.tab === 'interactions') renderInteractions();
         if (this.dataset.tab === 'project') { renderProjectPuzzles(); renderStoryline(); }
