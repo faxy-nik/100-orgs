@@ -72,7 +72,7 @@ Access = link/card on another page, trigger word (type anywhere, see Secret Word
 | `adaptive-text.js` | Text animation effects |
 | `install-prompt.js` | "Add to Home Screen" banner — offered once per device (`ash_install_offered`), browser install prompt on Android/desktop, manual instructions (Share → Add to Home Screen) on iOS. Suppressed if `ash_installed` set or already running standalone |
 | `admin.js` | Admin panel logic (extracted from admin.html inline script — byte-identical move) |
-| `turn-on-steps.js` | 486-step turn-on game data (`getDefaultSteps()` — extracted from turn-on.html inline script). 15 branches: fuck (2), masturbation (400), fingering (500), foreplay (600), oral (700), fingering drive (800), shower (900), watching you undress (1000), rough (1100), mirror (1200), 69 (1300), morning (1400), bath (1500), car (1600), public (1700) |
+| `turn-on-steps.js` | 452-step turn-on game data (`getDefaultSteps()` — extracted from turn-on.html inline script). 12 branches: fuck (2), masturbation (400), fingering (500), foreplay (600), oral (700), fingering drive (800), bath & shower (900), watching you undress (1000), rough (1100), mirror (1200), 69 (1300), morning (1400) |
 | `sw.js` | Service worker — offline cache (**ash-v47**)
 
 ## Companion, skies, music scripts — companions are sprite-sheet or procedurally drawn, skies use a 150+ definition rendering engine, music uses Web Audio API crossfade jukebox

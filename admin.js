@@ -2426,15 +2426,12 @@
     { id: 600, label: 'Foreplay — I tease you until you beg' },
     { id: 800, label: 'Fingering drive — I talk you to pieces, my fingers inside you' },
     { id: 700, label: 'Oral — my mouth on you, I taste every inch' },
-    { id: 900, label: 'Shower — I wash every inch of you' },
+    { id: 900, label: 'Bath & Shower — I wash every inch of you' },
     { id: 1000, label: 'Watching you undress — the slow way' },
     { id: 1100, label: 'Rough — I take control' },
     { id: 1200, label: 'Mirror — I watch us together' },
     { id: 1300, label: '69 — both of us, at once' },
     { id: 1400, label: 'Morning — I wake you up slow' },
-    { id: 1500, label: 'Bath — I bathe you until you melt' },
-    { id: 1600, label: 'Car — parked, dark, impatient' },
-    { id: 1700, label: 'Public — nothing under your dress' }
   ];
   var branchToast;
   function renderTurnOnBranches() {

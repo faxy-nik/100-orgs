@@ -17,7 +17,7 @@ A romantic, interactive multi-page gift website for one person ("Eeshah"). Vanil
 - The site is date-gated (`lock.js`/`section-lock.js`), full of secret triggers (type `ash`, `remember`, `letter`, `dream`, `sleep`), and has personal/admin data — never expose or log credentials, and never delete user-generated data from Firebase.
 
 ## Commands
-- Tests: `cd tools && npm test` — verifies syntax, refs, letters, memories, turn-on game integrity (486 steps reachable). Run after any change.
+- Tests: `cd tools && npm test` — verifies syntax, refs, letters, memories, turn-on game integrity (452 steps reachable). Run after any change.
 - Quick syntax check: `node --check <file>.js`
 - Final asset check: `tools\final_check.js` (39 JS / 24 HTML files)
 - Deploy rules only: `firebase deploy --only database --project faxy-ash` (requires firebase CLI + credentials)

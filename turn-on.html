@@ -545,7 +545,7 @@ body {
   <!-- Start -->
   <div id="startScreen">
     <h1>Turn Yourself On</h1>
-    <p>An exploration of desire, one choice at a time. Fifteen ways to begin — hundreds of steps from the first breath to the quiet after. Every decision stays. Nothing is taken back. Only more is added.</p>
+    <p>An exploration of desire, one choice at a time. Twelve ways to begin — hundreds of steps from the first breath to the quiet after. Every decision stays. Nothing is taken back. Only more is added.</p>
     <button class="start-btn" id="startBtn">&#x2665; Begin</button>
     <p style="margin-top:1.5rem;font-size:.75rem;"><a href="turnon-history.html" style="color:var(--ash);">&#x2661; Session History</a></p>
   </div>
@@ -603,14 +603,15 @@ var TRANSITION_DELAY = 2800;
 var LEVEL_NAMES = ['Awakening', 'Teasing', 'Touching', 'Yearning', 'Surrender', 'Pleasure', 'Ecstasy', 'Intimacy', 'Vulnerability', 'Union'];
 var STEPS = [];
 
-var STEPS_VER = 5;
+var STEPS_VER = 6;
 function loadSteps() {
   STEPS = getDefaultSteps();
   if (typeof FB !== 'undefined' && FB.get) {
     FB.get('config', 'turnOnSections').then(function (d) {
-      if (d && d.disabled && d.disabled.length) filterBranches(d.disabled);
+            if (d && d.disabled && d.disabled.length) filterBranches(d.disabled);
+      loadLastNight();
       initGame();
-    }).catch(function () { initGame(); });
+    }).catch(function () { loadLastNight(); initGame(); });;
   } else {
     initGame();
   }
@@ -621,6 +622,34 @@ function filterBranches(disabled) {
   if (!hub || !hub.options) return;
   var kept = hub.options.filter(function (o) { return disabled.indexOf(o.next) === -1; });
   if (kept.length) hub.options = kept; // never lock her out completely
+}
+
+var lastNightBranch = '';
+var lastNightRough = false;
+function loadLastNight() {
+  if (typeof FB === 'undefined' || !FB.get) return;
+  FB.get('turnOn', 'sessions_data').then(function (d) {
+    var list = d && d.sessions ? d.sessions : [];
+    for (var i = list.length - 1; i >= 0; i--) {
+      var s = list[i];
+      if (s && s.history && s.history.length && s.history[0].choice) {
+        lastNightBranch = s.history[0].choice;
+        var c = lastNightBranch.toLowerCase();
+        lastNightRough = c.indexOf('rough') !== -1 || c.indexOf('fuck') !== -1 || c.indexOf('69') !== -1;
+        break;
+      }
+    }
+  }).catch(function () {});
+}
+function branchMemoryText(step) {
+  if (!lastNightBranch || !step) return '';
+  if (step.id === 1400 && lastNightRough) {
+    return 'I can see you are still a little sore from last night, and I love that it was me. So this morning I will be gentle. For now.';
+  }
+  if (step.id === 1400) {
+    return 'Last night you chose "' + lastNightBranch + '" — and you were so good. I have been thinking about it all morning.';
+  }
+  return '';
 }
 
 
@@ -665,10 +694,20 @@ function renderGame() {
   document.getElementById('gameScreen').style.display = 'block';
   document.getElementById('endScreen').style.display = 'none';
 
-  var step = getStep(state.stepId);
+    var step = getStep(state.stepId);
   if (!step) {
     showEnd();
     return;
+  }
+
+  var memory = branchMemoryText(step);
+  if (memory) {
+    step = {
+      id: step.id, level: step.level, mood: step.mood, energy: step.energy,
+      symbol: step.symbol, pause: step.pause, hub: step.hub,
+      scene: (step.scene || '') + ' ' + memory,
+      prompt: step.prompt, options: step.options
+    };
   }
 
   // Level bar
@@ -777,10 +816,21 @@ function showOptions(step) {
       state.history.push({ prompt: step.prompt, choice: text, stepId: state.stepId });
       if (step.scene) state.narrative.push({ level: step.level, text: step.scene });
 
-      if (next === -1) {
+            if (next === -1) {
         state.stepId = null;
         saveState();
-        showEnd();
+        if (transition) {
+          container.style.display = 'none';
+          var tbe = document.getElementById('transitionBox');
+          tbe.textContent = transition;
+          tbe.style.display = 'block';
+          tbe.style.opacity = '0';
+          tbe.style.transform = 'translateY(8px)';
+          setTimeout(function() { tbe.style.opacity = '1'; tbe.style.transform = 'translateY(0)'; tbe.style.transition = 'all 0.4s ease'; }, 30);
+          setTimeout(function () { showEnd(); }, TRANSITION_DELAY);
+        } else {
+          showEnd();
+        }
         return;
       }
 
