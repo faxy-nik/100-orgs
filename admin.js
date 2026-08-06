@@ -341,8 +341,7 @@
           try { if (!a.audioBlob && a._audioBase64 && typeof FB !== 'undefined' && FB.base64ToBlob) { a.audioBlob = FB.base64ToBlob(a._audioBase64, a._audioType); } } catch(e){}
           if (a.audioBlob) {
             var url = URL.createObjectURL(a.audioBlob);
-            var at = (a.audioType || '').toLowerCase();
-            var dlExt = (at.indexOf('mp4') >= 0 || at.indexOf('aac') >= 0 || at.indexOf('m4a') >= 0) ? 'mp3' : 'webm';
+            var dlExt = 'mp3';
             audioHtml = '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><audio controls src="' + url + '" style="flex:1;min-width:160px;height:32px;"></audio><button class="dl-btn" data-url="' + url + '" data-id="' + (a.id || 'unknown') + '" data-ext="' + dlExt + '" style="padding:6px 14px;border-radius:6px;background:rgba(255,210,150,.12);border:1px solid rgba(255,210,150,.2);color:#ffebd2;cursor:pointer;font-size:.78rem;font-family:inherit;white-space:nowrap;">&#x2B07; Download .' + dlExt + '</button></div>';
           } else {
             audioHtml = '<div style="font-size:.72rem;color:#6b5f52;font-style:italic;">Audio unavailable: ' + (a._audioBase64 ? 'blob decode failed' : 'no audio data stored') + ' (keys: ' + Object.keys(a).filter(function(k){return k.indexOf('audio')>=0||k.indexOf('Base64')>=0||k.indexOf('Blob')>=0;}).join(', ') + ')</div>';
