@@ -1,0 +1,314 @@
+[
+  {
+    "id": 1000,
+    "level": 1,
+    "mood": "teasing",
+    "energy": 1,
+    "symbol": "🔥",
+    "pause": 1000,
+    "scene": "You stand in the middle of the room and I sit on the edge of the bed, watching you, the mattress warm beneath me. The lamp is low, painting your silhouette in gold, and the quiet hums between us like a held breath. You know what I want. You have always known — and tonight you are going to let me have it, piece by piece.",
+    "prompt": "\"This is my favourite fantasy — and you are living it,\" I say, my voice low and unhurried. \"Undress for me. Slowly. Do not rush. I want to see everything — every inch, every second of it.\"",
+    "options": [
+      {
+        "text": "You start with the hem of your shirt, slow",
+        "next": 1001,
+        "transition": "Your fingers catch the hem of your shirt and lift it inch by inch, and I stop breathing just to watch.",
+        "energy": 1
+      },
+      {
+        "text": "You turn your back to me instead",
+        "next": 1002,
+        "transition": "You turn around slowly, showing me the line of your back, and I want you more with every inch of it.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 1001,
+    "level": 2,
+    "mood": "teasing",
+    "energy": 2,
+    "symbol": "🔥",
+    "pause": 950,
+    "scene": "You lift your shirt over your head, and the light catches your skin — warm, bare, perfect — and I do not move. I do not breathe. I just watch, drinking you in. Your hands fall to your sides, and you stand there in the low light, letting me look, and the looking is its own kind of worship.",
+    "prompt": "\"Keep going,\" I tell you, my voice a low rumble. \"I want to remember every second of this — the light on your skin, the way you move. Keep going, baby.\"",
+    "options": [
+      {
+        "text": "I slide the straps of your bra down, slow",
+        "next": 1003,
+        "transition": "You reach back and unclip your bra, letting it fall, and I watch it slip away like a secret.",
+        "energy": 2
+      },
+      {
+        "text": "You shimmy out of your jeans, hips rolling",
+        "next": 1004,
+        "transition": "You unbutton your jeans and roll them down your hips, slow, and I forget how to breathe.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 1002,
+    "level": 2,
+    "mood": "teasing",
+    "energy": 2,
+    "symbol": "🔥",
+    "pause": 950,
+    "scene": "You turn your back to me and look over your shoulder, a smile in your eyes, and I watch you undress from behind — the curve of your waist, the dip of your spine, the way your hips move with a rhythm only you know. The lamp light traces your edges like a caress. I have never seen anything I wanted more than the back of you, undressing.",
+    "prompt": "\"God,\" I breathe, the word rough. \"I have watched you a thousand times and it never gets old — it gets better. Turn around. Let me see your face while you do this.\"",
+    "options": [
+      {
+        "text": "You turn and face me, shy",
+        "next": 1003,
+        "transition": "You turn slowly, your hands dropping to your sides, and I lose my breath, and then I lose my heart.",
+        "energy": 2
+      },
+      {
+        "text": "You keep your back to me, teasing",
+        "next": 1005,
+        "transition": "You keep your back to me and keep undressing, making me wait, and the waiting is its own kind of torture — the best kind.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 1003,
+    "level": 3,
+    "mood": "intense",
+    "energy": 2,
+    "symbol": "🔥",
+    "pause": 1000,
+    "scene": "There is a fire in the room, and it is nothing compared to the one between us — the heat of it licks at your skin, turning you gold. Your clothes are on the floor around you, and you stand in the warm light, watching me watch you, and I am utterly lost. You are down to lace and shadow, and the sight of you is burning itself into me.",
+    "prompt": "\"You have no idea what you do to me,\" I say, my voice gone low and rough. \"Come here. Slowly. Let me have every step of it.\"",
+    "options": [
+      {
+        "text": "You walk to me slowly, steps sure",
+        "next": 1006,
+        "transition": "You walk to me slow, deliberate, hips swaying, and my hands shake for you before you even reach me.",
+        "energy": 2
+      },
+      {
+        "text": "I come to you instead — I cannot wait",
+        "next": 1007,
+        "transition": "I stand and come to you, and the space between us becomes nothing, and my hands find your waist like they were made for it.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 1004,
+    "level": 3,
+    "mood": "intense",
+    "energy": 2,
+    "symbol": "🔥",
+    "pause": 1050,
+    "scene": "You are down to nothing but the last pieces, and you let them fall too — lace sliding down your thighs, pooling at your feet — and you stand there, bare, beautiful, brave, your skin gleaming in the low light. I take all of you in: the curve of your breasts, the softness of your belly, the way you hold yourself like you are not afraid. You are the most beautiful thing I have ever seen.",
+    "prompt": "I take you in. All of you, every inch, until I feel drunk on it. \"You are the most beautiful thing I have ever seen. And you are mine.\"",
+    "options": [
+      {
+        "text": "I reach for you, hands trembling",
+        "next": 1007,
+        "transition": "I reach for you and my fingers brush your waist like you are made of fire, and I almost burn.",
+        "energy": 3
+      },
+      {
+        "text": "You come to me, bare, ready",
+        "next": 1008,
+        "transition": "You come to me and press yourself against me, and I feel the heat of your skin through my shirt, and the world narrows to you.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1005,
+    "level": 3,
+    "mood": "teasing",
+    "energy": 2,
+    "symbol": "🔥",
+    "pause": 950,
+    "scene": "You keep your back to me, unhurried, dropping each piece of clothing like you have all the time in the world — and you do, and so do I. I sit forward, hands gripping the bed, knuckles white, watching the muscles of your back shift as you move. You are driving me slowly, beautifully insane.",
+    "prompt": "\"You are a tease,\" I say, my voice rough with laughter and wanting. \"You know exactly what you are doing to me. Keep going — I am enjoying this far too much to stop you.\"",
+    "options": [
+      {
+        "text": "You finally turn around, slow",
+        "next": 1008,
+        "transition": "You finally turn around, and the sight of you nearly undoes me — bare, golden, looking at me like that.",
+        "energy": 2
+      },
+      {
+        "text": "I cannot wait any longer — I rise",
+        "next": 1009,
+        "transition": "I stand and cross the room in three steps and take you in my arms, and the game is over — and we both win.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1006,
+    "level": 4,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "🔥",
+    "pause": 1000,
+    "scene": "You stop in front of me, close enough that I feel your heat, and I look up at you, firelight dancing on your skin, your breasts rising and falling with your breath. I take your hand and kiss your palm, then your wrist, feeling your pulse jump under my lips like a bird. The fire crackles. The rest of the world is far away.",
+    "prompt": "\"When our skin meets, all the rules break down,\" I murmur against your wrist. \"You know that, right? Nothing else matters — not time, not the world. Just this. Just us.\"",
+    "options": [
+      {
+        "text": "I pull you onto the bed with me",
+        "next": 1009,
+        "transition": "I pull you onto the bed and the world outside disappears, and there is only you, warm and bare, under my hands.",
+        "energy": 3
+      },
+      {
+        "text": "I stand and press my body to yours",
+        "next": 1010,
+        "transition": "I stand and press my body to yours, and the fire between us catches — your skin against my clothes, my mouth at your neck.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1007,
+    "level": 4,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "🔥",
+    "pause": 1050,
+    "scene": "Skin to skin, the fire we both lit burning between us, and I cannot breathe enough of you in. My hands learn you again like it is the first time — your waist, your ribs, the rise of your breasts, the heat of you seeping through my palms. Your heartbeat is a drum against my chest. I have dreamed of this; the dream was never this good.",
+    "prompt": "\"I dreamed about this,\" I say, my voice low and full of wonder. \"About you, like this, in this light, in my arms. And the dream was never this good — you are the better version of every dream I have ever had.\"",
+    "options": [
+      {
+        "text": "I undress the rest of the way, slow",
+        "next": 1010,
+        "transition": "I pull off my shirt and the last of our clothes fall to the floor together, and we are finally, truly even.",
+        "energy": 3
+      },
+      {
+        "text": "You pull my head down to a deep kiss",
+        "next": 1011,
+        "transition": "You pull me down into a kiss that swallows the whole world, and I taste the fire on your lips.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1008,
+    "level": 5,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "🔥",
+    "pause": 1000,
+    "scene": "You are bare and I am not, and the difference is driving me crazy — the feel of your naked skin through my clothes, the way you press into me, searching. I pull you into me and you feel how much I want you, hard against your belly, and I watch your eyes darken. I need your hands on me. I need it now.",
+    "prompt": "\"Undress me,\" I say, my voice rough with need. \"I want your hands on me when I lose every piece of it — I want to feel you claim me.\"",
+    "options": [
+      {
+        "text": "You undress me slowly, button by button",
+        "next": 1011,
+        "transition": "Your hands work my buttons slow, your knuckles brushing my skin, and I watch your face as you bare me.",
+        "energy": 3
+      },
+      {
+        "text": "I cannot wait — I lift you instead",
+        "next": 1012,
+        "transition": "I lift you and you wrap around me, legs around my waist, and nothing in the world matters but you.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1009,
+    "level": 6,
+    "mood": "ecstasy",
+    "energy": 3,
+    "symbol": "🔥",
+    "pause": 1050,
+    "scene": "The fire, the dark, the two of us — tangled, breathless, skin sliding on skin in the low light, your legs around me, my mouth at your throat. You are gasping my name, pulling me deeper, and the rest of the world has stopped existing. I can feel you rising beneath me, feel the shudder building, and I want to be there when you fall.",
+    "prompt": "\"Say my name,\" I breathe against your skin. \"I want to hear it when you fall apart — I want to be the word you break on.\"",
+    "options": [
+      {
+        "text": "I make you come — I take you there",
+        "next": 1012,
+        "transition": "I take you to the edge and hold you there, trembling, until you shatter in my arms, crying out my name.",
+        "energy": 3
+      },
+      {
+        "text": "We come together — we fall together",
+        "next": -1,
+        "transition": "We come together, holding each other through it, the fire and us, and there is nothing else in the world.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1010,
+    "level": 7,
+    "mood": "ecstasy",
+    "energy": 1,
+    "symbol": "🫂",
+    "pause": 1200,
+    "scene": "The fire burns low, painting the room in amber. We lie tangled in the sheets, my arm around you, your head on my chest, both of us still catching our breath, your skin warm and damp against mine. I can feel your heartbeat slowing, matching mine, settling into the same rhythm. I have never been so still and so alive.",
+    "prompt": "\"This is better than any dream,\" I say softly, my lips in your hair. \"Because it is real, and it is you — and I get to keep this.\"",
+    "options": [
+      {
+        "text": "I hold you closer, wordless",
+        "next": -1,
+        "transition": "You hold me closer, and the fire burns low, and I feel your breath even out against my chest.",
+        "energy": 1
+      },
+      {
+        "text": "You trace my chest with your fingers",
+        "next": -1,
+        "transition": "Your fingers trace my chest, slow and idle, and I memorize the feel of it, the weight of this moment.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 1011,
+    "level": 7,
+    "mood": "ecstasy",
+    "energy": 1,
+    "symbol": "🫂",
+    "pause": 1200,
+    "scene": "I trace your skin with my fingertips like I am memorising it — the curve of your shoulder, the dip of your hip, the soft skin of your inner thigh — and the firelight dances on your face, catching the smile in your eyes. You are warm and soft and entirely mine, and I am undone by it. I want to remember this forever.",
+    "prompt": "\"I want to remember this forever,\" I whisper. \"Your skin, your breathing, the way you look at me like that — like I am the whole world. I want to keep it.\"",
+    "options": [
+      {
+        "text": "I am yours, all of me",
+        "next": -1,
+        "transition": "\"I am yours,\" you say, and I feel it everywhere — in my chest, in my bones, in the way my hands hold you.",
+        "energy": 1
+      },
+      {
+        "text": "I kiss you, soft and long",
+        "next": -1,
+        "transition": "You kiss me, soft, and the firelight catches your face, and the world narrows to your lips.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 1012,
+    "level": 7,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "🫂",
+    "pause": 1200,
+    "scene": "You are still shaking, and I hold you through it, kissing your forehead, your temple, your lips, tasting the night on your skin. Nothing else has ever mattered this much — not before you, not ever. Your breath steadies against mine, and I feel the tremble leave you. I am holding the whole world, and it is you.",
+    "prompt": "\"You are my favourite story,\" I say, my voice thick and soft. \"The one I never want to end — the one I will read to myself every night. Stay with me.\"",
+    "options": [
+      {
+        "text": "Then it never ends, promise me",
+        "next": -1,
+        "transition": "\"Then it never ends,\" you whisper, and I hold you tighter, and I believe every word of it.",
+        "energy": 1
+      },
+      {
+        "text": "I hold you tighter, forever",
+        "next": -1,
+        "transition": "You hold me tighter, and I believe every word I said, and the fire burns low and the night holds us.",
+        "energy": 1
+      }
+    ]
+  }
+]

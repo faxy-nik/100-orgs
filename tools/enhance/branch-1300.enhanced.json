@@ -1,0 +1,386 @@
+[
+  {
+    "id": 1300,
+    "level": 1,
+    "mood": "teasing",
+    "energy": 1,
+    "symbol": "🍆",
+    "pause": 1000,
+    "scene": "We settle on the bed, opposite ends, and it takes a laughing, clumsy moment to arrange ourselves — your thighs over my shoulders, mine over yours, a tangle of limbs and heat. I look up the length of you, and you look down the length of me, and we both know exactly what comes next.",
+    "prompt": "\"We do this together. My mouth on you, yours on me. But there is a rule: whoever begs first, loses.\"",
+    "options": [
+      {
+        "text": "Let the games begin — I am not losing",
+        "next": 1301,
+        "transition": "I take you first, slow, and I hear your breath catch high in your throat — a promise of everything to come, and a warning I intend to win.",
+        "energy": 2
+      },
+      {
+        "text": "I start — my turn to taste you",
+        "next": 1302,
+        "transition": "You take me first, and I groan into you — the sound vibrating against your skin, making you shiver before you have even begun.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 1301,
+    "level": 2,
+    "mood": "teasing",
+    "energy": 2,
+    "symbol": "👅",
+    "pause": 1000,
+    "scene": "I take my time with you — slow, deliberate, learning your rhythm from the way your hips move, from the sounds you try to swallow. Your hands are in my hair, your thighs trembling around me, your taste already making me greedy.",
+    "prompt": "\"That is it. Take what you need. I am not going anywhere — and I am not losing.\"",
+    "options": [
+      {
+        "text": "I set the pace, faster, hungry",
+        "next": 1303,
+        "transition": "You tighten around me and speed up, and I match you — groan for groan, pulse for pulse, the game suddenly very serious. I feel you climbing, and I follow.",
+        "energy": 3
+      },
+      {
+        "text": "I slow down — I want to taste you slowly",
+        "next": 1304,
+        "transition": "I slow down, dragging my tongue over you with the patience of someone with nowhere to be, and you whimper — exactly what I wanted to hear. Game on.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 1302,
+    "level": 3,
+    "mood": "tender",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 1000,
+    "scene": "You take me into your mouth, and you are good at this — too good, unfairly good. My hands are tangled in your hair, my head falling back against the mattress, and I am already fighting for composure.",
+    "prompt": "\"Where did you learn — no. Do not answer. Just keep going.\"",
+    "options": [
+      {
+        "text": "You set the rhythm, and I surrender to it",
+        "next": 1303,
+        "transition": "You find your rhythm — yours, unhurried, cruel — and I let you run it, my hands fisting the sheets at my sides, my breath going ragged.",
+        "energy": 2
+      },
+      {
+        "text": "I take over, gentle but sure, at my pace",
+        "next": 1305,
+        "transition": "I take over, slow and sure, and you moan around me — the vibration running straight up my spine. I did not plan on that. I did not plan on you at all.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1303,
+    "level": 4,
+    "mood": "teasing",
+    "energy": 2,
+    "symbol": "🔥",
+    "pause": 950,
+    "scene": "We are close now — both of us, a delicious stalemate. I can feel you teetering on the edge of my tongue, and I know you can feel me too, losing my rhythm on yours. Neither of us wants to be the first to break.",
+    "prompt": "\"The rule stands. You want to come? Then make me come first. Fair is fair.\"",
+    "options": [
+      {
+        "text": "I work you harder, faster, merciless",
+        "next": 1306,
+        "transition": "I work you harder, and I feel you lose the thread — your hips stuttering, your hands clenching in my hair. Almost. Not yet. I want to hear it first.",
+        "energy": 3
+      },
+      {
+        "text": "I take you to the edge and hold you there",
+        "next": 1307,
+        "transition": "I take you to the edge and hold you there, humming against you, and you gasp out something that might be my name and might be a plea — and I take it as a victory either way.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1304,
+    "level": 4,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "💦",
+    "pause": 950,
+    "scene": "You go at me like you mean it — greedy, hungry, perfect — and my hips rise to meet you, chasing your mouth. I am not as patient as I pretend to be, and you know it, and you are using it beautifully.",
+    "prompt": "\"Okay. Okay. That is — you are cheating. I love it. Do not stop.\"",
+    "options": [
+      {
+        "text": "I push you closer — my tongue relentless",
+        "next": 1307,
+        "transition": "I take you to the edge, and you beg into my thighs — muffled, desperate, ruined — and I file the sound away forever. You say the word, and I answer with my mouth.",
+        "energy": 3
+      },
+      {
+        "text": "I bring you right to the edge, and wait",
+        "next": 1308,
+        "transition": "I bring you right to the edge, and you are shaking — every muscle in your body strung tight, your breath a thread. One wrong breath and you are gone, and we both know it.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1305,
+    "level": 5,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "💋",
+    "pause": 950,
+    "scene": "It is a race, and you are winning — I can feel it in the way your hands shake in my hair, in the low sounds you pull out of me without trying. I slow down, just to hear you plead, and the power shifts between us like weather.",
+    "prompt": "\"Shhh. We have time. Let me enjoy this before you destroy me.\"",
+    "options": [
+      {
+        "text": "Please — I beg you, do not stop",
+        "next": 1308,
+        "transition": "You beg me, and I grant it — for now — my mouth answering yours before the plea is even finished. But I make a note: you said the word, and I did not.",
+        "energy": 3
+      },
+      {
+        "text": "I push you past your pride, past everything",
+        "next": 1309,
+        "transition": "I push you, and you start to fall apart — a shudder running through you, a sound you cannot hold back. The race is nearly over, and we both know who is winning it.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1306,
+    "level": 5,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "🔥",
+    "pause": 950,
+    "scene": "I pull back just as you are about to fall, holding you at the edge of the cliff. You are trembling — trapped between my hands and your own need, between the rule and the wanting, and the wanting is winning.",
+    "prompt": "\"Not yet. Not until you say it. Say what you want.\"",
+    "options": [
+      {
+        "text": "Please, I beg you — do not stop",
+        "next": 1309,
+        "transition": "You beg me — broken and honest — and I give you what you asked for, my mouth returning like a promise kept. You say the word, and I answer with everything I have.",
+        "energy": 3
+      },
+      {
+        "text": "I take what I want — and I take it now",
+        "next": 1310,
+        "transition": "You take it — you finish yourself on my mouth, riding it out, and I let you. I let you take everything you need, and I love you for it, and I swallow every wave.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1307,
+    "level": 4,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "💋",
+    "pause": 950,
+    "scene": "You take over completely — your rhythm, your pace, your hands in my hair pulling me where you need me. I go still and let you use me, and you are glorious like this — the most beautiful thing I have ever tasted.",
+    "prompt": "\"Yes. Like that. Take it. I am yours to use.\"",
+    "options": [
+      {
+        "text": "I ride you, my rhythm, my pace",
+        "next": 1310,
+        "transition": "You ride me, and I feel you come undone around me — your thighs clenching, your breath going ragged, your hands fisting in my hair. I hold you up and let you fall.",
+        "energy": 3
+      },
+      {
+        "text": "I want you to take back control — now",
+        "next": 1311,
+        "transition": "You give it back, and I take it — gladly, hungrily — my hands finding your hips, my mouth claiming you again. My turn, and I do not plan to be gentle about winning.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1308,
+    "level": 5,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "👅",
+    "pause": 950,
+    "scene": "My hands find your hips and I set the tempo for both of us — faster, deeper, one rhythm, two bodies. You are gasping around me, and I am lost in the give and take, in the taste of you, in the sound of us.",
+    "prompt": "\"This is mine. You are mine. And I am yours. Say it.\"",
+    "options": [
+      {
+        "text": "I take you, faster, relentless",
+        "next": 1311,
+        "transition": "I take you faster, and you let me — your head thrown back, your hands in my hair, your whole body answering mine. I do not slow down, and neither do you.",
+        "energy": 3
+      },
+      {
+        "text": "I push you to the edge — both of us",
+        "next": 1312,
+        "transition": "I push you, and I feel us both heading over — the wave building under our skin, the room narrowing to this, to us, to the one breath we are about to share.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1309,
+    "level": 6,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "💦",
+    "pause": 900,
+    "scene": "We are both close now — a heartbeat from the edge, both of us shaking with it. I can feel you tightening, and you can feel me losing my mind. One of us has to break first, and we both know who.",
+    "prompt": "\"Come with me. Now. Together.\"",
+    "options": [
+      {
+        "text": "We come together — now, together",
+        "next": 1312,
+        "transition": "We go over the edge together, and the world goes quiet — just the two of us, the taste of each other, the wave carrying us both at once, and neither of us alone.",
+        "energy": 3
+      },
+      {
+        "text": "I finish you with my mouth, and take it all",
+        "next": 1313,
+        "transition": "I finish you with my mouth, and you fall apart — every muscle letting go at once, your hands fisting in my hair, my name breaking out of you. I take all of it, every drop.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1310,
+    "level": 7,
+    "mood": "ecstasy",
+    "energy": 3,
+    "symbol": "💦",
+    "pause": 900,
+    "scene": "You come on my mouth, and you are loud and broken and mine — the most honest sound you have ever made. I do not stop until you are empty and shaking and completely gone.",
+    "prompt": "\"That is it. Let go. I have you.\"",
+    "options": [
+      {
+        "text": "You hold my head and do not let go — do not stop",
+        "next": 1313,
+        "transition": "You hold my head and ride it out, and I take every wave — swallowing, tasting, holding you steady until the shaking finally slows to breathing.",
+        "energy": 3
+      },
+      {
+        "text": "I keep going until you beg me to stop",
+        "next": 1314,
+        "transition": "I keep going until you beg — broken, oversensitive, desperate — and then I crawl up your body and hold you through the aftershocks, kissing the tremble out of your skin.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1311,
+    "level": 7,
+    "mood": "ecstasy",
+    "energy": 3,
+    "symbol": "👅",
+    "pause": 900,
+    "scene": "My turn — and you are merciless, exactly as taught. My hands grip the sheets, my head falls back, and I am gone — your mouth, your tongue, your name on my lips and nothing else left in the world.",
+    "prompt": "\"Do not stop. Do not — I am going to —\"",
+    "options": [
+      {
+        "text": "I take you, and I do not stop — not for anything",
+        "next": 1314,
+        "transition": "You take me, and I break in your mouth — shuddering, spent, my hands in your hair, everything I am poured into you. You do not stop, and I am grateful for it.",
+        "energy": 3
+      },
+      {
+        "text": "We finish together — I feel you go",
+        "next": 1315,
+        "transition": "You feel me go, and you go with me — two bodies, one wave, the room full of us, both of us ruined and perfect and exactly where we belong.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1312,
+    "level": 7,
+    "mood": "ecstasy",
+    "energy": 3,
+    "symbol": "💦",
+    "pause": 900,
+    "scene": "We come in the same breath — two bodies, one wave, pulling each other over. Your hands in my hair, mine on your hips, the room full of us, the taste of each other still on our tongues.",
+    "prompt": "\"That. Whatever that was. Again. Tonight.\"",
+    "options": [
+      {
+        "text": "We stay tangled, catching our breath, your head on my thigh",
+        "next": -1,
+        "transition": "You stay tangled on me, breathless, and I kiss your knee — soft, grateful, still tasting you. Neither of us moves for a long time, and that is the point.",
+        "energy": 1
+      },
+      {
+        "text": "I kiss my way up your body, slow, worshipping",
+        "next": -1,
+        "transition": "I kiss my way up your body, slow — hip, stomach, ribs, breast — and you shiver under my mouth, the aftershocks still running through you, and I do not rush a single one.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 1313,
+    "level": 7,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "🫂",
+    "pause": 1200,
+    "scene": "We untangle, laughing at ourselves — you slide down to lie beside me, your head on my shoulder, still trembling a little, still glowing. The room is warm and quiet and ours.",
+    "prompt": "\"I think we broke the rules. Both of us. Worth it.\"",
+    "options": [
+      {
+        "text": "You pull me up for a kiss, slow",
+        "next": -1,
+        "transition": "You pull me up and kiss me, and it tastes like both of us — a sweet, tired, perfect kiss that says more than any rule ever could.",
+        "energy": 1
+      },
+      {
+        "text": "I lay my head on your stomach and go quiet",
+        "next": -1,
+        "transition": "I lay my head on your stomach and feel you breathe — slow and deep, the world returning, and I am exactly where I want to be.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 1314,
+    "level": 7,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "🫂",
+    "pause": 1200,
+    "scene": "I pull you up until your head rests on my chest, and your hand finds mine in the dark. We are quiet — the kind of quiet that holds everything — and it is perfect.",
+    "prompt": "\"You are the best thing that has ever happened to my mouth. To me. To everything.\"",
+    "options": [
+      {
+        "text": "You hold my hand, still shaking, still mine",
+        "next": -1,
+        "transition": "You hold my hand, still shaking, and I hold back — palm to palm, the trembling passing between us until it quiets into stillness.",
+        "energy": 1
+      },
+      {
+        "text": "I whisper your name, like a prayer",
+        "next": -1,
+        "transition": "I whisper your name, and the room keeps it — soft, sacred, the way you say it in the dark when you think I am asleep.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 1315,
+    "level": 7,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "🫂",
+    "pause": 1200,
+    "scene": "I am half asleep, and you are tracing shapes on my chest — slow, idle, peaceful circles. I catch your hand and kiss it, and smile without opening my eyes.",
+    "prompt": "\"We are doing that again. Soon. I mean tonight.\"",
+    "options": [
+      {
+        "text": "We do that again. Soon. Promise me",
+        "next": -1,
+        "transition": "\"Soon,\" I promise, and pull you closer. \"Tonight, if you want — and I know you want.\"",
+        "energy": 1
+      },
+      {
+        "text": "I fall asleep on you, right here",
+        "next": -1,
+        "transition": "I fall asleep on you, and it is the best place in the world — your heartbeat under my ear, your hand in my hair, the night ours.",
+        "energy": 1
+      }
+    ]
+  }
+]

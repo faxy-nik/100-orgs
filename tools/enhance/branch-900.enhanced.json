@@ -1,0 +1,482 @@
+[
+  {
+    "id": 900,
+    "level": 1,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "🛁",
+    "pause": 1050,
+    "scene": "The bathroom is warm and dim, glowing with candlelight. The bath is drawn — steam curling off the water, the mirror fogged over, the air thick with the scent of your soap. You are still dressed, standing at the edge, looking back at me, and the look on your face undoes me.",
+    "prompt": "\"Tonight I wash you, inch by inch. Not because you need it — because I want my hands on all of you, slow. And because I love the way you look in this light.\"",
+    "options": [
+      {
+        "text": "I undress you myself",
+        "next": 901,
+        "transition": "I reach for the hem of your shirt, slow, my knuckles grazing your skin. \"Let me. I want to uncover you myself.\"",
+        "energy": 1
+      },
+      {
+        "text": "You undress and step in first",
+        "next": 902,
+        "transition": "You undress and sink into the water with a sigh, and I watch you — already gone, already yours — as the steam rises around you.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 901,
+    "level": 2,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "💦",
+    "pause": 1050,
+    "scene": "I undress you piece by piece, folding each thing away with care, my knuckles brushing your skin with every layer that falls. You shiver under my touch, and I take my time with the last of it. The water waits, steaming, and so do I — but I am in no hurry.",
+    "prompt": "\"No rush. Every inch of you deserves to be uncovered slowly — and every inch of you belongs to me.\"",
+    "options": [
+      {
+        "text": "You undress me too",
+        "next": 903,
+        "transition": "You turn it around and undress me, your fingers slow and deliberate, and the bathroom suddenly feels much smaller, much warmer.",
+        "energy": 2
+      },
+      {
+        "text": "I step into the water with you",
+        "next": 904,
+        "transition": "I step in behind you and the water closes around both of us, hot and soft, and you lean back against me with a sigh.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 902,
+    "level": 2,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "💦",
+    "pause": 1050,
+    "scene": "You are already in the water, up to your shoulders, watching me undress with eyes that do not look away. The candlelight flickers across your wet skin, making the drops of water glow. You look like something out of a dream, and I am already drowning.",
+    "prompt": "\"You look at me like that and I forget my own name.\" I sink in behind you, my chest against your back. \"I only remember yours.\"",
+    "options": [
+      {
+        "text": "I lie back against you",
+        "next": 903,
+        "transition": "You lie back against me and melt into my chest, your head finding the hollow of my shoulder, the water lapping at us.",
+        "energy": 1
+      },
+      {
+        "text": "Wash my hair first",
+        "next": 905,
+        "transition": "I take the soap and start with your hair, fingertips slow against your scalp, and your whole body softens against mine.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 903,
+    "level": 3,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "🫂",
+    "pause": 1050,
+    "scene": "I take the soap and start with your back — shoulders first, then the long line of your spine, slow circles that work the tension out of you. Your head falls forward and you sigh, a sound of pure surrender. The steam curls around us, and the world is just this room.",
+    "prompt": "\"Just close your eyes. I have you. I have all of you, and I am not letting go.\"",
+    "options": [
+      {
+        "text": "Your hands slide around my front",
+        "next": 906,
+        "transition": "My hands slide around you under the water — soap, steam, skin — and you arch into my touch, soft and warm.",
+        "energy": 2
+      },
+      {
+        "text": "Wash my legs, slow",
+        "next": 907,
+        "transition": "I take my time with your legs, from ankle to thigh, and you go boneless against the tub, sighing my name.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 904,
+    "level": 3,
+    "mood": "teasing",
+    "energy": 1,
+    "symbol": "💦",
+    "pause": 1050,
+    "scene": "I kneel in the water and lift your leg, washing from ankle to thigh, slow and thorough, my thumbs working the muscles of your calf. You laugh when I kiss the inside of your knee, a bright sound in the steam. The soap is slick between us, and I am enjoying you far too much.",
+    "prompt": "\"You are ticklish here?\" I grin, watching you squirm. \"Noted. I am filing that away for later — much later.\"",
+    "options": [
+      {
+        "text": "I lift your foot and kiss your ankle",
+        "next": 907,
+        "transition": "I lift your foot, kiss your ankle, then your shin, and you giggle into the steam, bright and loose, mine.",
+        "energy": 1
+      },
+      {
+        "text": "Wash between my thighs",
+        "next": 908,
+        "transition": "I move slowly, soap and water and my hands, and you hold your breath, your eyes going dark and soft.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 905,
+    "level": 3,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "💧",
+    "pause": 1050,
+    "scene": "I tip your head back and work the soap into your hair, fingertips slow and firm against your scalp, and I watch your face go slack with pleasure. Your whole body softens into mine, trusting, weightless. You could fall asleep like this, and I would not blame you.",
+    "prompt": "\"There. You could fall asleep like this. Do not — I am not finished with you yet.\"",
+    "options": [
+      {
+        "text": "Your hands slide down my neck",
+        "next": 908,
+        "transition": "My hands follow the water down your neck, over your collarbones, and you shiver against me, a delicious little tremor.",
+        "energy": 2
+      },
+      {
+        "text": "Wash my front",
+        "next": 909,
+        "transition": "I turn you toward me and take my time with the front of you, soap trailing over your skin, watching your eyes flutter closed.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 906,
+    "level": 4,
+    "mood": "teasing",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 1050,
+    "scene": "The soap moves lower, over your shoulders, then slides around to the front of you. My hands cup you, slow circles under the water, feeling your skin turn slick and hot. You press back against me, and I feel your breath catch.",
+    "prompt": "\"You feel how warm you are? That is what you do to me. Just by being here. Just by being you.\"",
+    "options": [
+      {
+        "text": "I kiss your shoulder",
+        "next": 909,
+        "transition": "I kiss your shoulder, then your neck, tasting soap and water and you, and you arch back against me, soft and wanting.",
+        "energy": 2
+      },
+      {
+        "text": "Keep going lower",
+        "next": 910,
+        "transition": "My hands keep going lower, slow as the steam, and the water moves with them, and you go very still, very quiet.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 907,
+    "level": 4,
+    "mood": "intense",
+    "energy": 2,
+    "symbol": "👅",
+    "pause": 1050,
+    "scene": "One hand holds your hip, the other slides between your thighs — soap and water and slow, sure fingers finding you, feeling how wet you are, how ready. You grip the edge of the tub, your knuckles white, your breath coming in sharp little gasps.",
+    "prompt": "\"Shhh. We have all night. Let go of the edge, my love — let go and let me hold you.\"",
+    "options": [
+      {
+        "text": "I pull you closer",
+        "next": 910,
+        "transition": "I pull you closer and you feel exactly how much I want you, pressed against your back, my mouth on your neck.",
+        "energy": 3
+      },
+      {
+        "text": "The water is getting cold",
+        "next": 911,
+        "transition": "The water has gone cold — I pull the plug and stand, pulling you up with me, dripping and wanting, and the shower is already waiting.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 908,
+    "level": 3,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "🫂",
+    "pause": 1050,
+    "scene": "You turn in the water and take the soap from me, slow, deliberate. Your hands on my shoulders, my chest, learning me the way I learned you. The water sloshes gently around us, and I am gone for it — gone for you.",
+    "prompt": "\"You washed me,\" you say, quiet, your eyes holding mine. \"Now I wash you. And I do not miss anything.\"",
+    "options": [
+      {
+        "text": "You wash me the way I washed you",
+        "next": 909,
+        "transition": "Your hands on me, slow and deliberate, soap trailing everywhere, and I am gone for it, my eyes closing.",
+        "energy": 2
+      },
+      {
+        "text": "I take over and we finish together",
+        "next": 910,
+        "transition": "I take the soap and we finish together, hands overlapping, laughing in the steam like we are the only two people alive.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 909,
+    "level": 4,
+    "mood": "tender",
+    "energy": 2,
+    "symbol": "💦",
+    "pause": 1050,
+    "scene": "Your hands learn my skin the way mine learned yours — every curve, every hollow, every inch. The water has gone warm around us, and I am gone for every moment of it. Your fingers trace my chest, my stomach, and I can feel the shape of everything you are to me.",
+    "prompt": "\"See? You undo me too. Exactly like this. You always have.\"",
+    "options": [
+      {
+        "text": "I stand and pull you with me",
+        "next": 911,
+        "transition": "I stand and pull you up, water streaming off both of us, and the air is cool against our hot skin.",
+        "energy": 2
+      },
+      {
+        "text": "I kiss you, soap and all",
+        "next": 910,
+        "transition": "I kiss you, soap and steam and all, and you kiss me back like you mean it, like the night is just beginning.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 910,
+    "level": 5,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "🔥",
+    "pause": 1000,
+    "scene": "I stand and pull you up, water streaming off both of us. The shower is warmer, the steam thicker, the spray drumming on our skin. I press you back against the tile, and I can feel every inch of you, hot and wet, wanting.",
+    "prompt": "\"Stay right there. I want to see every drop on you. I want to taste every one of them.\"",
+    "options": [
+      {
+        "text": "Your mouth on my neck",
+        "next": 912,
+        "transition": "My mouth finds your neck, and the water runs down over both of us, and you tilt your head back, giving me everything.",
+        "energy": 2
+      },
+      {
+        "text": "I lift your leg around my hip",
+        "next": 913,
+        "transition": "I lift your leg around my hip and press you into the tile, and the steam swallows the sound you make.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 911,
+    "level": 4,
+    "mood": "intense",
+    "energy": 2,
+    "symbol": "🔥",
+    "pause": 1000,
+    "scene": "We are under the water together, my body against yours, the heat of the spray and the heat of us. Your hands are flat on the tile, my mouth on your shoulder, and the water runs in rivulets down your back. I can feel your heartbeat through your skin.",
+    "prompt": "\"Say my name against my mouth. I want to feel it on your lips. I want to know I am the one you call.\"",
+    "options": [
+      {
+        "text": "I take you right here",
+        "next": 914,
+        "transition": "I slide inside you against the tile, slow and deep, and the water drums around us, drowning out the world.",
+        "energy": 3
+      },
+      {
+        "text": "Against the wall, slow",
+        "next": 913,
+        "transition": "I turn you to the wall and press against you, slow, and the cold tile against your hot skin makes you gasp.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 912,
+    "level": 5,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "💋",
+    "pause": 1000,
+    "scene": "My mouth moves over your shoulder, your collarbone, lower — the water runs between us and I taste you, soap and rain and you. Your hands are in my wet hair, your head tipped back, and I want to memorize the taste of you under the spray.",
+    "prompt": "\"You taste like the bath and the shower and the night. You taste like mine. You always have.\"",
+    "options": [
+      {
+        "text": "I need you inside me",
+        "next": 914,
+        "transition": "I lift you a little and slide inside, and the steam swallows your moan as the water pours over us.",
+        "energy": 3
+      },
+      {
+        "text": "Make me come like this",
+        "next": 915,
+        "transition": "My hand finds you under the water, slow and sure, and the rhythm starts to break, your breath coming apart.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 913,
+    "level": 6,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "🔥",
+    "pause": 950,
+    "scene": "I lift your leg around my hip and press into you, slow — steam and tile and your breath breaking against my mouth. The water drums on your back, and I can feel every pulse of you around me. Your eyes find mine, and I am lost.",
+    "prompt": "\"Look at me. I want to watch you feel this. I want to see the exact moment you let go.\"",
+    "options": [
+      {
+        "text": "I take you, hard against the tile",
+        "next": 915,
+        "transition": "I take you against the tile, hard and deep, and the water cannot keep up with us, running off our bodies in sheets.",
+        "energy": 3
+      },
+      {
+        "text": "Slow, and do not look away",
+        "next": 916,
+        "transition": "Slow, deep, your eyes locked on mine — the steam forgets to move, and there is nothing but us.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 914,
+    "level": 7,
+    "mood": "ecstasy",
+    "energy": 3,
+    "symbol": "🔥",
+    "pause": 950,
+    "scene": "I take you against the tile, deep and slow, the water pouring over us, mixing with the heat of our skin. Your fingers are tangled in my wet hair, your head against my shoulder, your breath broken. You are squeezing me so tight, and I am drowning in you.",
+    "prompt": "\"You are squeezing me so tight. I am not going anywhere. Come with me, my love — right now, together.\"",
+    "options": [
+      {
+        "text": "I take you until you break",
+        "next": 916,
+        "transition": "I take you until you break, and you take me with you, your cry lost in the water, your body arching into mine.",
+        "energy": 3
+      },
+      {
+        "text": "We come together, here",
+        "next": 917,
+        "transition": "We come together under the water, and the world goes quiet, and there is nothing but us and the rain of the shower.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 915,
+    "level": 7,
+    "mood": "ecstasy",
+    "energy": 3,
+    "symbol": "💦",
+    "pause": 900,
+    "scene": "The water. The sound of us. Your hands. Your voice — gone, taken by the spray. I am gone. You. You. You. We break together under the shower, bodies locked, the water drumming on our backs, and the sound we make is swallowed by the steam.",
+    "prompt": "\"Now. Right now. With me — do not wait for me, take it.\"",
+    "options": [
+      {
+        "text": "I come with you, now",
+        "next": 918,
+        "transition": "We come together, and the water takes the sound of it, and your body tightens against mine, perfect.",
+        "energy": 3
+      },
+      {
+        "text": "Hold me, do not stop",
+        "next": 919,
+        "transition": "I hold you through it, our foreheads together, and the water drums over both of us until the trembling stops.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 916,
+    "level": 7,
+    "mood": "ecstasy",
+    "energy": 3,
+    "symbol": "💦",
+    "pause": 950,
+    "scene": "We hold each other, dripping, laughing, breathless, the water still drumming over us. Your heartbeat is fast against my chest, then slower. Then slower. Your hair is plastered to your face, and you have never looked more beautiful.",
+    "prompt": "\"That. That is what I mean every time I say I love you. That is what I mean.\"",
+    "options": [
+      {
+        "text": "I stay in your arms, dripping",
+        "next": 919,
+        "transition": "You stay in my arms, dripping, laughing, and the water drums over both of us, and neither of us moves.",
+        "energy": 1
+      },
+      {
+        "text": "I wrap you in a towel",
+        "next": -1,
+        "transition": "I wrap you in a towel, patting you dry, and you feel like the most precious thing I own — because you are.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 917,
+    "level": 7,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "🫂",
+    "pause": 1200,
+    "scene": "I turn the water off and the silence is full of our breathing, loud in the steamy room. I wrap you in a towel and start with your hair, gentle, squeezing the water out. You close your eyes and lean into my hands, and the world feels small and safe.",
+    "prompt": "\"You first. I have you. There is no rush — the night is ours.\"",
+    "options": [
+      {
+        "text": "I kiss your damp shoulder",
+        "next": -1,
+        "transition": "I kiss your damp shoulder, and you shiver — the good kind — and lean back into me, warm and soft.",
+        "energy": 1
+      },
+      {
+        "text": "We stand here, breathing the steam",
+        "next": -1,
+        "transition": "We stand there breathing the steam, wrapped in each other, and neither of us moves first — we do not want to break it.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 918,
+    "level": 7,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "🫂",
+    "pause": 1200,
+    "scene": "I carry you to the bed, both of us still damp, and lay you down like something precious — because you are. You pull me down with you, your arms around my neck, your skin still warm from the shower. The room smells of soap and you.",
+    "prompt": "\"Stay. Do not go far. I need your warmth. I need you close — always.\"",
+    "options": [
+      {
+        "text": "I carry you to the bed",
+        "next": -1,
+        "transition": "I carry you to the bed, and you are as light as water, and I lay you down and do not move far at all.",
+        "energy": 1
+      },
+      {
+        "text": "I hold you, still damp",
+        "next": -1,
+        "transition": "I hold you, still damp, skin to skin, and the room smells like the two of us, and I breathe you in.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 919,
+    "level": 7,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "🫂",
+    "pause": 1200,
+    "scene": "We lie tangled in the dark, your head on my chest, your hair still a little wet against my skin. The room smells like steam and us, and your heartbeat is slow under my hand. There is nothing left in the world but this bed and you.",
+    "prompt": "\"Goodnight, my love. I will wash you again tomorrow. And the day after. Every day I get — and I will spend all of them on you.\"",
+    "options": [
+      {
+        "text": "I love you, wet and warm",
+        "next": -1,
+        "transition": "You say it, wet and warm, your voice soft and sure, and I believe everything — because it is true.",
+        "energy": 1
+      },
+      {
+        "text": "I fall asleep against your chest",
+        "next": -1,
+        "transition": "You fall asleep against my chest, and I count your breaths, and I do not sleep for a long time — I am watching you.",
+        "energy": 1
+      }
+    ]
+  }
+]

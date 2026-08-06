@@ -341,7 +341,9 @@
           try { if (!a.audioBlob && a._audioBase64 && typeof FB !== 'undefined' && FB.base64ToBlob) { a.audioBlob = FB.base64ToBlob(a._audioBase64, a._audioType); } } catch(e){}
           if (a.audioBlob) {
             var url = URL.createObjectURL(a.audioBlob);
-            audioHtml = '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><audio controls src="' + url + '" style="flex:1;min-width:160px;height:32px;"></audio><button class="dl-btn" data-url="' + url + '" data-id="' + (a.id || 'unknown') + '" style="padding:6px 14px;border-radius:6px;background:rgba(255,210,150,.12);border:1px solid rgba(255,210,150,.2);color:#ffebd2;cursor:pointer;font-size:.78rem;font-family:inherit;white-space:nowrap;">&#x2B07; Download</button></div>';
+            var at = (a.audioType || '').toLowerCase();
+            var dlExt = (at.indexOf('mp4') >= 0 || at.indexOf('aac') >= 0 || at.indexOf('m4a') >= 0) ? 'mp3' : 'webm';
+            audioHtml = '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><audio controls src="' + url + '" style="flex:1;min-width:160px;height:32px;"></audio><button class="dl-btn" data-url="' + url + '" data-id="' + (a.id || 'unknown') + '" data-ext="' + dlExt + '" style="padding:6px 14px;border-radius:6px;background:rgba(255,210,150,.12);border:1px solid rgba(255,210,150,.2);color:#ffebd2;cursor:pointer;font-size:.78rem;font-family:inherit;white-space:nowrap;">&#x2B07; Download .' + dlExt + '</button></div>';
           } else {
             audioHtml = '<div style="font-size:.72rem;color:#6b5f52;font-style:italic;">Audio unavailable: ' + (a._audioBase64 ? 'blob decode failed' : 'no audio data stored') + ' (keys: ' + Object.keys(a).filter(function(k){return k.indexOf('audio')>=0||k.indexOf('Base64')>=0||k.indexOf('Blob')>=0;}).join(', ') + ')</div>';
           }
@@ -373,7 +375,7 @@
         btn.addEventListener('click', function () {
           var a = document.createElement('a');
           a.href = this.dataset.url;
-          a.download = 'voice-review-' + this.dataset.id + '.webm';
+          a.download = 'voice-review-' + this.dataset.id + '.' + (this.dataset.ext || 'webm');
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
@@ -2431,6 +2433,98 @@
     });
   }
 
+  /* ---- Turn On Journey Map (read-only) ---- */
+  function renderTurnOnMap() {
+    var box = document.getElementById('turnOnMap');
+    if (!box) return;
+    box.innerHTML =
+      '<input id="toMapSearch" placeholder="Search the journey (prompt, scene, option)... " style="width:100%;box-sizing:border-box;padding:.45rem .6rem;margin-bottom:.75rem;border-radius:6px;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;font-size:.8rem;outline:none;">' +
+      '<div id="toMapGroups"></div>';
+    document.getElementById('toMapSearch').addEventListener('input', function () {
+      renderTurnOnMapGroups(this.value);
+    });
+    renderTurnOnMapGroups('');
+  }
+
+  function turnOnNextLabel(next) {
+    if (next === -1) return '<span style="color:#e85d3a;">&#x2605; END</span>';
+    var br = turnOnBranchOf(next);
+    var lbl = br !== null ? turnOnBranchLabel(br) : 'step ' + next;
+    return esc(String(next)) + (br !== null ? ' (' + esc(lbl) + ')' : '');
+  }
+
+  function renderTurnOnMapGroups(q) {
+    var box = document.getElementById('toMapGroups');
+    if (!box) return;
+    q = (q || '').toLowerCase();
+    var html = '';
+    for (var gi = 0; gi < TURN_ON_BRANCHES.length; gi++) {
+      var gid = TURN_ON_BRANCHES[gi].id;
+      var steps = turnOnSteps.filter(function (s) { return turnOnBranchOf(s.id) === gid; });
+      if (q) {
+        steps = steps.filter(function (s) {
+          if (String(s.id).indexOf(q) >= 0) return true;
+          if ((s.prompt || '').toLowerCase().indexOf(q) >= 0) return true;
+          if ((s.scene || '').toLowerCase().indexOf(q) >= 0) return true;
+          return (s.options || []).some(function (o) {
+            return (o.text || '').toLowerCase().indexOf(q) >= 0 || (o.transition || '').toLowerCase().indexOf(q) >= 0;
+          });
+        });
+      }
+      var ends = {};
+      steps.forEach(function (s) {
+        s.options.forEach(function (o) { if (o.next === -1) ends[s.id] = 1; });
+      });
+      var symbol = turnOnBranchSymbol(turnOnSteps, gid);
+      var stepHtml = steps.map(function (s) {
+        var opts = (s.options || []).map(function (o, oi) {
+          var icon = ['&#x2776;','&#x2777;','&#x2778;','&#x2779;','&#x277A;'][oi] || ('#' + (oi + 1));
+          return '<div style="display:flex;gap:.5rem;padding:.22rem 0;border-bottom:1px solid rgba(255,210,150,.05);align-items:baseline;">' +
+            '<span style="color:#ff8fa3;font-size:.78rem;">' + icon + '</span>' +
+            '<span style="flex:1;font-size:.8rem;color:#d4c5b2;">' + esc(o.text) + '</span>' +
+            '<span style="font-size:.68rem;color:var(--ash);white-space:nowrap;">&#x2192; ' + turnOnNextLabel(o.next) + '</span>' +
+          '</div>' +
+          (o.transition ? '<div style="font-size:.72rem;color:#6b5f52;font-style:italic;padding:0 0 .3rem 1.6rem;">&#x2661; ' + esc(o.transition) + '</div>' : '');
+        }).join('');
+        return '<div class="to-map-step" style="margin-bottom:.35rem;border:1px solid rgba(255,210,150,.07);border-radius:6px;background:rgba(255,220,160,.015);">' +
+          '<div class="to-map-head" style="display:flex;gap:.6rem;align-items:center;padding:.4rem .6rem;cursor:pointer;flex-wrap:wrap;">' +
+            '<span style="font-family:\'Fraunces\',Georgia,serif;font-size:.78rem;color:var(--gold);">#' + s.id + '</span>' +
+            '<span style="font-size:.6rem;color:#6b5f52;text-transform:uppercase;letter-spacing:.05em;">Lv ' + (s.level + 1) + (s.mood ? ' &middot; ' + esc(s.mood) : '') + (s.symbol ? ' &middot; ' + esc(s.symbol) : '') + '</span>' +
+            '<span style="flex:1;font-size:.78rem;color:#d4c5b2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(s.prompt || '') + '</span>' +
+            '<span style="color:var(--ash);font-size:.68rem;">' + (s.options ? s.options.length : 0) + ' opts</span>' +
+            '<span style="color:var(--ash);font-size:.7rem;">&#9662;</span>' +
+          '</div>' +
+          '<div class="to-map-body" style="display:none;padding:.45rem .7rem;border-top:1px solid rgba(255,210,150,.06);">' +
+            (s.scene ? '<div style="font-size:.78rem;color:#c7b8a1;font-style:italic;margin-bottom:.5rem;border-left:2px solid rgba(232,93,58,.5);padding-left:.6rem;">' + esc(s.scene) + '</div>' : '') +
+            '<div style="font-size:.85rem;color:var(--parchment);margin-bottom:.4rem;">' + esc(s.prompt) + '</div>' +
+            opts +
+          '</div></div>';
+      }).join('');
+      html += '<div style="margin-bottom:1rem;border:1px solid rgba(255,210,150,.1);border-radius:10px;overflow:hidden;">' +
+        '<div class="to-map-group-head" style="display:flex;justify-content:space-between;align-items:center;gap:.6rem;padding:.55rem .9rem;background:rgba(255,220,160,.06);cursor:pointer;">' +
+          '<span style="font-family:\'Fraunces\',Georgia,serif;font-size:.85rem;color:var(--gold);">' + esc(symbol) + ' ' + esc(TURN_ON_BRANCHES[gi].label) + '</span>' +
+          '<span style="color:var(--ash);font-size:.72rem;">' + steps.length + ' steps &middot; ' + Object.keys(ends).length + ' endings</span>' +
+        '</div>' +
+        '<div class="to-map-group-body" style="padding:.6rem;">' +
+          (steps.length ? stepHtml : '<div style="color:#6b5f52;font-size:.72rem;text-align:center;padding:.4rem 0;">No matching steps.</div>') +
+        '</div>' +
+      '</div>';
+    }
+    box.innerHTML = html || '<div style="color:#6b5f52;font-size:.75rem;text-align:center;padding:1rem 0;">No matching steps.</div>';
+    box.querySelectorAll('.to-map-group-head').forEach(function (h) {
+      h.addEventListener('click', function () {
+        var b = h.nextElementSibling;
+        b.style.display = b.style.display === 'none' ? '' : 'none';
+      });
+    });
+    box.querySelectorAll('.to-map-head').forEach(function (h) {
+      h.addEventListener('click', function () {
+        var b = h.nextElementSibling;
+        b.style.display = b.style.display === 'none' ? 'block' : 'none';
+      });
+    });
+  }
+
   /* ---- Turn On Sessions ---- */
   function renderTurnOnSessions() {
     var list = document.getElementById('turnOnSessionsList');
@@ -2439,7 +2533,8 @@
       var items = (d && d.sessions) ? JSON.parse(JSON.stringify(d.sessions)) : [];
       items.sort(function (a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
       if (!items.length) {
-        list.innerHTML = '<div class="empty-state"><div class="icon">&#x2661;</div><p>No sessions yet.</p></div>';
+        list.innerHTML = '<div class="empty-state"><div class="icon">&#x2661;</div><p>No sessions yet.</p>' +
+          '<p style="font-size:.72rem;color:#6b5f52;margin-top:.4rem;">Sessions record when a playthrough ends on a browser without the admin passkey. Playthroughs on your own (admin) browser are skipped by design.</p></div>';
         return;
       }
       var totalChoices = 0, branchCounts = {};
@@ -2507,6 +2602,7 @@
 
   function renderTurnOn() {
     renderTurnOnBranches();
+    renderTurnOnMap();
     renderTurnOnSessions();
   }
 

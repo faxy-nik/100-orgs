@@ -1,0 +1,50 @@
+[
+  {
+    "id": 350,
+    "level": 5,
+    "mood": "tender",
+    "energy": 2,
+    "symbol": "👅",
+    "pause": 1200,
+    "scene": "I thrust deep and hold, buried to the hilt inside you, and the world stops spinning. Your heat clenches around me, your legs lock behind my back, and your moans fall into incoherent, perfect little sounds that I feel in my chest more than I hear them. I am so far inside you that I cannot tell where I end and you begin, and I never want to find out. The night holds its breath with us, wrapped in sweat and soft lamplight, and every tremor that runs through your body runs straight through mine.",
+    "prompt": "I kiss you softly, my lips barely brushing yours, slow and reverent, as if I am memorizing the shape of your mouth. \"Stay with me,\" I whisper against your lips, my voice rough and low. \"Don't move. Don't think. Just stay right here, right now, with me.\" I hold you there, feeling your heartbeat pulse against my skin, your breath mixing with mine, and I mean it with my whole soul — I want this moment, this stillness, this you, to be ours forever.",
+    "options": [
+      {
+        "text": "I keep this stillness, breathing you — my forehead against yours, my arms full of you, the pulse between us slow and deep, and I let this moment stretch into forever, memorizing the weight of you against me",
+        "next": 39,
+        "transition": "You let go, your body softening completely in my arms, a long shuddering exhale against my neck, and I am right there with you — falling together, breath by breath, until there is nothing left but us and the quiet dark. I hold you through it, whispering your name like a prayer, and the night wraps around us like a blanket, safe and ours.",
+        "energy": 2
+      },
+      {
+        "text": "I pull you against my chest and kiss your hair, my lips trailing slow and warm across your temple, your cheek, the curve of your ear, tasting salt and you, while my hands trace the line of your spine as if I have all the time in the world",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters — unhurried, deep, hungering, your fingers threading through my hair and pulling me closer, mine cupping your face like something precious. The world falls away until there is only your mouth and mine, rediscovering each other over and over, and I want this kiss to last until the sun forgets to rise.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 351,
+    "level": 5,
+    "mood": "teasing",
+    "energy": 2,
+    "symbol": "🍆",
+    "pause": 1200,
+    "scene": "You shatter around me, your body arching and gripping me in wave after wave, and I follow helplessly, drowning in your heat, spilling into you as your nails rake down my back. We come apart together, both lost in the same wave, cries swallowed by each other's mouths, hips bucking in perfect sync until we are nothing but shivering breath and tangled limbs. The aftershocks roll through us, slow and warm, and I am still inside you, still yours, still trembling with it.",
+    "prompt": "\"Look at me,\" I whisper, tilting your chin up gently with my fingers, my thumb brushing your swollen lips. \"I want to see your eyes.\" Your lashes flutter, heavy with pleasure, and when they finally open, dark and dazed and full of me, I am undone all over again. I trace the tears at the corner of your eye, kiss them away, and whisper again, softer this time, \"That's it. That's my girl. I love the way you fall apart for me.\"",
+    "options": [
+      {
+        "text": "I stay, and the night stays with us — still buried inside you, still holding your gaze, my thumb stroking your cheek as your breathing slows, the dark warm and heavy around us like it will hold us here forever",
+        "next": 39,
+        "transition": "You let go, your body softening completely in my arms, a long shuddering exhale against my neck, and I am right there with you — falling together, breath by breath, until there is nothing left but us and the quiet dark. I hold you through it, whispering your name like a prayer, and the night wraps around us like a blanket, safe and ours.",
+        "energy": 2
+      },
+      {
+        "text": "I find your lips again, unhurried and sure, tasting you, tasting us, my hand sliding to the nape of your neck as I pull you into a kiss that says everything words never could",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters — unhurried, deep, hungering, your fingers threading through my hair and pulling me closer, mine cupping your face like something precious. The world falls away until there is only your mouth and mine, rediscovering each other over and over, and I want this kiss to last until the sun forgets to rise.",
+        "energy": 2
+      }
+    ]
+  }
+]

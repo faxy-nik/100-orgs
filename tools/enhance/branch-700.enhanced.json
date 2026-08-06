@@ -1,0 +1,362 @@
+[
+  {
+    "id": 700,
+    "level": 1,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "🍆",
+    "pause": 900,
+    "scene": "I slide down your body, kissing every inch of skin on the way — your neck, your collarbone, the swell of your breasts, the soft curve of your stomach. Your hands tangle in my hair before I have even reached my destination, tugging, wanting. I can feel your pulse, smell your heat, and I am in no hurry at all.",
+    "prompt": "I look up at you from between your thighs, my lips a breath from your skin. \"Do not pull my hair until I make you. I want to hear you beg for it first.\"",
+    "options": [
+      {
+        "text": "You want to feel my tongue",
+        "next": 701,
+        "transition": "I kiss your inner thigh, slow and deliberate, feeling you tremble. \"You will feel everything. I promise.\"",
+        "energy": 2
+      },
+      {
+        "text": "I devour you",
+        "next": 702,
+        "transition": "I grin, dark and hungry. \"Oh, I will. And you will feel every second of it.\"",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 701,
+    "level": 3,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "🍆",
+    "pause": 1050,
+    "scene": "I drag my tongue flat across your slit, slow and deliberate, feeling every shiver of it. Your hips buck against my mouth and I do it again, savoring the taste of you, the heat, the way you open for me. You are already wet, already trembling, and I am only beginning.",
+    "prompt": "I moan against you, the sound vibrating into your skin. \"You taste incredible. I could stay here forever — I would die happy between your thighs.\"",
+    "options": [
+      {
+        "text": "Then stay — I do not stop",
+        "next": 703,
+        "transition": "I stay, licking you slow and deep, drinking you in, your moans filling the room until there is nothing else.",
+        "energy": 2
+      },
+      {
+        "text": "I focus on your clit",
+        "next": 704,
+        "transition": "I find your clit with my tongue and circle it slowly, then faster, watching your face contort, watching you lose yourself.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 702,
+    "level": 3,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "🍆",
+    "pause": 1200,
+    "scene": "I bury my face in you like a starving man, and I am — starving for your taste, your smell, the sound of you. My tongue works your clit, my fingers slide inside you, everything at once, taking you apart. You are gripping my hair hard, moaning my name, and I do not slow down.",
+    "prompt": "You are gripping my hair hard, moaning my name, your thighs tightening around my head. I do not slow down. I want to hear you break.",
+    "options": [
+      {
+        "text": "I go faster — you are close",
+        "next": 705,
+        "transition": "I speed up, tongue and fingers working together in a rhythm that owns you. \"Come. Now. I want to taste it.\"",
+        "energy": 3
+      },
+      {
+        "text": "Two fingers inside you",
+        "next": 706,
+        "transition": "I push two fingers deep inside you, curling against that spot, while my tongue works you. You cry out and arch off the bed.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 703,
+    "level": 4,
+    "mood": "vulnerable",
+    "energy": 3,
+    "symbol": "🍆",
+    "pause": 1350,
+    "scene": "Slow and deep, I worship you with my mouth — long, dragging licks that take their time, the way you deserve. I lick you like you are the answer to everything, and your thighs shake around my head, your breath a wreck. The world has shrunk to the taste of you.",
+    "prompt": "I look up at you, lips glistening, eyes dark. \"I could do this all night. I would rather do this than anything in the world.\"",
+    "options": [
+      {
+        "text": "Then I do — all night",
+        "next": 707,
+        "transition": "I do. I keep going, slow and relentless, until you are trembling, until time stops meaning anything.",
+        "energy": 2
+      },
+      {
+        "text": "I make you come on my tongue",
+        "next": 708,
+        "transition": "I suck your clit into my mouth and work you toward a shattering climax, feeling the tension build and build until you break.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 704,
+    "level": 4,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "🍆",
+    "pause": 900,
+    "scene": "I focus everything on your clit — circling, flicking, sucking, learning exactly what makes your hips jump. Your hands are fisted in my hair, your hips grinding against my face, using me. The taste of you is all over my mouth and I want more.",
+    "prompt": "\"That is it. Use my mouth. Take what you need — I am yours, all of me, right here.\"",
+    "options": [
+      {
+        "text": "You ride my face",
+        "next": 709,
+        "transition": "You ride my mouth, desperate and greedy, and I let you use me, my hands steady on your hips, moaning into you.",
+        "energy": 3
+      },
+      {
+        "text": "I hold you — you are shaking",
+        "next": 710,
+        "transition": "I grip your hips and hold you steady as you shake, as the pleasure builds. \"I have you. I am not letting go.\"",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 705,
+    "level": 4,
+    "mood": "ecstasy",
+    "energy": 3,
+    "symbol": "🍆",
+    "pause": 1050,
+    "scene": "My tongue and fingers work you together, relentless, perfect, a rhythm that has you climbing higher and higher. You are moaning, gripping my hair like you might break, your body tight as a bow. I can feel you getting close, feel the flutter of it, and I want it.",
+    "prompt": "\"Come for me. I want to taste you. I want to feel you come apart on my tongue.\"",
+    "options": [
+      {
+        "text": "You come — you are coming",
+        "next": 711,
+        "transition": "You come with a cry, your body seizing, and I drink every drop of you, moaning against you, not wasting a single second.",
+        "energy": 3
+      },
+      {
+        "text": "I do not stop when you come",
+        "next": 712,
+        "transition": "I keep going through your orgasm, drawing it out, riding it, until you are pushing my head away, wrecked.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 706,
+    "level": 4,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "🍆",
+    "pause": 1200,
+    "scene": "Two fingers deep inside you, my mouth on your clit, the world reduced to nothing but sensation. I curl my fingers against that spot, slow and sure, while my tongue works you. You are completely at my mercy, and you have never looked more beautiful.",
+    "prompt": "I curl my fingers against that spot while my tongue works you, feeling you tighten around me. \"Let go. I have got you. Let me catch you.\"",
+    "options": [
+      {
+        "text": "You let go completely",
+        "next": 713,
+        "transition": "You let go, and I catch every wave of it on my tongue, feeling you pulse around my fingers, feeling you fall.",
+        "energy": 3
+      },
+      {
+        "text": "Harder — I make you scream",
+        "next": 714,
+        "transition": "I finger you harder, suck your clit, and you scream my name, raw and broken, and I have never wanted anything more.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 707,
+    "level": 7,
+    "mood": "ecstasy",
+    "energy": 2,
+    "symbol": "🍆",
+    "pause": 1350,
+    "scene": "All night, I worshiped you with my mouth — slow, endless, devoted, until the room smelled like us and your legs would not hold you. When you finally came, it rolled through you like a tide, gentle and overwhelming, and I felt every wave of it. You are soft and glowing, still trembling.",
+    "prompt": "I kiss your knee, lips slick, and smile. \"Worth every second. I would spend every night of my life between your thighs.\"",
+    "options": [
+      {
+        "text": "You are floating",
+        "next": -1,
+        "transition": "You float back down to me, weightless and soft, and I hold you. \"Stay with me. Right here, always.\"",
+        "energy": 1
+      },
+      {
+        "text": "You kiss me, tasting yourself",
+        "next": -1,
+        "transition": "I kiss you and you taste yourself on my lips, and you moan into it. \"Delicious. You are delicious.\"",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 708,
+    "level": 7,
+    "mood": "ecstasy",
+    "energy": 2,
+    "symbol": "🍆",
+    "pause": 900,
+    "scene": "You came on my tongue — hard, shaking, crying out, your body bowing off the bed. I kept my mouth on you until your hips stopped moving, drinking everything you gave me, greedy for it. You are still trembling, your eyes wet, your breath a wreck.",
+    "prompt": "I crawl up your body, slow, and kiss you. \"You taste like heaven. I would drown in you.\"",
+    "options": [
+      {
+        "text": "You are speechless",
+        "next": -1,
+        "transition": "You are speechless, trembling, unable to form a word. I hold you close and let the quiet say what we cannot.",
+        "energy": 1
+      },
+      {
+        "text": "Again — you want more",
+        "next": -1,
+        "transition": "\"Again?\" I grin, already moving lower. \"You will have to beg. I want to hear it.\"",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 709,
+    "level": 7,
+    "mood": "intense",
+    "energy": 2,
+    "symbol": "🍆",
+    "pause": 1050,
+    "scene": "You rode my face until you came — grinding against my mouth, using me for your pleasure, taking exactly what you needed. I loved every second of your selfishness, loved the way you grabbed my hair and pulled. I am grinning, wet, and I want you again already.",
+    "prompt": "I wipe my mouth and smile up at you, eyes dark. \"My turn next. You have no idea what I am going to do to you.\"",
+    "options": [
+      {
+        "text": "You collapse, spent",
+        "next": -1,
+        "transition": "You collapse beside me, spent and satisfied, and I pull you in. \"You were amazing. You are always amazing.\"",
+        "energy": 1
+      },
+      {
+        "text": "You want to taste yourself on me",
+        "next": -1,
+        "transition": "You kiss me deeply, tasting yourself, moaning into my mouth. \"There you are. There we are.\"",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 710,
+    "level": 7,
+    "mood": "ecstasy",
+    "energy": 2,
+    "symbol": "🍆",
+    "pause": 1200,
+    "scene": "I held you steady as you came apart — shaking, gasping, crying, your whole body rigid in my arms. My mouth never left you until you were completely, beautifully undone. You are soft now, leaning into me, your eyes far away and full.",
+    "prompt": "I kiss your forehead. \"I have got you. I always have you — every time, every way.\"",
+    "options": [
+      {
+        "text": "You cling to me",
+        "next": -1,
+        "transition": "You cling to me, fingers curling into my skin, and I hold you like you are the most precious thing I will ever touch.",
+        "energy": 1
+      },
+      {
+        "text": "I whisper I love you",
+        "next": -1,
+        "transition": "You whisper it, your voice still shaking, and I kiss you. \"I love you too. So much. More every day.\"",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 711,
+    "level": 7,
+    "mood": "ecstasy",
+    "energy": 2,
+    "symbol": "🍆",
+    "pause": 1350,
+    "scene": "You came in my mouth and I swallowed everything — every wave, every pulse, every drop of you. You collapsed into the sheets, wrecked, glowing, your hair a mess across the pillow. I am drunk on the taste of you.",
+    "prompt": "I lie beside you, cheek against yours, both of us breathing hard. \"That was the best meal of my life. I am never eating anything else.\"",
+    "options": [
+      {
+        "text": "You laugh, wrecked",
+        "next": -1,
+        "transition": "You laugh, wrecked and happy, and I feel it move through us. \"You are ridiculous.\" \"And yours. All yours.\"",
+        "energy": 1
+      },
+      {
+        "text": "I kiss you softly",
+        "next": -1,
+        "transition": "You kiss me softly, slowly, like the night is not over. \"I love you.\" \"I love you too — endlessly.\"",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 712,
+    "level": 7,
+    "mood": "ecstasy",
+    "energy": 2,
+    "symbol": "🍆",
+    "pause": 900,
+    "scene": "I did not stop when you came — I kept going until you were begging me to stop, pushing my head away, laughing and crying, overwhelmed by the pleasure. Your body was shaking, oversensitive, alive. I loved every second of it.",
+    "prompt": "I grin, wiping my mouth. \"You said do not stop. I listened. You only have yourself to blame.\"",
+    "options": [
+      {
+        "text": "You hate me — I do it again",
+        "next": -1,
+        "transition": "You laugh and curse me, your voice weak, and I know you mean the exact opposite. I am already planning round two.",
+        "energy": 2
+      },
+      {
+        "text": "I pull you up and kiss you",
+        "next": -1,
+        "transition": "I kiss you and you taste yourself on me, and you melt. \"Round two later. I am not finished with you yet.\"",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 713,
+    "level": 7,
+    "mood": "ecstasy",
+    "energy": 2,
+    "symbol": "🍆",
+    "pause": 1050,
+    "scene": "You let go completely — your body bowing, your cry raw and unashamed, your hands clawing the sheets. I tasted every second of it, felt every pulse of you against my tongue. You are still trembling when I crawl up to you, still shaking when I pull you into my arms.",
+    "prompt": "I hold you as you shake, stroking your hair. \"You were the most beautiful thing I have ever seen. And I got to taste you.\"",
+    "options": [
+      {
+        "text": "You are still shaking",
+        "next": -1,
+        "transition": "You shake in my arms, aftershocks rolling through you, and I hold you through every one of them, patient and warm.",
+        "energy": 1
+      },
+      {
+        "text": "I kiss you, spent and happy",
+        "next": -1,
+        "transition": "You kiss me, spent and happy, soft and slow, and I feel like the luckiest person alive — because I am.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 714,
+    "level": 7,
+    "mood": "ecstasy",
+    "energy": 2,
+    "symbol": "🍆",
+    "pause": 1200,
+    "scene": "You screamed my name and it echoed through the room, raw and beautiful, a sound I will replay forever. My mouth and fingers worked you until you were completely hollowed out, raw, radiant, lying in a heap of spent limbs. You are still gasping, still glowing.",
+    "prompt": "I gather you into my arms, careful and gentle. \"I love you. Every part of you — especially the parts I just tasted.\"",
+    "options": [
+      {
+        "text": "I love you too",
+        "next": -1,
+        "transition": "You say it back, breathless, and I hold you tighter. \"Forever. That is the only answer I will accept.\"",
+        "energy": 1
+      },
+      {
+        "text": "You are too spent to speak",
+        "next": -1,
+        "transition": "You are too spent to speak, so you kiss me instead, soft and heavy with love. It is enough. It is everything.",
+        "energy": 1
+      }
+    ]
+  }
+]

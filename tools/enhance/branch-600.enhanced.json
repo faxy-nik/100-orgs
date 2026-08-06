@@ -1,0 +1,362 @@
+[
+  {
+    "id": 600,
+    "level": 1,
+    "mood": "tender",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 900,
+    "scene": "The room is warm and soft around us, the light low and golden. I do not touch you where you want me to. I kiss your neck, your collarbone, your shoulder — everywhere but where you ache — and I feel your breath quicken, feel the heat of your skin under my lips, hear the little sound you make when my mouth hovers close and then moves away. Everywhere but there. You are already trembling, and I am only beginning.",
+    "prompt": "\"You wanted foreplay, my love. So I am going to take my time with you — all night if I have to. Every kiss will be a promise, and every promise will make you want more. And you are going to beg.\"",
+    "options": [
+      {
+        "text": "I kiss you — slow, deep, hungry",
+        "next": 601,
+        "transition": "I kiss you slow and deep, my hands tangled in your hair, pulling you closer until there is nothing left of the world but our mouths. You melt against me, and I feel the fight leave your body.",
+        "energy": 1
+      },
+      {
+        "text": "I tease you — hands everywhere but there",
+        "next": 602,
+        "transition": "My hands roam everywhere — your waist, your thighs, the hem of your shirt — everywhere but where you need them. You whimper with frustration and I smile against your skin, tasting your impatience.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 601,
+    "level": 3,
+    "mood": "tender",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 1050,
+    "scene": "We kiss until we are both breathless, your lips swollen, my heart hammering against my ribs. My hands trace your body through your clothes, teasing every inch of skin they can reach, memorizing the curve of your waist, the heat of your hips, the way you press into me when my fingers drift low and then slip away. Your thighs are pressing together and I can feel exactly how much you want me.",
+    "prompt": "\"You are getting wet, are you not?\" I murmur against your lips, breathing you in. \"I can feel it. I can smell it. Do not hide it from me — I want every part of you that aches.\"",
+    "options": [
+      {
+        "text": "Yes — but you want more",
+        "next": 603,
+        "transition": "\"More?\" I smile against your mouth. \"You have not earned more yet.\" I kiss lower, along your jaw, down your throat, dragging it out until you squirm.",
+        "energy": 2
+      },
+      {
+        "text": "I make you feel everything first",
+        "next": 604,
+        "transition": "I kiss down your neck, your chest, the soft skin between your breasts, everywhere but there. You arch into me, begging, and I take my sweet time.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 602,
+    "level": 3,
+    "mood": "teasing",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 1200,
+    "scene": "I kiss your neck, your collarbone, down the line of your stomach — stopping just above your waistband, close enough that you can feel the warmth of my breath through the fabric. You squirm beneath me, desperate, your hips lifting and searching for pressure that never comes. I watch you fall apart slowly, and I am enjoying every second of it.",
+    "prompt": "\"Not yet,\" I say softly, watching your frustration build, your eyes dark and pleading. \"I am not done teasing you. You are going to feel every second of this.\"",
+    "options": [
+      {
+        "text": "You beg — I take my time",
+        "next": 605,
+        "transition": "\"Begging already?\" I smile against your skin. \"I love it. Say it again. Let me hear how much you want it.\"",
+        "energy": 2
+      },
+      {
+        "text": "You bite your lip and suffer",
+        "next": 606,
+        "transition": "You bite your lip, trembling with need, eyes locked on mine. I take my time, savoring you, watching the struggle play out across your face.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 603,
+    "level": 4,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "💋",
+    "pause": 1350,
+    "scene": "I kiss down your body, dragging my lips over your stomach, feeling it flutter under my mouth. My breath ghosts over your waistband, warm and deliberate, and I hear the air catch in your throat. You are shaking with anticipation, your fingers finding my hair and gripping without even knowing. You are so close to what you want that I can almost taste it.",
+    "prompt": "\"You want me to keep going?\" I ask, hovering, my lips a whisper from your skin. \"Ask me nicely. Show me you want it.\"",
+    "options": [
+      {
+        "text": "You beg me — I keep going",
+        "next": 607,
+        "transition": "\"Please,\" you beg, voice cracking, and I grin against your skin. \"Say it again. Slower.\" I wait until I feel you shiver through it.",
+        "energy": 2
+      },
+      {
+        "text": "You grind up against me",
+        "next": 608,
+        "transition": "You grind against me, desperate and impatient, and I feel your heat through the fabric. I hold you down, gentle and firm. \"No. Not yet. You will get what you need, but only when I decide.\"",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 604,
+    "level": 4,
+    "mood": "tender",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 900,
+    "scene": "I worship every inch of you with my mouth — your neck, the slope of your breasts, the soft hollow of your hips, the inside of your thighs. Your skin is hot under my lips, and I feel you shiver everywhere I go. Everywhere except where you ache for me. You are a prayer under my hands, and I want to memorize every line of you.",
+    "prompt": "\"You are beautiful like this,\" I whisper against your skin. \"Desperate and mine. I could stay here forever, just feeling you want me.\"",
+    "options": [
+      {
+        "text": "You are mine — I touch you",
+        "next": 609,
+        "transition": "\"Mine,\" you echo, soft and wrecked, and I kiss the inside of your thigh, so close, feeling you shiver, feeling the heat of you.",
+        "energy": 2
+      },
+      {
+        "text": "You are going to die of wanting",
+        "next": 610,
+        "transition": "You are dying of want, and I love every second of your suffering. I pull back, just barely, and watch your eyes follow me, pleading.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 605,
+    "level": 4,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "💋",
+    "pause": 1050,
+    "scene": "I pull your shirt off with my teeth, slowly, my lips brushing the newly exposed skin as the fabric gives way. Your chest rises and falls fast beneath me, your skin burning under my mouth. You are desperate for more, your body arching toward me, and the sound you make when I stop is worth every moment of the wait.",
+    "prompt": "\"You have been so good,\" I say, looking down at you. \"So patient. Do you want a reward?\"",
+    "options": [
+      {
+        "text": "Yes — you want it so badly",
+        "next": 611,
+        "transition": "\"Then beg for it properly.\" I wait until you do, until your voice trembles and your hands shake, until you are on the edge of tears.",
+        "energy": 2
+      },
+      {
+        "text": "You want to earn it",
+        "next": 612,
+        "transition": "\"Oh, you will earn it.\" I smile, dark and slow. I spend an hour making you ache for it, and every minute of it is mine.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 606,
+    "level": 4,
+    "mood": "vulnerable",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 1200,
+    "scene": "You bite your lip and suffer beautifully, letting me tease you until you are trembling beneath me, your breath coming in uneven little gasps. I could do this forever — watching you need me, watching the want move through you. Your eyes are dark and glassy, your cheeks flushed, and you are the most exquisite thing I have ever seen.",
+    "prompt": "I trace your bottom lip with my thumb, feeling it tremble. \"You can ask. You can always ask. I just want to hear you say it.\"",
+    "options": [
+      {
+        "text": "I touch you — you are begging",
+        "next": 613,
+        "transition": "Your begging breaks me. I finally touch you, where you need it, and you gasp like I gave you air, like you were drowning.",
+        "energy": 3
+      },
+      {
+        "text": "I make you wait longer",
+        "next": 614,
+        "transition": "\"You want to wait?\" I smile, slow. \"Then we wait. We have all night, my love — and I plan to use every second.\"",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 607,
+    "level": 7,
+    "mood": "ecstasy",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 1350,
+    "scene": "You begged so sweetly that I finally gave in — and the kiss turned into so much more, my hands and mouth everywhere, giving you everything I held back. Your body arches against mine as pleasure finally floods you, a wave that takes your breath. I feel you tremble against me, hear your voice break on my name, and it is the most beautiful sound in the world.",
+    "prompt": "I kiss your forehead, soft. \"See? Begging works. You just have to let me hear how much you want it.\"",
+    "options": [
+      {
+        "text": "You gasp, overwhelmed",
+        "next": -1,
+        "transition": "You gasp as the pleasure takes over, your hands gripping my back. I hold you through it, steady, whispering your name until it passes.",
+        "energy": 2
+      },
+      {
+        "text": "I pull you closer, breathless",
+        "next": -1,
+        "transition": "You pull me closer, breathless and shaking, your body still trembling. \"Do not stop. Please, do not stop.\" I do not.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 608,
+    "level": 7,
+    "mood": "intense",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 900,
+    "scene": "You were so desperate you came just from grinding against me — humping my thigh like you were starving, chasing the friction with a hunger I had never seen. It was the hottest thing I have ever seen, your eyes going wide, your body seizing. You came in a rush, shaking, and I watched every second of it with my heart in my throat.",
+    "prompt": "\"Did you just come from that?\" I laugh, delighted, pulling you close. \"You are incredible. You are the most incredible woman I have ever known.\"",
+    "options": [
+      {
+        "text": "You blush but nod",
+        "next": -1,
+        "transition": "You blush and nod, hiding your face against my chest, and I kiss you. \"I am keeping you forever. You know that, right?\"",
+        "energy": 2
+      },
+      {
+        "text": "I do not stop teasing you",
+        "next": -1,
+        "transition": "\"You want more?\" I smile, wicked. \"I will never stop teasing you, my love. You have no idea what I have planned.\"",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 609,
+    "level": 7,
+    "mood": "ecstasy",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 1050,
+    "scene": "You surrendered completely — begging, arching, finally letting the pleasure take you. It came slowly, like sunrise, spreading through you until you glowed, your skin flushed, your breath gone. I watched your face as it happened, watched the tension leave your body, and I have never seen anything more beautiful.",
+    "prompt": "I kiss your shoulder. \"That is what I wanted to give you. Slow. Complete. Everything.\"",
+    "options": [
+      {
+        "text": "You melt into me, full",
+        "next": -1,
+        "transition": "You melt into me, complete and warm, your heartbeat slowing against mine. \"Thank you.\" \"Always, my love. Always.\"",
+        "energy": 1
+      },
+      {
+        "text": "You never want this to end",
+        "next": -1,
+        "transition": "\"It never has to.\" I hold you like I will never let go, and I mean every word.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 610,
+    "level": 7,
+    "mood": "ecstasy",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 1200,
+    "scene": "All that wanting, all that teasing — it finally spilled over. You came undone against me, shaking, whispering my name like a prayer, like the only word you remembered. I felt every wave of it move through you, felt your fingers dig into my shoulders. You are radiant, wrecked, mine.",
+    "prompt": "I stroke your hair as you float back down, your eyes still hazy. \"I love watching you need me. I love watching you come apart in my arms.\"",
+    "options": [
+      {
+        "text": "I needed you so badly",
+        "next": -1,
+        "transition": "\"I always need you,\" you whisper, your voice small and honest. I kiss your forehead and hold you tighter.",
+        "energy": 1
+      },
+      {
+        "text": "You fall asleep in my arms",
+        "next": -1,
+        "transition": "You fall asleep in my arms, spent and safe, your breath going slow and soft. I watch you and smile, and I do not move for a long time.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 611,
+    "level": 7,
+    "mood": "ecstasy",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 1350,
+    "scene": "You begged, I gave in, and it was everything — your body coming apart under my mouth, under my hands, until you forgot your own name and only remembered mine. Your skin is damp, your hair a mess, your smile slack and glowing. I want to do this to you for the rest of my life.",
+    "prompt": "I kiss your smile. \"Best foreplay ever?\"",
+    "options": [
+      {
+        "text": "Best anything ever",
+        "next": -1,
+        "transition": "You laugh, breathless, and I feel it against my lips. \"Best anything ever.\" I kiss you again, slow, tasting it.",
+        "energy": 1
+      },
+      {
+        "text": "You are already craving more",
+        "next": -1,
+        "transition": "\"Then we go again.\" I pull you closer, already hungry. \"I am not tired of you yet. I will never be tired of you.\"",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 612,
+    "level": 7,
+    "mood": "intense",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 900,
+    "scene": "You earned it — an hour of aching, of begging, of almost, of my mouth hovering and pulling away. When I finally let you come, it hit you like a wave, drowning you in pleasure, your whole body seizing and shaking. You were the most beautiful thing I have ever seen, and I gave it to you.",
+    "prompt": "\"You earned that,\" I whisper against your ear. \"Every second of it. And I would make you wait again just to watch it happen.\"",
+    "options": [
+      {
+        "text": "You collapse, utterly spent",
+        "next": -1,
+        "transition": "You collapse against me, utterly spent, your breath ragged. I hold you through the aftershocks, stroking your hair.",
+        "energy": 1
+      },
+      {
+        "text": "You are crying happy tears",
+        "next": -1,
+        "transition": "Tears roll down your cheeks, and you are smiling through them. I wipe them away. \"That is how you know it was good, my love.\"",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 613,
+    "level": 7,
+    "mood": "ecstasy",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 1050,
+    "scene": "Your begging broke me, and my hands gave you everything — fast and hungry, the way you wanted, the way you needed. You came apart so fast it left us both gasping, your body arching off the bed, your voice raw. I watched you fall and caught you.",
+    "prompt": "\"You were so desperate,\" I tease, kissing your neck. \"I love that about you. I love that you are not afraid to want me.\"",
+    "options": [
+      {
+        "text": "You were — you needed me",
+        "next": -1,
+        "transition": "\"You are mine,\" you whisper, and my heart stops. \"Yes. Always. Every piece of me.\"",
+        "energy": 2
+      },
+      {
+        "text": "You laugh, embarrassed",
+        "next": -1,
+        "transition": "You laugh, embarrassed, your face hot against my chest. I kiss the blush off your cheeks until you smile.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 614,
+    "level": 7,
+    "mood": "tender",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 1200,
+    "scene": "We waited, and it was worth it — a slow, deep, endless climax that felt like it took an hour and a second at the same time, like time itself bent around us. You are still humming with it, soft and loose in my arms, tracing lazy patterns on my skin. The room is quiet, full of our breathing.",
+    "prompt": "In the quiet after, you trace patterns on my chest. \"Worth the wait?\"",
+    "options": [
+      {
+        "text": "Worth everything",
+        "next": -1,
+        "transition": "\"Worth everything,\" I answer, my voice rough. You smile against my skin, and I feel it like a kiss.",
+        "energy": 1
+      },
+      {
+        "text": "You kiss me without answering",
+        "next": -1,
+        "transition": "You kiss me instead of answering, slow and thorough. The kiss says it all — the words would only get in the way.",
+        "energy": 1
+      }
+    ]
+  }
+]

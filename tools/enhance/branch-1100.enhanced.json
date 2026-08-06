@@ -1,0 +1,338 @@
+[
+  {
+    "id": 1100,
+    "level": 1,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "🔥",
+    "pause": 900,
+    "scene": "The air changes the way it always does before I take you — a shift I feel in my fingertips before you ever notice. You see it in my eyes: the way I go quiet, the way my jaw sets, the way my gaze drops to your mouth and stays there. You know that look. You know exactly what it means, and I watch the knowing shiver through you before you even move.",
+    "prompt": "\"On your knees.\" That is all I say — two words, low and unhurried and final. And you know exactly what I mean, because we both know what happens when you obey.",
+    "options": [
+      {
+        "text": "You sink to your knees, slow, without a word",
+        "next": 1101,
+        "transition": "You sink to your knees in front of me, slow and deliberate, looking up at me — and my breath catches in my throat. Your hands rest on your thighs and you are already trembling, already mine, and the room goes very quiet.",
+        "energy": 2
+      },
+      {
+        "text": "You hold your ground and look up at me, defiant",
+        "next": 1102,
+        "transition": "You hold my gaze, chin lifted, a challenge burning in your eyes. I smile slowly — not a kind smile — and I have already decided exactly how this ends. So have you, I think, even if you will not admit it.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 1101,
+    "level": 2,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "🔥",
+    "pause": 950,
+    "scene": "You kneel before me, looking up, and I cup your chin, tilting your face up to mine. My thumb traces your lower lip — slow, deliberate, back and forth — and your lips part for me without being asked, like a door opening from inside.",
+    "prompt": "\"Good girl. You know I would never hurt you — but I am going to take what is mine. And you are going to love every second of it.\" My thumb stays on your lip while I say it, feeling your breath quicken against my skin.",
+    "options": [
+      {
+        "text": "I guide your head down, my fingers in your hair",
+        "next": 1103,
+        "transition": "I guide you down gently, my hand in your hair, and you take me into your mouth — warm and wet and yours. I hiss through my teeth and my eyes close for just a second before I make them open again. I want to see you.",
+        "energy": 3
+      },
+      {
+        "text": "I pull you up by the chin and press you to the wall",
+        "next": 1104,
+        "transition": "I pull you up and back, pressing you against the wall, my body a cage around yours, my mouth at your ear before you can catch your breath. I feel your pulse against my chest, fast and telling.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 1102,
+    "level": 2,
+    "mood": "teasing",
+    "energy": 2,
+    "symbol": "🔥",
+    "pause": 950,
+    "scene": "You hold my gaze, chin lifted, daring me — and I love it, I love you like this. I walk around you slowly, circling like I have all night, and you feel me watching every inch of you: the curve of your shoulder, the sway of your hips, the way your chest rises a little faster under my stare.",
+    "prompt": "\"Defiant. I love it.\" I stop behind you and my voice drops low. \"We will fix that in a minute.\"",
+    "options": [
+      {
+        "text": "You are going to behave — and you already know it",
+        "next": 1103,
+        "transition": "I take your chin and tilt your face up to mine. \"Are you going to behave?\" I ask, and your answer is in the way you look at me — soft and stubborn, already giving in. \"Good girl.\"",
+        "energy": 3
+      },
+      {
+        "text": "I turn you over my knee — it is decided",
+        "next": 1105,
+        "transition": "I sit and pull you over my knee, your skin bared to my hand, and you gasp at the first cool breath of air on it. The room goes very still, waiting with us.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1103,
+    "level": 3,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "🔥",
+    "pause": 1000,
+    "scene": "I guide you down and you take me into your mouth — and it is everything. I watch you: your eyes on mine, your hair in my fist, your cheeks hollowed and hungry. I am in no hurry, and I want you to feel that patience in every slow inch.",
+    "prompt": "\"Slow. Look at me. That is it. You are perfect like this — on your knees, mine, exactly where you belong.\"",
+    "options": [
+      {
+        "text": "I hold your hair, gently, anchored",
+        "next": 1106,
+        "transition": "My fist tightens gently in your hair, guiding your rhythm, and I watch you take me deeper. Your eyes water and you do not stop, and something dark and tender curls in my chest at the sight.",
+        "energy": 3
+      },
+      {
+        "text": "I let you set the pace, and surrender",
+        "next": 1107,
+        "transition": "I let you take the lead and groan, head falling back against the wall, as you decide how fast, how deep, how much. I am yours to take, and we both know I am not complaining.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 1104,
+    "level": 3,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "🔥",
+    "pause": 950,
+    "scene": "I pull you up and pin you against the wall, my forearm across your chest just under your collarbone, my mouth at your ear, my thigh between your legs pressing up. You are trapped — and you love it, I can feel the way you press down against me, chasing it.",
+    "prompt": "\"You like it when I am rough with you. Say it. I want to hear the words.\"",
+    "options": [
+      {
+        "text": "I like it — I say it soft, like a confession",
+        "next": 1107,
+        "transition": "You say it and I press closer, one hand sliding down between your legs. \"Good girl. That is all I needed to hear.\" I feel you go warm under my palm, and I smile against your ear.",
+        "energy": 2
+      },
+      {
+        "text": "I make you say it again, louder",
+        "next": 1108,
+        "transition": "\"Louder. I want to hear it.\" You say it again, breathless and shaking, and I grin against your ear. \"Again. Say it until you believe it.\"",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1105,
+    "level": 3,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "🔥",
+    "pause": 950,
+    "scene": "You are over my knee, bare and warm under my palm, your breath already uneven, your thighs pressed together and apart and together again. I spank you once — sharp, loud in the quiet room — and you gasp, your hips pressing down into me, seeking more before you even know it.",
+    "prompt": "\"Count them. I want to hear you.\" My hand hovers, waiting, and the anticipation is its own sound in the silence.",
+    "options": [
+      {
+        "text": "One — and I spank you again",
+        "next": 1108,
+        "transition": "\"One.\" I spank you again, harder, and your voice shakes around the number. The sting blooms across your skin and I smooth my palm over the heat, slow, letting you feel the difference between hurt and want.",
+        "energy": 3
+      },
+      {
+        "text": "You arch up, pressing back, asking for more",
+        "next": 1109,
+        "transition": "You press back into my hand, asking without words, and I know exactly what you want. I give it to you — slowly, deliberately, savouring the asking, the way you move against me without shame.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1106,
+    "level": 4,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "🔥",
+    "pause": 1000,
+    "scene": "My fist is in your hair, firm but gentle, guiding your rhythm like a hand on a rein. You take me deeper and deeper, and I groan, head back against the wall, the world narrowing to the sound of you and the wet heat of your mouth.",
+    "prompt": "\"That is it. Take all of me. You were made for this — made for me.\"",
+    "options": [
+      {
+        "text": "I loosen my grip and let you take control",
+        "next": 1109,
+        "transition": "I loosen my grip and let you take over, and you devour me — greedy, unhurried, owning every inch. I am undone and I let it happen, my hand falling to your cheek, my thumb on your skin.",
+        "energy": 2
+      },
+      {
+        "text": "I take you deeper, to the root",
+        "next": 1110,
+        "transition": "I take you deeper, and you moan around me, your eyes watering, looking up at me. I hold you there, watching the tears gather, and I do not look away — neither do you.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1107,
+    "level": 4,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "🔥",
+    "pause": 1000,
+    "scene": "You say it and I press closer, my hand sliding down between your legs. You are already wet — so wet I can feel it through the fabric — and I laugh low in your ear, proud and possessive, thrilled and moved by it at once.",
+    "prompt": "\"Look how ready you are. My rough girl. My good girl. Both of them are mine — every version of you belongs to me.\"",
+    "options": [
+      {
+        "text": "I touch you slowly, through the fabric",
+        "next": 1110,
+        "transition": "I slide my fingers over you, slow and teasing, while I hold you pinned with my other arm. Your hips roll into my hand and your fingers grip my shirt, and I take my time, because I can.",
+        "energy": 3
+      },
+      {
+        "text": "I make you beg — I stop and wait",
+        "next": 1111,
+        "transition": "I stop and wait, my hand hovering just where you need it. \"Beg for it.\" The silence stretches, and I can hear your heartbeat in it. \"I will wait all night if I have to.\"",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1108,
+    "level": 5,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "🔥",
+    "pause": 950,
+    "scene": "\"One. Two.\" I spank you again, and again — each one harder, each one landing on skin already warm and marked from the last. And each time you press back into my hand, chasing the sting, your breath going short and high and perfect.",
+    "prompt": "\"You are counting wrong on purpose. You want more. Say it.\"",
+    "options": [
+      {
+        "text": "More — please, please, I need more",
+        "next": 1111,
+        "transition": "\"Please.\" That word. I give you exactly what you asked for — no warning, no mercy — and you cry out into the quiet room, your body arching, your fingers gripping the chair.",
+        "energy": 3
+      },
+      {
+        "text": "I stop, and hold you — pulling you into my arms instead",
+        "next": 1112,
+        "transition": "I stop, and pull you into my lap, your skin warm and stinging under my hand. \"That is enough. You were so good.\" I kiss the heat where I was hard — soft, reverent, a different kind of ownership.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 1109,
+    "level": 5,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "🔥",
+    "pause": 1000,
+    "scene": "You are bent over the edge of the bed, and I am behind you, my hand tangled in your hair, your body arching back into mine. The air is heavy, close, full of your scent — and I can feel exactly how ready you are, how wet, how wanting.",
+    "prompt": "\"Beg for it. I want to hear how much you need me.\"",
+    "options": [
+      {
+        "text": "Please — I need you inside me",
+        "next": 1112,
+        "transition": "You beg me and I slide into you, both of us groaning as the world snaps into focus. You are hot and tight and perfect, and I grip your hips and hold still a moment, just to feel it, just to feel you.",
+        "energy": 3
+      },
+      {
+        "text": "I make you wait, hover at the edge",
+        "next": 1113,
+        "transition": "I hold you on the edge, teasing, dragging it out until you are trembling and gasping my name into the sheets. \"Not yet.\" I whisper it against your back. \"Not until you are falling apart.\"",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1110,
+    "level": 6,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "🔥",
+    "pause": 1000,
+    "scene": "I push inside you — hard, deep, one motion — and you cry out, your whole body jerking with it. My hand is on the back of your neck, your body pinned beneath me, and I take you like I own you, because I do.",
+    "prompt": "\"Look at me. Turn around and look at me — I want to see your eyes when you come.\"",
+    "options": [
+      {
+        "text": "I take you hard, deep, relentless",
+        "next": 1113,
+        "transition": "I take you hard and deep, and you claw at the sheets, moaning my name until it is the only word left in the room. I do not slow down — I do not think I could if I tried.",
+        "energy": 3
+      },
+      {
+        "text": "I slow down at the very edge — you are close",
+        "next": -1,
+        "transition": "I slow to a tease at the very edge, feeling you flutter around me, and when I move again you shatter around me, screaming my name into the pillow. I watch you come apart and I am already gone with you, buried in your neck.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1111,
+    "level": 7,
+    "mood": "ecstasy",
+    "energy": 3,
+    "symbol": "🔥",
+    "pause": 1100,
+    "scene": "You come apart for me — rough and loud and so beautiful it hurts — and I am right there with you, my forehead pressed against yours, both of us shaking and breathless and utterly lost in each other.",
+    "prompt": "\"That is my girl. Mine. Fucking mine.\" I say it against your mouth, and I mean every syllable.",
+    "options": [
+      {
+        "text": "I am yours — I whisper it back",
+        "next": -1,
+        "transition": "You say it — \"I am yours\" — and I feel it land somewhere deep, in my bones, and I kiss you like a seal on it, slow and certain and shaking.",
+        "energy": 1
+      },
+      {
+        "text": "You kiss me, hard and soft at once, tasting of everything we just were",
+        "next": -1,
+        "transition": "You kiss me, hard and soft at once, tasting of everything we just were, and I kiss you back the same way — fierce and gentle, both of us still trembling, neither of us wanting it to end.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 1112,
+    "level": 7,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "🫂",
+    "pause": 1200,
+    "scene": "I pull you into my arms and hold you, stroking your back where it is warm and stinging, kissing the top of your head. The rough part is over. This part is mine too — the holding, the keeping, the softness after the storm.",
+    "prompt": "\"You were so good for me. Are you okay? Tell me. I need to hear your voice.\"",
+    "options": [
+      {
+        "text": "I am perfect — you say it, and mean it",
+        "next": -1,
+        "transition": "You say \"I am perfect,\" and I check every inch of you with my hands to be sure — slow, reverent, until I believe it too. \"You are. You really are.\"",
+        "energy": 1
+      },
+      {
+        "text": "You hold me tighter and do not let go",
+        "next": -1,
+        "transition": "You hold me tighter, and the rough part falls away like a wave going out. Only the two of us remain, warm and still and breathing together, and it is exactly enough.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 1113,
+    "level": 7,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "🫂",
+    "pause": 1200,
+    "scene": "We lie tangled, your cheek on my chest, my hand in your hair, your heartbeat slowly returning to normal against mine. I can feel every breath you take, and I match mine to yours without thinking — the way I always do.",
+    "prompt": "\"I love you more when I am rough with you — because I get to hold you after, and remember that you chose me.\"",
+    "options": [
+      {
+        "text": "I always choose you — every time, every day",
+        "next": -1,
+        "transition": "\"I always choose you,\" you say, and I hold you like you might break, because the words did something to me I cannot name and do not need to.",
+        "energy": 1
+      },
+      {
+        "text": "I kiss your chest — right over your heart",
+        "next": -1,
+        "transition": "You kiss my chest, right over my heart, and I go quiet — the loudest thing in the room is my pulse under your lips, and I let it say everything.",
+        "energy": 1
+      }
+    ]
+  }
+]

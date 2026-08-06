@@ -1,0 +1,338 @@
+[
+  {
+    "id": 1400,
+    "level": 1,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "💋",
+    "pause": 1050,
+    "scene": "The first light is grey and soft through the curtains, and the room is quiet. You are still asleep, warm against me, your back to my chest, your hair spilling on the pillow. I kiss your shoulder, and I feel your sleep stir — a breath, a shift, a warmth that tells me you are there with me.",
+    "prompt": "\"Good morning, my love. I have been awake for a while — just watching you breathe, counting the rise and fall of you.\"",
+    "options": [
+      {
+        "text": "I kiss your shoulder awake, soft",
+        "next": 1401,
+        "transition": "You stir, making that small sleepy sound that lives in my chest, and I kiss your shoulder again — slower this time, warm, unhurried, the way mornings should be.",
+        "energy": 1
+      },
+      {
+        "text": "You feel me against you before you wake",
+        "next": 1402,
+        "transition": "You feel me against you — already hard, already wanting you — and you smile without opening your eyes. The morning is already good, and it has barely begun.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 1401,
+    "level": 2,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "💋",
+    "pause": 1050,
+    "scene": "You wake slowly, your voice thick with sleep. \"What time is it?\" I pull you closer, my arms full of you. \"Time for nothing. Go back to sleep. I have you.\"",
+    "prompt": "My hand slides over your hip — slow, warm, patient — tracing the curve of you under the covers. \"Just stay here with me. Let me touch you before the day starts.\"",
+    "options": [
+      {
+        "text": "I slide my hand over your hip, your skin warm",
+        "next": 1403,
+        "transition": "My hand moves over your hip, your stomach, the soft warm skin still marked by sleep — tracing you like a promise the day cannot break, and you sigh into it.",
+        "energy": 2
+      },
+      {
+        "text": "You roll into me, still half asleep",
+        "next": 1404,
+        "transition": "You roll into me, burrowing into my chest, your face in my neck, and I wrap myself around you like a blanket — the world outside can wait forever.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 1402,
+    "level": 2,
+    "mood": "teasing",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 1000,
+    "scene": "You are still half asleep, but you feel exactly what is pressed against you, and you smile into the pillow — that smile I can hear more than see. I am already done for, and you have not even opened your eyes.",
+    "prompt": "\"You feel that? That is what you do to me just by sleeping next to me. You do not even have to be awake.\"",
+    "options": [
+      {
+        "text": "You arch back into me, pressing close",
+        "next": 1403,
+        "transition": "You arch back into me, pressing close, the full warmth of you against me, and I groan into your hair — the morning suddenly much more interesting than I planned.",
+        "energy": 2
+      },
+      {
+        "text": "You reach back for me, under the covers",
+        "next": 1405,
+        "transition": "Your hand finds me under the covers — slow, sleepy, sure — and I bite my lip against the sound you pull out of me before the day has properly started.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1403,
+    "level": 3,
+    "mood": "tender",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 1050,
+    "scene": "Slow morning hands — no rush, nowhere to be. I trace your skin under the covers while the light grows gold around us, and you make that small contented sound I would cross the world to hear.",
+    "prompt": "\"This is my favourite part of the day. You, me, and no one else in the world yet.\"",
+    "options": [
+      {
+        "text": "I touch you slowly, learning you again",
+        "next": 1406,
+        "transition": "I touch you slow, gentle, patient — and you open for me like a secret, your body waking to my hand before the rest of you does. I feel you go warm, and I smile.",
+        "energy": 2
+      },
+      {
+        "text": "You pull my hand lower, guiding me",
+        "next": 1407,
+        "transition": "You take my hand and guide it lower — a quiet instruction from your sleepy self — and I follow you without question, the way I always do, the way I always will.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1404,
+    "level": 3,
+    "mood": "tender",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 1050,
+    "scene": "You are wrapped around me, your leg hooked over mine, your face buried in my neck, still half asleep and completely trusting — the most beautiful weight in the world.",
+    "prompt": "I whisper into your hair. \"You are so soft like this. So mine. I could stay here all day and still not be finished looking at you.\"",
+    "options": [
+      {
+        "text": "I lift your leg over my hip, slow",
+        "next": 1407,
+        "transition": "I lift your leg over my hip, and you feel me settle against you — warm, hard, ready — and you sigh, still asleep, still mine, and it is the sweetest surrender.",
+        "energy": 2
+      },
+      {
+        "text": "I turn you onto your back, into the light",
+        "next": 1408,
+        "transition": "I turn you gently onto your back, and you look up at me — sleepy and wanting, the light falling across your face — and I am gone, completely yours.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 1405,
+    "level": 3,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "💋",
+    "pause": 1000,
+    "scene": "Your hand works me slow under the covers — sleepy, knowing, cruel in the best way — while your eyes are still closed. I press my forehead to your back, breathing hard, trying to remember how to be patient.",
+    "prompt": "\"You are going to ruin me before breakfast. Do not stop.\"",
+    "options": [
+      {
+        "text": "I slide into you slowly, from behind",
+        "next": 1408,
+        "transition": "I slide into you slowly — inch by inch, the morning gone quiet around the sound — and both of us sighing into it. You are warm and soft and wet and all mine.",
+        "energy": 3
+      },
+      {
+        "text": "You push back against me, guiding me home",
+        "next": 1409,
+        "transition": "You push back into me, guiding me home, and we move together slow — the sheets rustling, your breath catching, the light climbing the wall as we climb together.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1406,
+    "level": 4,
+    "mood": "tender",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 1100,
+    "scene": "Slow and deep, the way mornings should be. The sheets are tangled, the light is warm on your skin, and you are looking up at me like I am the whole world — which is backwards, because you are mine.",
+    "prompt": "I hold your face in my hands. \"I love you. I love waking up to you. I love this — this exact second, every morning, forever.\"",
+    "options": [
+      {
+        "text": "I move slowly, deep, and watch you",
+        "next": 1409,
+        "transition": "I move inside you slow and deep, and you sigh my name — soft, sleepy, ruined — and I slow down even more, just to hear it again.",
+        "energy": 2
+      },
+      {
+        "text": "You wrap your leg around me and pull me deeper",
+        "next": 1410,
+        "transition": "You wrap your leg around me and pull me deeper, and I lose my rhythm — your name falling out of me as the morning tilts, as we tilt with it.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1407,
+    "level": 4,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "💋",
+    "pause": 1050,
+    "scene": "I slide into you from behind — slow, spooned against you, still warm from sleep — and we both let out a breath we have been holding all night. The light finds us, and we do not care.",
+    "prompt": "\"Good morning,\" I murmur against your neck, and you feel me smile. \"It is now.\"",
+    "options": [
+      {
+        "text": "We move together, slow, still half asleep",
+        "next": 1410,
+        "transition": "We move together slow, still tangled in sleep, and the world outside does not exist — only you, only me, only this lazy, perfect rhythm we have made.",
+        "energy": 2
+      },
+      {
+        "text": "You turn your head for a kiss, deep",
+        "next": 1411,
+        "transition": "You turn your head and kiss me — deep, morning-sweet — while I stay inside you, and the kiss turns into a sigh, and the sigh into a moan, and neither of us wants it to end.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 1408,
+    "level": 5,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "💋",
+    "pause": 1050,
+    "scene": "On your back now, morning light across your face, my weight warm and welcome on you. I move slow, watching every expression cross your face — every flutter of your eyes, every parting of your lips, every soft sound you give me.",
+    "prompt": "\"I want to see you. I want to watch you feel this. You are so beautiful in the morning light.\"",
+    "options": [
+      {
+        "text": "I stay slow, teasing, feeling you close",
+        "next": 1411,
+        "transition": "I stay slow, teasing you toward it, and you grip my shoulders — nails, breath, your eyes begging without words. Almost. Not yet. I want to watch the moment arrive.",
+        "energy": 2
+      },
+      {
+        "text": "I speed up, and the morning wakes",
+        "next": 1412,
+        "transition": "I speed up, and the quiet morning fills with both of our sounds — the bed creaking, your cries, my name breaking out of you — and the light seems brighter for it.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1409,
+    "level": 5,
+    "mood": "ecstasy",
+    "energy": 3,
+    "symbol": "💋",
+    "pause": 1050,
+    "scene": "The sheets are a mess, the pillows scattered, and we have forgotten the time, the day, the world. There is only this — your hands, my hands, the push and pull of us, the heat building between us.",
+    "prompt": "I breathe against your mouth. \"I am close. Tell me you are close. I want us to come together — now.\"",
+    "options": [
+      {
+        "text": "I feel you tighten around me and I let go",
+        "next": 1412,
+        "transition": "I feel you tighten around me and I am gone — groaning your name, burying my face in your neck as the morning goes gold around us. You come with me, and it is everything.",
+        "energy": 3
+      },
+      {
+        "text": "You pull me deeper and hold me there",
+        "next": 1413,
+        "transition": "You pull me deeper and hold me there, and we fall over together — your cry swallowed by mine, the light full and warm on our skin, the world still holding its breath.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1410,
+    "level": 6,
+    "mood": "ecstasy",
+    "energy": 3,
+    "symbol": "💋",
+    "pause": 1100,
+    "scene": "We come together in the warm light — you first, then me — your cry muffled in the pillow, mine buried in your neck, the morning holding its breath around us. Neither of us moves for a long, perfect moment.",
+    "prompt": "I hold you through it, stroking your hair back from your face. \"That is my girl. My sleepy, perfect girl.\"",
+    "options": [
+      {
+        "text": "I stay inside you, soft and still",
+        "next": 1413,
+        "transition": "I stay inside you, soft, and kiss your shoulder. Neither of us moves — the light moves instead, across our skin, and it is enough. More than enough.",
+        "energy": 1
+      },
+      {
+        "text": "We lie tangled, breathless, warm",
+        "next": -1,
+        "transition": "We lie tangled, catching our breath, the morning light warm on our skin — the day waiting politely outside, and neither of us inviting it in.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 1411,
+    "level": 7,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "🫂",
+    "pause": 1200,
+    "scene": "You lie in the crook of my arm, your hand on my chest, both of us warm and quiet. The day can wait. We cannot — but we will, together, for just a little longer.",
+    "prompt": "\"This is my favourite way to wake up. I want this for the rest of my life.\"",
+    "options": [
+      {
+        "text": "Every morning — I want this every morning",
+        "next": -1,
+        "transition": "\"Every morning,\" you say, and I kiss your forehead like it is a vow I intend to keep forever.",
+        "energy": 1
+      },
+      {
+        "text": "You kiss my chest, right over my heart",
+        "next": -1,
+        "transition": "You kiss my chest, and the morning waits for us — patient and golden, like it knows we are not going anywhere.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 1412,
+    "level": 7,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "🫂",
+    "pause": 1200,
+    "scene": "The sheets are ruined and so are we — laughing, breathless, your leg over mine, the morning golden around us. This is the best kind of wreck, and I would wreck it again tomorrow.",
+    "prompt": "\"We are never getting out of bed. I have decided. This is our new life.\"",
+    "options": [
+      {
+        "text": "I agree completely — we are staying here",
+        "next": -1,
+        "transition": "You agree completely, and we both know it is a lie and a promise — and somehow it is the truest thing we have said all morning.",
+        "energy": 1
+      },
+      {
+        "text": "You pull the covers over us and hide from the world",
+        "next": -1,
+        "transition": "You pull the covers over us, and the world can keep itself — we have this, this tent of sheets and gold light and each other.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 1413,
+    "level": 7,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "🫂",
+    "pause": 1200,
+    "scene": "I hold you, still joined, still warm, my lips on your forehead. The light moves across the room, and neither of us cares — this is the only place that matters, and we are both here.",
+    "prompt": "\"Good morning, my love. Best morning of my life. And tomorrow — we do it again.\"",
+    "options": [
+      {
+        "text": "I love you — I say it first this time",
+        "next": -1,
+        "transition": "You say it, and the morning is golden around us — simple, true, everything. I hold you and say it back, and it feels like the first time every time.",
+        "energy": 1
+      },
+      {
+        "text": "You smile into my chest, and I feel it",
+        "next": -1,
+        "transition": "You smile into my chest, and I feel it like sunlight — warm and certain — and I pull you closer, the morning ours, and tomorrow already promised.",
+        "energy": 1
+      }
+    ]
+  }
+]

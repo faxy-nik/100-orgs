@@ -1,0 +1,362 @@
+[
+  {
+    "id": 1200,
+    "level": 1,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "🪞",
+    "pause": 1000,
+    "scene": "I take your hand and lead you to the full-length mirror, the glass cool and dark until we stand before it. I stand behind you, my hands on your shoulders, and there we are — both of us, framed in the glass, the room behind us soft and low. Neither of us speaks, because the picture already says everything.",
+    "prompt": "\"I want you to see what I see. Stay with me. Do not look away — not once, not tonight.\"",
+    "options": [
+      {
+        "text": "I undress you myself, piece by piece",
+        "next": 1201,
+        "transition": "I reach for the hem of your shirt, slow, my fingers brushing the warm skin beneath. \"Let me. I want to unwrap you like a gift.\"",
+        "energy": 2
+      },
+      {
+        "text": "You undress yourself, slow, in the glass",
+        "next": 1202,
+        "transition": "I step back, hands up, and watch you in the mirror. \"Show me. The slow way — I want to see every second of it.\"",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 1201,
+    "level": 2,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "💋",
+    "pause": 1050,
+    "scene": "I undress you piece by piece in front of the glass — shirt, then skin, then more — and every time you start to look away, I turn your chin back with two gentle fingers. Your reflection never once escapes me, and I do not let it escape you either.",
+    "prompt": "\"No. Keep looking. You are not allowed to hide from me tonight — not in this room, not in this glass.\"",
+    "options": [
+      {
+        "text": "I look at you instead of myself — I always do",
+        "next": 1203,
+        "transition": "I catch your chin in the glass. \"Eyes front, my love. She is not finished being seen.\" You try to laugh, and it comes out shakier than you meant it.",
+        "energy": 1
+      },
+      {
+        "text": "I watch myself being undressed, and I do not flinch",
+        "next": 1204,
+        "transition": "You hold your own gaze in the mirror, and I see you decide to stay — a quiet victory I feel in my chest. My hands keep working, slower now, savouring it.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 1202,
+    "level": 2,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "💋",
+    "pause": 1050,
+    "scene": "You undress yourself, slow, your hands a little shy at the buttons, your reflection shy too. I watch you from behind, my reflection soft and warm in the glass, giving you all the time in the world.",
+    "prompt": "\"You are the most beautiful thing I have ever undressed. Even when you doubt it — especially then.\"",
+    "options": [
+      {
+        "text": "I meet my own eyes in the glass, and hold them",
+        "next": 1203,
+        "transition": "Your eyes find themselves in the glass, and you do not run from them. I see the moment you choose to stay, and I could kiss you for it — I settle for smiling at you in the mirror.",
+        "energy": 1
+      },
+      {
+        "text": "I look at you in the mirror instead of me",
+        "next": 1205,
+        "transition": "You watch me watching you, and something in your face settles — like a door closing on a draft. I see you, and I want you to feel how seen you are.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 1203,
+    "level": 3,
+    "mood": "teasing",
+    "energy": 1,
+    "symbol": "💋",
+    "pause": 1050,
+    "scene": "I turn you gently to face the glass, my hands on your hips, my lips near your ear, my breath warm on your neck. There you are — whole, bare, mine — and the glass shows all of it, every inch I love.",
+    "prompt": "\"That is you. Look at her. She is the one I love — the one I have always loved.\"",
+    "options": [
+      {
+        "text": "I look — really look, and I do not look away",
+        "next": 1206,
+        "transition": "You look, and I feel you stop hiding — your shoulders loosen, your eyes soften, your hands stop covering. Something in the room changes, and the change is you.",
+        "energy": 2
+      },
+      {
+        "text": "You point out what you love — piece by piece",
+        "next": 1207,
+        "transition": "I start with your neck — the long, sweet line of it. Then I will not stop. I name your collarbones, your waist, the soft places only I know, and each word lands in the glass.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 1204,
+    "level": 3,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "🫂",
+    "pause": 1050,
+    "scene": "For the first time tonight you hold your own gaze in the mirror. Not looking away. Not judging. Just seeing — the way I see you — and it is the most beautiful thing in this room, in any room.",
+    "prompt": "\"There she is. I have missed her.\"",
+    "options": [
+      {
+        "text": "I keep looking at myself, unflinching",
+        "next": 1207,
+        "transition": "I keep your gaze with mine — mirrored, patient — and I show you what I see in her: every soft thing, every strong thing, everything you have been hiding from yourself.",
+        "energy": 1
+      },
+      {
+        "text": "I look at us together, and I see it",
+        "next": 1208,
+        "transition": "You watch the two of us in the glass — him and her, one picture — and I watch you soften into it, like water finding its level. That is us. That is what we are.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 1205,
+    "level": 4,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "🫂",
+    "pause": 1050,
+    "scene": "You watch me watching you in the glass, and something in your shoulders loosens. You stop checking yourself — the old habit, the tally — and start seeing. Your reflection becomes a woman, not a checklist.",
+    "prompt": "\"That is the look. The one that undoes me. Every single time.\"",
+    "options": [
+      {
+        "text": "I watch your hands on me in the glass",
+        "next": 1208,
+        "transition": "My hands find your waist, and you do not look away. In the mirror you watch them move over you, and I feel you lean into the touch instead of away from it.",
+        "energy": 2
+      },
+      {
+        "text": "I watch my own reflection, learning her",
+        "next": 1209,
+        "transition": "You are learning your own face, and I want to teach you more — so I step closer, and the glass makes room for both of us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 1206,
+    "level": 4,
+    "mood": "intense",
+    "energy": 2,
+    "symbol": "🔥",
+    "pause": 1000,
+    "scene": "My mouth finds your neck in the glass — slow, deliberate, teeth and tongue — and your breath fogs the mirror in a small white cloud. Your eyes stay open, watching yourself feel, watching yourself want, and it is the most honest thing you have ever done.",
+    "prompt": "\"Do you see? This is you. Wanting. Unashamed. Beautiful.\"",
+    "options": [
+      {
+        "text": "I watch myself want, and I do not hide it",
+        "next": 1209,
+        "transition": "You watch yourself want — lips parted, eyes dark, skin flushed — and it is the hottest thing I have seen in this room, in any room. I do not let you turn away.",
+        "energy": 3
+      },
+      {
+        "text": "I arch back into you, eyes still open",
+        "next": 1210,
+        "transition": "You arch back into me, and your eyes find mine in the glass — a question, an answer, a dare. I hold them with mine, and my hands slide down your body.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1207,
+    "level": 4,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "💋",
+    "pause": 1050,
+    "scene": "I point at your reflection, piece by piece. Your neck. The curve of your hip. The place where your waist turns into something I could hold forever. Each one, named like a blessing, spoken into the glass.",
+    "prompt": "\"That. And that. And that. Every inch of you is my favorite thing in the world.\"",
+    "options": [
+      {
+        "text": "I start to believe you — I feel it begin",
+        "next": 1210,
+        "transition": "I see you start to believe it, and it changes everything between us — the way you stand, the way you look at me, the way you stay in the glass instead of running.",
+        "energy": 2
+      },
+      {
+        "text": "Show me my face the way you see it — please",
+        "next": 1208,
+        "transition": "I frame your face in the glass with both hands, thumbs at your jaw, and I show you — softly, wordlessly, until your eyes go wet and you finally, finally see her.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 1208,
+    "level": 5,
+    "mood": "intense",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 1000,
+    "scene": "Your own hand traces your reflection — your collarbone, your waist, the line of your shoulder — and I watch you learn the shape of yourself in my eyes. The glass holds you the way I want to hold you.",
+    "prompt": "\"Yes. Touch yourself like that. That is how I touch you in my mind — all day, every day, in every quiet moment.\"",
+    "options": [
+      {
+        "text": "I watch myself, and I like her — finally",
+        "next": 1209,
+        "transition": "You watch yourself and — there it is. The smile. Small, real, yours. I want to bottle it and keep it forever.",
+        "energy": 2
+      },
+      {
+        "text": "Your hands find me too, in the glass",
+        "next": 1211,
+        "transition": "My hands slide down your body, and yours slide back — both of us reflected, touching, mirroring each other. The glass fills with us, and we fill it together.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1209,
+    "level": 4,
+    "mood": "intense",
+    "energy": 2,
+    "symbol": "🔥",
+    "pause": 1000,
+    "scene": "My hands move over you in the glass — but you have closed your eyes again. I stop. I wait. The pause hangs in the air between us, and you feel it, and you open your eyes.",
+    "prompt": "\"Look at yourself. Not at me. At you. I will wait all night.\"",
+    "options": [
+      {
+        "text": "I open my eyes and see myself — truly",
+        "next": 1212,
+        "transition": "You open your eyes, and you see yourself seeing — the woman in the glass looking back, unafraid. \"Good.\" I whisper it like a reward, and I mean it.",
+        "energy": 3
+      },
+      {
+        "text": "I watch you watch me, and I stay",
+        "next": 1213,
+        "transition": "You watch me, and I show you what I mean — slowly, my hands moving over you as your eyes hold mine in the glass, until the watching becomes something else entirely.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1210,
+    "level": 5,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "👅",
+    "pause": 1000,
+    "scene": "My hand slides between your thighs, your head falling back against my shoulder, and in the glass you watch your own face break open — slow, helpless, beautiful. Your mouth opens on a sound you have never heard yourself make, and it is mine now.",
+    "prompt": "\"Keep your eyes open. I want you to see how good you look when I do this — how wet, how yours.\"",
+    "options": [
+      {
+        "text": "I watch my face as you work me, open",
+        "next": 1211,
+        "transition": "You watch yourself, and I watch you watching — all of us reflected, layered, moving as one. It is more than I can take, and I do not want it to end.",
+        "energy": 3
+      },
+      {
+        "text": "I lose myself and my eyes close",
+        "next": 1212,
+        "transition": "Your eyes close, and I slow down at once. \"No. Open. I want to see her see this.\" I wait, patient as the glass, until you do.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 1211,
+    "level": 6,
+    "mood": "intense",
+    "energy": 3,
+    "symbol": "🔥",
+    "pause": 950,
+    "scene": "I lift you, your back to the glass, and you are weightless against me — held, anchored, safe. In the mirror you watch your own face, flushed and undone, and you do not look away. You are no longer afraid of her.",
+    "prompt": "\"There you are. The woman who is not afraid of herself anymore.\"",
+    "options": [
+      {
+        "text": "I watch myself fall apart — and I stay",
+        "next": 1214,
+        "transition": "You watch yourself fall apart, eyes open, and it is the most beautiful thing I have ever seen — her, you, all of it, reflected and real. I do not let either of you go.",
+        "energy": 3
+      },
+      {
+        "text": "I come in your arms, eyes open, watching",
+        "next": -1,
+        "transition": "You come in my arms with your eyes open — on me, on her in the glass — and I hold them with mine through every wave, until the room comes back soft and quiet around us.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1212,
+    "level": 5,
+    "mood": "intense",
+    "energy": 2,
+    "symbol": "🔥",
+    "pause": 1050,
+    "scene": "You closed your eyes again, hiding. I stop, holding you still against me, and wait. The silence is patient. The mirror waits with us, showing a woman halfway to brave — and I would wait forever for her to finish the journey.",
+    "prompt": "\"Open your eyes, my love. She is still there. She is waiting for you.\"",
+    "options": [
+      {
+        "text": "I open my eyes and see her waiting",
+        "next": 1213,
+        "transition": "You open your eyes, and she is there — you, all of you, looking back. I feel you take her in, and something in you stands a little taller in my arms.",
+        "energy": 3
+      },
+      {
+        "text": "I cannot look yet — I am not ready",
+        "next": -1,
+        "transition": "You cannot look yet, and I hold you anyway — whispering into your hair, my arms around you, until you can. No rush. No rules. Just me, waiting with you.",
+        "energy": 1
+      }
+    ]
+  },
+  {
+    "id": 1213,
+    "level": 7,
+    "mood": "ecstasy",
+    "energy": 3,
+    "symbol": "💦",
+    "pause": 900,
+    "scene": "You are watching yourself now. Your own eyes. Your own mouth. The woman in the glass is coming undone, and she is you — she is beautiful, she is real, she is yours and mine. And you finally, finally see her.",
+    "prompt": "\"See? See her? That is her. That is you. I love her — I love you.\"",
+    "options": [
+      {
+        "text": "I see myself, and I am beautiful",
+        "next": -1,
+        "transition": "You see yourself — truly — and I see it land in your eyes, that quiet knowing. I would fight anyone who tried to take it from you, including the voice in your head that used to whisper otherwise.",
+        "energy": 1
+      },
+      {
+        "text": "I come undone, watching her watch me",
+        "next": -1,
+        "transition": "You come undone watching yourself, and I hold you through every wave — your hands in mine, both of us in the glass, none of us looking away.",
+        "energy": 3
+      }
+    ]
+  },
+  {
+    "id": 1214,
+    "level": 7,
+    "mood": "tender",
+    "energy": 1,
+    "symbol": "🪞",
+    "pause": 1200,
+    "scene": "I wipe the fog from the glass with my palm, and two people look back at us — him and her, soft and warm and spent. One of them is learning to love what she sees. The other has always known, and will remind her as often as it takes.",
+    "prompt": "\"This is you. This is what I have always seen. Come meet her properly.\"",
+    "options": [
+      {
+        "text": "I tell her she is beautiful — out loud",
+        "next": -1,
+        "transition": "You say it to your own reflection — \"You are beautiful\" — and I kiss the top of your head, proud of you in a way I cannot put into words.",
+        "energy": 1
+      },
+      {
+        "text": "I hold you from behind, both of us in the glass",
+        "next": -1,
+        "transition": "We stay, the two of us in the glass — you wrapped in me, me wrapped in you — and neither of us moves. The morning keeps its distance, and we keep each other.",
+        "energy": 1
+      }
+    ]
+  }
+]

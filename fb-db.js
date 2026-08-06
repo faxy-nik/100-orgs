@@ -34,29 +34,62 @@ var FB = (function () {
 
   function memGetAll(store) {
     var all = memLoad();
-    return Promise.resolve(all[store] || []);
+    var arr = (all[store] || []).map(function (x) { return JSON.parse(JSON.stringify(x)); });
+    arr.forEach(function (item) { decodeBlobs(item); });
+    return Promise.resolve(arr);
   }
   function memGet(store, key) {
     var all = memLoad();
     var items = all[store] || [];
-    for (var i = 0; i < items.length; i++) { if ((items[i].id || items[i].key) === key) return Promise.resolve(items[i]); }
+    for (var i = 0; i < items.length; i++) {
+      if ((items[i].id || items[i].key) === key) {
+        var item = JSON.parse(JSON.stringify(items[i]));
+        decodeBlobs(item);
+        return Promise.resolve(item);
+      }
+    }
     return Promise.resolve(null);
   }
   function memPut(store, data) {
-    var all = memLoad();
-    if (!all[store]) all[store] = [];
-    var items = all[store];
-    var key = data && (data.id || data.key);
-    if (key) {
-      for (var i = 0; i < items.length; i++) { if ((items[i].id || items[i].key) === key) { items[i] = data; memSave(all); return Promise.resolve({ key: key }); } }
-      items.push(data);
-      memSave(all);
-      return Promise.resolve({ key: key });
+    var copy = {}, blobField = null, blobName = '';
+    for (var k in data) {
+      if (data[k] instanceof Blob) {
+        blobField = k;
+        blobName = k.replace('Blob', '');
+        continue;
+      }
+      copy[k] = data[k];
     }
-    data.id = 'local_' + memId();
-    items.push(data);
-    memSave(all);
-    return Promise.resolve({ key: data.id });
+    var persist = function (c) {
+      var all = memLoad();
+      if (!all[store]) all[store] = [];
+      var items = all[store];
+      var key = c && (c.id || c.key);
+      if (key) {
+        for (var i = 0; i < items.length; i++) {
+          if ((items[i].id || items[i].key) === key) {
+            items[i] = c;
+            memSave(all);
+            return Promise.resolve({ key: key });
+          }
+        }
+        items.push(c);
+        memSave(all);
+        return Promise.resolve({ key: key });
+      }
+      c.id = 'local_' + memId();
+      items.push(c);
+      memSave(all);
+      return Promise.resolve({ key: c.id });
+    };
+    if (blobField) {
+      return blobToBase64(data[blobField]).then(function (b64) {
+        copy['_' + blobName + 'Base64'] = b64;
+        copy['_' + blobName + 'Type'] = data[blobField].type;
+        return persist(copy);
+      });
+    }
+    return persist(copy);
   }
   function memDelete(store, key) {
     var all = memLoad();
@@ -95,8 +128,8 @@ var FB = (function () {
       put: memPut,
       delete: memDelete,
       clear: memClear,
-      blobToBase64: function (blob) { return Promise.resolve(''); },
-      base64ToBlob: function () { return null; }
+      blobToBase64: blobToBase64,
+      base64ToBlob: base64ToBlob
     };
   }
 
@@ -197,7 +230,7 @@ var FB = (function () {
 
   function decodeBlobs(item) {
     for (var k in item) {
-      if (k.indexOf('_Base64') > 0) {
+      if (k.indexOf('_Base64') >= 0) {
         var prefix = k.slice(0, -7);
         var fieldName = prefix.replace(/^_/, '');
         var typeKey = prefix + 'Type';

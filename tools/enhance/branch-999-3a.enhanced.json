@@ -1,0 +1,1202 @@
+[
+  {
+    "id": 300,
+    "level": 5,
+    "mood": "tender",
+    "energy": 2,
+    "symbol": "🔥",
+    "pause": 1200,
+    "scene": "I pull you closer, my arms folding around you so completely that there is no space left between us. You fit perfectly against me, soft and warm and still trembling from everything we just shared. I feel your heart beating against my chest, slowing into the same quiet rhythm as mine. This is where I want to stay for the rest of the night.",
+    "prompt": "I kiss you softly, my lips lingering on yours. \"Stay with me. Do not move, do not think, just stay right here in my arms.\"",
+    "options": [
+      {
+        "text": "I surrender to this moment completely, letting every wall fall away",
+        "next": 301,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I pull you closer and kiss you deeply, tasting the night on your lips",
+        "next": 302,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 301,
+    "level": 5,
+    "mood": "teasing",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 1200,
+    "scene": "Tangled in each other and the sheets, our limbs woven together like we were always meant to fit this way. I do not know where I end and you begin, and I do not want to. The moonlight traces your skin as you shift against me, and I feel your breath catch. We are one slow, breathing thing.",
+    "prompt": "\"Look at me,\" I whisper, my fingers tilting your chin gently. \"I want to see your eyes. I want to see the woman who just gave me everything.\"",
+    "options": [
+      {
+        "text": "I let the night hold us both, safe in its silence",
+        "next": 303,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I hold you close and kiss you until we breathe as one, slow and endless",
+        "next": 304,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 302,
+    "level": 5,
+    "mood": "intense",
+    "energy": 2,
+    "symbol": "👅",
+    "pause": 1200,
+    "scene": "I kiss your forehead, soft and reverent, and whisper, \"That was everything. Everything I have, everything I am.\" You smile up at me, still flushed, still glowing, and the word falls from your lips like the easiest thing in the world. \"Again?\" My heart stumbles. I would spend forever answering yes to that question.",
+    "prompt": "I stroke your hair, pushing it back from your face. \"What are you thinking? Tell me what is moving through that beautiful mind of yours.\"",
+    "options": [
+      {
+        "text": "I melt into you, nothing else left to give or keep",
+        "next": 305,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I pull you against me and kiss your forehead, breathing you in",
+        "next": 306,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 303,
+    "level": 5,
+    "mood": "vulnerable",
+    "energy": 2,
+    "symbol": "🍆",
+    "pause": 1200,
+    "scene": "We lie still, our hearts still pounding together in the same unsteady rhythm. I trace your spine with my fingertips, slow circles along every curve, and you shiver against me. Nothing needs to be said. Your skin is warm, your breath is mine, and I have never felt more like myself than in this exact second.",
+    "prompt": "You smile, soft and sleepy, and I kiss you. We do not need words; we never have. Your lips say everything mine already know.",
+    "options": [
+      {
+        "text": "I give myself to this, all of it, every trembling piece",
+        "next": 307,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I kiss you slow, like the night is ours and time is a gift",
+        "next": 308,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 304,
+    "level": 5,
+    "mood": "ecstasy",
+    "energy": 2,
+    "symbol": "💦",
+    "pause": 1200,
+    "scene": "The silence after is full, not empty, heavy with everything we said without words. Your body is still humming against mine, warm and spent, and I can feel the echo of your pleasure in my own skin. I keep you close, my hand over your heart. Some languages are only spoken in the dark.",
+    "prompt": "\"I love you.\" The words come easily now; they always have, but tonight they feel brand new in my mouth.",
+    "options": [
+      {
+        "text": "I breathe you in and let go of everything else",
+        "next": 309,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I wrap my arms around you and hold on, never wanting to wake",
+        "next": 310,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 305,
+    "level": 5,
+    "mood": "tender",
+    "energy": 2,
+    "symbol": "🫂",
+    "pause": 1200,
+    "scene": "I hold you and feel your breathing slow, evening out into long, trusting sighs. You are safe here, in my arms, in this bed, in this night. Always. I press a kiss to your hair and let my own eyes close, your weight on my chest the most perfect thing I have ever carried. My hands keep moving, gentle, like they cannot bear to stop touching you.",
+    "prompt": "\"Again?\" I ask, my voice a low rumble against your hair. You nod, pulling me closer, and I feel the answer in your whole body before your lips touch mine.",
+    "options": [
+      {
+        "text": "I fall into you, whole and safe, exactly where I belong",
+        "next": 311,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I pull you to my chest, spent and yours, holding the night",
+        "next": 312,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 306,
+    "level": 5,
+    "mood": "teasing",
+    "energy": 2,
+    "symbol": "🔥",
+    "pause": 1200,
+    "scene": "Your body hums with the aftermath of my touch, a low, contented current still running under your skin. I kiss your shoulder, tasting the salt and sweetness of you, and feel you arch just a little toward me. \"More?\" you ask, and I smile against your skin. \"Always more. With you, always more.\"",
+    "prompt": "\"Mine,\" I whisper against your ear, my breath warm on your neck. You smile, that smile that undoes me, and answer, \"Always. Forever. Every single time you ask.\"",
+    "options": [
+      {
+        "text": "I stay here, in this, forever if you will have me",
+        "next": 313,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I kiss you softly, trembling and happy beyond words",
+        "next": 314,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 307,
+    "level": 5,
+    "mood": "intense",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 1200,
+    "scene": "I trace lazy patterns on your skin, my fingertips drawing circles and lines like I am memorizing a map I never want to forget. Every circle, every line, every soft gasp it earns me. I am not done with you yet. My hands roam lower, and your breath hitches because you know it too.",
+    "prompt": "I hold you and feel you relax into me, boneless and trusting. Perfect. This is the most perfect thing my life has ever made.",
+    "options": [
+      {
+        "text": "I hold the moment and never want to leave it",
+        "next": 315,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I hold you and do not let go, not tonight, not ever",
+        "next": 316,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 308,
+    "level": 5,
+    "mood": "vulnerable",
+    "energy": 2,
+    "symbol": "👅",
+    "pause": 1200,
+    "scene": "You tremble from the intensity of it, small shivers running through you like aftershocks. I hold you until it passes, wrapping you in my arms and whispering your name like a prayer. Then I start again, slower this time, softer, because I know exactly what you need even before you do. You melt, and I watch you fall apart and come back together all over again.",
+    "prompt": "\"Thank you,\" you whisper, your voice small and wrecked and beautiful. I kiss your forehead and hold you tighter. There is nothing to thank me for. This is what I want.",
+    "options": [
+      {
+        "text": "I let everything else fall away, until it is only us",
+        "next": 317,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I tangle my fingers in your hair and kiss you, soft and deep",
+        "next": 318,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 309,
+    "level": 5,
+    "mood": "ecstasy",
+    "energy": 2,
+    "symbol": "🍆",
+    "pause": 1200,
+    "scene": "You arch into my hand, chasing the feeling like it is the only thing keeping you tethered to the world. I give it again and again, watching your face go slack and beautiful with pleasure. Your fingers grip my wrist, your hips move against me, and I would spend every hour of every night doing exactly this. You are the most beautiful thing I have ever seen come undone.",
+    "prompt": "\"That was beautiful,\" I say, my voice rough with awe. You blush, that lovely color rising up your neck, and I kiss the heat of it. \"I mean it. You are beautiful. Every sound you make is a gift.\"",
+    "options": [
+      {
+        "text": "I lose the world and find you instead, over and over",
+        "next": 319,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I kiss your temple and pull you flush against me, never wanting space between us",
+        "next": 320,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 310,
+    "level": 5,
+    "mood": "tender",
+    "energy": 2,
+    "symbol": "💦",
+    "pause": 1200,
+    "scene": "I watch your face as pleasure takes you, the way your lashes flutter, the way your lips part around my name. It is my favorite sight in the world, better than every sunrise I have ever slept through. I drink in every second, because I know you only let me see you like this. You trust me with the most vulnerable parts of you, and I will never take that lightly.",
+    "prompt": "I kiss you softly, tasting the night and you. \"Stay with me. Just stay. That is all I will ever ask of you.\"",
+    "options": [
+      {
+        "text": "I give you everything I have left, and it is still not enough",
+        "next": 321,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I press my lips to yours, gentle and full of promise",
+        "next": 322,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 311,
+    "level": 5,
+    "mood": "teasing",
+    "energy": 2,
+    "symbol": "🫂",
+    "pause": 1200,
+    "scene": "You come undone beneath me, your whole body bowing into mine as the wave takes you. I drink in every second, every shiver, every broken sound that falls from your lips. I stay right where I am, feeling you pulse around me, feeling you come back to yourself slowly. When your eyes finally open, they find mine, and I am already gone for you.",
+    "prompt": "\"Look at me,\" I whisper, cupping your face so you cannot look away. \"I want to see your eyes. I want to see what I do to you.\"",
+    "options": [
+      {
+        "text": "I rest in you, complete and quiet, the way I was always meant to",
+        "next": 323,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I hold your face in both hands and kiss you tenderly",
+        "next": 324,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 312,
+    "level": 5,
+    "mood": "intense",
+    "energy": 2,
+    "symbol": "🔥",
+    "pause": 1200,
+    "scene": "I fill you completely and pause, holding myself perfectly still so you can feel every inch of the way we fit together. Your eyes find mine, wide and dark and full of wonder. \"Do not move,\" you breathe, and I obey, because your command is the only law I have ever wanted to follow. We stay frozen in the most perfect moment of my life, connected, complete.",
+    "prompt": "I stroke your hair back from your face, watching your eyes drift shut and open again. \"What are you thinking? Tell me everything, or tell me nothing. Just stay with me.\"",
+    "options": [
+      {
+        "text": "I sink into the feeling, weightless and perfectly yours",
+        "next": 325,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I pull you into my arms and breathe you in like air",
+        "next": 326,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 313,
+    "level": 5,
+    "mood": "vulnerable",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 1200,
+    "scene": "We find a rhythm that feels ancient, older than words, older than the world. Two bodies knowing what the other needs before a single thought can catch up. I move with you, you move with me, and it is effortless in a way that still astonishes me. There is no one else in this universe. There never was.",
+    "prompt": "You smile up at me, and I kiss you. We do not need words; our bodies have been speaking for hours and they have said everything perfectly.",
+    "options": [
+      {
+        "text": "I let the quiet hold us both, cradled and cared for",
+        "next": 327,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I kiss you until the trembling stops and the smiling begins",
+        "next": 328,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 314,
+    "level": 5,
+    "mood": "ecstasy",
+    "energy": 2,
+    "symbol": "👅",
+    "pause": 1200,
+    "scene": "I thrust deep and hold there, buried in your warmth, feeling you squeeze around me. Your moans are incoherent, perfect, the rawest language you have ever spoken. I watch your face and keep the pace slow, deliberate, drawing it out until you are begging without knowing the words. This is what heaven sounds like, and it is coming from you.",
+    "prompt": "\"I love you.\" The words come easily now, spilling out of me while I am still lost inside you. \"I love you. I love you. I will say it until you believe every letter.\"",
+    "options": [
+      {
+        "text": "I close my eyes and feel only you, everywhere, always",
+        "next": 329,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I cradle you against me, still shaking myself, still undone by you",
+        "next": 330,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 315,
+    "level": 5,
+    "mood": "tender",
+    "energy": 2,
+    "symbol": "🍆",
+    "pause": 1200,
+    "scene": "You shatter around me and I follow a heartbeat later, both of us lost in the same wave, pulled under together. I feel you tighten, feel you grip me, feel us tumble over the edge as one. When it finally lets us go, we drift, breathless, tangled, glowing. I do not know where your pleasure ends and mine begins. I hope I never have to learn.",
+    "prompt": "\"Again?\" I ask, my voice a hoarse whisper against your skin. You nod, pulling me closer, and the word yes is written across your whole body before you ever speak it.",
+    "options": [
+      {
+        "text": "I belong here, in this, with you, and nowhere else",
+        "next": 331,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I pull you close and kiss the top of your head, spent and whole",
+        "next": 332,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 316,
+    "level": 5,
+    "mood": "teasing",
+    "energy": 2,
+    "symbol": "💦",
+    "pause": 1200,
+    "scene": "I feel you tighten around me, feel your orgasm ripple through you in wave after wave, and I keep going, slow and relentless, drawing every last tremor out of you. You gasp my name like a prayer and I answer by kissing your throat. When you finally go limp, sated and trembling, I stay inside you, still connected, not ready to let the moment end.",
+    "prompt": "\"Mine,\" I whisper into your skin, claiming the word like a vow. You smile, that dazed, beautiful smile, and answer, \"Always. Every version of me, always yours.\"",
+    "options": [
+      {
+        "text": "I drift in the calm after the storm, wrapped in you",
+        "next": 333,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I kiss you, slow and sure, like the night belongs to us",
+        "next": 334,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 317,
+    "level": 5,
+    "mood": "intense",
+    "energy": 2,
+    "symbol": "🫂",
+    "pause": 1200,
+    "scene": "We come together at the same moment, holding on like the world might end and this is the only thing that matters. Your nails dig into my back, my face buried in your neck, both of us crying out and then falling silent at once. We stay wrapped around each other long after, breathing the same air. If the world did end, I would not notice. You are my entire world.",
+    "prompt": "I hold you and feel you relax into me, your whole body going soft and trusting. Perfect. This is the only definition of perfect I have ever needed.",
+    "options": [
+      {
+        "text": "I let myself be nothing but yours, completely and gladly",
+        "next": 335,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I wrap us in the sheets and hold you tight, hiding from everything but us",
+        "next": 336,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 318,
+    "level": 5,
+    "mood": "vulnerable",
+    "energy": 2,
+    "symbol": "🔥",
+    "pause": 1200,
+    "scene": "I pull you closer, my arm sliding under your head, your body curving into mine like it was measured for me. You fit perfectly against me, every angle finding its home. I can feel the last shivers running through you, and I smooth them away with my hands. There is nowhere in the world I would rather be than right here, holding you.",
+    "prompt": "\"Thank you,\" you whisper, your voice fragile and honest. I kiss your forehead, lingering there. \"You never have to thank me for loving you. It is the easiest thing I have ever done.\"",
+    "options": [
+      {
+        "text": "I hold this feeling and call it home, because it is",
+        "next": 337,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I kiss your shoulder and pull you into my chest, keeping you safe",
+        "next": 338,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 319,
+    "level": 5,
+    "mood": "ecstasy",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 1200,
+    "scene": "Tangled in each other and the sheets, we lie in the aftermath of something that felt like a miracle. I do not know where I end and you begin, and I no longer care to know. Your leg is hooked over mine, your breath warm on my chest, your heartbeat answering mine. We are a single creature now, and it is the most natural thing in the world.",
+    "prompt": "\"That was beautiful,\" I say, my thumb tracing your jaw. You blush, burying your face in my chest, and I laugh softly. \"I mean every word. You are the most beautiful thing I have ever touched.\"",
+    "options": [
+      {
+        "text": "I let the moment wrap around us like a blanket",
+        "next": 339,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I hold you like you are the only thing keeping me here, because you are",
+        "next": 340,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 320,
+    "level": 5,
+    "mood": "tender",
+    "energy": 2,
+    "symbol": "👅",
+    "pause": 1200,
+    "scene": "I kiss your forehead, my lips lingering on your skin. \"That was everything,\" I murmur, meaning it in a way I cannot fully explain. You smile up at me, sleepy and satisfied and so beautiful it aches. \"Again?\" you ask, and I feel my heart make a home in your hands. \"Ask me that every night for the rest of my life.\"",
+    "prompt": "I kiss you softly, savoring the shape of your lips. \"Stay with me. Not just tonight. Stay with me in every way a person can stay.\"",
+    "options": [
+      {
+        "text": "I am still, and full, and yours, exactly as I want to be",
+        "next": 341,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I kiss you through my smile, happy and spent and entirely yours",
+        "next": 342,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 321,
+    "level": 5,
+    "mood": "teasing",
+    "energy": 2,
+    "symbol": "🍆",
+    "pause": 1200,
+    "scene": "We lie still, our hearts pounding together in a rhythm that has finally begun to slow. I trace your spine with my fingertips, from the nape of your neck to the small of your back, and you shiver, deliciously, predictably. I smile against your shoulder and keep tracing. I could map every inch of you forever and never once get bored.",
+    "prompt": "\"Look at me,\" I whisper, my fingers gentle on your chin. \"I want to see your eyes. I want to see the woman who lives inside this body I love.\"",
+    "options": [
+      {
+        "text": "I breathe the night in and keep it, the way I keep you",
+        "next": 343,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I pull you closer, still breathless, still yours, still utterly gone for you",
+        "next": 344,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 322,
+    "level": 5,
+    "mood": "intense",
+    "energy": 2,
+    "symbol": "💦",
+    "pause": 1200,
+    "scene": "The silence after is full, brimming, spilling over with everything we said without words. Your body is still pressed against mine, warm and damp and spent, and I can feel the echo of every sound you made. We do not need to fill it. The silence is ours, and it says I love you in a hundred different ways.",
+    "prompt": "I stroke your hair, fingers combing through the tangles of the night. \"What are you thinking? Whatever it is, I want to hear it. I want to hear everything.\"",
+    "options": [
+      {
+        "text": "I let the warmth carry us both into sleep",
+        "next": 345,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I press my forehead to yours and hold you, breathing the same air",
+        "next": 346,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 323,
+    "level": 5,
+    "mood": "vulnerable",
+    "energy": 2,
+    "symbol": "🫂",
+    "pause": 1200,
+    "scene": "I hold you and feel your breathing slow until it is deep and trusting and mine. You are safe here, in this bed, in these arms. Always. I press a kiss to your hair and let my hands move in slow circles on your back. The world outside can wait. It has never had anything half as precious as this moment.",
+    "prompt": "You smile, that soft half-smile you wear when you are happiest, and I kiss you. We do not need words. We have never needed words. We have each other's bodies and hearts, and that is a language enough.",
+    "options": [
+      {
+        "text": "I am here, all of me, always, in every version of always",
+        "next": 347,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I kiss you and do not rush a single second of it",
+        "next": 348,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 324,
+    "level": 5,
+    "mood": "ecstasy",
+    "energy": 2,
+    "symbol": "🔥",
+    "pause": 1200,
+    "scene": "Your body hums with the aftermath of my touch, a soft electric current still running just under your skin. I kiss your shoulder, tasting you, and feel you tremble. \"More?\" you ask, half teasing, half hopeful. I smile against your skin. \"Always more. For you, Eeshah, I would give the moon and then beg to give it again.\"",
+    "prompt": "\"I love you.\" The words come easily now, and I say them like I invented them just for you. \"I love you in the quiet, in the loud, in every space between.\"",
+    "options": [
+      {
+        "text": "I keep this night in my chest like a treasure",
+        "next": 349,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I gather you into my arms, shaking and grateful and so in love",
+        "next": 350,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 325,
+    "level": 5,
+    "mood": "tender",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 1200,
+    "scene": "I trace lazy patterns on your skin, my fingertips wandering without a destination. Every circle, every line, every inch of you that shivers under my touch. I am not done with you yet. I could spend a lifetime learning the geography of your body and still want more. Your breath hitches as my hand drifts lower, and I smile against your neck. There is no rush. There is only us.",
+    "prompt": "\"Again?\" I ask, my lips brushing your ear. You nod, pulling me closer, and I feel the word yes ripple through your body before it ever reaches your mouth. I am already yours all over again.",
+    "options": [
+      {
+        "text": "I let go of everything that is not us, and hold on to you",
+        "next": 351,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I hold you, kiss you, and promise everything I have",
+        "next": 39,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 326,
+    "level": 5,
+    "mood": "teasing",
+    "energy": 2,
+    "symbol": "👅",
+    "pause": 1200,
+    "scene": "You tremble from the intensity, your whole body caught in the aftershocks of what we just made. I hold you until it passes, my arms a shelter, my hands gentle on your back. Then, when your breathing settles, I start again, slower, softer, watching your eyes widen with surprise and want. You never stop amazing me, and I never stop wanting to see you undone.",
+    "prompt": "\"Mine,\" I whisper into the curve of your neck. You smile, that smile that lives in my dreams, and your voice is a promise when you answer, \"Always. Every single time, always.\"",
+    "options": [
+      {
+        "text": "I stay in this quiet, yours, without needing anything else",
+        "next": 39,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I gather you close and kiss your shoulder, worshipping every inch",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 327,
+    "level": 5,
+    "mood": "intense",
+    "energy": 2,
+    "symbol": "🍆",
+    "pause": 1200,
+    "scene": "You arch into my hand, your hips lifting to chase the feeling, your breath coming in short, desperate bursts. I give it again and again, keeping the pressure just right, reading your body like a language I was born knowing. Your fingers curl into the sheets and your head falls back, and I watch you with something like reverence. There is nowhere else I would rather be.",
+    "prompt": "I hold you and feel you relax into me, every muscle letting go at once. Perfect. This is what perfection looks like, and it is lying in my arms.",
+    "options": [
+      {
+        "text": "I keep this moment, precious, safe, all mine",
+        "next": 39,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I pull you against me, lips on yours, nothing between us",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 328,
+    "level": 5,
+    "mood": "vulnerable",
+    "energy": 2,
+    "symbol": "💦",
+    "pause": 1200,
+    "scene": "I watch your face as pleasure takes you, the way your eyes fall shut, the way your lips part on a breath you cannot finish. It is my favorite sight in the world, and I have memorized every detail of it. I keep watching, even when your hands come up to cover your face, pulling them away gently. I want to see all of you, especially like this. Especially always.",
+    "prompt": "\"Thank you,\" you whisper, and your voice cracks in the middle, which is the most honest sound I have ever heard. I kiss your forehead, slow and long. \"Thank me for nothing. I am exactly where I want to be.\"",
+    "options": [
+      {
+        "text": "I let the calm settle over us like snow, soft and quiet",
+        "next": 39,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I trace your skin and kiss you slowly, memorizing you by touch",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 329,
+    "level": 5,
+    "mood": "ecstasy",
+    "energy": 2,
+    "symbol": "🫂",
+    "pause": 1200,
+    "scene": "You come undone beneath me, your body arching into mine as the pleasure breaks over you. I drink in every second of it, every tremor, every gasp, every small sound that proves I did this to you. I hold you through it, whispering your name like a lifeline. When you come back to me, your eyes are glassy and soft, and I fall in love with you all over again.",
+    "prompt": "\"That was beautiful,\" I say, and my voice is thick with wonder. You blush, that gorgeous rush of color, and I kiss it away. \"You are beautiful. What we do together is beautiful. Never doubt it.\"",
+    "options": [
+      {
+        "text": "I breathe you in, still and full and completely at peace",
+        "next": 39,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I fold you into my arms, kissing your hair, keeping you forever",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 330,
+    "level": 5,
+    "mood": "tender",
+    "energy": 2,
+    "symbol": "🔥",
+    "pause": 1200,
+    "scene": "I fill you completely and pause, buried to the hilt, feeling you stretch around me. Your eyes find mine, and in them I see everything we have ever been to each other. \"Do not move,\" you whisper, and I obey without a second thought, frozen inside you while the world holds its breath. Your hands come up to my face, and we stay like that, connected, complete, perfect.",
+    "prompt": "I kiss you softly, barely a kiss at all, more a whisper of lips. \"Stay with me. Stay with me tonight, tomorrow, every day the sun comes up.\"",
+    "options": [
+      {
+        "text": "I hold this night like a secret I will never tell",
+        "next": 39,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I press my mouth to yours, soft and sure and full of forever",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 331,
+    "level": 5,
+    "mood": "teasing",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 1200,
+    "scene": "We find a rhythm that feels ancient, as if we have done this a thousand lives before this one. Two bodies knowing what the other needs, moving together like the tide and the shore. I watch your face, the way pleasure softens you, the way your hands pull me closer. There is nothing modern about this. It is older than time, and it is ours.",
+    "prompt": "\"Look at me,\" I whisper, my thumb brushing your cheek. \"I want to see your eyes. I want to see the stars that live in them.\"",
+    "options": [
+      {
+        "text": "I am still inside the feeling, floating on it",
+        "next": 39,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I cradle your face and kiss you again, because once is never enough",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 332,
+    "level": 5,
+    "mood": "intense",
+    "energy": 2,
+    "symbol": "👅",
+    "pause": 1200,
+    "scene": "I thrust deep and hold, letting you feel every inch of the way I fill you. Your moans are incoherent, perfect, the most honest music ever written. I move again, slow and deliberate, dragging it out until your fingers dig into my shoulders. I would die happily inside this moment. You make everything feel like the first time and the last time at once.",
+    "prompt": "I stroke your hair back from your damp forehead. \"What are you thinking? Tell me. I want to live inside your thoughts.\"",
+    "options": [
+      {
+        "text": "I rest here, in your warmth, in your arms, in your heart",
+        "next": 39,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I pull you closer, lips finding yours, never wanting distance",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 333,
+    "level": 5,
+    "mood": "vulnerable",
+    "energy": 2,
+    "symbol": "🍆",
+    "pause": 1200,
+    "scene": "You shatter around me and I follow, the two of us tumbling over the edge in the same wave. I feel you pulse around me, feel my own release answer yours, both of us lost and found in the same breath. We come down slowly, clinging to each other, gasping into each other's skin. I hold you through it all, and after, I keep holding. That is the part I will never stop.",
+    "prompt": "You smile, dazed and soft, and I kiss you. We do not need words. We have never needed them. Your smile is a sentence, your sigh is a paragraph, and I read you perfectly.",
+    "options": [
+      {
+        "text": "I keep the quiet between us, precious and unbroken",
+        "next": 39,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I kiss the corner of your mouth, tender, tasting your smile",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 334,
+    "level": 5,
+    "mood": "ecstasy",
+    "energy": 2,
+    "symbol": "💦",
+    "pause": 1200,
+    "scene": "I feel you tighten around me, feel your orgasm ripple through you in long, rolling waves. I keep going, slow and deep, drawing out every shiver until you are breathless and boneless beneath me. Your hands push weakly at my chest, half a plea, half a surrender, and I smile and kiss them. I would take you to the edge a hundred times tonight, just to watch you fly.",
+    "prompt": "\"I love you.\" The words come easily now, so easily that I wonder how I ever kept them in. \"I love you, I love you, I love you. Say them back when you can breathe again.\"",
+    "options": [
+      {
+        "text": "I let the afterglow hold me, soft as your heartbeat",
+        "next": 39,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I wrap around you and kiss your neck, feather-soft, staying close",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 335,
+    "level": 5,
+    "mood": "tender",
+    "energy": 2,
+    "symbol": "🫂",
+    "pause": 1200,
+    "scene": "We come together, holding on like the world might end and this embrace is the only lifeboat. Your legs lock around me, my face buried in your hair, both of us crying out and then shattering into silence together. We stay wrapped around each other for a long time, breathing, trembling, existing only for each other. If the world ended now, I would die the happiest man alive.",
+    "prompt": "\"Again?\" I ask, my voice a ruined whisper. You nod, pulling me closer, and I can feel your smile against my skin. There is no question I would not answer yes to, as long as it is you asking.",
+    "options": [
+      {
+        "text": "I stay, soft and full of you, exactly where I belong",
+        "next": 39,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I bring your lips back to mine, because the night is not over",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 336,
+    "level": 5,
+    "mood": "teasing",
+    "energy": 2,
+    "symbol": "🔥",
+    "pause": 1200,
+    "scene": "I pull you closer, my arms making a home around you. You fit perfectly against me, like your body was designed in the same breath as mine. I feel your heartbeat slow against my chest, feel your fingers trail lazily through the hair on my chest. The night is winding down, but neither of us moves to end it. This moment is too good to let go of.",
+    "prompt": "\"Mine,\" I whisper, my lips against your ear. You smile, that wicked-soft smile, and your answer is a promise: \"Always. Today, tomorrow, and every always after.\"",
+    "options": [
+      {
+        "text": "I drift in the hush of us, happy beyond reason",
+        "next": 39,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I hold you and kiss you until we both smile, kissing through laughter",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 337,
+    "level": 5,
+    "mood": "intense",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 1200,
+    "scene": "Tangled in each other and the sheets, we lie in the ruins of something beautiful. I do not know where I end and you begin, and I have stopped trying to figure it out. Your warmth is everywhere, your scent on my skin, your heartbeat under my palm. We are one creature, one breath, one long sigh of contentment. I never want to be separate again.",
+    "prompt": "I hold you and feel you relax into me, all the tension of the world leaving your body. Perfect. This is the word I have been saving my whole life for, and it belongs to you.",
+    "options": [
+      {
+        "text": "I anchor myself in your arms and let the world drift away",
+        "next": 39,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I pull you under the covers and kiss you, hidden from everything",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 338,
+    "level": 5,
+    "mood": "vulnerable",
+    "energy": 2,
+    "symbol": "👅",
+    "pause": 1200,
+    "scene": "I kiss your forehead, lingering there, breathing in the scent of you. \"That was everything,\" I say, and my voice is honest in a way I rarely let it be. You smile, soft and satisfied, and ask, \"Again?\" with your eyes already half closed. I laugh quietly and pull you tighter. \"Ask me again in ten minutes. I will be ready.\"",
+    "prompt": "\"Thank you,\" you whisper, barely a sound at all. I kiss your forehead, slow and reverent. \"You never have to thank me. But if you want to, thank me by staying. Thank me by being here tomorrow.\"",
+    "options": [
+      {
+        "text": "I let the world fall away until only you remain",
+        "next": 39,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I kiss your brow, then your lips, tracing the path between",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 339,
+    "level": 5,
+    "mood": "ecstasy",
+    "energy": 2,
+    "symbol": "🍆",
+    "pause": 1200,
+    "scene": "We lie still, our hearts pounding together like drums in the same song. I trace your spine with my fingertips, following the curve of it down to where your body softens, and you shiver against me. I smile and do it again, watching the goosebumps rise. There are a thousand things I want to say, but none of them are as true as this touch.",
+    "prompt": "\"That was beautiful,\" I say, my voice low and full of wonder. You blush, and the color of you is my favorite thing in this room. \"I mean it. I will never get tired of watching you come undone.\"",
+    "options": [
+      {
+        "text": "I keep this, careful and close, like the treasure it is",
+        "next": 39,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I gather you in, mouth finding yours, body answering body",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 340,
+    "level": 5,
+    "mood": "tender",
+    "energy": 2,
+    "symbol": "💦",
+    "pause": 1200,
+    "scene": "The silence after is full, heavy with everything we said without words. Your body is warm against mine, your hair spread across my arm, your breath deep and even. I lie awake just to feel it, just to feel you. Some silences are empty. This one is the fullest thing I have ever held.",
+    "prompt": "I kiss you softly, my lips barely grazing yours. \"Stay with me. Say nothing, do nothing. Just stay. That is my favorite thing you do.\"",
+    "options": [
+      {
+        "text": "I am quiet, and yours, and here, exactly where I should be",
+        "next": 39,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I press kisses along your jaw, slow, unhurried, endless",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 341,
+    "level": 5,
+    "mood": "teasing",
+    "energy": 2,
+    "symbol": "🫂",
+    "pause": 1200,
+    "scene": "I hold you and feel your breathing slow into long, trusting sighs. You are safe here, in this bed, in these arms, in this life we are building. Always. I press my lips to your hair and keep my hands moving, gentle, soothing. Whatever the world brings tomorrow, it will never take this from us. This moment is ours, and I am keeping it.",
+    "prompt": "\"Look at me,\" I whisper, tilting your face up gently. \"I want to see your eyes. I want to see the woman who makes every part of me soft.\"",
+    "options": [
+      {
+        "text": "I let this feeling hold us, the way I hold you",
+        "next": 39,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I bring your mouth to mine, unhurried, tasting forever",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 342,
+    "level": 5,
+    "mood": "intense",
+    "energy": 2,
+    "symbol": "🔥",
+    "pause": 1200,
+    "scene": "Your body hums with the aftermath of my touch, a low current still singing under your skin. I kiss your shoulder, my lips tracing the taste of you, and you arch just slightly toward me. \"More?\" you ask, and your voice is half a laugh, half a plea. I smile against your skin. \"Always more. I will never be done with you. That is the promise I make tonight.\"",
+    "prompt": "I stroke your hair, winding a strand around my finger. \"What are you thinking? Tell me, Eeshah. I want to know every corner of your mind.\"",
+    "options": [
+      {
+        "text": "I stay in the warmth you leave behind, like a home",
+        "next": 39,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I kiss your lips, soft as a promise, sealed with the night",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 343,
+    "level": 5,
+    "mood": "vulnerable",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 1200,
+    "scene": "I trace lazy patterns on your skin, my fingertips wandering aimlessly and meaning everything. Every circle, every line, every secret your body tells me. I am not done with you yet, and I do not think I ever will be. Your skin is warm, your pulse is steady under my hand, and I am learning you the way I learned to breathe.",
+    "prompt": "You smile, that smile that makes my chest ache, and I kiss you. We do not need words. Your smile is a conversation, and I am fluent in you.",
+    "options": [
+      {
+        "text": "I hold this night, gentle and full, like a bird in my hands",
+        "next": 39,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I pull you closer, breath against yours, never letting the moment end",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 344,
+    "level": 5,
+    "mood": "ecstasy",
+    "energy": 2,
+    "symbol": "👅",
+    "pause": 1200,
+    "scene": "You tremble from the intensity, your body caught in wave after wave of it. I hold you until it passes, my arms wrapped around you like a promise. Then I start again, my hands slow, my mouth soft, watching your eyes widen with the realization that there is more. There is always more with us. I will spend my whole life proving it to you.",
+    "prompt": "\"I love you.\" The words come easily now, like breathing, like water. \"I love you in this moment, in every moment, in the spaces between moments.\"",
+    "options": [
+      {
+        "text": "I let myself be held by this, by you, by everything we are",
+        "next": 39,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I trace your lips, then kiss them slowly, savoring every second",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 345,
+    "level": 5,
+    "mood": "tender",
+    "energy": 2,
+    "symbol": "🍆",
+    "pause": 1200,
+    "scene": "You arch into my hand, your hips rolling against my palm, chasing the feeling like it is the only thing that exists. I give it again and again, watching you unravel, watching you rise and fall. Your moans are soft now, tired, satisfied. I kiss your shoulder and keep my hand gentle. You have given me everything tonight. I want to give you rest.",
+    "prompt": "\"Again?\" I ask, half teasing, half hopeful. You nod, pulling me closer, and your body says yes long before your voice does. I will never stop being amazed that I get to have this with you.",
+    "options": [
+      {
+        "text": "I keep the hush wrapped around us, soft as your skin",
+        "next": 39,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I gather you close, kissing your temple, holding the quiet",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 346,
+    "level": 5,
+    "mood": "teasing",
+    "energy": 2,
+    "symbol": "💦",
+    "pause": 1200,
+    "scene": "I watch your face as pleasure takes you, the slow bloom of it, the way your mouth falls open, the way your hands find mine. It is my favorite sight in the world, and I have catalogued every version of it. I hold your gaze through it, not letting you hide, because this, too, is intimacy. This, too, is love. And I want to see every second of it.",
+    "prompt": "\"Mine,\" I whisper, the word a brand and a blessing. You smile, that slow, knowing smile, and your voice is velvet when you answer, \"Always. Yours before I knew what it meant. Yours forever after.\"",
+    "options": [
+      {
+        "text": "I rest, complete, in your arms, in your heart",
+        "next": 39,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I press my lips to yours, tender again, like it is the first time",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 347,
+    "level": 5,
+    "mood": "intense",
+    "energy": 2,
+    "symbol": "🫂",
+    "pause": 1200,
+    "scene": "You come undone beneath me, your body arching, your voice breaking into pieces of my name. I drink in every second of it, storing it somewhere safe where I can revisit it forever. I hold you through the trembling and the after, when your hands are weak and your eyes are soft. This is the most honest you have ever been, and I am honored to be the one who sees it.",
+    "prompt": "I hold you and feel you relax into me, boneless, trusting, entirely mine. Perfect. I have found the word for this, and it is your name.",
+    "options": [
+      {
+        "text": "I stay in this, endless and warm, like the tide",
+        "next": 39,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I pull you in and kiss you like a prayer I mean with my whole life",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 348,
+    "level": 5,
+    "mood": "vulnerable",
+    "energy": 2,
+    "symbol": "🔥",
+    "pause": 1200,
+    "scene": "I fill you completely and pause, the fullness of us the only thing in the world. Your eyes find mine, dark and soft and full of everything. \"Do not move,\" you whisper, and I obey, staying buried inside you while the universe holds its breath. We stay like that, connected, your hands on my face, mine on your hips, a moment with no end.",
+    "prompt": "\"Thank you,\" you whisper, your voice barely a breath. I kiss your forehead, my lips pressing the word into your skin. \"Thank me by staying. Thank me by never doubting how loved you are.\"",
+    "options": [
+      {
+        "text": "I let the quiet settle, deep, into our bones",
+        "next": 39,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I hold your face and kiss you, slow, like there is all the time in the world",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  },
+  {
+    "id": 349,
+    "level": 5,
+    "mood": "ecstasy",
+    "energy": 2,
+    "symbol": "💋",
+    "pause": 1200,
+    "scene": "We find a rhythm that feels ancient, as old as the first heartbeat, as old as love itself. Two bodies knowing what the other needs without a single word exchanged. We move together like water, like wind, like two halves of one whole finally remembering each other. When it ends, we hold on, and the rhythm becomes breathing, becomes heartbeat, becomes us.",
+    "prompt": "\"That was beautiful,\" I say, my voice hushed like a secret. You blush, and I kiss the color rising on your cheeks. \"Every time, it is beautiful. Every time, it is you.\"",
+    "options": [
+      {
+        "text": "I am here, in this, with you, and I am never leaving",
+        "next": 39,
+        "transition": "You let go, and I am right there with you, holding the space so you never fall alone.",
+        "energy": 2
+      },
+      {
+        "text": "I kiss you softly, then hold you close, the night ours",
+        "next": 200,
+        "transition": "We kiss like it is the only thing that matters, and for a while, the whole world forgets us.",
+        "energy": 2
+      }
+    ]
+  }
+]

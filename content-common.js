@@ -1497,34 +1497,53 @@ console.error = function () {
                   vb.addEventListener('click', function (e) {
                     e.stopPropagation();
                     var that = this;
-                    if (window._recording) {
-                      if (window._mediaRecorder && window._mediaRecorder.state === 'recording') window._mediaRecorder.stop();
-                      return;
-                    }
+                    if (window._recording) return;
                     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { alert('Voice recording not supported.'); return; }
-                    toast('Voice max: 120s recommended, 180s limit', 'rgba(0,0,0,0.85)', 3000);
-                    window._recording = true;
-                    window._mediaRecorder = null;
-                    that.style.background = 'rgba(232,58,58,0.3)';
-                    that.textContent = '\u23F9\uFE0F';
-                    that.title = 'Stop recording';
+
+                    // Friendly recording panel: live timer, cancel, no time limit
+                    var panel = document.createElement('div');
+                    panel.style.cssText = 'position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:99999;background:rgba(24,18,20,.97);border:1px solid rgba(232,93,58,.4);border-radius:14px;padding:18px 22px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.6);width:min(320px,90vw);';
+                    panel.innerHTML =
+                      '<div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;">' +
+                        '<span class="rec-dot" style="width:14px;height:14px;border-radius:50%;background:#e85d3a;display:inline-block;animation:recPulse 1s infinite;"></span>' +
+                        '<span style="font-family:\'Fraunces\',Georgia,serif;color:#ffe680;font-size:.95rem;">Recording</span>' +
+                      '</div>' +
+                      '<div class="rec-timer" style="font-size:2rem;font-family:\'Fraunces\',Georgia,serif;color:#ffebd2;margin-bottom:4px;">0:00</div>' +
+                      '<div style="font-size:.7rem;color:#6b5f52;margin-bottom:14px;">No time limit — take all the time you need.</div>' +
+                      '<div style="display:flex;gap:10px;justify-content:center;">' +
+                        '<button class="rec-cancel" style="flex:1;padding:9px 0;border-radius:8px;background:transparent;border:1px solid rgba(255,210,150,.25);color:#c7b8a1;cursor:pointer;font-family:inherit;font-size:.8rem;">Cancel</button>' +
+                        '<button class="rec-stop" style="flex:1;padding:9px 0;border-radius:8px;background:rgba(232,93,58,.2);border:1px solid #e85d3a;color:#ffebd2;cursor:pointer;font-family:inherit;font-size:.8rem;font-weight:600;">Stop &amp; Save</button>' +
+                      '</div>';
+                    var style = document.createElement('style');
+                    style.textContent = '@keyframes recPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.25)}}';
+                    document.head.appendChild(style);
+                    document.body.appendChild(panel);
+
                     var chunks = [];
-                    var maxDuration = 120000;
-                    var hardMax = 180000;
+                    var canceled = false;
+                    var startedAt = Date.now();
+                    var timerInt = setInterval(function () {
+                      var t = panel.querySelector('.rec-timer');
+                      if (!t) return;
+                      var s = Math.floor((Date.now() - startedAt) / 1000);
+                      t.textContent = Math.floor(s / 60) + ':' + (s % 60 < 10 ? '0' : '') + (s % 60);
+                    }, 500);
+
+                    window._recording = true;
+                    var mime = (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported('audio/mp4')) ? 'audio/mp4' : 'audio/webm';
                     navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
-                      var mediaRecorder = new MediaRecorder(stream);
+                      var mediaRecorder = new MediaRecorder(stream, mime === 'audio/mp4' ? { mimeType: 'audio/mp4' } : undefined);
                       window._mediaRecorder = mediaRecorder;
-                      mediaRecorder.ondataavailable = function (e) { if (e.data.size > 0) chunks.push(e.data); };
-                      var warnTimeout = setTimeout(function () {
-                        if (mediaRecorder.state === 'recording') toast('Warning: 120s exceeded! Max 180s.', 'rgba(180,40,40,0.9)', 5000);
-                      }, maxDuration);
-                      var hardTimeout = setTimeout(function () {
-                        if (mediaRecorder.state === 'recording') mediaRecorder.stop();
-                      }, hardMax);
+                      mediaRecorder.ondataavailable = function (ev) { if (ev.data.size > 0) chunks.push(ev.data); };
                       mediaRecorder.onstop = function () {
-                        clearTimeout(warnTimeout); clearTimeout(hardTimeout);
-                        var blob = new Blob(chunks, { type: 'audio/webm' });
-                        var review = { type: 'audio', file: window.ASH_CONFIG.reviewFile, section: getSectionHeading(that), sectionIdx: data.idx || 0, audioBlob: blob, text: ti.value.trim(), date: new Date().toISOString() };
+                        clearInterval(timerInt);
+                        window._recording = false;
+                        window._mediaRecorder = null;
+                        stream.getTracks().forEach(function (t) { t.stop(); });
+                        panel.remove();
+                        if (canceled || !chunks.length) return;
+                        var blob = new Blob(chunks, { type: mime });
+                        var review = { type: 'audio', file: window.ASH_CONFIG.reviewFile, section: getSectionHeading(that), sectionIdx: data.idx || 0, audioBlob: blob, audioType: mime, text: ti.value.trim(), date: new Date().toISOString() };
                         if (typeof FB !== 'undefined' && FB.put) {
                           FB.put('reviews', review).then(function () {
                             toast('\u2714\uFE0F Voice review saved', 'rgba(40,180,40,0.9)', 2500);
@@ -1542,17 +1561,22 @@ console.error = function () {
                           that.textContent = '\uD83C\uDF99\uFE0F';
                           that.title = 'Record a voice note';
                         }, 3000);
-                        window._recording = false;
-                        window._mediaRecorder = null;
-                        stream.getTracks().forEach(function (t) { t.stop(); });
                       };
                       mediaRecorder.start();
                     }).catch(function () {
-                      that.style.background = 'rgba(232,93,58,0.15)';
-                      that.textContent = '\uD83C\uDF99\uFE0F';
-                      that.title = 'Record a voice note';
+                      clearInterval(timerInt);
+                      panel.remove();
                       window._recording = false;
                       alert('Microphone access denied.');
+                    });
+
+                    panel.querySelector('.rec-cancel').addEventListener('click', function () {
+                      canceled = true;
+                      if (window._mediaRecorder && window._mediaRecorder.state === 'recording') window._mediaRecorder.stop();
+                      else { panel.remove(); clearInterval(timerInt); window._recording = false; }
+                    });
+                    panel.querySelector('.rec-stop').addEventListener('click', function () {
+                      if (window._mediaRecorder && window._mediaRecorder.state === 'recording') window._mediaRecorder.stop();
                     });
                   });
 

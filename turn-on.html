@@ -902,7 +902,11 @@ function pushSession() {
     var list = (d && d.sessions) ? d.sessions : [];
     list.push(session);
     return FB.put('turnOn', { id: 'sessions_data', sessions: list });
-  }).catch(function(){});
+  }).then(function () {
+    console.log('turn-on session saved');
+  }).catch(function (err) {
+    console.warn('turn-on session save failed:', err);
+  });
 }
 
 function showEnd() {
