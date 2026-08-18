@@ -1171,7 +1171,7 @@
             '<div class="info">' +
               '<div class="stitle">' + esc(l.subject || '(no subject)') + (!l.read ? ' <span style="color:#ffe680;font-size:.7rem;">NEW</span>' : '') + '</div>' +
               '<div class="smeta">' + date + '</div>' +
-              '<div style="font-size:.8rem;color:#d4c5b2;margin-top:4px;white-space:pre-wrap;">' + esc(l.body || '').slice(0, 200) + (l.body && l.body.length > 200 ? '...' : '') + '</div>' +
+              '<div style="font-size:.8rem;color:#d4c5b2;margin-top:4px;white-space:pre-wrap;">' + esc(l.body || '') + '</div>' +
             '</div>' +
             '<div class="actions" style="flex-direction:column;gap:4px;">' +
               (!l.read ? '<button class="approve-btn" data-letter-id="' + esc(l.id || l.key) + '" style="font-size:.7rem;padding:.25rem .5rem;">Mark read</button>' : '') +
