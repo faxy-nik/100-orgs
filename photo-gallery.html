@@ -194,17 +194,6 @@
     .eff-wide { grid-column: span 2; }
     .eff-big { grid-row: span 2; grid-column: span 2; }
 
-    /* Card rise animation */
-    .gallery-item.rise-hidden {
-      opacity: 0;
-      transform: translateY(28px);
-    }
-    .gallery-item.rise-visible {
-      opacity: 1;
-      transform: translateY(0);
-      transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1), transform 0.6s cubic-bezier(0.22,1,0.36,1);
-    }
-
     /* Shimmer skeleton */
     .gallery-item.shimmer {
       background: linear-gradient(110deg, var(--glass) 30%, rgba(255,220,160,0.12) 50%, var(--glass) 70%);
@@ -213,6 +202,13 @@
     }
     .gallery-item.shimmer img, .gallery-item.shimmer video { opacity: 0; }
     @keyframes shimmerSlide { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* Card rise animation */
+    .gallery-item.rise-pending { opacity: 0; }
+    .gallery-item.rise-in {
+      animation: riseFadeIn 0.5s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+    @keyframes riseFadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
     /* Spotlight cursor follow */
     .gallery.spotlight-active .gallery-item::before {
@@ -587,7 +583,7 @@
           var eff = EFFECTS[Math.floor(seededRand(i * 7919 + 1)() * EFFECTS.length)];
           var stagger = '';
           if (!isVideo && seededRand(i * 7919 + 2)() > 0.55) stagger = ' ' + STAGGER[Math.floor(seededRand(i * 7919 + 3)() * STAGGER.length)];
-          html += '<div class="gallery-item shimmer rise-hidden ' + eff + stagger + '" data-index="' + i + '">';
+          html += '<div class="gallery-item shimmer rise-pending ' + eff + stagger + '" data-index="' + i + '">';
           if (eff === 'eff-diamond') html += '<span class="diamond-gem">\uD83D\uDC8E</span>';
           if (isVideo) {
             html += '<video preload="metadata" muted playsinline>' +
@@ -644,18 +640,18 @@
           var riseObs = new IntersectionObserver(function (entries) {
             entries.forEach(function (e) {
               if (e.isIntersecting) {
-                var delay = Math.floor(Math.random() * 120);
-                setTimeout(function () { e.target.classList.remove('rise-hidden'); e.target.classList.add('rise-visible'); }, delay);
+                e.target.classList.remove('rise-pending');
+                e.target.classList.add('rise-in');
                 riseObs.unobserve(e.target);
               }
             });
           }, { rootMargin: '60px' });
-          grid.querySelectorAll('.rise-hidden').forEach(function (item, idx) {
-            item.style.transitionDelay = (idx % 8) * 0.06 + 's';
+          grid.querySelectorAll('.rise-pending').forEach(function (item, idx) {
+            item.style.animationDelay = (idx % 8) * 0.05 + 's';
             riseObs.observe(item);
           });
         } else {
-          grid.querySelectorAll('.rise-hidden').forEach(function (item) { item.classList.remove('rise-hidden'); item.classList.add('rise-visible'); });
+          grid.querySelectorAll('.rise-pending').forEach(function (item) { item.classList.remove('rise-pending'); });
         }
       }
 
