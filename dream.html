@@ -996,5 +996,51 @@
 <script src="events.js"></script>
 <script src="puzzle-hunt.js"></script>
 <script src="letters.js"></script>
+<script>
+(function () {
+  function dreamToast(msg) {
+    var el = document.createElement('div');
+    el.textContent = msg;
+    el.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(255,230,128,0.85);color:#181214;padding:8px 18px;border-radius:20px;font-size:14px;z-index:999999;pointer-events:none;transition:opacity 0.5s;opacity:1;';
+    document.body.appendChild(el);
+    setTimeout(function () { el.style.opacity = '0'; setTimeout(function () { el.remove(); }, 500); }, 2500);
+  }
+  document.addEventListener('dblclick', function (e) {
+    var t = e.target;
+    if (t.closest && (t.closest('#dreamContent') || t === document.body || t === document.documentElement)) {
+      showDreamWishModal();
+    }
+  });
+  function showDreamWishModal() {
+    if (document.getElementById('dreamWishOverlay')) return;
+    var overlay = document.createElement('div');
+    overlay.id = 'dreamWishOverlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;';
+    var modal = document.createElement('div');
+    modal.style.cssText = 'background:#1c181a;border:1px solid rgba(255,210,150,.15);border-radius:16px;padding:1.5rem;width:300px;box-shadow:0 8px 40px rgba(0,0,0,.7);text-align:center;';
+    modal.innerHTML =
+      '<div style="font-size:2rem;margin-bottom:0.5rem;">\u2B50</div>' +
+      '<div style="font-family:Fraunces,Georgia,serif;color:#ffe680;font-size:1rem;margin-bottom:0.8rem;">Make a wish</div>' +
+      '<textarea id="dreamWishInput" placeholder="What do you wish for?" style="width:100%;background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#ffebd2;padding:0.6rem;border-radius:8px;font-family:inherit;font-size:0.85rem;resize:none;height:80px;outline:none;"></textarea>' +
+      '<div style="display:flex;gap:8px;justify-content:center;margin-top:0.8rem;">' +
+        '<button id="dreamWishSave" style="background:rgba(255,230,128,.15);border:1px solid rgba(255,230,128,.35);color:#ffe680;padding:0.4rem 1rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:0.8rem;">\u2728 Save</button>' +
+        '<button id="dreamWishCancel" style="background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);color:#c7b8a1;padding:0.4rem 1rem;border-radius:6px;cursor:pointer;font-family:inherit;font-size:0.8rem;">Cancel</button>' +
+      '</div>';
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    document.getElementById('dreamWishInput').focus();
+    document.getElementById('dreamWishSave').addEventListener('click', function () {
+      var text = document.getElementById('dreamWishInput').value.trim();
+      if (text && window.WishSystem) {
+        window.WishSystem.addWish(text, 'dream');
+        dreamToast('\u2B50 Wish saved \u2728');
+      }
+      overlay.remove();
+    });
+    document.getElementById('dreamWishCancel').addEventListener('click', function () { overlay.remove(); });
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) overlay.remove(); });
+  }
+})();
+</script>
 </body>
 </html>

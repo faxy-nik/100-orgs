@@ -385,6 +385,72 @@
     });
   }
 
+  function exportReviews() {
+    FB.getAll('reviews').then(function (reviews) {
+      if (!reviews.length) { toast('No reviews to export'); return; }
+      reviews.sort(function (a, b) { return (a.date || '').localeCompare(b.date || ''); });
+      var sections = {};
+      reviews.forEach(function (r) {
+        var key = r.section || r.sectionTitle || ('Section #' + (r.sectionIdx != null ? r.sectionIdx : '?'));
+        if (!sections[key]) sections[key] = [];
+        sections[key].push(r);
+      });
+      var esc = function (s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+      var out = '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>All Reviews</title>\n' +
+        '<style>\n' +
+        'body{margin:0;background:#181214;color:#ffebd2;font-family:Georgia,serif;line-height:1.8;padding:2rem max(2rem,5vw);}\n' +
+        'h1{color:#ffe680;font-size:1.8rem;text-align:center;margin-bottom:.5rem;}\n' +
+        'h2{color:#ffe680;font-size:1.2rem;margin:2.5rem 0 .8rem;padding-bottom:.4rem;border-bottom:1px solid rgba(255,210,150,.15);}\n' +
+        '.review{background:rgba(255,220,160,.04);border:1px solid rgba(255,210,150,.1);border-radius:10px;padding:1rem 1.2rem;margin-bottom:.8rem;}\n' +
+        '.meta{color:#6b5f52;font-size:.8rem;margin-bottom:.4rem;}\n' +
+        '.text{color:#ffebd2;font-size:.95rem;white-space:pre-wrap;}\n' +
+        '.audio{color:#8a7a5e;font-size:.82rem;font-style:italic;margin-top:.4rem;}\n' +
+        '.sub{color:#6b5f52;font-size:.82rem;font-style:italic;margin-top:.2rem;}\n' +
+        '.sig{text-align:right;color:#ffe680;font-style:italic;margin-top:2rem;font-size:.9rem;}\n' +
+        '</style>\n</head>\n<body>\n' +
+        '<h1>All Reviews</h1>\n' +
+        '<p style="text-align:center;color:#6b5f52;font-size:.85rem;margin-bottom:2rem;">' + reviews.length + ' reviews across ' + Object.keys(sections).length + ' sections</p>\n';
+      var keys = Object.keys(sections);
+      keys.forEach(function (sec) {
+        out += '<h2>' + esc(sec) + ' <span style="color:#6b5f52;font-weight:normal;font-size:.85rem;">(' + sections[sec].length + ')</span></h2>\n';
+        sections[sec].forEach(function (r) {
+          var date = r.date ? new Date(r.date).toLocaleString() : '';
+          var page = r.file || r.page || '';
+          var sub = [];
+          if (page) sub.push(esc(page));
+          if (date) sub.push(date);
+          out += '<div class="review">\n';
+          if (sub.length) out += '  <div class="meta">' + sub.join(' &middot; ') + '</div>\n';
+          if (r.text) out += '  <div class="text">' + esc(r.text) + '</div>\n';
+          if (r.type === 'audio' || r.audioBlob || r._audioBase64) {
+            var audioSrc = '';
+            if (r._audioBase64) {
+              var mime = r._audioType || 'audio/webm';
+              audioSrc = 'data:' + mime + ';base64,' + r._audioBase64;
+            }
+            if (audioSrc) {
+              out += '  <div class="audio"><audio controls src="' + audioSrc + '" style="width:100%;height:32px;"></audio></div>\n';
+            } else {
+              out += '  <div class="audio">[Voice review - audio data unavailable]</div>\n';
+            }
+          }
+          out += '</div>\n';
+        });
+      });
+      out += '<div class="sig">exported from 100 prghs for eeshah</div>\n</body>\n</html>';
+      var blob = new Blob([out], { type: 'text/html;charset=utf-8' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'all-reviews.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast('Exported ' + reviews.length + ' reviews');
+    }).catch(function () { toast('Error exporting reviews'); });
+  }
+
   function renderSectionRequests() {
     var list = document.getElementById('sectionRequestsList');
     if (!list) return;
@@ -2944,6 +3010,7 @@
     });
     document.getElementById('wishExportBtn').addEventListener('click', function () { exportWishes('json'); });
     document.getElementById('wishExportCsvBtn').addEventListener('click', function () { exportWishes('csv'); });
+    document.getElementById('exportReviewsBtn').addEventListener('click', exportReviews);
 
     // Secret song
     document.getElementById('secSaveBtn').addEventListener('click', saveSecretSong);
