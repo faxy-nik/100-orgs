@@ -5,11 +5,24 @@
 function sectionLock(k) {
   if (window.FeatureFlags && !window.FeatureFlags.get('section-lock')) return;
   var hidden = false;
-  function hide(msg) {
+  function hide(msg, adminLock) {
     if (hidden) return;
     hidden = true;
-    if (!document.body) { setTimeout(function () { hide(msg); }, 50); return; }
-    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#181214;color:#ffebd2;font-family:Georgia,serif;padding:2rem;text-align:center"><div><h1 style="font-family:Fraunces,Georgia,serif;color:#ffe680">\uD83D\uDD12 Locked</h1><p style="color:#6b5f52;margin-top:1rem">' + msg + '</p><a href="index.html" style="display:inline-block;margin-top:1.5rem;padding:.6rem 1.5rem;border:1px solid #ffe680;color:#ffe680;border-radius:8px;text-decoration:none;font-family:Fraunces,Georgia,serif">\u2190 Back home</a></div></div>';
+    if (!document.body) { setTimeout(function () { hide(msg, adminLock); }, 50); return; }
+    var quizBtn = adminLock ? '<button id="sectionQuizUnlockBtn" style="display:inline-block;margin-top:1.2rem;padding:.6rem 1.5rem;border:1px solid rgba(111,207,147,.4);color:#6fcf93;background:rgba(111,207,147,.08);border-radius:8px;cursor:pointer;font-family:Fraunces,Georgia,serif;font-size:.9rem;transition:all .25s;">\uD83E\uDDEA Take Quiz to Unlock</button>' : '';
+    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#181214;color:#ffebd2;font-family:Georgia,serif;padding:2rem;text-align:center"><div><h1 style="font-family:Fraunces,Georgia,serif;color:#ffe680">\uD83D\uDD12 Locked</h1><p style="color:#6b5f52;margin-top:1rem">' + msg + '</p>' + quizBtn + '<a href="index.html" style="display:inline-block;margin-top:1.5rem;padding:.6rem 1.5rem;border:1px solid #ffe680;color:#ffe680;border-radius:8px;text-decoration:none;font-family:Fraunces,Georgia,serif">\u2190 Back home</a></div></div>';
+    document.body.style.display = '';
+    if (adminLock) {
+      var btn = document.getElementById('sectionQuizUnlockBtn');
+      if (btn) {
+        btn.onmouseover = function () { this.style.background = '#6fcf93'; this.style.color = '#181214'; };
+        btn.onmouseout = function () { this.style.background = 'rgba(111,207,147,.08)'; this.style.color = '#6fcf93'; };
+        btn.onclick = function () {
+          if (typeof window.openSectionQuiz === 'function') { window.openSectionQuiz(k); }
+          else { setTimeout(function () { if (typeof window.openSectionQuiz === 'function') window.openSectionQuiz(k); else alert('Quiz loading, please try again in a moment.'); }, 500); }
+        };
+      }
+    }
   }
   function show() {
     if (!document.body) { setTimeout(show, 50); return; }
@@ -22,7 +35,7 @@ function sectionLock(k) {
     if (typeof FB !== 'undefined' && FB.set) {
       FB.init();
       FB.get('config', 'access').then(function (ac) {
-        if (ac && ac[k] && ac[k].adminLocked) { hide('This section is currently locked by the admin.'); return; }
+        if (ac && ac[k] && ac[k].adminLocked) { hide('This section is currently locked by the admin.', true); return; }
         verify();
       }).catch(function () { checkLocalLock(); });
     } else { checkLocalLock(); }
@@ -33,7 +46,7 @@ function sectionLock(k) {
       if (ar) {
         var ac = JSON.parse(ar);
         var sc = ac[k];
-        if (sc && sc.adminLocked) { hide('This section is currently locked by the admin.'); return; }
+        if (sc && sc.adminLocked) { hide('This section is currently locked by the admin.', true); return; }
       }
     } catch (e) {}
     verify();

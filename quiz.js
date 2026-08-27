@@ -225,6 +225,28 @@
           { question: 'Where do these fantasies bloom, according to the dedication?', options: ['In the dark, quiet hours', 'In his diary', 'In dreams', 'In songs'], answer: 0 },
           { question: 'What is this story "never meant to be"?', options: ['Forgotten', 'Shared', 'Finished', 'Written'], answer: 0 }
         ]
+      },
+      // photo-gallery — page-level quiz
+      {
+        id: 'photo-gallery-quiz', page: 'photo-gallery', sectionIdx: -1, title: 'Photo Gallery',
+        questions: [
+          { question: 'Who is every picture in this gallery about?', options: ['Fahad', 'Ash', 'Both of them', 'No one'], answer: 1 },
+          { question: 'Why did the author make this gallery?', options: ['To show off photography', 'To preserve our memories', 'For Instagram', 'For fun'], answer: 1 },
+          { question: 'Who is this website dedicated to?', options: ['Fahad', 'Ash', 'Everyone', 'No one'], answer: 1 },
+          { question: 'What was the author trying to build instead of just another website?', options: ['A portfolio', 'A home', 'A gallery', 'A blog'], answer: 1 },
+          { question: 'Who was always in the author\'s mind while making this project?', options: ['His family', 'Ash', 'His friends', 'Himself'], answer: 1 }
+        ]
+      },
+      // sky-observatory — page-level quiz
+      {
+        id: 'sky-observatory-quiz', page: 'sky-observatory', sectionIdx: -1, title: 'Sky Observatory',
+        questions: [
+          { question: 'What can you change in the sky observatory?', options: ['The music', 'The sky', 'The text', 'The colors'], answer: 1 },
+          { question: 'What appears in the sky at night?', options: ['Clouds', 'Stars', 'Rain', 'Snow'], answer: 1 },
+          { question: 'What is this website called?', options: ['A love letter', '100 prghs for eeshah', 'A gallery', 'A diary'], answer: 1 },
+          { question: 'What month did you first meet?', options: ['May', 'June', 'July', 'August'], answer: 1 },
+          { question: 'What was the author trying to build with this website?', options: ['A business', 'A home', 'A game', 'A tool'], answer: 1 }
+        ]
       }
     ];
   }
@@ -370,6 +392,25 @@
       FB.put('quizHistory', { id: 'all', items: items }).catch(function () {});
       if (window.Interactions) window.Interactions.record('content', passed ? 'quiz_passed' : 'quiz_failed', quiz.id);
     }).catch(function () {});
+
+    if (passed && quiz.page) {
+      FB.get('config', 'access').then(function (ac) {
+        ac = ac || {};
+        if (!ac[quiz.page]) ac[quiz.page] = { questions: [] };
+        ac[quiz.page].adminLocked = false;
+        ac.id = 'access';
+        try {
+          var local = JSON.parse(localStorage.getItem('ash-section-access') || '{}');
+          local[quiz.page] = local[quiz.page] || {};
+          local[quiz.page].adminLocked = false;
+          localStorage.setItem('ash-section-access', JSON.stringify(local));
+        } catch (e) {}
+        return FB.put('config', ac);
+      }).then(function () {
+        toastShow('Section unlocked! Reloading...');
+        setTimeout(function () { location.reload(); }, 1200);
+      }).catch(function () {});
+    }
   }
 
   function esc(str) {
@@ -404,6 +445,15 @@
   window.closeModal = window.closeModal || function () {
     var overlay = document.getElementById('modalOverlay');
     if (overlay) overlay.style.display = 'none';
+  };
+
+  window.openSectionQuiz = function (pageKey) {
+    for (var i = 0; i < QUIZZES.length; i++) {
+      if (QUIZZES[i].page === pageKey && QUIZZES[i].sectionIdx === -1) {
+        openQuizModal(QUIZZES[i]);
+        return;
+      }
+    }
   };
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(addQuizButtons, 500); });

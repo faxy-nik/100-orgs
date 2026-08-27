@@ -2260,7 +2260,7 @@
     return {
       '100-organs': { adminLocked: false, questions: defaultQuiz('100-organs') },
       'love': { adminLocked: false, questions: defaultQuiz('love') },
-      'fantasies': { adminLocked: true, questions: defaultQuiz('fantasies') },
+      'fantasies': { adminLocked: false, questions: defaultQuiz('fantasies') },
       'sky-observatory': { adminLocked: false, questions: defaultQuiz('sky-observatory') },
       'photo-gallery': { adminLocked: false, questions: defaultQuiz('photo-gallery') }
     };
