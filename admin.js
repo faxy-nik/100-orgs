@@ -2288,7 +2288,11 @@
 
   function saveAccessConfig(cfg) {
     localStorage.setItem(SECTION_ACCESS_KEY, JSON.stringify(cfg));
-    if (typeof FB !== 'undefined' && FB.set) { FB.set('config/access', JSON.parse(JSON.stringify(cfg))).catch(function () {}); }
+    if (typeof FB !== 'undefined' && FB.put) {
+      var copy = JSON.parse(JSON.stringify(cfg));
+      copy.id = 'access';
+      FB.put('config', copy).catch(function () {});
+    }
   }
 
   var accessCfg = null;

@@ -394,22 +394,35 @@
     }).catch(function () {});
 
     if (passed && quiz.page) {
-      FB.get('config', 'access').then(function (ac) {
-        ac = ac || {};
-        if (!ac[quiz.page]) ac[quiz.page] = { questions: [] };
-        ac[quiz.page].adminLocked = false;
-        ac.id = 'access';
-        try {
-          var local = JSON.parse(localStorage.getItem('ash-section-access') || '{}');
-          local[quiz.page] = local[quiz.page] || {};
-          local[quiz.page].adminLocked = false;
-          localStorage.setItem('ash-section-access', JSON.stringify(local));
-        } catch (e) {}
-        return FB.put('config', ac);
-      }).then(function () {
-        toastShow('Section unlocked! Reloading...');
-        setTimeout(function () { location.reload(); }, 1200);
-      }).catch(function () {});
+      if (quiz.sectionIdx >= 0) {
+        FB.get('sectionUnlock', quiz.page).then(function (d) {
+          var cur = d && typeof d.unlocked === 'number' ? d.unlocked : 0;
+          var next = quiz.sectionIdx + 1;
+          if (next > cur) {
+            return FB.put('sectionUnlock', { id: quiz.page, unlocked: next });
+          }
+        }).then(function () {
+          toastShow('Section unlocked! Reloading...');
+          setTimeout(function () { location.reload(); }, 1200);
+        }).catch(function () {});
+      } else {
+        FB.get('config', 'access').then(function (ac) {
+          ac = ac || {};
+          if (!ac[quiz.page]) ac[quiz.page] = {};
+          ac[quiz.page].adminLocked = false;
+          ac.id = 'access';
+          try {
+            var local = JSON.parse(localStorage.getItem('ash-section-access') || '{}');
+            local[quiz.page] = local[quiz.page] || {};
+            local[quiz.page].adminLocked = false;
+            localStorage.setItem('ash-section-access', JSON.stringify(local));
+          } catch (e) {}
+          return FB.put('config', ac);
+        }).then(function () {
+          toastShow('Section unlocked! Reloading...');
+          setTimeout(function () { location.reload(); }, 1200);
+        }).catch(function () {});
+      }
     }
   }
 

@@ -35,7 +35,16 @@ function sectionLock(k) {
     if (typeof FB !== 'undefined' && FB.set) {
       FB.init();
       FB.get('config', 'access').then(function (ac) {
-        if (ac && ac[k] && ac[k].adminLocked) { hide('This section is currently locked by the admin.', true); return; }
+        var fbLocked = !!(ac && ac[k] && ac[k].adminLocked);
+        var localLocked = false;
+        try {
+          var ar = localStorage.getItem('ash-section-access');
+          if (ar) {
+            var lac = JSON.parse(ar);
+            if (lac[k] && lac[k].adminLocked) localLocked = true;
+          }
+        } catch (e) {}
+        if (fbLocked || localLocked) { hide('This section is currently locked by the admin.', true); return; }
         verify();
       }).catch(function () { checkLocalLock(); });
     } else { checkLocalLock(); }
