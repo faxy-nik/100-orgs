@@ -32,8 +32,7 @@ function sectionLock(k) {
   if (document.body) document.body.style.display = 'none';
   // Check admin lock from Firebase, fall back to localStorage
   function checkAdminLock() {
-    if (typeof FB !== 'undefined' && FB.set) {
-      FB.init();
+    if (typeof FB !== 'undefined' && FB.get) {
       FB.get('config', 'access').then(function (ac) {
         var fbLocked = !!(ac && ac[k] && ac[k].adminLocked);
         var localLocked = false;

@@ -13,16 +13,24 @@
   function save() { try { localStorage.setItem(KEY, JSON.stringify(found)); } catch(e) {} }
   load();
 
-  var USE_FB = typeof FB !== 'undefined' && typeof FB.put === 'function' && typeof FB.on === 'function';
-  var toggles = {}; // per-letter enabled state, { id: true|false }, default true
-  if (USE_FB) {
-    FB.on('config', 'secretLetters', function (val) { toggles = val && typeof val === 'object' ? val : {}; });
+  var TOGGLE_KEY = 'ash-secret-letter-toggles';
+  function loadToggles() { try { return JSON.parse(localStorage.getItem(TOGGLE_KEY)) || {}; } catch(e) { return {}; } }
+  function persistToggles(t) { try { localStorage.setItem(TOGGLE_KEY, JSON.stringify(t)); } catch(e) {} }
+
+  var toggles = loadToggles(); // per-letter enabled state, { id: true|false }, default true
+  if (typeof FB !== 'undefined' && FB.get) {
+    FB.get('config', 'secretLetters').then(function (val) {
+      if (val && typeof val === 'object') { toggles = val; persistToggles(toggles); }
+    }).catch(function () {});
+  }
+  if (typeof FB !== 'undefined' && FB.on) {
+    FB.on('config', 'secretLetters', function (val) { if (val && typeof val === 'object') { toggles = val; persistToggles(toggles); } });
   }
 
   function letterEnabled(id) { return toggles[id] !== false; }
 
   function syncFoundToFirebase() {
-    if (!USE_FB) return;
+    if (typeof FB === 'undefined' || !FB.put) return;
     FB.put('userData', { id: 'secretLetters', letters: found, updatedAt: Date.now() }).catch(function () {});
   }
 
@@ -205,7 +213,12 @@
     isEnabled: letterEnabled,
     setEnabled: function (id, val) {
       toggles[id] = !!val;
-      if (USE_FB) FB.set('config/secretLetters', JSON.parse(JSON.stringify(toggles))).catch(function () {});
+      persistToggles(toggles);
+      if (typeof FB !== 'undefined' && FB.put) {
+        var copy = JSON.parse(JSON.stringify(toggles));
+        copy.id = 'secretLetters';
+        FB.put('config', copy).catch(function () {});
+      }
       return toggles[id];
     }
   };
