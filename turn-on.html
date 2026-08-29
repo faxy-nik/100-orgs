@@ -606,13 +606,23 @@ var STEPS = [];
 var STEPS_VER = 6;
 function loadSteps() {
   STEPS = getDefaultSteps();
+  function applyDisabled(disabled) {
+    if (disabled && disabled.length) filterBranches(disabled);
+    loadLastNight();
+    initGame();
+  }
   if (typeof FB !== 'undefined' && FB.get) {
     FB.get('config', 'turnOnSections').then(function (d) {
-            if (d && d.disabled && d.disabled.length) filterBranches(d.disabled);
+      var disabled = (d && d.disabled) || [];
+      try { var local = JSON.parse(localStorage.getItem('ash-turnon-branches')); if (local && local.disabled && local.disabled.length > disabled.length) disabled = local.disabled; } catch (e) {}
+      applyDisabled(disabled);
+    }).catch(function () {
+      try { var local = JSON.parse(localStorage.getItem('ash-turnon-branches')); if (local && local.disabled) { applyDisabled(local.disabled); return; } } catch (e) {}
       loadLastNight();
       initGame();
-    }).catch(function () { loadLastNight(); initGame(); });;
+    });
   } else {
+    try { var local = JSON.parse(localStorage.getItem('ash-turnon-branches')); if (local && local.disabled) { applyDisabled(local.disabled); return; } } catch (e) {}
     initGame();
   }
 }

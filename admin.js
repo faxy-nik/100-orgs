@@ -2459,30 +2459,39 @@
     { id: 1400, label: 'Morning — I wake you up slow' },
   ];
   var branchToast;
+  var TURNON_KEY = 'ash-turnon-branches';
   function renderTurnOnBranches() {
     var box = document.getElementById('turnOnBranches');
     if (!box) return;
     branchToast = document.getElementById('turnOnBranchesToast');
     FB.get('config', 'turnOnSections').then(function (d) {
       var disabled = (d && d.disabled) || [];
-      var html = '';
-      TURN_ON_BRANCHES.forEach(function (b) {
-        var count = turnOnSteps.filter(function (s) { return turnOnBranchOf(s.id) === b.id; }).length;
-        var on = disabled.indexOf(b.id) === -1;
-        var symbol = turnOnBranchSymbol(turnOnSteps, b.id);
-        html += '<div style="display:flex;align-items:center;gap:.6rem;padding:.5rem .7rem;margin-bottom:.4rem;border:1px solid rgba(255,210,150,.08);border-radius:8px;background:rgba(255,220,160,.02);">' +
-          '<input type="checkbox" data-branch="' + b.id + '"' + (on ? ' checked' : '') + ' style="width:16px;height:16px;accent-color:#6fcf93;">' +
-          '<span style="font-size:.9rem;">' + esc(symbol) + '</span>' +
-          '<span style="flex:1;font-size:.82rem;color:var(--parchment-dim);">' + esc(b.label) + '</span>' +
-          '<span style="font-size:.7rem;color:var(--ash);">' + count + ' steps</span>' +
-          '<span style="font-size:.62rem;padding:1px 8px;border-radius:8px;' + (on ? 'background:rgba(111,207,147,.15);color:#6fcf93;' : 'background:rgba(232,93,58,.12);color:#e85d3a;') + '">' + (on ? 'ON' : 'OFF') + '</span>' +
-        '</div>';
-      });
-      box.innerHTML = html;
-      box.querySelectorAll('input[type=checkbox]').forEach(function (cb) {
-        cb.addEventListener('change', saveTurnOnBranches);
-      });
-    }).catch(function () {});
+      try { var local = JSON.parse(localStorage.getItem(TURNON_KEY)); if (local && local.disabled) disabled = local.disabled; } catch (e) {}
+      applyTurnOnDisabled(disabled);
+    }).catch(function () {
+      try { var local = JSON.parse(localStorage.getItem(TURNON_KEY)); if (local && local.disabled) applyTurnOnDisabled(local.disabled); } catch (e) {}
+    });
+  }
+  function applyTurnOnDisabled(disabled) {
+    var html = '';
+    TURN_ON_BRANCHES.forEach(function (b) {
+      var count = turnOnSteps.filter(function (s) { return turnOnBranchOf(s.id) === b.id; }).length;
+      var on = disabled.indexOf(b.id) === -1;
+      var symbol = turnOnBranchSymbol(turnOnSteps, b.id);
+      html += '<div style="display:flex;align-items:center;gap:.6rem;padding:.5rem .7rem;margin-bottom:.4rem;border:1px solid rgba(255,210,150,.08);border-radius:8px;background:rgba(255,220,160,.02);">' +
+        '<input type="checkbox" data-branch="' + b.id + '"' + (on ? ' checked' : '') + ' style="width:16px;height:16px;accent-color:#6fcf93;">' +
+        '<span style="font-size:.9rem;">' + esc(symbol) + '</span>' +
+        '<span style="flex:1;font-size:.82rem;color:var(--parchment-dim);">' + esc(b.label) + '</span>' +
+        '<span style="font-size:.7rem;color:var(--ash);">' + count + ' steps</span>' +
+        '<span style="font-size:.62rem;padding:1px 8px;border-radius:8px;' + (on ? 'background:rgba(111,207,147,.15);color:#6fcf93;' : 'background:rgba(232,93,58,.12);color:#e85d3a;') + '">' + (on ? 'ON' : 'OFF') + '</span>' +
+      '</div>';
+    });
+    var box = document.getElementById('turnOnBranches');
+    if (!box) return;
+    box.innerHTML = html;
+    box.querySelectorAll('input[type=checkbox]').forEach(function (cb) {
+      cb.addEventListener('change', saveTurnOnBranches);
+    });
   }
   function saveTurnOnBranches() {
     var disabled = [];
@@ -2495,6 +2504,7 @@
       renderTurnOnBranches();
       return;
     }
+    try { localStorage.setItem(TURNON_KEY, JSON.stringify({ disabled: disabled })); } catch (e) {}
     FB.put('config', { id: 'turnOnSections', disabled: disabled }).then(function () {
       if (branchToast) branchToast.textContent = 'Branch toggles saved.';
     }).catch(function () {
